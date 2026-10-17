@@ -28,6 +28,8 @@ device or emulator, and `dl.google.com` (Android SDK manager / Google Maven) was
 | Layouts at 16:9, 20:9 (1600×720) and 4:3 (1024×768) | checked visually |
 | Debug APK: `tools/build_apk_offline.sh` | built, signed (v1+v2+v3), `apksigner verify` pass |
 | `./gradlew :android:assembleDebug` (AGP) | **not run**: Google Maven blocked here |
+| No class referenced at runtime is missing (\`tools/check_missing_classes.py\`) | pass: only \`androidx.fragment\` (unused fragment embedding) and the backend's text-dialog \`R\` remain |
+| No unguarded call newer than Android 5.0 (\`tools/check_api_level.py\` vs API 21) | pass for game code; LibGDX's newer calls are behind its own \`SDK_INT\` checks |
 | Running on an Android device or emulator | **not done** |
 
 ## Commands and outputs
@@ -132,3 +134,13 @@ This is not a device measurement. No Android profiling was possible.
   `AudioService.suspend/resume`, safe insets and `renderUnderCutout`.
 * The AGP Gradle build is configured but was not executed here.
 * The art limitations listed in the README apply: cutout animations and simpler supporting art.
+
+## Fixed: crash on launch (Android 11+)
+
+The first APK crashed immediately on Android 11 and newer. On API 30+ LibGDX's
+\`AndroidApplication\` creates \`AndroidXKeyboardHeightProvider\`, which needs \`androidx.core\`, and
+the APK did not contain AndroidX, so the app died with \`NoClassDefFoundError\`.
+
+* The AGP build now depends on \`androidx.core:core:1.13.1\`.
+* The offline build adds a minimal, API-30-based replacement for the five members LibGDX uses
+  (\`android-offline/src/main/java/androidx/core\`), because Google Maven is unreachable there.

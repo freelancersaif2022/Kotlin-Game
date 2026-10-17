@@ -57,6 +57,9 @@ kotlin {
 dependencies {
     implementation(project(":core"))
     implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+    // LibGDX's backend uses androidx.core for keyboard insets on Android 11+; without it the app
+    // crashes at launch with NoClassDefFoundError (androidx/core/view/ViewCompat).
+    implementation("androidx.core:core:1.13.1")
     natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
     natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
     natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
