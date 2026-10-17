@@ -1,0 +1,188 @@
+
+enemy_monkey.png
+size: 2048, 296
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/monkey/attack/00
+  rotate: false
+  xy: 1902, 2
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/attack/01
+  rotate: false
+  xy: 456, 2
+  size: 142, 145
+  orig: 192, 192
+  offset: 32, 22
+  index: -1
+enemies/monkey/attack/02
+  rotate: false
+  xy: 767, 2
+  size: 154, 144
+  orig: 192, 192
+  offset: 27, 27
+  index: -1
+enemies/monkey/attack/03
+  rotate: false
+  xy: 604, 2
+  size: 157, 144
+  orig: 192, 192
+  offset: 28, 27
+  index: -1
+enemies/monkey/attack/04
+  rotate: false
+  xy: 150, 2
+  size: 152, 146
+  orig: 192, 192
+  offset: 29, 25
+  index: -1
+enemies/monkey/attack/05
+  rotate: false
+  xy: 308, 2
+  size: 142, 146
+  orig: 192, 192
+  offset: 32, 21
+  index: -1
+enemies/monkey/damage/00
+  rotate: false
+  xy: 1620, 149
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/damage/01
+  rotate: false
+  xy: 927, 2
+  size: 139, 144
+  orig: 192, 192
+  offset: 33, 26
+  index: -1
+enemies/monkey/damage/02
+  rotate: false
+  xy: 2, 2
+  size: 142, 147
+  orig: 192, 192
+  offset: 23, 25
+  index: -1
+enemies/monkey/damage/03
+  rotate: false
+  xy: 927, 2
+  size: 139, 144
+  orig: 192, 192
+  offset: 17, 26
+  index: -1
+enemies/monkey/death/00
+  rotate: false
+  xy: 1762, 2
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/death/01
+  rotate: false
+  xy: 1899, 149
+  size: 142, 140
+  orig: 192, 192
+  offset: 24, 26
+  index: -1
+enemies/monkey/death/02
+  rotate: false
+  xy: 746, 152
+  size: 142, 138
+  orig: 192, 192
+  offset: 23, 23
+  index: -1
+enemies/monkey/death/03
+  rotate: false
+  xy: 1034, 152
+  size: 133, 138
+  orig: 192, 192
+  offset: 27, 23
+  index: -1
+enemies/monkey/death/04
+  rotate: false
+  xy: 1492, 2
+  size: 122, 142
+  orig: 192, 192
+  offset: 31, 22
+  index: -1
+enemies/monkey/death/05
+  rotate: false
+  xy: 1492, 150
+  size: 104, 140
+  orig: 192, 192
+  offset: 41, 23
+  index: -1
+enemies/monkey/idle/00
+  rotate: false
+  xy: 1762, 2
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/idle/01
+  rotate: false
+  xy: 1213, 2
+  size: 134, 144
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/idle/02
+  rotate: false
+  xy: 1762, 2
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/idle/03
+  rotate: false
+  xy: 894, 152
+  size: 134, 138
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/movement/00
+  rotate: false
+  xy: 1902, 2
+  size: 134, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/movement/01
+  rotate: false
+  xy: 604, 152
+  size: 136, 140
+  orig: 192, 192
+  offset: 29, 26
+  index: -1
+enemies/monkey/movement/02
+  rotate: false
+  xy: 1620, 2
+  size: 136, 141
+  orig: 192, 192
+  offset: 29, 25
+  index: -1
+enemies/monkey/movement/03
+  rotate: false
+  xy: 1760, 149
+  size: 133, 141
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/monkey/movement/04
+  rotate: false
+  xy: 1072, 2
+  size: 135, 144
+  orig: 192, 192
+  offset: 27, 24
+  index: -1
+enemies/monkey/movement/05
+  rotate: false
+  xy: 1353, 2
+  size: 133, 144
+  orig: 192, 192
+  offset: 29, 24
+  index: -1

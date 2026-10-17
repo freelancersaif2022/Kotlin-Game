@@ -1,0 +1,188 @@
+
+enemy_scorpion.png
+size: 1988, 280
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/scorpion/attack/00
+  rotate: false
+  xy: 1435, 141
+  size: 129, 133
+  orig: 192, 192
+  offset: 34, 18
+  index: -1
+enemies/scorpion/attack/01
+  rotate: false
+  xy: 874, 2
+  size: 141, 136
+  orig: 192, 192
+  offset: 31, 22
+  index: -1
+enemies/scorpion/attack/02
+  rotate: false
+  xy: 431, 2
+  size: 144, 138
+  orig: 192, 192
+  offset: 29, 26
+  index: -1
+enemies/scorpion/attack/03
+  rotate: false
+  xy: 581, 2
+  size: 142, 138
+  orig: 192, 192
+  offset: 29, 27
+  index: -1
+enemies/scorpion/attack/04
+  rotate: false
+  xy: 142, 2
+  size: 143, 139
+  orig: 192, 192
+  offset: 28, 25
+  index: -1
+enemies/scorpion/attack/05
+  rotate: false
+  xy: 729, 2
+  size: 139, 137
+  orig: 192, 192
+  offset: 32, 21
+  index: -1
+enemies/scorpion/damage/00
+  rotate: false
+  xy: 1575, 2
+  size: 134, 133
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/damage/01
+  rotate: false
+  xy: 291, 2
+  size: 134, 139
+  orig: 192, 192
+  offset: 30, 26
+  index: -1
+enemies/scorpion/damage/02
+  rotate: false
+  xy: 2, 2
+  size: 134, 143
+  orig: 192, 192
+  offset: 20, 25
+  index: -1
+enemies/scorpion/damage/03
+  rotate: false
+  xy: 291, 2
+  size: 134, 139
+  orig: 192, 192
+  offset: 14, 26
+  index: -1
+enemies/scorpion/death/00
+  rotate: false
+  xy: 1435, 2
+  size: 134, 133
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/death/01
+  rotate: false
+  xy: 1161, 143
+  size: 141, 123
+  orig: 192, 192
+  offset: 31, 28
+  index: -1
+enemies/scorpion/death/02
+  rotate: false
+  xy: 1003, 144
+  size: 142, 113
+  orig: 192, 192
+  offset: 30, 27
+  index: -1
+enemies/scorpion/death/03
+  rotate: false
+  xy: 729, 145
+  size: 135, 104
+  orig: 192, 192
+  offset: 34, 25
+  index: -1
+enemies/scorpion/death/04
+  rotate: false
+  xy: 874, 144
+  size: 123, 114
+  orig: 192, 192
+  offset: 38, 23
+  index: -1
+enemies/scorpion/death/05
+  rotate: false
+  xy: 1844, 141
+  size: 102, 128
+  orig: 192, 192
+  offset: 47, 21
+  index: -1
+enemies/scorpion/idle/00
+  rotate: false
+  xy: 1435, 2
+  size: 134, 133
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/idle/01
+  rotate: false
+  xy: 1021, 2
+  size: 134, 136
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/idle/02
+  rotate: false
+  xy: 1435, 2
+  size: 134, 133
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/idle/03
+  rotate: false
+  xy: 1704, 141
+  size: 134, 131
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/movement/00
+  rotate: false
+  xy: 1435, 141
+  size: 129, 133
+  orig: 192, 192
+  offset: 34, 18
+  index: -1
+enemies/scorpion/movement/01
+  rotate: false
+  xy: 1715, 2
+  size: 132, 133
+  orig: 192, 192
+  offset: 33, 25
+  index: -1
+enemies/scorpion/movement/02
+  rotate: false
+  xy: 1853, 2
+  size: 131, 133
+  orig: 192, 192
+  offset: 31, 25
+  index: -1
+enemies/scorpion/movement/03
+  rotate: false
+  xy: 1570, 141
+  size: 128, 133
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/scorpion/movement/04
+  rotate: false
+  xy: 1161, 2
+  size: 131, 135
+  orig: 192, 192
+  offset: 27, 24
+  index: -1
+enemies/scorpion/movement/05
+  rotate: false
+  xy: 1298, 2
+  size: 131, 135
+  orig: 192, 192
+  offset: 30, 24
+  index: -1

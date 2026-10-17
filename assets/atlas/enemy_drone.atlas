@@ -1,0 +1,188 @@
+
+enemy_drone.png
+size: 2040, 224
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/drone/attack/00
+  rotate: false
+  xy: 1758, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/attack/01
+  rotate: false
+  xy: 951, 2
+  size: 139, 110
+  orig: 192, 192
+  offset: 35, 23
+  index: -1
+enemies/drone/attack/02
+  rotate: false
+  xy: 802, 2
+  size: 143, 110
+  orig: 192, 192
+  offset: 39, 29
+  index: -1
+enemies/drone/attack/03
+  rotate: false
+  xy: 506, 2
+  size: 145, 111
+  orig: 192, 192
+  offset: 41, 30
+  index: -1
+enemies/drone/attack/04
+  rotate: false
+  xy: 222, 2
+  size: 143, 112
+  orig: 192, 192
+  offset: 39, 27
+  index: -1
+enemies/drone/attack/05
+  rotate: false
+  xy: 657, 2
+  size: 139, 111
+  orig: 192, 192
+  offset: 35, 22
+  index: -1
+enemies/drone/damage/00
+  rotate: false
+  xy: 1618, 114
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/damage/01
+  rotate: false
+  xy: 371, 2
+  size: 129, 112
+  orig: 192, 192
+  offset: 43, 29
+  index: -1
+enemies/drone/damage/02
+  rotate: false
+  xy: 89, 2
+  size: 127, 117
+  orig: 192, 192
+  offset: 38, 31
+  index: -1
+enemies/drone/damage/03
+  rotate: false
+  xy: 371, 2
+  size: 129, 112
+  orig: 192, 192
+  offset: 27, 29
+  index: -1
+enemies/drone/death/00
+  rotate: false
+  xy: 1618, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/death/01
+  rotate: false
+  xy: 802, 118
+  size: 136, 85
+  orig: 192, 192
+  offset: 22, 34
+  index: -1
+enemies/drone/death/02
+  rotate: false
+  xy: 1359, 116
+  size: 131, 86
+  orig: 192, 192
+  offset: 20, 47
+  index: -1
+enemies/drone/death/03
+  rotate: false
+  xy: 1236, 116
+  size: 117, 95
+  orig: 192, 192
+  offset: 24, 51
+  index: -1
+enemies/drone/death/04
+  rotate: false
+  xy: 1512, 2
+  size: 100, 107
+  orig: 192, 192
+  offset: 34, 48
+  index: -1
+enemies/drone/death/05
+  rotate: false
+  xy: 2, 2
+  size: 81, 121
+  orig: 192, 192
+  offset: 48, 36
+  index: -1
+enemies/drone/idle/00
+  rotate: false
+  xy: 1618, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/idle/01
+  rotate: false
+  xy: 1096, 2
+  size: 134, 108
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/idle/02
+  rotate: false
+  xy: 1618, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/idle/03
+  rotate: false
+  xy: 1096, 116
+  size: 134, 104
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/movement/00
+  rotate: false
+  xy: 1758, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/movement/01
+  rotate: false
+  xy: 1758, 114
+  size: 135, 104
+  orig: 192, 192
+  offset: 27, 25
+  index: -1
+enemies/drone/movement/02
+  rotate: false
+  xy: 1899, 114
+  size: 135, 104
+  orig: 192, 192
+  offset: 27, 25
+  index: -1
+enemies/drone/movement/03
+  rotate: false
+  xy: 1898, 2
+  size: 134, 106
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/drone/movement/04
+  rotate: false
+  xy: 1236, 2
+  size: 132, 108
+  orig: 192, 192
+  offset: 31, 25
+  index: -1
+enemies/drone/movement/05
+  rotate: false
+  xy: 1374, 2
+  size: 132, 108
+  orig: 192, 192
+  offset: 31, 25
+  index: -1

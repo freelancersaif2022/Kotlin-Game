@@ -1,0 +1,498 @@
+{
+ "manifestCounts": {
+  "sprite_regions": 1556,
+  "animation_sequences": 210,
+  "animated_frames": 1295,
+  "playable_characters": 5,
+  "character_frames": 310,
+  "enemies": 10,
+  "bosses": 5,
+  "environments": 8,
+  "parallax_layers": 32,
+  "obstacle_types": 30,
+  "powerups": 10,
+  "collectible_types": 10,
+  "vfx_sequences": 20,
+  "ui_regions": 167,
+  "atlas_pages": 38
+ },
+ "spriteRegions": 1556,
+ "animations": 210,
+ "packedPages": [
+  {
+   "group": "boss_ice_titan",
+   "file": "boss_ice_titan.png",
+   "size": [
+    1968,
+    896
+   ],
+   "regions": 46,
+   "unique": 31,
+   "gpuMiB": 6.73
+  },
+  {
+   "group": "boss_jungle_guardian",
+   "file": "boss_jungle_guardian.png",
+   "size": [
+    2008,
+    932
+   ],
+   "regions": 46,
+   "unique": 31,
+   "gpuMiB": 7.14
+  },
+  {
+   "group": "boss_robot_destroyer",
+   "file": "boss_robot_destroyer.png",
+   "size": [
+    2048,
+    984
+   ],
+   "regions": 46,
+   "unique": 31,
+   "gpuMiB": 7.69
+  },
+  {
+   "group": "boss_scorpion_king",
+   "file": "boss_scorpion_king.png",
+   "size": [
+    2020,
+    936
+   ],
+   "regions": 46,
+   "unique": 31,
+   "gpuMiB": 7.21
+  },
+  {
+   "group": "boss_shadow_dragon",
+   "file": "boss_shadow_dragon.png",
+   "size": [
+    1928,
+    920
+   ],
+   "regions": 46,
+   "unique": 31,
+   "gpuMiB": 6.77
+  },
+  {
+   "group": "char_luna",
+   "file": "char_luna.png",
+   "size": [
+    1988,
+    544
+   ],
+   "regions": 62,
+   "unique": 40,
+   "gpuMiB": 4.13
+  },
+  {
+   "group": "char_max",
+   "file": "char_max.png",
+   "size": [
+    2032,
+    540
+   ],
+   "regions": 62,
+   "unique": 39,
+   "gpuMiB": 4.19
+  },
+  {
+   "group": "char_ninja_kai",
+   "file": "char_ninja_kai.png",
+   "size": [
+    1976,
+    644
+   ],
+   "regions": 62,
+   "unique": 39,
+   "gpuMiB": 4.85
+  },
+  {
+   "group": "char_rex",
+   "file": "char_rex.png",
+   "size": [
+    2048,
+    556
+   ],
+   "regions": 62,
+   "unique": 39,
+   "gpuMiB": 4.34
+  },
+  {
+   "group": "char_robo_x",
+   "file": "char_robo_x.png",
+   "size": [
+    1976,
+    544
+   ],
+   "regions": 62,
+   "unique": 40,
+   "gpuMiB": 4.1
+  },
+  {
+   "group": "effects",
+   "file": "effects.png",
+   "size": [
+    2048,
+    1344
+   ],
+   "regions": 160,
+   "unique": 160,
+   "gpuMiB": 10.5
+  },
+  {
+   "group": "enemy_bat",
+   "file": "enemy_bat.png",
+   "size": [
+    2044,
+    232
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 1.81
+  },
+  {
+   "group": "enemy_drone",
+   "file": "enemy_drone.png",
+   "size": [
+    2040,
+    224
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 1.74
+  },
+  {
+   "group": "enemy_fire_monster",
+   "file": "enemy_fire_monster.png",
+   "size": [
+    2048,
+    280
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.19
+  },
+  {
+   "group": "enemy_ice_creature",
+   "file": "enemy_ice_creature.png",
+   "size": [
+    2048,
+    300
+   ],
+   "regions": 26,
+   "unique": 23,
+   "gpuMiB": 2.34
+  },
+  {
+   "group": "enemy_monkey",
+   "file": "enemy_monkey.png",
+   "size": [
+    2048,
+    296
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.31
+  },
+  {
+   "group": "enemy_robot",
+   "file": "enemy_robot.png",
+   "size": [
+    1976,
+    292
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.2
+  },
+  {
+   "group": "enemy_scorpion",
+   "file": "enemy_scorpion.png",
+   "size": [
+    1988,
+    280
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.12
+  },
+  {
+   "group": "enemy_shadow_monster",
+   "file": "enemy_shadow_monster.png",
+   "size": [
+    2028,
+    296
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.29
+  },
+  {
+   "group": "enemy_snake",
+   "file": "enemy_snake.png",
+   "size": [
+    2008,
+    296
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 2.27
+  },
+  {
+   "group": "enemy_spider",
+   "file": "enemy_spider.png",
+   "size": [
+    1972,
+    248
+   ],
+   "regions": 26,
+   "unique": 22,
+   "gpuMiB": 1.87
+  },
+  {
+   "group": "items",
+   "file": "items.png",
+   "size": [
+    2048,
+    660
+   ],
+   "regions": 230,
+   "unique": 106,
+   "gpuMiB": 5.16
+  },
+  {
+   "group": "obstacles",
+   "file": "obstacles.png",
+   "size": [
+    2004,
+    592
+   ],
+   "regions": 135,
+   "unique": 42,
+   "gpuMiB": 4.53
+  },
+  {
+   "group": "previews",
+   "file": "previews.png",
+   "size": [
+    1956,
+    372
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 2.78
+  },
+  {
+   "group": "ui",
+   "file": "ui_0.png",
+   "size": [
+    2044,
+    2048
+   ],
+   "regions": 155,
+   "unique": 153,
+   "gpuMiB": 15.97
+  },
+  {
+   "group": "ui",
+   "file": "ui_1.png",
+   "size": [
+    1924,
+    564
+   ],
+   "regions": 155,
+   "unique": 153,
+   "gpuMiB": 4.14
+  },
+  {
+   "group": "ui_panels",
+   "file": "ui_panels.png",
+   "size": [
+    1940,
+    1832
+   ],
+   "regions": 13,
+   "unique": 13,
+   "gpuMiB": 13.56
+  },
+  {
+   "group": "world_city",
+   "file": "world_city_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_city",
+   "file": "world_city_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_desert",
+   "file": "world_desert_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_desert",
+   "file": "world_desert_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_fantasy",
+   "file": "world_fantasy_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_fantasy",
+   "file": "world_fantasy_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_forest",
+   "file": "world_forest_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_forest",
+   "file": "world_forest_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_haunted",
+   "file": "world_haunted_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_haunted",
+   "file": "world_haunted_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_jungle",
+   "file": "world_jungle_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_jungle",
+   "file": "world_jungle_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_snow",
+   "file": "world_snow_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_snow",
+   "file": "world_snow_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  },
+  {
+   "group": "world_volcano",
+   "file": "world_volcano_0.png",
+   "size": [
+    1812,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 10.04
+  },
+  {
+   "group": "world_volcano",
+   "file": "world_volcano_1.png",
+   "size": [
+    1288,
+    1452
+   ],
+   "regions": 8,
+   "unique": 8,
+   "gpuMiB": 7.13
+  }
+ ],
+ "totalPackedGpuMiB": 272.3,
+ "sourceGpuMiB": 608.0
+}

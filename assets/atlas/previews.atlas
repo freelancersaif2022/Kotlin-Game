@@ -1,0 +1,62 @@
+
+previews.png
+size: 1956, 372
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+previews/city
+  rotate: false
+  xy: 2, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/desert
+  rotate: false
+  xy: 328, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/fantasy
+  rotate: false
+  xy: 654, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/forest
+  rotate: false
+  xy: 980, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/haunted
+  rotate: false
+  xy: 1306, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/jungle
+  rotate: false
+  xy: 1632, 2
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/snow
+  rotate: false
+  xy: 2, 188
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1
+previews/volcano
+  rotate: false
+  xy: 328, 188
+  size: 320, 180
+  orig: 320, 180
+  offset: 0, 0
+  index: -1

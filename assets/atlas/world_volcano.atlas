@@ -1,0 +1,68 @@
+
+world_volcano_0.png
+size: 1812, 1452
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+environments/volcano/decoration
+  rotate: false
+  xy: 1288, 136
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+environments/volcano/ground
+  rotate: false
+  xy: 1288, 2
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+environments/volcano/layer_0
+  rotate: false
+  xy: 2, 2
+  size: 1280, 720
+  orig: 1280, 720
+  offset: 0, 0
+  index: -1
+environments/volcano/layer_1
+  rotate: false
+  xy: 2, 728
+  size: 1280, 720
+  orig: 1280, 720
+  offset: 0, 0
+  index: -1
+environments/volcano/lighting
+  rotate: false
+  xy: 1550, 136
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+environments/volcano/platform
+  rotate: false
+  xy: 1550, 2
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+
+world_volcano_1.png
+size: 1288, 1452
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+environments/volcano/layer_2
+  rotate: false
+  xy: 2, 2
+  size: 1280, 720
+  orig: 1280, 720
+  offset: 0, 0
+  index: -1
+environments/volcano/layer_3
+  rotate: false
+  xy: 2, 728
+  size: 1280, 720
+  orig: 1280, 720
+  offset: 0, 0
+  index: -1

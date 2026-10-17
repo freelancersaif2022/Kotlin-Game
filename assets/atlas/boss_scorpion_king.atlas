@@ -1,0 +1,328 @@
+
+boss_scorpion_king.png
+size: 2020, 936
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+bosses/scorpion_king/damage/00
+  rotate: false
+  xy: 666, 508
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/damage/01
+  rotate: false
+  xy: 926, 2
+  size: 210, 250
+  orig: 320, 320
+  offset: 54, 34
+  index: -1
+bosses/scorpion_king/damage/02
+  rotate: false
+  xy: 1574, 2
+  size: 203, 249
+  orig: 320, 320
+  offset: 50, 34
+  index: -1
+bosses/scorpion_king/damage/03
+  rotate: false
+  xy: 1575, 257
+  size: 202, 247
+  orig: 320, 320
+  offset: 42, 35
+  index: -1
+bosses/scorpion_king/damage/04
+  rotate: false
+  xy: 1574, 2
+  size: 203, 249
+  orig: 320, 320
+  offset: 37, 34
+  index: -1
+bosses/scorpion_king/damage/05
+  rotate: false
+  xy: 926, 2
+  size: 210, 250
+  orig: 320, 320
+  offset: 40, 34
+  index: -1
+bosses/scorpion_king/death/00
+  rotate: false
+  xy: 2, 259
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/death/01
+  rotate: false
+  xy: 1086, 510
+  size: 226, 235
+  orig: 320, 320
+  offset: 49, 35
+  index: -1
+bosses/scorpion_king/death/02
+  rotate: false
+  xy: 1318, 510
+  size: 230, 224
+  orig: 320, 320
+  offset: 49, 35
+  index: -1
+bosses/scorpion_king/death/03
+  rotate: false
+  xy: 1554, 510
+  size: 228, 213
+  orig: 320, 320
+  offset: 51, 34
+  index: -1
+bosses/scorpion_king/death/04
+  rotate: false
+  xy: 1788, 721
+  size: 226, 202
+  orig: 320, 320
+  offset: 52, 33
+  index: -1
+bosses/scorpion_king/death/05
+  rotate: false
+  xy: 1554, 729
+  size: 222, 193
+  orig: 320, 320
+  offset: 54, 33
+  index: -1
+bosses/scorpion_king/death/06
+  rotate: false
+  xy: 1318, 740
+  size: 215, 189
+  orig: 320, 320
+  offset: 57, 34
+  index: -1
+bosses/scorpion_king/death/07
+  rotate: false
+  xy: 216, 725
+  size: 203, 197
+  orig: 320, 320
+  offset: 63, 32
+  index: -1
+bosses/scorpion_king/death/08
+  rotate: false
+  xy: 1788, 510
+  size: 181, 205
+  orig: 320, 320
+  offset: 73, 32
+  index: -1
+bosses/scorpion_king/death/09
+  rotate: false
+  xy: 216, 510
+  size: 158, 209
+  orig: 320, 320
+  offset: 83, 31
+  index: -1
+bosses/scorpion_king/idle/00
+  rotate: false
+  xy: 2, 259
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/idle/01
+  rotate: false
+  xy: 232, 258
+  size: 208, 246
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/idle/02
+  rotate: false
+  xy: 232, 258
+  size: 208, 246
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/idle/03
+  rotate: false
+  xy: 2, 259
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/idle/04
+  rotate: false
+  xy: 446, 509
+  size: 208, 239
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/idle/05
+  rotate: false
+  xy: 446, 509
+  size: 208, 239
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/movement/00
+  rotate: false
+  xy: 2, 508
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/movement/01
+  rotate: false
+  xy: 666, 258
+  size: 214, 244
+  orig: 320, 320
+  offset: 54, 35
+  index: -1
+bosses/scorpion_king/movement/02
+  rotate: false
+  xy: 446, 258
+  size: 214, 245
+  orig: 320, 320
+  offset: 54, 37
+  index: -1
+bosses/scorpion_king/movement/03
+  rotate: false
+  xy: 886, 258
+  size: 209, 244
+  orig: 320, 320
+  offset: 54, 35
+  index: -1
+bosses/scorpion_king/movement/04
+  rotate: false
+  xy: 880, 508
+  size: 200, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/movement/05
+  rotate: false
+  xy: 1367, 257
+  size: 202, 247
+  orig: 320, 320
+  offset: 52, 35
+  index: -1
+bosses/scorpion_king/movement/06
+  rotate: false
+  xy: 1361, 2
+  size: 207, 249
+  orig: 320, 320
+  offset: 53, 36
+  index: -1
+bosses/scorpion_king/movement/07
+  rotate: false
+  xy: 1783, 256
+  size: 205, 248
+  orig: 320, 320
+  offset: 57, 34
+  index: -1
+bosses/scorpion_king/primary_attack/00
+  rotate: false
+  xy: 2, 508
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/primary_attack/01
+  rotate: false
+  xy: 1783, 2
+  size: 217, 248
+  orig: 320, 320
+  offset: 54, 32
+  index: -1
+bosses/scorpion_king/primary_attack/02
+  rotate: false
+  xy: 232, 2
+  size: 231, 250
+  orig: 320, 320
+  offset: 47, 34
+  index: -1
+bosses/scorpion_king/primary_attack/03
+  rotate: false
+  xy: 469, 2
+  size: 224, 250
+  orig: 320, 320
+  offset: 48, 35
+  index: -1
+bosses/scorpion_king/primary_attack/04
+  rotate: false
+  xy: 1142, 257
+  size: 219, 247
+  orig: 320, 320
+  offset: 49, 36
+  index: -1
+bosses/scorpion_king/primary_attack/05
+  rotate: false
+  xy: 699, 2
+  size: 221, 250
+  orig: 320, 320
+  offset: 46, 35
+  index: -1
+bosses/scorpion_king/primary_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 224, 251
+  orig: 320, 320
+  offset: 51, 33
+  index: -1
+bosses/scorpion_king/primary_attack/07
+  rotate: false
+  xy: 1142, 2
+  size: 213, 249
+  orig: 320, 320
+  offset: 58, 31
+  index: -1
+bosses/scorpion_king/special_attack/00
+  rotate: false
+  xy: 2, 508
+  size: 208, 243
+  orig: 320, 320
+  offset: 56, 29
+  index: -1
+bosses/scorpion_king/special_attack/01
+  rotate: false
+  xy: 1783, 2
+  size: 217, 248
+  orig: 320, 320
+  offset: 54, 32
+  index: -1
+bosses/scorpion_king/special_attack/02
+  rotate: false
+  xy: 232, 2
+  size: 231, 250
+  orig: 320, 320
+  offset: 47, 34
+  index: -1
+bosses/scorpion_king/special_attack/03
+  rotate: false
+  xy: 469, 2
+  size: 224, 250
+  orig: 320, 320
+  offset: 48, 35
+  index: -1
+bosses/scorpion_king/special_attack/04
+  rotate: false
+  xy: 1142, 257
+  size: 219, 247
+  orig: 320, 320
+  offset: 49, 36
+  index: -1
+bosses/scorpion_king/special_attack/05
+  rotate: false
+  xy: 699, 2
+  size: 221, 250
+  orig: 320, 320
+  offset: 46, 35
+  index: -1
+bosses/scorpion_king/special_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 224, 251
+  orig: 320, 320
+  offset: 51, 33
+  index: -1
+bosses/scorpion_king/special_attack/07
+  rotate: false
+  xy: 1142, 2
+  size: 213, 249
+  orig: 320, 320
+  offset: 58, 31
+  index: -1

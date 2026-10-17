@@ -1,0 +1,188 @@
+
+enemy_spider.png
+size: 1972, 248
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/spider/attack/00
+  rotate: false
+  xy: 1554, 126
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/attack/01
+  rotate: false
+  xy: 1265, 2
+  size: 143, 119
+  orig: 192, 192
+  offset: 30, 23
+  index: -1
+enemies/spider/attack/02
+  rotate: false
+  xy: 823, 2
+  size: 150, 121
+  orig: 192, 192
+  offset: 29, 26
+  index: -1
+enemies/spider/attack/03
+  rotate: false
+  xy: 510, 2
+  size: 152, 123
+  orig: 192, 192
+  offset: 30, 26
+  index: -1
+enemies/spider/attack/04
+  rotate: false
+  xy: 668, 2
+  size: 149, 123
+  orig: 192, 192
+  offset: 28, 24
+  index: -1
+enemies/spider/attack/05
+  rotate: false
+  xy: 1118, 2
+  size: 141, 120
+  orig: 192, 192
+  offset: 31, 22
+  index: -1
+enemies/spider/damage/00
+  rotate: false
+  xy: 1265, 127
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/damage/01
+  rotate: false
+  xy: 367, 2
+  size: 137, 124
+  orig: 192, 192
+  offset: 31, 25
+  index: -1
+enemies/spider/damage/02
+  rotate: false
+  xy: 98, 2
+  size: 142, 130
+  orig: 192, 192
+  offset: 19, 24
+  index: -1
+enemies/spider/damage/03
+  rotate: false
+  xy: 367, 2
+  size: 137, 124
+  orig: 192, 192
+  offset: 15, 25
+  index: -1
+enemies/spider/death/00
+  rotate: false
+  xy: 1832, 125
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/death/01
+  rotate: false
+  xy: 510, 131
+  size: 141, 111
+  orig: 192, 192
+  offset: 27, 22
+  index: -1
+enemies/spider/death/02
+  rotate: false
+  xy: 963, 129
+  size: 141, 113
+  orig: 192, 192
+  offset: 28, 22
+  index: -1
+enemies/spider/death/03
+  rotate: false
+  xy: 979, 2
+  size: 133, 121
+  orig: 192, 192
+  offset: 32, 22
+  index: -1
+enemies/spider/death/04
+  rotate: false
+  xy: 246, 2
+  size: 115, 127
+  orig: 192, 192
+  offset: 40, 22
+  index: -1
+enemies/spider/death/05
+  rotate: false
+  xy: 2, 2
+  size: 90, 132
+  orig: 192, 192
+  offset: 51, 21
+  index: -1
+enemies/spider/idle/00
+  rotate: false
+  xy: 1832, 125
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/idle/01
+  rotate: false
+  xy: 1414, 2
+  size: 134, 119
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/idle/02
+  rotate: false
+  xy: 1832, 125
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/idle/03
+  rotate: false
+  xy: 823, 129
+  size: 134, 115
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/movement/00
+  rotate: false
+  xy: 1554, 126
+  size: 134, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/movement/01
+  rotate: false
+  xy: 1118, 128
+  size: 137, 116
+  orig: 192, 192
+  offset: 28, 24
+  index: -1
+enemies/spider/movement/02
+  rotate: false
+  xy: 1832, 2
+  size: 136, 117
+  orig: 192, 192
+  offset: 28, 23
+  index: -1
+enemies/spider/movement/03
+  rotate: false
+  xy: 1405, 127
+  size: 133, 117
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/spider/movement/04
+  rotate: false
+  xy: 1554, 2
+  size: 133, 118
+  orig: 192, 192
+  offset: 27, 25
+  index: -1
+enemies/spider/movement/05
+  rotate: false
+  xy: 1693, 2
+  size: 133, 118
+  orig: 192, 192
+  offset: 29, 25
+  index: -1

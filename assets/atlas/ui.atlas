@@ -1,0 +1,1099 @@
+
+ui_0.png
+size: 2044, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+ui/components/achievement_card
+  rotate: false
+  xy: 328, 462
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/best_score
+  rotate: false
+  xy: 1718, 200
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/character_card
+  rotate: false
+  xy: 328, 264
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/coins_collected
+  rotate: false
+  xy: 992, 228
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/confirmation
+  rotate: false
+  xy: 1318, 228
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/final_score
+  rotate: false
+  xy: 1718, 2
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/locked
+  rotate: false
+  xy: 654, 264
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/mission_card
+  rotate: false
+  xy: 2, 462
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/panel9
+  rotate: false
+  xy: 1976, 818
+  size: 64, 64
+  split: 22, 21, 22, 21
+  pad: 7, 6, 7, 6
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/components/price_tag
+  rotate: false
+  xy: 980, 426
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/profile_panel
+  rotate: false
+  xy: 1632, 596
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/reward_card
+  rotate: false
+  xy: 1306, 426
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/unlocked
+  rotate: false
+  xy: 1644, 398
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/upgrade_panel
+  rotate: false
+  xy: 2, 264
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/components/world_card
+  rotate: false
+  xy: 654, 462
+  size: 320, 192
+  orig: 320, 192
+  offset: 0, 0
+  index: -1
+ui/gameover/ad_revive/disabled
+  rotate: false
+  xy: 1178, 1658
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/ad_revive/normal
+  rotate: false
+  xy: 1472, 1640
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/ad_revive/pressed
+  rotate: false
+  xy: 884, 1658
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/ad_revive/selected
+  rotate: false
+  xy: 2, 1694
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/continue/disabled
+  rotate: false
+  xy: 296, 1600
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/continue/normal
+  rotate: false
+  xy: 1178, 1564
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/continue/pressed
+  rotate: false
+  xy: 2, 1600
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/continue/selected
+  rotate: false
+  xy: 590, 1600
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/home/disabled
+  rotate: false
+  xy: 1472, 1546
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/home/normal
+  rotate: false
+  xy: 296, 1506
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/home/pressed
+  rotate: false
+  xy: 590, 1506
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/home/selected
+  rotate: false
+  xy: 884, 1564
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/restart/disabled
+  rotate: false
+  xy: 1178, 1470
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/restart/normal
+  rotate: false
+  xy: 1472, 1452
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/restart/pressed
+  rotate: false
+  xy: 884, 1470
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameover/restart/selected
+  rotate: false
+  xy: 2, 1506
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/distance
+  rotate: false
+  xy: 328, 1976
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/jump/disabled
+  rotate: false
+  xy: 1472, 1358
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/jump/normal
+  rotate: false
+  xy: 296, 1318
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/jump/pressed
+  rotate: false
+  xy: 590, 1318
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/jump/selected
+  rotate: false
+  xy: 884, 1376
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/pause/disabled
+  rotate: false
+  xy: 1178, 1282
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/pause/normal
+  rotate: false
+  xy: 1472, 1264
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/pause/pressed
+  rotate: false
+  xy: 884, 1282
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/pause/selected
+  rotate: false
+  xy: 2, 1318
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/score
+  rotate: false
+  xy: 2, 1976
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/slide/disabled
+  rotate: false
+  xy: 296, 1412
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/slide/normal
+  rotate: false
+  xy: 1178, 1376
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/slide/pressed
+  rotate: false
+  xy: 2, 1412
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/gameplay/slide/selected
+  rotate: false
+  xy: 590, 1412
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/icons/diamond
+  rotate: false
+  xy: 1970, 468
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/gold
+  rotate: false
+  xy: 1970, 398
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/heart
+  rotate: false
+  xy: 1958, 678
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/jetpack
+  rotate: false
+  xy: 1906, 818
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/key
+  rotate: false
+  xy: 1970, 538
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/magnet
+  rotate: false
+  xy: 1836, 794
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/shield
+  rotate: false
+  xy: 1958, 748
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/silver
+  rotate: false
+  xy: 1970, 398
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/speed
+  rotate: false
+  xy: 1766, 794
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/icons/star
+  rotate: false
+  xy: 1958, 608
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ui/lobby/achievements/disabled
+  rotate: false
+  xy: 1178, 1094
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/achievements/normal
+  rotate: false
+  xy: 1472, 1076
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/achievements/pressed
+  rotate: false
+  xy: 884, 1094
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/achievements/selected
+  rotate: false
+  xy: 2, 1130
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/characters/disabled
+  rotate: false
+  xy: 1178, 718
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/characters/normal
+  rotate: false
+  xy: 590, 660
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/characters/pressed
+  rotate: false
+  xy: 884, 718
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/characters/selected
+  rotate: false
+  xy: 2, 754
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/daily_rewards/disabled
+  rotate: false
+  xy: 1472, 982
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/daily_rewards/normal
+  rotate: false
+  xy: 296, 942
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/daily_rewards/pressed
+  rotate: false
+  xy: 590, 942
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/daily_rewards/selected
+  rotate: false
+  xy: 884, 1000
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/leaderboard/disabled
+  rotate: false
+  xy: 1472, 1170
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/leaderboard/normal
+  rotate: false
+  xy: 296, 1130
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/leaderboard/pressed
+  rotate: false
+  xy: 590, 1130
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/leaderboard/selected
+  rotate: false
+  xy: 884, 1188
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/logo
+  rotate: false
+  xy: 992, 2
+  size: 720, 220
+  orig: 720, 220
+  offset: 0, 0
+  index: -1
+ui/lobby/missions/disabled
+  rotate: false
+  xy: 296, 1036
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/missions/normal
+  rotate: false
+  xy: 1178, 1000
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/missions/pressed
+  rotate: false
+  xy: 2, 1036
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/missions/selected
+  rotate: false
+  xy: 590, 1036
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/play/disabled
+  rotate: false
+  xy: 2, 660
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/play/normal
+  rotate: false
+  xy: 980, 624
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/play/pressed
+  rotate: false
+  xy: 1274, 624
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/play/selected
+  rotate: false
+  xy: 296, 660
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/profile/disabled
+  rotate: false
+  xy: 296, 1224
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/profile/normal
+  rotate: false
+  xy: 1178, 1188
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/profile/pressed
+  rotate: false
+  xy: 2, 1224
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/profile/selected
+  rotate: false
+  xy: 590, 1224
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/settings/disabled
+  rotate: false
+  xy: 1178, 906
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/settings/normal
+  rotate: false
+  xy: 1472, 888
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/settings/pressed
+  rotate: false
+  xy: 884, 906
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/settings/selected
+  rotate: false
+  xy: 2, 942
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/shop/disabled
+  rotate: false
+  xy: 1472, 794
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/shop/normal
+  rotate: false
+  xy: 296, 754
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/shop/pressed
+  rotate: false
+  xy: 590, 754
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/shop/selected
+  rotate: false
+  xy: 884, 812
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/upgrade/disabled
+  rotate: false
+  xy: 296, 848
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/upgrade/normal
+  rotate: false
+  xy: 1178, 812
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/upgrade/pressed
+  rotate: false
+  xy: 2, 848
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/lobby/upgrade/selected
+  rotate: false
+  xy: 590, 848
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/cancel/disabled
+  rotate: false
+  xy: 1178, 1846
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/cancel/normal
+  rotate: false
+  xy: 1472, 1828
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/cancel/pressed
+  rotate: false
+  xy: 884, 1846
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/cancel/selected
+  rotate: false
+  xy: 2, 1882
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/card_luna
+  rotate: false
+  xy: 200, 2
+  size: 192, 256
+  orig: 192, 256
+  offset: 0, 0
+  index: -1
+ui/shop/card_max
+  rotate: false
+  xy: 2, 2
+  size: 192, 256
+  orig: 192, 256
+  offset: 0, 0
+  index: -1
+ui/shop/card_ninja_kai
+  rotate: false
+  xy: 596, 2
+  size: 192, 256
+  orig: 192, 256
+  offset: 0, 0
+  index: -1
+ui/shop/card_rex
+  rotate: false
+  xy: 398, 2
+  size: 192, 256
+  orig: 192, 256
+  offset: 0, 0
+  index: -1
+ui/shop/card_robo_x
+  rotate: false
+  xy: 794, 2
+  size: 192, 256
+  orig: 192, 256
+  offset: 0, 0
+  index: -1
+ui/shop/confirm/disabled
+  rotate: false
+  xy: 296, 1788
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/confirm/normal
+  rotate: false
+  xy: 1178, 1752
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/confirm/pressed
+  rotate: false
+  xy: 2, 1788
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/confirm/selected
+  rotate: false
+  xy: 590, 1788
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/purchase/disabled
+  rotate: false
+  xy: 1472, 1734
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/purchase/normal
+  rotate: false
+  xy: 296, 1694
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/purchase/pressed
+  rotate: false
+  xy: 590, 1694
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/shop/purchase/selected
+  rotate: false
+  xy: 884, 1752
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_health/normal
+  rotate: false
+  xy: 1178, 1940
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_power/disabled
+  rotate: false
+  xy: 1472, 1922
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_power/normal
+  rotate: false
+  xy: 296, 1882
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_power/pressed
+  rotate: false
+  xy: 590, 1882
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_power/selected
+  rotate: false
+  xy: 884, 1940
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+
+ui_1.png
+size: 1924, 564
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+ui/gameplay/boss_health
+  rotate: false
+  xy: 948, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/coins
+  rotate: false
+  xy: 296, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/gems
+  rotate: false
+  xy: 622, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/health_bar
+  rotate: false
+  xy: 948, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/powerup_slot
+  rotate: false
+  xy: 1600, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/gameplay/progress
+  rotate: false
+  xy: 1274, 472
+  size: 320, 68
+  orig: 320, 68
+  offset: 0, 0
+  index: -1
+ui/rewards/claim/disabled
+  rotate: false
+  xy: 884, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/claim/normal
+  rotate: false
+  xy: 296, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/claim/pressed
+  rotate: false
+  xy: 590, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/claim/selected
+  rotate: false
+  xy: 1178, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/next/disabled
+  rotate: false
+  xy: 1472, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/next/normal
+  rotate: false
+  xy: 884, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/next/pressed
+  rotate: false
+  xy: 1178, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/next/selected
+  rotate: false
+  xy: 2, 472
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/watch_ad/disabled
+  rotate: false
+  xy: 296, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/watch_ad/normal
+  rotate: false
+  xy: 1472, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/watch_ad/pressed
+  rotate: false
+  xy: 2, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/rewards/watch_ad/selected
+  rotate: false
+  xy: 590, 378
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/back/disabled
+  rotate: false
+  xy: 1472, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/back/normal
+  rotate: false
+  xy: 884, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/back/pressed
+  rotate: false
+  xy: 1178, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/back/selected
+  rotate: false
+  xy: 2, 284
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/music/disabled
+  rotate: false
+  xy: 884, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/music/normal
+  rotate: false
+  xy: 296, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/music/pressed
+  rotate: false
+  xy: 590, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/music/selected
+  rotate: false
+  xy: 1178, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/sound/disabled
+  rotate: false
+  xy: 1472, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/sound/normal
+  rotate: false
+  xy: 884, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/sound/pressed
+  rotate: false
+  xy: 1178, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/sound/selected
+  rotate: false
+  xy: 2, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/vibration/disabled
+  rotate: false
+  xy: 296, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/vibration/normal
+  rotate: false
+  xy: 1472, 96
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/vibration/pressed
+  rotate: false
+  xy: 2, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/settings/vibration/selected
+  rotate: false
+  xy: 590, 190
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_health/disabled
+  rotate: false
+  xy: 296, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_health/pressed
+  rotate: false
+  xy: 2, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1
+ui/upgrades/upgrade_health/selected
+  rotate: false
+  xy: 590, 2
+  size: 288, 88
+  orig: 288, 88
+  offset: 0, 0
+  index: -1

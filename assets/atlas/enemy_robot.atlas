@@ -1,0 +1,188 @@
+
+enemy_robot.png
+size: 1976, 292
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/robot/attack/00
+  rotate: false
+  xy: 488, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/attack/01
+  rotate: false
+  xy: 1206, 2
+  size: 120, 144
+  orig: 192, 192
+  offset: 42, 23
+  index: -1
+enemies/robot/attack/02
+  rotate: false
+  xy: 1583, 2
+  size: 130, 140
+  orig: 192, 192
+  offset: 39, 26
+  index: -1
+enemies/robot/attack/03
+  rotate: false
+  xy: 1842, 2
+  size: 130, 139
+  orig: 192, 192
+  offset: 39, 27
+  index: -1
+enemies/robot/attack/04
+  rotate: false
+  xy: 1452, 2
+  size: 125, 141
+  orig: 192, 192
+  offset: 40, 25
+  index: -1
+enemies/robot/attack/05
+  rotate: false
+  xy: 242, 2
+  size: 120, 145
+  orig: 192, 192
+  offset: 41, 22
+  index: -1
+enemies/robot/damage/00
+  rotate: false
+  xy: 848, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/damage/01
+  rotate: false
+  xy: 1719, 2
+  size: 117, 140
+  orig: 192, 192
+  offset: 41, 25
+  index: -1
+enemies/robot/damage/02
+  rotate: false
+  xy: 1842, 147
+  size: 116, 138
+  orig: 192, 192
+  offset: 31, 26
+  index: -1
+enemies/robot/damage/03
+  rotate: false
+  xy: 1719, 2
+  size: 117, 140
+  orig: 192, 192
+  offset: 25, 25
+  index: -1
+enemies/robot/death/00
+  rotate: false
+  xy: 368, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/death/01
+  rotate: false
+  xy: 1583, 148
+  size: 113, 137
+  orig: 192, 192
+  offset: 43, 25
+  index: -1
+enemies/robot/death/02
+  rotate: false
+  xy: 1702, 148
+  size: 113, 128
+  orig: 192, 192
+  offset: 43, 26
+  index: -1
+enemies/robot/death/03
+  rotate: false
+  xy: 1452, 149
+  size: 109, 122
+  orig: 192, 192
+  offset: 45, 27
+  index: -1
+enemies/robot/death/04
+  rotate: false
+  xy: 1332, 150
+  size: 101, 119
+  orig: 192, 192
+  offset: 50, 25
+  index: -1
+enemies/robot/death/05
+  rotate: false
+  xy: 1206, 152
+  size: 91, 113
+  orig: 192, 192
+  offset: 52, 23
+  index: -1
+enemies/robot/idle/00
+  rotate: false
+  xy: 368, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/idle/01
+  rotate: false
+  xy: 2, 2
+  size: 114, 147
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/idle/02
+  rotate: false
+  xy: 368, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/idle/03
+  rotate: false
+  xy: 1332, 2
+  size: 114, 142
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/movement/00
+  rotate: false
+  xy: 488, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/movement/01
+  rotate: false
+  xy: 608, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 40, 25
+  index: -1
+enemies/robot/movement/02
+  rotate: false
+  xy: 728, 2
+  size: 114, 145
+  orig: 192, 192
+  offset: 40, 25
+  index: -1
+enemies/robot/movement/03
+  rotate: false
+  xy: 968, 2
+  size: 113, 145
+  orig: 192, 192
+  offset: 39, 18
+  index: -1
+enemies/robot/movement/04
+  rotate: false
+  xy: 1087, 2
+  size: 113, 145
+  orig: 192, 192
+  offset: 37, 25
+  index: -1
+enemies/robot/movement/05
+  rotate: false
+  xy: 122, 2
+  size: 114, 146
+  orig: 192, 192
+  offset: 38, 24
+  index: -1

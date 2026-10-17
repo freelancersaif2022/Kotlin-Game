@@ -1,0 +1,440 @@
+
+char_ninja_kai.png
+size: 1976, 644
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+characters/ninja_kai/death/00
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/death/01
+  rotate: false
+  xy: 399, 205
+  size: 145, 177
+  orig: 192, 256
+  offset: 26, 40
+  index: -1
+characters/ninja_kai/death/02
+  rotate: false
+  xy: 678, 375
+  size: 156, 163
+  orig: 192, 256
+  offset: 22, 43
+  index: -1
+characters/ninja_kai/death/03
+  rotate: false
+  xy: 130, 394
+  size: 149, 146
+  orig: 192, 256
+  offset: 28, 42
+  index: -1
+characters/ninja_kai/death/04
+  rotate: false
+  xy: 1823, 398
+  size: 149, 139
+  orig: 192, 256
+  offset: 28, 42
+  index: -1
+characters/ninja_kai/death/05
+  rotate: false
+  xy: 993, 400
+  size: 147, 135
+  orig: 192, 256
+  offset: 30, 41
+  index: -1
+characters/ninja_kai/death/06
+  rotate: false
+  xy: 1284, 401
+  size: 139, 134
+  orig: 192, 256
+  offset: 35, 39
+  index: -1
+characters/ninja_kai/death/07
+  rotate: false
+  xy: 1680, 399
+  size: 118, 124
+  orig: 192, 256
+  offset: 45, 36
+  index: -1
+characters/ninja_kai/double_jump/00
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/double_jump/01
+  rotate: false
+  xy: 678, 205
+  size: 152, 164
+  orig: 192, 256
+  offset: 25, 55
+  index: -1
+characters/ninja_kai/double_jump/02
+  rotate: false
+  xy: 840, 400
+  size: 147, 139
+  orig: 192, 256
+  offset: 30, 60
+  index: -1
+characters/ninja_kai/double_jump/03
+  rotate: false
+  xy: 1429, 401
+  size: 145, 132
+  orig: 192, 256
+  offset: 32, 63
+  index: -1
+characters/ninja_kai/double_jump/04
+  rotate: false
+  xy: 840, 400
+  size: 147, 139
+  orig: 192, 256
+  offset: 30, 60
+  index: -1
+characters/ninja_kai/double_jump/05
+  rotate: false
+  xy: 678, 205
+  size: 152, 164
+  orig: 192, 256
+  offset: 25, 55
+  index: -1
+characters/ninja_kai/falling/00
+  rotate: false
+  xy: 274, 2
+  size: 124, 197
+  orig: 192, 256
+  offset: 34, 44
+  index: -1
+characters/ninja_kai/falling/01
+  rotate: false
+  xy: 274, 2
+  size: 124, 197
+  orig: 192, 256
+  offset: 34, 39
+  index: -1
+characters/ninja_kai/falling/02
+  rotate: false
+  xy: 274, 2
+  size: 124, 197
+  orig: 192, 256
+  offset: 34, 35
+  index: -1
+characters/ninja_kai/falling/03
+  rotate: false
+  xy: 274, 2
+  size: 124, 197
+  orig: 192, 256
+  offset: 34, 30
+  index: -1
+characters/ninja_kai/idle/00
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/idle/01
+  rotate: false
+  xy: 404, 2
+  size: 122, 197
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/idle/02
+  rotate: false
+  xy: 404, 2
+  size: 122, 197
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/idle/03
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/idle/04
+  rotate: false
+  xy: 2, 205
+  size: 122, 190
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/idle/05
+  rotate: false
+  xy: 2, 205
+  size: 122, 190
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/jumping/00
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/jumping/01
+  rotate: false
+  xy: 1158, 2
+  size: 123, 194
+  orig: 192, 256
+  offset: 35, 37
+  index: -1
+characters/ninja_kai/jumping/02
+  rotate: false
+  xy: 907, 204
+  size: 133, 190
+  orig: 192, 256
+  offset: 30, 46
+  index: -1
+characters/ninja_kai/jumping/03
+  rotate: false
+  xy: 258, 205
+  size: 135, 181
+  orig: 192, 256
+  offset: 29, 50
+  index: -1
+characters/ninja_kai/jumping/04
+  rotate: false
+  xy: 907, 204
+  size: 133, 190
+  orig: 192, 256
+  offset: 30, 46
+  index: -1
+characters/ninja_kai/jumping/05
+  rotate: false
+  xy: 1158, 2
+  size: 123, 194
+  orig: 192, 256
+  offset: 35, 37
+  index: -1
+characters/ninja_kai/landing/00
+  rotate: false
+  xy: 399, 388
+  size: 122, 151
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/landing/01
+  rotate: false
+  xy: 550, 383
+  size: 122, 161
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/landing/02
+  rotate: false
+  xy: 550, 205
+  size: 122, 172
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/landing/03
+  rotate: false
+  xy: 130, 205
+  size: 122, 183
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/running/00
+  rotate: false
+  xy: 1415, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/running/01
+  rotate: false
+  xy: 1418, 202
+  size: 127, 193
+  orig: 192, 256
+  offset: 33, 29
+  index: -1
+characters/ninja_kai/running/02
+  rotate: false
+  xy: 1284, 202
+  size: 128, 193
+  orig: 192, 256
+  offset: 32, 32
+  index: -1
+characters/ninja_kai/running/03
+  rotate: false
+  xy: 1551, 202
+  size: 123, 193
+  orig: 192, 256
+  offset: 32, 32
+  index: -1
+characters/ninja_kai/running/04
+  rotate: false
+  xy: 1799, 2
+  size: 121, 194
+  orig: 192, 256
+  offset: 33, 28
+  index: -1
+characters/ninja_kai/running/05
+  rotate: false
+  xy: 1158, 202
+  size: 120, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/running/06
+  rotate: false
+  xy: 1031, 2
+  size: 121, 195
+  orig: 192, 256
+  offset: 34, 27
+  index: -1
+characters/ninja_kai/running/07
+  rotate: false
+  xy: 659, 2
+  size: 119, 197
+  orig: 192, 256
+  offset: 36, 28
+  index: -1
+characters/ninja_kai/running/08
+  rotate: false
+  xy: 784, 2
+  size: 117, 197
+  orig: 192, 256
+  offset: 38, 28
+  index: -1
+characters/ninja_kai/running/09
+  rotate: false
+  xy: 907, 2
+  size: 118, 196
+  orig: 192, 256
+  offset: 37, 26
+  index: -1
+characters/ninja_kai/sliding/00
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/sliding/01
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/sliding/02
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/sliding/03
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/sliding/04
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/sliding/05
+  rotate: false
+  xy: 1580, 529
+  size: 135, 109
+  orig: 192, 256
+  offset: 29, 27
+  index: -1
+characters/ninja_kai/taking_damage/00
+  rotate: false
+  xy: 1543, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/taking_damage/01
+  rotate: false
+  xy: 142, 2
+  size: 126, 197
+  orig: 192, 256
+  offset: 41, 26
+  index: -1
+characters/ninja_kai/taking_damage/02
+  rotate: false
+  xy: 2, 2
+  size: 134, 197
+  orig: 192, 256
+  offset: 29, 25
+  index: -1
+characters/ninja_kai/taking_damage/03
+  rotate: false
+  xy: 142, 2
+  size: 126, 197
+  orig: 192, 256
+  offset: 25, 26
+  index: -1
+characters/ninja_kai/victory/00
+  rotate: false
+  xy: 1287, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/victory/01
+  rotate: false
+  xy: 1680, 202
+  size: 137, 191
+  orig: 192, 256
+  offset: 29, 44
+  index: -1
+characters/ninja_kai/victory/02
+  rotate: false
+  xy: 1823, 202
+  size: 141, 190
+  orig: 192, 256
+  offset: 27, 52
+  index: -1
+characters/ninja_kai/victory/03
+  rotate: false
+  xy: 1680, 202
+  size: 137, 191
+  orig: 192, 256
+  offset: 29, 44
+  index: -1
+characters/ninja_kai/victory/04
+  rotate: false
+  xy: 1671, 2
+  size: 122, 194
+  orig: 192, 256
+  offset: 35, 24
+  index: -1
+characters/ninja_kai/victory/05
+  rotate: false
+  xy: 532, 2
+  size: 121, 197
+  orig: 192, 256
+  offset: 36, 37
+  index: -1
+characters/ninja_kai/victory/06
+  rotate: false
+  xy: 274, 2
+  size: 124, 197
+  orig: 192, 256
+  offset: 34, 42
+  index: -1
+characters/ninja_kai/victory/07
+  rotate: false
+  xy: 532, 2
+  size: 121, 197
+  orig: 192, 256
+  offset: 36, 37
+  index: -1

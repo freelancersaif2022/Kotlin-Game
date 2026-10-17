@@ -1,0 +1,951 @@
+
+obstacles.png
+size: 2004, 592
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+obstacles/broken_bridge/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/broken_bridge/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/broken_bridge/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/broken_bridge/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/broken_bridge/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/broken_bridge/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/cactus/00
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/collapsing_platform/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/collapsing_platform/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/collapsing_platform/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/collapsing_platform/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/collapsing_platform/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/collapsing_platform/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/crystal_cluster/00
+  rotate: false
+  xy: 1268, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/electric_barrier/00
+  rotate: false
+  xy: 956, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/electric_barrier/01
+  rotate: false
+  xy: 1115, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/electric_barrier/02
+  rotate: false
+  xy: 1274, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/electric_barrier/03
+  rotate: false
+  xy: 1433, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/electric_barrier/04
+  rotate: false
+  xy: 1592, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/electric_barrier/05
+  rotate: false
+  xy: 1751, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/explosive_barrel/00
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/explosive_barrel/01
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/explosive_barrel/02
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/explosive_barrel/03
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/explosive_barrel/04
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/explosive_barrel/05
+  rotate: false
+  xy: 1097, 462
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/fallen_tree/00
+  rotate: false
+  xy: 1594, 455
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/falling_boulder/00
+  rotate: false
+  xy: 644, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/falling_boulder/01
+  rotate: false
+  xy: 795, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/falling_boulder/02
+  rotate: false
+  xy: 946, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/falling_boulder/03
+  rotate: false
+  xy: 1097, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/falling_boulder/04
+  rotate: false
+  xy: 1248, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/falling_boulder/05
+  rotate: false
+  xy: 1399, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/fire_pit/00
+  rotate: false
+  xy: 1805, 454
+  size: 177, 130
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/fire_pit/01
+  rotate: false
+  xy: 1439, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/fire_pit/02
+  rotate: false
+  xy: 1622, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/fire_pit/03
+  rotate: false
+  xy: 1805, 317
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/fire_pit/04
+  rotate: false
+  xy: 324, 326
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/fire_pit/05
+  rotate: false
+  xy: 2, 327
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/hanging_chain/00
+  rotate: false
+  xy: 2, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/hanging_chain/01
+  rotate: false
+  xy: 161, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/hanging_chain/02
+  rotate: false
+  xy: 320, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/hanging_chain/03
+  rotate: false
+  xy: 479, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/hanging_chain/04
+  rotate: false
+  xy: 638, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/hanging_chain/05
+  rotate: false
+  xy: 797, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/haunted_stump/00
+  rotate: false
+  xy: 1594, 455
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1
+obstacles/ice_spikes/00
+  rotate: false
+  xy: 1268, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/laser_barrier/00
+  rotate: false
+  xy: 2, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/laser_barrier/01
+  rotate: false
+  xy: 161, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/laser_barrier/02
+  rotate: false
+  xy: 320, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/laser_barrier/03
+  rotate: false
+  xy: 479, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/laser_barrier/04
+  rotate: false
+  xy: 638, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/laser_barrier/05
+  rotate: false
+  xy: 797, 2
+  size: 153, 158
+  orig: 192, 192
+  offset: 20, 16
+  index: -1
+obstacles/lava_pool/00
+  rotate: false
+  xy: 1805, 454
+  size: 177, 130
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/lava_pool/01
+  rotate: false
+  xy: 1439, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/lava_pool/02
+  rotate: false
+  xy: 1622, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/lava_pool/03
+  rotate: false
+  xy: 1805, 317
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/lava_pool/04
+  rotate: false
+  xy: 324, 326
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/lava_pool/05
+  rotate: false
+  xy: 2, 327
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/mechanical_trap/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/mechanical_trap/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/mechanical_trap/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/mechanical_trap/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/mechanical_trap/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/mechanical_trap/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_platform/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/moving_saw/00
+  rotate: false
+  xy: 2, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/moving_saw/01
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/moving_saw/02
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/moving_saw/03
+  rotate: false
+  xy: 163, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/moving_saw/04
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/moving_saw/05
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/poison_plant/00
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/poison_plant/01
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/poison_plant/02
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/poison_plant/03
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/poison_plant/04
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/poison_plant/05
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/quicksand/00
+  rotate: false
+  xy: 1805, 454
+  size: 177, 130
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/quicksand/01
+  rotate: false
+  xy: 1439, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/quicksand/02
+  rotate: false
+  xy: 1622, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/quicksand/03
+  rotate: false
+  xy: 1805, 317
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/quicksand/04
+  rotate: false
+  xy: 324, 326
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/quicksand/05
+  rotate: false
+  xy: 2, 327
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/rolling_rock/00
+  rotate: false
+  xy: 644, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rolling_rock/01
+  rotate: false
+  xy: 795, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rolling_rock/02
+  rotate: false
+  xy: 946, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rolling_rock/03
+  rotate: false
+  xy: 1097, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rolling_rock/04
+  rotate: false
+  xy: 1248, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rolling_rock/05
+  rotate: false
+  xy: 1399, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/rotating_blade/00
+  rotate: false
+  xy: 2, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/rotating_blade/01
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/rotating_blade/02
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/rotating_blade/03
+  rotate: false
+  xy: 163, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/rotating_blade/04
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/rotating_blade/05
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/sharp_spikes/00
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/snowball/00
+  rotate: false
+  xy: 1550, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/snowball/01
+  rotate: false
+  xy: 1701, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/snowball/02
+  rotate: false
+  xy: 1852, 166
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/snowball/03
+  rotate: false
+  xy: 644, 317
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/snowball/04
+  rotate: false
+  xy: 795, 317
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/snowball/05
+  rotate: false
+  xy: 946, 317
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 17
+  index: -1
+obstacles/spring_trap/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/spring_trap/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/spring_trap/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/spring_trap/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/spring_trap/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/spring_trap/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/stalactite/00
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/steam_vent/00
+  rotate: false
+  xy: 1805, 454
+  size: 177, 130
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/steam_vent/01
+  rotate: false
+  xy: 1439, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/steam_vent/02
+  rotate: false
+  xy: 1622, 317
+  size: 177, 132
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/steam_vent/03
+  rotate: false
+  xy: 1805, 317
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/steam_vent/04
+  rotate: false
+  xy: 324, 326
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/steam_vent/05
+  rotate: false
+  xy: 2, 327
+  size: 177, 131
+  orig: 192, 192
+  offset: 8, 14
+  index: -1
+obstacles/swinging_axe/00
+  rotate: false
+  xy: 2, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/swinging_axe/01
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/swinging_axe/02
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/swinging_axe/03
+  rotate: false
+  xy: 163, 166
+  size: 155, 155
+  orig: 192, 192
+  offset: 19, 14
+  index: -1
+obstacles/swinging_axe/04
+  rotate: false
+  xy: 324, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/swinging_axe/05
+  rotate: false
+  xy: 484, 166
+  size: 154, 154
+  orig: 192, 192
+  offset: 19, 15
+  index: -1
+obstacles/thorn_bush/00
+  rotate: false
+  xy: 1097, 317
+  size: 165, 139
+  orig: 192, 192
+  offset: 12, 23
+  index: -1
+obstacles/traffic_cone/00
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/traffic_cone/01
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/traffic_cone/02
+  rotate: false
+  xy: 361, 463
+  size: 170, 52
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/traffic_cone/03
+  rotate: false
+  xy: 185, 463
+  size: 170, 56
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/traffic_cone/04
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/traffic_cone/05
+  rotate: false
+  xy: 1252, 462
+  size: 170, 66
+  orig: 192, 192
+  offset: 15, 31
+  index: -1
+obstacles/wooden_crate/00
+  rotate: false
+  xy: 1439, 455
+  size: 149, 124
+  orig: 192, 192
+  offset: 22, 20
+  index: -1

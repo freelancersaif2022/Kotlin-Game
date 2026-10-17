@@ -1,0 +1,97 @@
+
+ui_panels.png
+size: 1940, 1832
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+ui/screens/achievements_panel
+  rotate: false
+  xy: 1294, 368
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/character_selection_panel
+  rotate: false
+  xy: 2, 734
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/daily_rewards_panel
+  rotate: false
+  xy: 2, 368
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/gameover_panel
+  rotate: false
+  xy: 648, 1100
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/loading_panel
+  rotate: false
+  xy: 2, 2
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/lobby_panel
+  rotate: false
+  xy: 2, 1100
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/missions_panel
+  rotate: false
+  xy: 648, 368
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/pause_panel
+  rotate: false
+  xy: 648, 2
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/settings_panel
+  rotate: false
+  xy: 1294, 2
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/shop_panel
+  rotate: false
+  xy: 1294, 1100
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/upgrades_panel
+  rotate: false
+  xy: 2, 1466
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/victory_panel
+  rotate: false
+  xy: 1294, 734
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1
+ui/screens/world_selection_panel
+  rotate: false
+  xy: 648, 734
+  size: 640, 360
+  orig: 640, 360
+  offset: 0, 0
+  index: -1

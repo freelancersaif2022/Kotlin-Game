@@ -1,0 +1,328 @@
+
+boss_shadow_dragon.png
+size: 1928, 920
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+bosses/shadow_dragon/damage/00
+  rotate: false
+  xy: 1268, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/damage/01
+  rotate: false
+  xy: 433, 2
+  size: 199, 245
+  orig: 320, 320
+  offset: 70, 37
+  index: -1
+bosses/shadow_dragon/damage/02
+  rotate: false
+  xy: 433, 253
+  size: 187, 241
+  orig: 320, 320
+  offset: 77, 36
+  index: -1
+bosses/shadow_dragon/damage/03
+  rotate: false
+  xy: 863, 501
+  size: 182, 236
+  orig: 320, 320
+  offset: 74, 38
+  index: -1
+bosses/shadow_dragon/damage/04
+  rotate: false
+  xy: 433, 253
+  size: 187, 241
+  orig: 320, 320
+  offset: 63, 36
+  index: -1
+bosses/shadow_dragon/damage/05
+  rotate: false
+  xy: 433, 2
+  size: 199, 245
+  orig: 320, 320
+  offset: 56, 37
+  index: -1
+bosses/shadow_dragon/death/00
+  rotate: false
+  xy: 638, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/death/01
+  rotate: false
+  xy: 1051, 501
+  size: 212, 231
+  orig: 320, 320
+  offset: 53, 40
+  index: -1
+bosses/shadow_dragon/death/02
+  rotate: false
+  xy: 1269, 501
+  size: 214, 210
+  orig: 320, 320
+  offset: 52, 51
+  index: -1
+bosses/shadow_dragon/death/03
+  rotate: false
+  xy: 210, 502
+  size: 214, 196
+  orig: 320, 320
+  offset: 53, 58
+  index: -1
+bosses/shadow_dragon/death/04
+  rotate: false
+  xy: 2, 704
+  size: 217, 182
+  orig: 320, 320
+  offset: 54, 67
+  index: -1
+bosses/shadow_dragon/death/05
+  rotate: false
+  xy: 863, 743
+  size: 216, 173
+  orig: 320, 320
+  offset: 55, 72
+  index: -1
+bosses/shadow_dragon/death/06
+  rotate: false
+  xy: 1269, 717
+  size: 211, 178
+  orig: 320, 320
+  offset: 58, 71
+  index: -1
+bosses/shadow_dragon/death/07
+  rotate: false
+  xy: 225, 704
+  size: 197, 178
+  orig: 320, 320
+  offset: 67, 72
+  index: -1
+bosses/shadow_dragon/death/08
+  rotate: false
+  xy: 1489, 701
+  size: 176, 182
+  orig: 320, 320
+  offset: 77, 67
+  index: -1
+bosses/shadow_dragon/death/09
+  rotate: false
+  xy: 1489, 501
+  size: 152, 194
+  orig: 320, 320
+  offset: 88, 51
+  index: -1
+bosses/shadow_dragon/idle/00
+  rotate: false
+  xy: 638, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/idle/01
+  rotate: false
+  xy: 223, 2
+  size: 204, 246
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/idle/02
+  rotate: false
+  xy: 223, 2
+  size: 204, 246
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/idle/03
+  rotate: false
+  xy: 638, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/idle/04
+  rotate: false
+  xy: 653, 501
+  size: 204, 239
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/idle/05
+  rotate: false
+  xy: 653, 501
+  size: 204, 239
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/movement/00
+  rotate: false
+  xy: 848, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/movement/01
+  rotate: false
+  xy: 1710, 251
+  size: 209, 243
+  orig: 320, 320
+  offset: 56, 36
+  index: -1
+bosses/shadow_dragon/movement/02
+  rotate: false
+  xy: 1077, 2
+  size: 206, 244
+  orig: 320, 320
+  offset: 56, 38
+  index: -1
+bosses/shadow_dragon/movement/03
+  rotate: false
+  xy: 1289, 2
+  size: 206, 244
+  orig: 320, 320
+  offset: 56, 35
+  index: -1
+bosses/shadow_dragon/movement/04
+  rotate: false
+  xy: 1058, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/movement/05
+  rotate: false
+  xy: 1478, 252
+  size: 202, 243
+  orig: 320, 320
+  offset: 60, 37
+  index: -1
+bosses/shadow_dragon/movement/06
+  rotate: false
+  xy: 1501, 2
+  size: 203, 244
+  orig: 320, 320
+  offset: 60, 40
+  index: -1
+bosses/shadow_dragon/movement/07
+  rotate: false
+  xy: 2, 254
+  size: 202, 243
+  orig: 320, 320
+  offset: 60, 37
+  index: -1
+bosses/shadow_dragon/primary_attack/00
+  rotate: false
+  xy: 848, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/primary_attack/01
+  rotate: false
+  xy: 1710, 2
+  size: 211, 243
+  orig: 320, 320
+  offset: 61, 36
+  index: -1
+bosses/shadow_dragon/primary_attack/02
+  rotate: false
+  xy: 638, 2
+  size: 216, 244
+  orig: 320, 320
+  offset: 64, 38
+  index: -1
+bosses/shadow_dragon/primary_attack/03
+  rotate: false
+  xy: 1686, 500
+  size: 216, 240
+  orig: 320, 320
+  offset: 68, 40
+  index: -1
+bosses/shadow_dragon/primary_attack/04
+  rotate: false
+  xy: 432, 501
+  size: 215, 240
+  orig: 320, 320
+  offset: 71, 39
+  index: -1
+bosses/shadow_dragon/primary_attack/05
+  rotate: false
+  xy: 210, 254
+  size: 216, 242
+  orig: 320, 320
+  offset: 68, 38
+  index: -1
+bosses/shadow_dragon/primary_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 215, 246
+  orig: 320, 320
+  offset: 64, 36
+  index: -1
+bosses/shadow_dragon/primary_attack/07
+  rotate: false
+  xy: 860, 2
+  size: 211, 244
+  orig: 320, 320
+  offset: 61, 35
+  index: -1
+bosses/shadow_dragon/special_attack/00
+  rotate: false
+  xy: 848, 252
+  size: 204, 243
+  orig: 320, 320
+  offset: 58, 29
+  index: -1
+bosses/shadow_dragon/special_attack/01
+  rotate: false
+  xy: 1710, 2
+  size: 211, 243
+  orig: 320, 320
+  offset: 61, 36
+  index: -1
+bosses/shadow_dragon/special_attack/02
+  rotate: false
+  xy: 638, 2
+  size: 216, 244
+  orig: 320, 320
+  offset: 64, 38
+  index: -1
+bosses/shadow_dragon/special_attack/03
+  rotate: false
+  xy: 1686, 500
+  size: 216, 240
+  orig: 320, 320
+  offset: 68, 40
+  index: -1
+bosses/shadow_dragon/special_attack/04
+  rotate: false
+  xy: 432, 501
+  size: 215, 240
+  orig: 320, 320
+  offset: 71, 39
+  index: -1
+bosses/shadow_dragon/special_attack/05
+  rotate: false
+  xy: 210, 254
+  size: 216, 242
+  orig: 320, 320
+  offset: 68, 38
+  index: -1
+bosses/shadow_dragon/special_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 215, 246
+  orig: 320, 320
+  offset: 64, 36
+  index: -1
+bosses/shadow_dragon/special_attack/07
+  rotate: false
+  xy: 860, 2
+  size: 211, 244
+  orig: 320, 320
+  offset: 61, 35
+  index: -1

@@ -1,0 +1,188 @@
+
+enemy_snake.png
+size: 2008, 296
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/snake/attack/00
+  rotate: false
+  xy: 959, 2
+  size: 124, 145
+  orig: 192, 192
+  offset: 37, 18
+  index: -1
+enemies/snake/attack/01
+  rotate: false
+  xy: 1089, 2
+  size: 140, 144
+  orig: 192, 192
+  offset: 34, 24
+  index: -1
+enemies/snake/attack/02
+  rotate: false
+  xy: 1853, 149
+  size: 151, 140
+  orig: 192, 192
+  offset: 30, 26
+  index: -1
+enemies/snake/attack/03
+  rotate: false
+  xy: 1089, 152
+  size: 155, 139
+  orig: 192, 192
+  offset: 31, 26
+  index: -1
+enemies/snake/attack/04
+  rotate: false
+  xy: 1620, 150
+  size: 150, 140
+  orig: 192, 192
+  offset: 31, 26
+  index: -1
+enemies/snake/attack/05
+  rotate: false
+  xy: 401, 2
+  size: 141, 145
+  orig: 192, 192
+  offset: 33, 23
+  index: -1
+enemies/snake/damage/00
+  rotate: false
+  xy: 822, 2
+  size: 131, 145
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/damage/01
+  rotate: false
+  xy: 1853, 2
+  size: 137, 141
+  orig: 192, 192
+  offset: 35, 25
+  index: -1
+enemies/snake/damage/02
+  rotate: false
+  xy: 401, 153
+  size: 139, 136
+  orig: 192, 192
+  offset: 26, 26
+  index: -1
+enemies/snake/damage/03
+  rotate: false
+  xy: 1853, 2
+  size: 137, 141
+  orig: 192, 192
+  offset: 19, 25
+  index: -1
+enemies/snake/death/00
+  rotate: false
+  xy: 548, 2
+  size: 131, 145
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/death/01
+  rotate: false
+  xy: 1373, 151
+  size: 109, 140
+  orig: 192, 192
+  offset: 44, 26
+  index: -1
+enemies/snake/death/02
+  rotate: false
+  xy: 1488, 151
+  size: 106, 140
+  orig: 192, 192
+  offset: 51, 26
+  index: -1
+enemies/snake/death/03
+  rotate: false
+  xy: 1250, 152
+  size: 103, 138
+  orig: 192, 192
+  offset: 53, 28
+  index: -1
+enemies/snake/death/04
+  rotate: false
+  xy: 1513, 2
+  size: 101, 143
+  orig: 192, 192
+  offset: 52, 25
+  index: -1
+enemies/snake/death/05
+  rotate: false
+  xy: 1757, 2
+  size: 90, 142
+  orig: 192, 192
+  offset: 55, 23
+  index: -1
+enemies/snake/idle/00
+  rotate: false
+  xy: 548, 2
+  size: 131, 145
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/idle/01
+  rotate: false
+  xy: 135, 2
+  size: 131, 147
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/idle/02
+  rotate: false
+  xy: 548, 2
+  size: 131, 145
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/idle/03
+  rotate: false
+  xy: 1620, 2
+  size: 131, 142
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/movement/00
+  rotate: false
+  xy: 959, 2
+  size: 124, 145
+  orig: 192, 192
+  offset: 37, 18
+  index: -1
+enemies/snake/movement/01
+  rotate: false
+  xy: 272, 2
+  size: 123, 147
+  orig: 192, 192
+  offset: 36, 24
+  index: -1
+enemies/snake/movement/02
+  rotate: false
+  xy: 2, 2
+  size: 127, 148
+  orig: 192, 192
+  offset: 32, 23
+  index: -1
+enemies/snake/movement/03
+  rotate: false
+  xy: 685, 2
+  size: 131, 145
+  orig: 192, 192
+  offset: 30, 18
+  index: -1
+enemies/snake/movement/04
+  rotate: false
+  xy: 1373, 2
+  size: 134, 143
+  orig: 192, 192
+  offset: 28, 26
+  index: -1
+enemies/snake/movement/05
+  rotate: false
+  xy: 1235, 2
+  size: 132, 144
+  orig: 192, 192
+  offset: 30, 25
+  index: -1

@@ -1,0 +1,440 @@
+
+char_robo_x.png
+size: 1976, 544
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+characters/robo_x/death/00
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/death/01
+  rotate: false
+  xy: 506, 204
+  size: 118, 174
+  orig: 192, 256
+  offset: 47, 37
+  index: -1
+characters/robo_x/death/02
+  rotate: false
+  xy: 630, 382
+  size: 123, 158
+  orig: 192, 256
+  offset: 51, 43
+  index: -1
+characters/robo_x/death/03
+  rotate: false
+  xy: 135, 393
+  size: 128, 143
+  orig: 192, 256
+  offset: 44, 41
+  index: -1
+characters/robo_x/death/04
+  rotate: false
+  xy: 759, 397
+  size: 131, 132
+  orig: 192, 256
+  offset: 40, 39
+  index: -1
+characters/robo_x/death/05
+  rotate: false
+  xy: 896, 397
+  size: 137, 128
+  orig: 192, 256
+  offset: 35, 38
+  index: -1
+characters/robo_x/death/06
+  rotate: false
+  xy: 1591, 399
+  size: 132, 125
+  orig: 192, 256
+  offset: 35, 35
+  index: -1
+characters/robo_x/death/07
+  rotate: false
+  xy: 1354, 400
+  size: 117, 117
+  orig: 192, 256
+  offset: 40, 31
+  index: -1
+characters/robo_x/double_jump/00
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/double_jump/01
+  rotate: false
+  xy: 2, 372
+  size: 127, 159
+  orig: 192, 256
+  offset: 45, 55
+  index: -1
+characters/robo_x/double_jump/02
+  rotate: false
+  xy: 269, 393
+  size: 136, 132
+  orig: 192, 256
+  offset: 35, 59
+  index: -1
+characters/robo_x/double_jump/03
+  rotate: false
+  xy: 1833, 397
+  size: 137, 126
+  orig: 192, 256
+  offset: 33, 61
+  index: -1
+characters/robo_x/double_jump/04
+  rotate: false
+  xy: 269, 393
+  size: 136, 132
+  orig: 192, 256
+  offset: 35, 59
+  index: -1
+characters/robo_x/double_jump/05
+  rotate: false
+  xy: 2, 372
+  size: 127, 159
+  orig: 192, 256
+  offset: 45, 55
+  index: -1
+characters/robo_x/falling/00
+  rotate: false
+  xy: 254, 2
+  size: 119, 196
+  orig: 192, 256
+  offset: 32, 48
+  index: -1
+characters/robo_x/falling/01
+  rotate: false
+  xy: 254, 2
+  size: 119, 196
+  orig: 192, 256
+  offset: 32, 43
+  index: -1
+characters/robo_x/falling/02
+  rotate: false
+  xy: 254, 2
+  size: 119, 196
+  orig: 192, 256
+  offset: 32, 39
+  index: -1
+characters/robo_x/falling/03
+  rotate: false
+  xy: 254, 2
+  size: 119, 196
+  orig: 192, 256
+  offset: 32, 34
+  index: -1
+characters/robo_x/idle/00
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/idle/01
+  rotate: false
+  xy: 134, 2
+  size: 114, 197
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/idle/02
+  rotate: false
+  xy: 134, 2
+  size: 114, 197
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/idle/03
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/idle/04
+  rotate: false
+  xy: 1713, 202
+  size: 114, 190
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/idle/05
+  rotate: false
+  xy: 1713, 202
+  size: 114, 190
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/jumping/00
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/jumping/01
+  rotate: false
+  xy: 1112, 202
+  size: 118, 193
+  orig: 192, 256
+  offset: 33, 41
+  index: -1
+characters/robo_x/jumping/02
+  rotate: false
+  xy: 869, 203
+  size: 124, 188
+  orig: 192, 256
+  offset: 29, 51
+  index: -1
+characters/robo_x/jumping/03
+  rotate: false
+  xy: 374, 204
+  size: 126, 180
+  orig: 192, 256
+  offset: 28, 55
+  index: -1
+characters/robo_x/jumping/04
+  rotate: false
+  xy: 869, 203
+  size: 124, 188
+  orig: 192, 256
+  offset: 29, 51
+  index: -1
+characters/robo_x/jumping/05
+  rotate: false
+  xy: 1112, 202
+  size: 118, 193
+  orig: 192, 256
+  offset: 33, 41
+  index: -1
+characters/robo_x/landing/00
+  rotate: false
+  xy: 506, 384
+  size: 114, 151
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/landing/01
+  rotate: false
+  xy: 134, 205
+  size: 114, 161
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/landing/02
+  rotate: false
+  xy: 630, 204
+  size: 114, 172
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/landing/03
+  rotate: false
+  xy: 254, 204
+  size: 114, 183
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/running/00
+  rotate: false
+  xy: 1710, 2
+  size: 110, 194
+  orig: 192, 256
+  offset: 43, 24
+  index: -1
+characters/robo_x/running/01
+  rotate: false
+  xy: 1236, 202
+  size: 112, 193
+  orig: 192, 256
+  offset: 44, 29
+  index: -1
+characters/robo_x/running/02
+  rotate: false
+  xy: 1354, 202
+  size: 113, 192
+  orig: 192, 256
+  offset: 44, 32
+  index: -1
+characters/robo_x/running/03
+  rotate: false
+  xy: 1473, 202
+  size: 112, 192
+  orig: 192, 256
+  offset: 41, 32
+  index: -1
+characters/robo_x/running/04
+  rotate: false
+  xy: 1826, 2
+  size: 110, 194
+  orig: 192, 256
+  offset: 40, 28
+  index: -1
+characters/robo_x/running/05
+  rotate: false
+  xy: 1592, 2
+  size: 112, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/running/06
+  rotate: false
+  xy: 1232, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 37, 28
+  index: -1
+characters/robo_x/running/07
+  rotate: false
+  xy: 627, 2
+  size: 115, 196
+  orig: 192, 256
+  offset: 36, 30
+  index: -1
+characters/robo_x/running/08
+  rotate: false
+  xy: 748, 2
+  size: 115, 196
+  orig: 192, 256
+  offset: 36, 30
+  index: -1
+characters/robo_x/running/09
+  rotate: false
+  xy: 994, 2
+  size: 112, 195
+  orig: 192, 256
+  offset: 39, 27
+  index: -1
+characters/robo_x/sliding/00
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/sliding/01
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/sliding/02
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/sliding/03
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/sliding/04
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/sliding/05
+  rotate: false
+  xy: 1039, 401
+  size: 132, 108
+  orig: 192, 256
+  offset: 26, 31
+  index: -1
+characters/robo_x/taking_damage/00
+  rotate: false
+  xy: 1352, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/taking_damage/01
+  rotate: false
+  xy: 869, 2
+  size: 119, 195
+  orig: 192, 256
+  offset: 39, 31
+  index: -1
+characters/robo_x/taking_damage/02
+  rotate: false
+  xy: 2, 2
+  size: 126, 198
+  orig: 192, 256
+  offset: 28, 29
+  index: -1
+characters/robo_x/taking_damage/03
+  rotate: false
+  xy: 869, 2
+  size: 119, 195
+  orig: 192, 256
+  offset: 23, 31
+  index: -1
+characters/robo_x/victory/00
+  rotate: false
+  xy: 1112, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/victory/01
+  rotate: false
+  xy: 1591, 202
+  size: 116, 191
+  orig: 192, 256
+  offset: 44, 43
+  index: -1
+characters/robo_x/victory/02
+  rotate: false
+  xy: 1833, 202
+  size: 117, 189
+  orig: 192, 256
+  offset: 46, 50
+  index: -1
+characters/robo_x/victory/03
+  rotate: false
+  xy: 1591, 202
+  size: 116, 191
+  orig: 192, 256
+  offset: 44, 43
+  index: -1
+characters/robo_x/victory/04
+  rotate: false
+  xy: 1472, 2
+  size: 114, 194
+  orig: 192, 256
+  offset: 39, 24
+  index: -1
+characters/robo_x/victory/05
+  rotate: false
+  xy: 504, 2
+  size: 117, 196
+  orig: 192, 256
+  offset: 34, 40
+  index: -1
+characters/robo_x/victory/06
+  rotate: false
+  xy: 379, 2
+  size: 119, 196
+  orig: 192, 256
+  offset: 32, 46
+  index: -1
+characters/robo_x/victory/07
+  rotate: false
+  xy: 504, 2
+  size: 117, 196
+  orig: 192, 256
+  offset: 34, 40
+  index: -1

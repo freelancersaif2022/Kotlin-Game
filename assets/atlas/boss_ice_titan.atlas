@@ -1,0 +1,328 @@
+
+boss_ice_titan.png
+size: 1968, 896
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+bosses/ice_titan/damage/00
+  rotate: false
+  xy: 2, 259
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/damage/01
+  rotate: false
+  xy: 201, 2
+  size: 180, 250
+  orig: 320, 320
+  offset: 73, 32
+  index: -1
+bosses/ice_titan/damage/02
+  rotate: false
+  xy: 796, 2
+  size: 178, 248
+  orig: 320, 320
+  offset: 68, 31
+  index: -1
+bosses/ice_titan/damage/03
+  rotate: false
+  xy: 387, 506
+  size: 174, 243
+  orig: 320, 320
+  offset: 61, 31
+  index: -1
+bosses/ice_titan/damage/04
+  rotate: false
+  xy: 796, 2
+  size: 178, 248
+  orig: 320, 320
+  offset: 55, 31
+  index: -1
+bosses/ice_titan/damage/05
+  rotate: false
+  xy: 201, 2
+  size: 180, 250
+  orig: 320, 320
+  offset: 60, 32
+  index: -1
+bosses/ice_titan/death/00
+  rotate: false
+  xy: 387, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/death/01
+  rotate: false
+  xy: 1768, 506
+  size: 194, 238
+  orig: 320, 320
+  offset: 65, 32
+  index: -1
+bosses/ice_titan/death/02
+  rotate: false
+  xy: 758, 507
+  size: 202, 229
+  orig: 320, 320
+  offset: 65, 34
+  index: -1
+bosses/ice_titan/death/03
+  rotate: false
+  xy: 966, 507
+  size: 208, 216
+  orig: 320, 320
+  offset: 67, 35
+  index: -1
+bosses/ice_titan/death/04
+  rotate: false
+  xy: 1180, 507
+  size: 213, 205
+  orig: 320, 320
+  offset: 65, 38
+  index: -1
+bosses/ice_titan/death/05
+  rotate: false
+  xy: 1399, 507
+  size: 213, 200
+  orig: 320, 320
+  offset: 67, 39
+  index: -1
+bosses/ice_titan/death/06
+  rotate: false
+  xy: 2, 508
+  size: 205, 193
+  orig: 320, 320
+  offset: 71, 40
+  index: -1
+bosses/ice_titan/death/07
+  rotate: false
+  xy: 2, 707
+  size: 191, 183
+  orig: 320, 320
+  offset: 77, 41
+  index: -1
+bosses/ice_titan/death/08
+  rotate: false
+  xy: 199, 707
+  size: 171, 175
+  orig: 320, 320
+  offset: 85, 42
+  index: -1
+bosses/ice_titan/death/09
+  rotate: false
+  xy: 213, 507
+  size: 150, 178
+  orig: 320, 320
+  offset: 92, 40
+  index: -1
+bosses/ice_titan/idle/00
+  rotate: false
+  xy: 387, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/idle/01
+  rotate: false
+  xy: 1387, 255
+  size: 185, 246
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/idle/02
+  rotate: false
+  xy: 1387, 255
+  size: 185, 246
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/idle/03
+  rotate: false
+  xy: 387, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/idle/04
+  rotate: false
+  xy: 567, 506
+  size: 185, 239
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/idle/05
+  rotate: false
+  xy: 567, 506
+  size: 185, 239
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/movement/00
+  rotate: false
+  xy: 578, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/movement/01
+  rotate: false
+  xy: 1768, 255
+  size: 189, 245
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/ice_titan/movement/02
+  rotate: false
+  xy: 1582, 2
+  size: 189, 247
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/ice_titan/movement/03
+  rotate: false
+  xy: 1194, 255
+  size: 187, 246
+  orig: 320, 320
+  offset: 66, 34
+  index: -1
+bosses/ice_titan/movement/04
+  rotate: false
+  xy: 201, 258
+  size: 180, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/movement/05
+  rotate: false
+  xy: 796, 256
+  size: 177, 245
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/ice_titan/movement/06
+  rotate: false
+  xy: 1777, 2
+  size: 180, 247
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/ice_titan/movement/07
+  rotate: false
+  xy: 1578, 255
+  size: 184, 246
+  orig: 320, 320
+  offset: 66, 34
+  index: -1
+bosses/ice_titan/primary_attack/00
+  rotate: false
+  xy: 578, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/primary_attack/01
+  rotate: false
+  xy: 1186, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 68, 31
+  index: -1
+bosses/ice_titan/primary_attack/02
+  rotate: false
+  xy: 387, 2
+  size: 205, 249
+  orig: 320, 320
+  offset: 60, 33
+  index: -1
+bosses/ice_titan/primary_attack/03
+  rotate: false
+  xy: 980, 255
+  size: 208, 246
+  orig: 320, 320
+  offset: 57, 35
+  index: -1
+bosses/ice_titan/primary_attack/04
+  rotate: false
+  xy: 980, 2
+  size: 200, 247
+  orig: 320, 320
+  offset: 59, 33
+  index: -1
+bosses/ice_titan/primary_attack/05
+  rotate: false
+  xy: 598, 2
+  size: 192, 249
+  orig: 320, 320
+  offset: 67, 32
+  index: -1
+bosses/ice_titan/primary_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 193, 251
+  orig: 320, 320
+  offset: 68, 31
+  index: -1
+bosses/ice_titan/primary_attack/07
+  rotate: false
+  xy: 1384, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 67, 31
+  index: -1
+bosses/ice_titan/special_attack/00
+  rotate: false
+  xy: 578, 257
+  size: 185, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/ice_titan/special_attack/01
+  rotate: false
+  xy: 1186, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 68, 31
+  index: -1
+bosses/ice_titan/special_attack/02
+  rotate: false
+  xy: 387, 2
+  size: 205, 249
+  orig: 320, 320
+  offset: 60, 33
+  index: -1
+bosses/ice_titan/special_attack/03
+  rotate: false
+  xy: 980, 255
+  size: 208, 246
+  orig: 320, 320
+  offset: 57, 35
+  index: -1
+bosses/ice_titan/special_attack/04
+  rotate: false
+  xy: 980, 2
+  size: 200, 247
+  orig: 320, 320
+  offset: 59, 33
+  index: -1
+bosses/ice_titan/special_attack/05
+  rotate: false
+  xy: 598, 2
+  size: 192, 249
+  orig: 320, 320
+  offset: 67, 32
+  index: -1
+bosses/ice_titan/special_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 193, 251
+  orig: 320, 320
+  offset: 68, 31
+  index: -1
+bosses/ice_titan/special_attack/07
+  rotate: false
+  xy: 1384, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 67, 31
+  index: -1

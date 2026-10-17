@@ -1,0 +1,1126 @@
+
+effects.png
+size: 2048, 1344
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+effects/boss_defeat/00
+  rotate: false
+  xy: 1217, 1262
+  size: 43, 44
+  orig: 256, 256
+  offset: 107, 105
+  index: -1
+effects/boss_defeat/01
+  rotate: false
+  xy: 1745, 1249
+  size: 61, 62
+  orig: 256, 256
+  offset: 100, 93
+  index: -1
+effects/boss_defeat/02
+  rotate: false
+  xy: 319, 1083
+  size: 84, 88
+  orig: 256, 256
+  offset: 87, 81
+  index: -1
+effects/boss_defeat/03
+  rotate: false
+  xy: 1853, 932
+  size: 111, 115
+  orig: 256, 256
+  offset: 73, 68
+  index: -1
+effects/boss_defeat/04
+  rotate: false
+  xy: 1431, 545
+  size: 137, 143
+  orig: 256, 256
+  offset: 60, 53
+  index: -1
+effects/boss_defeat/05
+  rotate: false
+  xy: 1081, 201
+  size: 165, 173
+  orig: 256, 256
+  offset: 46, 37
+  index: -1
+effects/boss_defeat/06
+  rotate: false
+  xy: 683, 2
+  size: 193, 203
+  orig: 256, 256
+  offset: 32, 21
+  index: -1
+effects/boss_defeat/07
+  rotate: false
+  xy: 2, 2
+  size: 221, 235
+  orig: 256, 256
+  offset: 18, 3
+  index: -1
+effects/coin_sparkle/00
+  rotate: false
+  xy: 1266, 1262
+  size: 43, 41
+  orig: 256, 256
+  offset: 107, 102
+  index: -1
+effects/coin_sparkle/01
+  rotate: false
+  xy: 1812, 1249
+  size: 65, 61
+  orig: 256, 256
+  offset: 97, 90
+  index: -1
+effects/coin_sparkle/02
+  rotate: false
+  xy: 409, 1176
+  size: 87, 82
+  orig: 256, 256
+  offset: 87, 75
+  index: -1
+effects/coin_sparkle/03
+  rotate: false
+  xy: 113, 970
+  size: 109, 102
+  orig: 256, 256
+  offset: 77, 60
+  index: -1
+effects/coin_sparkle/04
+  rotate: false
+  xy: 1716, 838
+  size: 131, 123
+  orig: 256, 256
+  offset: 67, 44
+  index: -1
+effects/coin_sparkle/05
+  rotate: false
+  xy: 1212, 547
+  size: 153, 144
+  orig: 256, 256
+  offset: 57, 26
+  index: -1
+effects/coin_sparkle/06
+  rotate: false
+  xy: 229, 239
+  size: 175, 165
+  orig: 256, 256
+  offset: 47, 7
+  index: -1
+effects/coin_sparkle/07
+  rotate: false
+  xy: 1371, 694
+  size: 197, 138
+  orig: 256, 256
+  offset: 37, 35
+  index: -1
+effects/damage_flash/00
+  rotate: false
+  xy: 2, 1262
+  size: 44, 44
+  orig: 256, 256
+  offset: 106, 102
+  index: -1
+effects/damage_flash/01
+  rotate: false
+  xy: 1090, 1183
+  size: 60, 66
+  orig: 256, 256
+  offset: 100, 89
+  index: -1
+effects/damage_flash/02
+  rotate: false
+  xy: 236, 1083
+  size: 77, 89
+  orig: 256, 256
+  offset: 93, 75
+  index: -1
+effects/damage_flash/03
+  rotate: false
+  xy: 1041, 964
+  size: 93, 111
+  orig: 256, 256
+  offset: 87, 60
+  index: -1
+effects/damage_flash/04
+  rotate: false
+  xy: 711, 697
+  size: 110, 133
+  orig: 256, 256
+  offset: 80, 44
+  index: -1
+effects/damage_flash/05
+  rotate: false
+  xy: 1915, 187
+  size: 128, 155
+  orig: 256, 256
+  offset: 73, 27
+  index: -1
+effects/damage_flash/06
+  rotate: false
+  xy: 1763, 187
+  size: 145, 179
+  orig: 256, 256
+  offset: 66, 8
+  index: -1
+effects/damage_flash/07
+  rotate: false
+  xy: 1280, 2
+  size: 161, 188
+  orig: 256, 256
+  offset: 60, 1
+  index: -1
+effects/dragon_flame/00
+  rotate: false
+  xy: 786, 1263
+  size: 47, 38
+  orig: 256, 256
+  offset: 107, 109
+  index: -1
+effects/dragon_flame/01
+  rotate: false
+  xy: 1448, 1254
+  size: 70, 57
+  orig: 256, 256
+  offset: 95, 96
+  index: -1
+effects/dragon_flame/02
+  rotate: false
+  xy: 1218, 1179
+  size: 93, 77
+  orig: 256, 256
+  offset: 84, 80
+  index: -1
+effects/dragon_flame/03
+  rotate: false
+  xy: 113, 1078
+  size: 117, 97
+  orig: 256, 256
+  offset: 72, 65
+  index: -1
+effects/dragon_flame/04
+  rotate: false
+  xy: 2, 843
+  size: 140, 117
+  orig: 256, 256
+  offset: 60, 48
+  index: -1
+effects/dragon_flame/05
+  rotate: false
+  xy: 1756, 694
+  size: 163, 138
+  orig: 256, 256
+  offset: 49, 30
+  index: -1
+effects/dragon_flame/06
+  rotate: false
+  xy: 854, 385
+  size: 188, 159
+  orig: 256, 256
+  offset: 37, 11
+  index: -1
+effects/dragon_flame/07
+  rotate: false
+  xy: 1149, 836
+  size: 210, 124
+  orig: 256, 256
+  offset: 26, 47
+  index: -1
+effects/electric_sparks/00
+  rotate: false
+  xy: 457, 1306
+  size: 25, 26
+  orig: 256, 256
+  offset: 117, 109
+  index: -1
+effects/electric_sparks/01
+  rotate: false
+  xy: 1524, 1247
+  size: 48, 47
+  orig: 256, 256
+  offset: 107, 95
+  index: -1
+effects/electric_sparks/02
+  rotate: false
+  xy: 1014, 1183
+  size: 70, 67
+  orig: 256, 256
+  offset: 97, 80
+  index: -1
+effects/electric_sparks/03
+  rotate: false
+  xy: 941, 1083
+  size: 91, 85
+  orig: 256, 256
+  offset: 88, 65
+  index: -1
+effects/electric_sparks/04
+  rotate: false
+  xy: 1346, 967
+  size: 113, 105
+  orig: 256, 256
+  offset: 78, 48
+  index: -1
+effects/electric_sparks/05
+  rotate: false
+  xy: 1574, 835
+  size: 136, 124
+  orig: 256, 256
+  offset: 68, 30
+  index: -1
+effects/electric_sparks/06
+  rotate: false
+  xy: 1048, 546
+  size: 158, 144
+  orig: 256, 256
+  offset: 58, 11
+  index: -1
+effects/electric_sparks/07
+  rotate: false
+  xy: 524, 697
+  size: 181, 135
+  orig: 256, 256
+  offset: 48, 19
+  index: -1
+effects/explosion/00
+  rotate: false
+  xy: 839, 1263
+  size: 42, 38
+  orig: 256, 256
+  offset: 108, 107
+  index: -1
+effects/explosion/01
+  rotate: false
+  xy: 137, 1259
+  size: 60, 51
+  orig: 256, 256
+  offset: 100, 99
+  index: -1
+effects/explosion/02
+  rotate: false
+  xy: 1438, 1183
+  size: 79, 65
+  orig: 256, 256
+  offset: 92, 88
+  index: -1
+effects/explosion/03
+  rotate: false
+  xy: 1929, 1158
+  size: 96, 83
+  orig: 256, 256
+  offset: 85, 73
+  index: -1
+effects/explosion/04
+  rotate: false
+  xy: 1929, 1053
+  size: 114, 99
+  orig: 256, 256
+  offset: 77, 59
+  index: -1
+effects/explosion/05
+  rotate: false
+  xy: 148, 847
+  size: 132, 117
+  orig: 256, 256
+  offset: 69, 42
+  index: -1
+effects/explosion/06
+  rotate: false
+  xy: 1149, 697
+  size: 149, 133
+  orig: 256, 256
+  offset: 62, 25
+  index: -1
+effects/explosion/07
+  rotate: false
+  xy: 1582, 542
+  size: 168, 150
+  orig: 256, 256
+  offset: 54, 6
+  index: -1
+effects/fire_particles/00
+  rotate: false
+  xy: 1578, 1262
+  size: 46, 40
+  orig: 256, 256
+  offset: 105, 110
+  index: -1
+effects/fire_particles/01
+  rotate: false
+  xy: 502, 1255
+  size: 67, 53
+  orig: 256, 256
+  offset: 96, 106
+  index: -1
+effects/fire_particles/02
+  rotate: false
+  xy: 1650, 1181
+  size: 89, 67
+  orig: 256, 256
+  offset: 86, 100
+  index: -1
+effects/fire_particles/03
+  rotate: false
+  xy: 645, 1175
+  size: 110, 82
+  orig: 256, 256
+  offset: 77, 92
+  index: -1
+effects/fire_particles/04
+  rotate: false
+  xy: 1443, 1082
+  size: 130, 95
+  orig: 256, 256
+  offset: 68, 85
+  index: -1
+effects/fire_particles/05
+  rotate: false
+  xy: 403, 967
+  size: 151, 110
+  orig: 256, 256
+  offset: 58, 75
+  index: -1
+effects/fire_particles/06
+  rotate: false
+  xy: 2, 712
+  size: 172, 125
+  orig: 256, 256
+  offset: 49, 64
+  index: -1
+effects/fire_particles/07
+  rotate: false
+  xy: 325, 564
+  size: 193, 140
+  orig: 256, 256
+  offset: 40, 52
+  index: -1
+effects/guardian_projectile/00
+  rotate: false
+  xy: 270, 1261
+  size: 44, 45
+  orig: 256, 256
+  offset: 105, 105
+  index: -1
+effects/guardian_projectile/01
+  rotate: false
+  xy: 1895, 1247
+  size: 61, 65
+  orig: 256, 256
+  offset: 95, 95
+  index: -1
+effects/guardian_projectile/02
+  rotate: false
+  xy: 720, 1085
+  size: 79, 84
+  orig: 256, 256
+  offset: 85, 84
+  index: -1
+effects/guardian_projectile/03
+  rotate: false
+  xy: 1717, 967
+  size: 99, 103
+  orig: 256, 256
+  offset: 74, 72
+  index: -1
+effects/guardian_projectile/04
+  rotate: false
+  xy: 725, 836
+  size: 117, 122
+  orig: 256, 256
+  offset: 64, 59
+  index: -1
+effects/guardian_projectile/05
+  rotate: false
+  xy: 715, 550
+  size: 136, 141
+  orig: 256, 256
+  offset: 54, 45
+  index: -1
+effects/guardian_projectile/06
+  rotate: false
+  xy: 1052, 380
+  size: 155, 160
+  orig: 256, 256
+  offset: 44, 30
+  index: -1
+effects/guardian_projectile/07
+  rotate: false
+  xy: 1763, 2
+  size: 174, 179
+  orig: 256, 256
+  offset: 33, 14
+  index: -1
+effects/ice_particles/00
+  rotate: false
+  xy: 320, 1261
+  size: 40, 45
+  orig: 256, 256
+  offset: 107, 105
+  index: -1
+effects/ice_particles/01
+  rotate: false
+  xy: 1156, 1183
+  size: 55, 64
+  orig: 256, 256
+  offset: 100, 95
+  index: -1
+effects/ice_particles/02
+  rotate: false
+  xy: 645, 1079
+  size: 69, 85
+  orig: 256, 256
+  offset: 93, 83
+  index: -1
+effects/ice_particles/03
+  rotate: false
+  xy: 1624, 967
+  size: 87, 104
+  orig: 256, 256
+  offset: 83, 71
+  index: -1
+effects/ice_particles/04
+  rotate: false
+  xy: 1925, 801
+  size: 103, 125
+  orig: 256, 256
+  offset: 74, 57
+  index: -1
+effects/ice_particles/05
+  rotate: false
+  xy: 1915, 508
+  size: 120, 146
+  orig: 256, 256
+  offset: 64, 41
+  index: -1
+effects/ice_particles/06
+  rotate: false
+  xy: 1607, 371
+  size: 137, 165
+  orig: 256, 256
+  offset: 55, 26
+  index: -1
+effects/ice_particles/07
+  rotate: false
+  xy: 1447, 2
+  size: 155, 186
+  orig: 256, 256
+  offset: 44, 9
+  index: -1
+effects/ice_shard/00
+  rotate: false
+  xy: 1108, 1255
+  size: 41, 47
+  orig: 256, 256
+  offset: 106, 102
+  index: -1
+effects/ice_shard/01
+  rotate: false
+  xy: 1962, 1247
+  size: 60, 65
+  orig: 256, 256
+  offset: 95, 91
+  index: -1
+effects/ice_shard/02
+  rotate: false
+  xy: 929, 1174
+  size: 79, 83
+  orig: 256, 256
+  offset: 86, 78
+  index: -1
+effects/ice_shard/03
+  rotate: false
+  xy: 1822, 1053
+  size: 101, 101
+  orig: 256, 256
+  offset: 75, 65
+  index: -1
+effects/ice_shard/04
+  rotate: false
+  xy: 848, 839
+  size: 121, 119
+  orig: 256, 256
+  offset: 65, 49
+  index: -1
+effects/ice_shard/05
+  rotate: false
+  xy: 857, 696
+  size: 143, 137
+  orig: 256, 256
+  offset: 54, 34
+  index: -1
+effects/ice_shard/06
+  rotate: false
+  xy: 598, 387
+  size: 164, 156
+  orig: 256, 256
+  offset: 44, 16
+  index: -1
+effects/ice_shard/07
+  rotate: false
+  xy: 1252, 201
+  size: 186, 172
+  orig: 256, 256
+  offset: 33, 0
+  index: -1
+effects/jump_dust/00
+  rotate: false
+  xy: 741, 1263
+  size: 39, 39
+  orig: 256, 256
+  offset: 108, 106
+  index: -1
+effects/jump_dust/01
+  rotate: false
+  xy: 588, 1248
+  size: 51, 59
+  orig: 256, 256
+  offset: 103, 94
+  index: -1
+effects/jump_dust/02
+  rotate: false
+  xy: 1579, 1180
+  size: 65, 76
+  orig: 256, 256
+  offset: 96, 83
+  index: -1
+effects/jump_dust/03
+  rotate: false
+  xy: 560, 1079
+  size: 79, 96
+  orig: 256, 256
+  offset: 90, 69
+  index: -1
+effects/jump_dust/04
+  rotate: false
+  xy: 725, 964
+  size: 93, 115
+  orig: 256, 256
+  offset: 84, 54
+  index: -1
+effects/jump_dust/05
+  rotate: false
+  xy: 1925, 660
+  size: 106, 135
+  orig: 256, 256
+  offset: 78, 38
+  index: -1
+effects/jump_dust/06
+  rotate: false
+  xy: 1915, 348
+  size: 121, 154
+  orig: 256, 256
+  offset: 71, 21
+  index: -1
+effects/jump_dust/07
+  rotate: false
+  xy: 1608, 192
+  size: 134, 173
+  orig: 256, 256
+  offset: 66, 3
+  index: -1
+effects/landing_impact/00
+  rotate: false
+  xy: 1524, 1300
+  size: 38, 35
+  orig: 256, 256
+  offset: 108, 111
+  index: -1
+effects/landing_impact/01
+  rotate: false
+  xy: 1650, 1254
+  size: 59, 55
+  orig: 256, 256
+  offset: 97, 100
+  index: -1
+effects/landing_impact/02
+  rotate: false
+  xy: 1804, 1160
+  size: 85, 83
+  orig: 256, 256
+  offset: 85, 86
+  index: -1
+effects/landing_impact/03
+  rotate: false
+  xy: 1507, 965
+  size: 111, 111
+  orig: 256, 256
+  offset: 73, 72
+  index: -1
+effects/landing_impact/04
+  rotate: false
+  xy: 1006, 696
+  size: 137, 137
+  orig: 256, 256
+  offset: 60, 59
+  index: -1
+effects/landing_impact/05
+  rotate: false
+  xy: 2, 243
+  size: 165, 165
+  orig: 256, 256
+  offset: 46, 45
+  index: -1
+effects/landing_impact/06
+  rotate: false
+  xy: 1081, 2
+  size: 193, 193
+  orig: 256, 256
+  offset: 32, 31
+  index: -1
+effects/landing_impact/07
+  rotate: false
+  xy: 456, 2
+  size: 221, 221
+  orig: 256, 256
+  offset: 18, 17
+  index: -1
+effects/robot_missile/00
+  rotate: false
+  xy: 408, 1306
+  size: 43, 33
+  orig: 256, 256
+  offset: 105, 112
+  index: -1
+effects/robot_missile/01
+  rotate: false
+  xy: 203, 1261
+  size: 61, 49
+  orig: 256, 256
+  offset: 96, 104
+  index: -1
+effects/robot_missile/02
+  rotate: false
+  xy: 502, 1181
+  size: 80, 68
+  orig: 256, 256
+  offset: 87, 94
+  index: -1
+effects/robot_missile/03
+  rotate: false
+  xy: 824, 1084
+  size: 99, 86
+  orig: 256, 256
+  offset: 77, 83
+  index: -1
+effects/robot_missile/04
+  rotate: false
+  xy: 560, 967
+  size: 116, 106
+  orig: 256, 256
+  offset: 69, 70
+  index: -1
+effects/robot_missile/05
+  rotate: false
+  xy: 1365, 838
+  size: 136, 123
+  orig: 256, 256
+  offset: 59, 57
+  index: -1
+effects/robot_missile/06
+  rotate: false
+  xy: 554, 549
+  size: 155, 142
+  orig: 256, 256
+  offset: 49, 43
+  index: -1
+effects/robot_missile/07
+  rotate: false
+  xy: 1252, 379
+  size: 173, 162
+  orig: 256, 256
+  offset: 41, 27
+  index: -1
+effects/running_dust/00
+  rotate: false
+  xy: 408, 1264
+  size: 41, 36
+  orig: 256, 256
+  offset: 105, 110
+  index: -1
+effects/running_dust/01
+  rotate: false
+  xy: 1156, 1253
+  size: 55, 53
+  orig: 256, 256
+  offset: 95, 101
+  index: -1
+effects/running_dust/02
+  rotate: false
+  xy: 154, 1181
+  size: 72, 72
+  orig: 256, 256
+  offset: 84, 89
+  index: -1
+effects/running_dust/03
+  rotate: false
+  xy: 1218, 1082
+  size: 88, 91
+  orig: 256, 256
+  offset: 73, 76
+  index: -1
+effects/running_dust/04
+  rotate: false
+  xy: 2, 966
+  size: 105, 108
+  orig: 256, 256
+  offset: 62, 63
+  index: -1
+effects/running_dust/05
+  rotate: false
+  xy: 365, 710
+  size: 123, 127
+  orig: 256, 256
+  offset: 51, 48
+  index: -1
+effects/running_dust/06
+  rotate: false
+  xy: 1756, 542
+  size: 141, 146
+  orig: 256, 256
+  offset: 39, 31
+  index: -1
+effects/running_dust/07
+  rotate: false
+  xy: 1750, 372
+  size: 159, 164
+  orig: 256, 256
+  offset: 28, 14
+  index: -1
+effects/scorpion_poison/00
+  rotate: false
+  xy: 455, 1264
+  size: 41, 36
+  orig: 256, 256
+  offset: 107, 110
+  index: -1
+effects/scorpion_poison/01
+  rotate: false
+  xy: 72, 1259
+  size: 59, 52
+  orig: 256, 256
+  offset: 97, 99
+  index: -1
+effects/scorpion_poison/02
+  rotate: false
+  xy: 72, 1181
+  size: 76, 72
+  orig: 256, 256
+  offset: 88, 85
+  index: -1
+effects/scorpion_poison/03
+  rotate: false
+  xy: 2, 1080
+  size: 94, 92
+  orig: 256, 256
+  offset: 78, 71
+  index: -1
+effects/scorpion_poison/04
+  rotate: false
+  xy: 286, 965
+  size: 111, 112
+  orig: 256, 256
+  offset: 69, 55
+  index: -1
+effects/scorpion_poison/05
+  rotate: false
+  xy: 1574, 698
+  size: 128, 131
+  orig: 256, 256
+  offset: 60, 39
+  index: -1
+effects/scorpion_poison/06
+  rotate: false
+  xy: 173, 410
+  size: 146, 151
+  orig: 256, 256
+  offset: 50, 21
+  index: -1
+effects/scorpion_poison/07
+  rotate: false
+  xy: 882, 208
+  size: 164, 171
+  orig: 256, 256
+  offset: 40, 2
+  index: -1
+effects/shield_activation/00
+  rotate: false
+  xy: 645, 1263
+  size: 42, 40
+  orig: 256, 256
+  offset: 107, 105
+  index: -1
+effects/shield_activation/01
+  rotate: false
+  xy: 1317, 1254
+  size: 61, 60
+  orig: 256, 256
+  offset: 99, 95
+  index: -1
+effects/shield_activation/02
+  rotate: false
+  xy: 409, 1083
+  size: 84, 87
+  orig: 256, 256
+  offset: 87, 82
+  index: -1
+effects/shield_activation/03
+  rotate: false
+  xy: 824, 964
+  size: 111, 114
+  orig: 256, 256
+  offset: 73, 69
+  index: -1
+effects/shield_activation/04
+  rotate: false
+  xy: 857, 550
+  size: 137, 140
+  orig: 256, 256
+  offset: 60, 56
+  index: -1
+effects/shield_activation/05
+  rotate: false
+  xy: 683, 211
+  size: 165, 170
+  orig: 256, 256
+  offset: 46, 40
+  index: -1
+effects/shield_activation/06
+  rotate: false
+  xy: 882, 2
+  size: 193, 200
+  orig: 256, 256
+  offset: 32, 24
+  index: -1
+effects/shield_activation/07
+  rotate: false
+  xy: 229, 2
+  size: 221, 231
+  orig: 256, 256
+  offset: 18, 7
+  index: -1
+effects/smoke/00
+  rotate: false
+  xy: 887, 1263
+  size: 34, 38
+  orig: 256, 256
+  offset: 111, 111
+  index: -1
+effects/smoke/01
+  rotate: false
+  xy: 1523, 1183
+  size: 47, 58
+  orig: 256, 256
+  offset: 104, 100
+  index: -1
+effects/smoke/02
+  rotate: false
+  xy: 2, 1178
+  size: 64, 78
+  orig: 256, 256
+  offset: 98, 87
+  index: -1
+effects/smoke/03
+  rotate: false
+  xy: 1717, 1076
+  size: 81, 99
+  orig: 256, 256
+  offset: 91, 72
+  index: -1
+effects/smoke/04
+  rotate: false
+  xy: 975, 839
+  size: 98, 119
+  orig: 256, 256
+  offset: 84, 58
+  index: -1
+effects/smoke/05
+  rotate: false
+  xy: 130, 567
+  size: 114, 139
+  orig: 256, 256
+  offset: 78, 41
+  index: -1
+effects/smoke/06
+  rotate: false
+  xy: 1444, 378
+  size: 132, 161
+  orig: 256, 256
+  offset: 71, 24
+  index: -1
+effects/smoke/07
+  rotate: false
+  xy: 1608, 2
+  size: 149, 184
+  orig: 256, 256
+  offset: 64, 5
+  index: -1
+effects/speed_trails/00
+  rotate: false
+  xy: 927, 1306
+  size: 32, 22
+  orig: 256, 256
+  offset: 110, 113
+  index: -1
+effects/speed_trails/01
+  rotate: false
+  xy: 927, 1263
+  size: 60, 37
+  orig: 256, 256
+  offset: 94, 104
+  index: -1
+effects/speed_trails/02
+  rotate: false
+  xy: 1014, 1256
+  size: 88, 52
+  orig: 256, 256
+  offset: 78, 94
+  index: -1
+effects/speed_trails/03
+  rotate: false
+  xy: 1317, 1181
+  size: 115, 67
+  orig: 256, 256
+  offset: 62, 82
+  index: -1
+effects/speed_trails/04
+  rotate: false
+  xy: 761, 1176
+  size: 143, 81
+  orig: 256, 256
+  offset: 46, 70
+  index: -1
+effects/speed_trails/05
+  rotate: false
+  xy: 1041, 1082
+  size: 171, 95
+  orig: 256, 256
+  offset: 30, 57
+  index: -1
+effects/speed_trails/06
+  rotate: false
+  xy: 1140, 966
+  size: 200, 110
+  orig: 256, 256
+  offset: 13, 42
+  index: -1
+effects/speed_trails/07
+  rotate: false
+  xy: 494, 838
+  size: 225, 123
+  orig: 256, 256
+  offset: 0, 27
+  index: -1
+effects/unlock_celebration/00
+  rotate: false
+  xy: 366, 1261
+  size: 36, 43
+  orig: 256, 256
+  offset: 106, 106
+  index: -1
+effects/unlock_celebration/01
+  rotate: false
+  xy: 588, 1181
+  size: 51, 61
+  orig: 256, 256
+  offset: 96, 97
+  index: -1
+effects/unlock_celebration/02
+  rotate: false
+  xy: 319, 1177
+  size: 65, 78
+  orig: 256, 256
+  offset: 87, 88
+  index: -1
+effects/unlock_celebration/03
+  rotate: false
+  xy: 1624, 1077
+  size: 79, 97
+  orig: 256, 256
+  offset: 78, 76
+  index: -1
+effects/unlock_celebration/04
+  rotate: false
+  xy: 941, 964
+  size: 94, 113
+  orig: 256, 256
+  offset: 68, 65
+  index: -1
+effects/unlock_celebration/05
+  rotate: false
+  xy: 250, 710
+  size: 109, 131
+  orig: 256, 256
+  offset: 58, 51
+  index: -1
+effects/unlock_celebration/06
+  rotate: false
+  xy: 2, 414
+  size: 122, 149
+  orig: 256, 256
+  offset: 50, 36
+  index: -1
+effects/unlock_celebration/07
+  rotate: false
+  xy: 456, 229
+  size: 136, 167
+  orig: 256, 256
+  offset: 40, 21
+  index: -1
+effects/victory_confetti/00
+  rotate: false
+  xy: 693, 1263
+  size: 42, 39
+  orig: 256, 256
+  offset: 109, 107
+  index: -1
+effects/victory_confetti/01
+  rotate: false
+  xy: 1384, 1254
+  size: 58, 58
+  orig: 256, 256
+  offset: 102, 99
+  index: -1
+effects/victory_confetti/02
+  rotate: false
+  xy: 236, 1178
+  size: 74, 77
+  orig: 256, 256
+  offset: 95, 89
+  index: -1
+effects/victory_confetti/03
+  rotate: false
+  xy: 1346, 1078
+  size: 91, 97
+  orig: 256, 256
+  offset: 88, 77
+  index: -1
+effects/victory_confetti/04
+  rotate: false
+  xy: 365, 843
+  size: 105, 116
+  orig: 256, 256
+  offset: 82, 66
+  index: -1
+effects/victory_confetti/05
+  rotate: false
+  xy: 2, 569
+  size: 122, 136
+  orig: 256, 256
+  offset: 75, 52
+  index: -1
+effects/victory_confetti/06
+  rotate: false
+  xy: 410, 402
+  size: 138, 156
+  orig: 256, 256
+  offset: 68, 37
+  index: -1
+effects/victory_confetti/07
+  rotate: false
+  xy: 1447, 194
+  size: 154, 178
+  orig: 256, 256
+  offset: 61, 20
+  index: -1

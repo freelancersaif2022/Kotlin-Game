@@ -1,0 +1,188 @@
+
+enemy_ice_creature.png
+size: 2048, 300
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/ice_creature/attack/00
+  rotate: false
+  xy: 1097, 2
+  size: 127, 145
+  orig: 192, 192
+  offset: 33, 18
+  index: -1
+enemies/ice_creature/attack/01
+  rotate: false
+  xy: 280, 2
+  size: 137, 146
+  orig: 192, 192
+  offset: 33, 22
+  index: -1
+enemies/ice_creature/attack/02
+  rotate: false
+  xy: 1642, 2
+  size: 144, 143
+  orig: 192, 192
+  offset: 31, 26
+  index: -1
+enemies/ice_creature/attack/03
+  rotate: false
+  xy: 692, 153
+  size: 143, 141
+  orig: 192, 192
+  offset: 32, 26
+  index: -1
+enemies/ice_creature/attack/04
+  rotate: false
+  xy: 1496, 2
+  size: 140, 144
+  orig: 192, 192
+  offset: 32, 25
+  index: -1
+enemies/ice_creature/attack/05
+  rotate: false
+  xy: 2, 2
+  size: 137, 147
+  orig: 192, 192
+  offset: 32, 21
+  index: -1
+enemies/ice_creature/damage/00
+  rotate: false
+  xy: 962, 2
+  size: 129, 145
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/damage/01
+  rotate: false
+  xy: 1792, 2
+  size: 129, 143
+  orig: 192, 192
+  offset: 35, 25
+  index: -1
+enemies/ice_creature/damage/02
+  rotate: false
+  xy: 1912, 151
+  size: 130, 139
+  orig: 192, 192
+  offset: 25, 24
+  index: -1
+enemies/ice_creature/damage/03
+  rotate: false
+  xy: 1642, 151
+  size: 129, 143
+  orig: 192, 192
+  offset: 19, 25
+  index: -1
+enemies/ice_creature/death/00
+  rotate: false
+  xy: 692, 2
+  size: 129, 145
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/death/01
+  rotate: false
+  xy: 1496, 152
+  size: 129, 137
+  orig: 192, 192
+  offset: 38, 25
+  index: -1
+enemies/ice_creature/death/02
+  rotate: false
+  xy: 841, 153
+  size: 119, 132
+  orig: 192, 192
+  offset: 45, 24
+  index: -1
+enemies/ice_creature/death/03
+  rotate: false
+  xy: 1177, 153
+  size: 112, 129
+  orig: 192, 192
+  offset: 48, 24
+  index: -1
+enemies/ice_creature/death/04
+  rotate: false
+  xy: 966, 153
+  size: 107, 130
+  orig: 192, 192
+  offset: 47, 25
+  index: -1
+enemies/ice_creature/death/05
+  rotate: false
+  xy: 1079, 153
+  size: 92, 130
+  orig: 192, 192
+  offset: 52, 22
+  index: -1
+enemies/ice_creature/idle/00
+  rotate: false
+  xy: 692, 2
+  size: 129, 145
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/idle/01
+  rotate: false
+  xy: 145, 2
+  size: 129, 147
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/idle/02
+  rotate: false
+  xy: 692, 2
+  size: 129, 145
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/idle/03
+  rotate: false
+  xy: 1777, 151
+  size: 129, 142
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/movement/00
+  rotate: false
+  xy: 1097, 2
+  size: 127, 145
+  orig: 192, 192
+  offset: 33, 18
+  index: -1
+enemies/ice_creature/movement/01
+  rotate: false
+  xy: 1230, 2
+  size: 127, 145
+  orig: 192, 192
+  offset: 35, 25
+  index: -1
+enemies/ice_creature/movement/02
+  rotate: false
+  xy: 827, 2
+  size: 129, 145
+  orig: 192, 192
+  offset: 33, 25
+  index: -1
+enemies/ice_creature/movement/03
+  rotate: false
+  xy: 1363, 2
+  size: 127, 145
+  orig: 192, 192
+  offset: 31, 18
+  index: -1
+enemies/ice_creature/movement/04
+  rotate: false
+  xy: 558, 2
+  size: 128, 146
+  orig: 192, 192
+  offset: 28, 24
+  index: -1
+enemies/ice_creature/movement/05
+  rotate: false
+  xy: 423, 2
+  size: 129, 146
+  orig: 192, 192
+  offset: 30, 24
+  index: -1

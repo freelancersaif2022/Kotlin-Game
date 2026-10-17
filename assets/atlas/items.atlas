@@ -1,0 +1,1616 @@
+
+items.png
+size: 2048, 660
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+collectibles/bonus_token/reward/00
+  rotate: false
+  xy: 1659, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/bonus_token/reward/01
+  rotate: false
+  xy: 1010, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/bonus_token/reward/02
+  rotate: false
+  xy: 1156, 268
+  size: 26, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/bonus_token/reward/03
+  rotate: false
+  xy: 1010, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/bonus_token/reward/04
+  rotate: false
+  xy: 1659, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/bonus_token/reward/05
+  rotate: false
+  xy: 1083, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/bonus_token/reward/06
+  rotate: false
+  xy: 1188, 268
+  size: 26, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/bonus_token/reward/07
+  rotate: false
+  xy: 1083, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/diamond_coin/spin/00
+  rotate: false
+  xy: 1560, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/diamond_coin/spin/01
+  rotate: false
+  xy: 738, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/diamond_coin/spin/02
+  rotate: false
+  xy: 1249, 268
+  size: 23, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/diamond_coin/spin/03
+  rotate: false
+  xy: 738, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/diamond_coin/spin/04
+  rotate: false
+  xy: 1560, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/diamond_coin/spin/05
+  rotate: false
+  xy: 811, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/diamond_coin/spin/06
+  rotate: false
+  xy: 1334, 268
+  size: 22, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/diamond_coin/spin/07
+  rotate: false
+  xy: 811, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/gem/reward/00
+  rotate: false
+  xy: 311, 268
+  size: 98, 104
+  orig: 128, 128
+  offset: 17, 11
+  index: -1
+collectibles/gem/reward/01
+  rotate: false
+  xy: 205, 268
+  size: 100, 105
+  orig: 128, 128
+  offset: 15, 11
+  index: -1
+collectibles/gem/reward/02
+  rotate: false
+  xy: 904, 153
+  size: 101, 106
+  orig: 128, 128
+  offset: 14, 10
+  index: -1
+collectibles/gem/reward/03
+  rotate: false
+  xy: 205, 268
+  size: 100, 105
+  orig: 128, 128
+  offset: 15, 11
+  index: -1
+collectibles/gem/reward/04
+  rotate: false
+  xy: 311, 268
+  size: 98, 104
+  orig: 128, 128
+  offset: 17, 11
+  index: -1
+collectibles/gem/reward/05
+  rotate: false
+  xy: 904, 265
+  size: 100, 106
+  orig: 128, 128
+  offset: 17, 10
+  index: -1
+collectibles/gem/reward/06
+  rotate: false
+  xy: 99, 268
+  size: 100, 106
+  orig: 128, 128
+  offset: 17, 10
+  index: -1
+collectibles/gem/reward/07
+  rotate: false
+  xy: 904, 265
+  size: 100, 106
+  orig: 128, 128
+  offset: 17, 10
+  index: -1
+collectibles/gold_coin/spin/00
+  rotate: false
+  xy: 1362, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/gold_coin/spin/01
+  rotate: false
+  xy: 1948, 263
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/gold_coin/spin/02
+  rotate: false
+  xy: 2021, 263
+  size: 23, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/gold_coin/spin/03
+  rotate: false
+  xy: 1948, 263
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/gold_coin/spin/04
+  rotate: false
+  xy: 1362, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/gold_coin/spin/05
+  rotate: false
+  xy: 519, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/gold_coin/spin/06
+  rotate: false
+  xy: 1278, 268
+  size: 22, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/gold_coin/spin/07
+  rotate: false
+  xy: 519, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/key/reward/00
+  rotate: false
+  xy: 1471, 570
+  size: 101, 79
+  orig: 128, 128
+  offset: 12, 36
+  index: -1
+collectibles/key/reward/01
+  rotate: false
+  xy: 1688, 570
+  size: 103, 78
+  orig: 128, 128
+  offset: 11, 37
+  index: -1
+collectibles/key/reward/02
+  rotate: false
+  xy: 1578, 570
+  size: 104, 78
+  orig: 128, 128
+  offset: 10, 37
+  index: -1
+collectibles/key/reward/03
+  rotate: false
+  xy: 1688, 570
+  size: 103, 78
+  orig: 128, 128
+  offset: 11, 37
+  index: -1
+collectibles/key/reward/04
+  rotate: false
+  xy: 1471, 570
+  size: 101, 79
+  orig: 128, 128
+  offset: 12, 36
+  index: -1
+collectibles/key/reward/05
+  rotate: false
+  xy: 1363, 570
+  size: 102, 82
+  orig: 128, 128
+  offset: 12, 34
+  index: -1
+collectibles/key/reward/06
+  rotate: false
+  xy: 1255, 570
+  size: 102, 84
+  orig: 128, 128
+  offset: 12, 33
+  index: -1
+collectibles/key/reward/07
+  rotate: false
+  xy: 1363, 570
+  size: 102, 82
+  orig: 128, 128
+  offset: 12, 34
+  index: -1
+collectibles/mystery_box/reward/00
+  rotate: false
+  xy: 1453, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/mystery_box/reward/01
+  rotate: false
+  xy: 2, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/mystery_box/reward/02
+  rotate: false
+  xy: 2, 380
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/mystery_box/reward/03
+  rotate: false
+  xy: 2, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/mystery_box/reward/04
+  rotate: false
+  xy: 1453, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/mystery_box/reward/05
+  rotate: false
+  xy: 113, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/mystery_box/reward/06
+  rotate: false
+  xy: 113, 380
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/mystery_box/reward/07
+  rotate: false
+  xy: 113, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/reward_bag/reward/00
+  rotate: false
+  xy: 1560, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/reward_bag/reward/01
+  rotate: false
+  xy: 828, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/reward_bag/reward/02
+  rotate: false
+  xy: 1144, 475
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/reward_bag/reward/03
+  rotate: false
+  xy: 828, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/reward_bag/reward/04
+  rotate: false
+  xy: 1560, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/reward_bag/reward/05
+  rotate: false
+  xy: 939, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/reward_bag/reward/06
+  rotate: false
+  xy: 1880, 475
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/reward_bag/reward/07
+  rotate: false
+  xy: 939, 478
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/silver_coin/spin/00
+  rotate: false
+  xy: 1461, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/silver_coin/spin/01
+  rotate: false
+  xy: 592, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/silver_coin/spin/02
+  rotate: false
+  xy: 1220, 268
+  size: 23, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/silver_coin/spin/03
+  rotate: false
+  xy: 592, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/silver_coin/spin/04
+  rotate: false
+  xy: 1461, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+collectibles/silver_coin/spin/05
+  rotate: false
+  xy: 665, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/silver_coin/spin/06
+  rotate: false
+  xy: 1306, 268
+  size: 22, 103
+  orig: 128, 128
+  offset: 53, 12
+  index: -1
+collectibles/silver_coin/spin/07
+  rotate: false
+  xy: 665, 268
+  size: 67, 103
+  orig: 128, 128
+  offset: 31, 12
+  index: -1
+collectibles/star/reward/00
+  rotate: false
+  xy: 1040, 377
+  size: 98, 93
+  orig: 128, 128
+  offset: 15, 22
+  index: -1
+collectibles/star/reward/01
+  rotate: false
+  xy: 828, 377
+  size: 100, 95
+  orig: 128, 128
+  offset: 13, 20
+  index: -1
+collectibles/star/reward/02
+  rotate: false
+  xy: 1942, 372
+  size: 100, 97
+  orig: 128, 128
+  offset: 13, 19
+  index: -1
+collectibles/star/reward/03
+  rotate: false
+  xy: 828, 377
+  size: 100, 95
+  orig: 128, 128
+  offset: 13, 20
+  index: -1
+collectibles/star/reward/04
+  rotate: false
+  xy: 1040, 377
+  size: 98, 93
+  orig: 128, 128
+  offset: 15, 22
+  index: -1
+collectibles/star/reward/05
+  rotate: false
+  xy: 934, 377
+  size: 100, 95
+  orig: 128, 128
+  offset: 15, 20
+  index: -1
+collectibles/star/reward/06
+  rotate: false
+  xy: 1362, 375
+  size: 100, 97
+  orig: 128, 128
+  offset: 15, 19
+  index: -1
+collectibles/star/reward/07
+  rotate: false
+  xy: 934, 377
+  size: 100, 95
+  orig: 128, 128
+  offset: 15, 20
+  index: -1
+collectibles/treasure_chest/reward/00
+  rotate: false
+  xy: 1346, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/treasure_chest/reward/01
+  rotate: false
+  xy: 224, 476
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/treasure_chest/reward/02
+  rotate: false
+  xy: 1144, 377
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/treasure_chest/reward/03
+  rotate: false
+  xy: 224, 476
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/treasure_chest/reward/04
+  rotate: false
+  xy: 1346, 478
+  size: 101, 86
+  orig: 128, 128
+  offset: 14, 17
+  index: -1
+collectibles/treasure_chest/reward/05
+  rotate: false
+  xy: 335, 476
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+collectibles/treasure_chest/reward/06
+  rotate: false
+  xy: 311, 378
+  size: 105, 92
+  orig: 128, 128
+  offset: 12, 14
+  index: -1
+collectibles/treasure_chest/reward/07
+  rotate: false
+  xy: 335, 476
+  size: 105, 91
+  orig: 128, 128
+  offset: 12, 15
+  index: -1
+powerups/coin_magnet/activation/00
+  rotate: false
+  xy: 446, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/coin_magnet/activation/01
+  rotate: false
+  xy: 1571, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/coin_magnet/activation/02
+  rotate: false
+  xy: 214, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/coin_magnet/activation/03
+  rotate: false
+  xy: 1186, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/coin_magnet/activation/04
+  rotate: false
+  xy: 1198, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/coin_magnet/activation/05
+  rotate: false
+  xy: 153, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/coin_magnet/active/00
+  rotate: false
+  xy: 446, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/coin_magnet/active/01
+  rotate: false
+  xy: 1571, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/coin_magnet/active/02
+  rotate: false
+  xy: 214, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/coin_magnet/active/03
+  rotate: false
+  xy: 1186, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/coin_magnet/active/04
+  rotate: false
+  xy: 1198, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/coin_magnet/active/05
+  rotate: false
+  xy: 153, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/coin_magnet/hud
+  rotate: false
+  xy: 668, 571
+  size: 73, 65
+  orig: 96, 96
+  offset: 12, 12
+  index: -1
+powerups/coin_magnet/icon
+  rotate: false
+  xy: 1667, 478
+  size: 97, 86
+  orig: 128, 128
+  offset: 16, 16
+  index: -1
+powerups/coin_magnet/pickup
+  rotate: false
+  xy: 1667, 478
+  size: 97, 86
+  orig: 128, 128
+  offset: 16, 16
+  index: -1
+powerups/double_coins/activation/00
+  rotate: false
+  xy: 537, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/double_coins/activation/01
+  rotate: false
+  xy: 1777, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/double_coins/activation/02
+  rotate: false
+  xy: 444, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/double_coins/activation/03
+  rotate: false
+  xy: 1440, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/double_coins/activation/04
+  rotate: false
+  xy: 1476, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/double_coins/activation/05
+  rotate: false
+  xy: 455, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/double_coins/active/00
+  rotate: false
+  xy: 537, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/double_coins/active/01
+  rotate: false
+  xy: 1777, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/double_coins/active/02
+  rotate: false
+  xy: 444, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/double_coins/active/03
+  rotate: false
+  xy: 1440, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/double_coins/active/04
+  rotate: false
+  xy: 1476, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/double_coins/active/05
+  rotate: false
+  xy: 455, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/double_coins/hud
+  rotate: false
+  xy: 446, 571
+  size: 70, 76
+  orig: 96, 96
+  offset: 13, 10
+  index: -1
+powerups/double_coins/icon
+  rotate: false
+  xy: 1758, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+powerups/double_coins/pickup
+  rotate: false
+  xy: 1758, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+powerups/double_jump/activation/00
+  rotate: false
+  xy: 1050, 476
+  size: 85, 87
+  orig: 192, 192
+  offset: 54, 52
+  index: -1
+powerups/double_jump/activation/01
+  rotate: false
+  xy: 1468, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/double_jump/activation/02
+  rotate: false
+  xy: 99, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/double_jump/activation/03
+  rotate: false
+  xy: 1059, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/double_jump/activation/04
+  rotate: false
+  xy: 1059, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/double_jump/activation/05
+  rotate: false
+  xy: 2, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/double_jump/active/00
+  rotate: false
+  xy: 1050, 476
+  size: 85, 87
+  orig: 192, 192
+  offset: 54, 52
+  index: -1
+powerups/double_jump/active/01
+  rotate: false
+  xy: 1468, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/double_jump/active/02
+  rotate: false
+  xy: 99, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/double_jump/active/03
+  rotate: false
+  xy: 1059, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/double_jump/active/04
+  rotate: false
+  xy: 1059, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/double_jump/active/05
+  rotate: false
+  xy: 2, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/double_jump/hud
+  rotate: false
+  xy: 446, 378
+  size: 64, 87
+  orig: 96, 96
+  offset: 18, 4
+  index: -1
+powerups/double_jump/icon
+  rotate: false
+  xy: 1948, 141
+  size: 84, 116
+  orig: 128, 128
+  offset: 25, 5
+  index: -1
+powerups/double_jump/pickup
+  rotate: false
+  xy: 1948, 141
+  size: 84, 116
+  orig: 128, 128
+  offset: 25, 5
+  index: -1
+powerups/extra_life/activation/00
+  rotate: false
+  xy: 628, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/extra_life/activation/01
+  rotate: false
+  xy: 519, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/extra_life/activation/02
+  rotate: false
+  xy: 559, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/extra_life/activation/03
+  rotate: false
+  xy: 1567, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/extra_life/activation/04
+  rotate: false
+  xy: 1615, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/extra_life/activation/05
+  rotate: false
+  xy: 606, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/extra_life/active/00
+  rotate: false
+  xy: 628, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/extra_life/active/01
+  rotate: false
+  xy: 519, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/extra_life/active/02
+  rotate: false
+  xy: 559, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/extra_life/active/03
+  rotate: false
+  xy: 1567, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/extra_life/active/04
+  rotate: false
+  xy: 1615, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/extra_life/active/05
+  rotate: false
+  xy: 606, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/extra_life/hud
+  rotate: false
+  xy: 587, 571
+  size: 75, 68
+  orig: 96, 96
+  offset: 10, 10
+  index: -1
+powerups/extra_life/icon
+  rotate: false
+  xy: 1255, 377
+  size: 100, 90
+  orig: 128, 128
+  offset: 14, 13
+  index: -1
+powerups/extra_life/pickup
+  rotate: false
+  xy: 1255, 377
+  size: 100, 90
+  orig: 128, 128
+  offset: 14, 13
+  index: -1
+powerups/health_recovery/activation/00
+  rotate: false
+  xy: 628, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/health_recovery/activation/01
+  rotate: false
+  xy: 519, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/health_recovery/activation/02
+  rotate: false
+  xy: 559, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/health_recovery/activation/03
+  rotate: false
+  xy: 1567, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/health_recovery/activation/04
+  rotate: false
+  xy: 1615, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/health_recovery/activation/05
+  rotate: false
+  xy: 606, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/health_recovery/active/00
+  rotate: false
+  xy: 628, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/health_recovery/active/01
+  rotate: false
+  xy: 519, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/health_recovery/active/02
+  rotate: false
+  xy: 559, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/health_recovery/active/03
+  rotate: false
+  xy: 1567, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/health_recovery/active/04
+  rotate: false
+  xy: 1615, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/health_recovery/active/05
+  rotate: false
+  xy: 606, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/health_recovery/hud
+  rotate: false
+  xy: 587, 571
+  size: 75, 68
+  orig: 96, 96
+  offset: 10, 10
+  index: -1
+powerups/health_recovery/icon
+  rotate: false
+  xy: 1255, 377
+  size: 100, 90
+  orig: 128, 128
+  offset: 14, 13
+  index: -1
+powerups/health_recovery/pickup
+  rotate: false
+  xy: 1255, 377
+  size: 100, 90
+  orig: 128, 128
+  offset: 14, 13
+  index: -1
+powerups/invincibility/activation/00
+  rotate: false
+  xy: 719, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/invincibility/activation/01
+  rotate: false
+  xy: 622, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/invincibility/activation/02
+  rotate: false
+  xy: 674, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/invincibility/activation/03
+  rotate: false
+  xy: 1694, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/invincibility/activation/04
+  rotate: false
+  xy: 1754, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/invincibility/activation/05
+  rotate: false
+  xy: 757, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/invincibility/active/00
+  rotate: false
+  xy: 719, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/invincibility/active/01
+  rotate: false
+  xy: 622, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/invincibility/active/02
+  rotate: false
+  xy: 674, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/invincibility/active/03
+  rotate: false
+  xy: 1694, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/invincibility/active/04
+  rotate: false
+  xy: 1754, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/invincibility/active/05
+  rotate: false
+  xy: 757, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/invincibility/hud
+  rotate: false
+  xy: 1797, 570
+  size: 74, 77
+  orig: 96, 96
+  offset: 12, 9
+  index: -1
+powerups/invincibility/icon
+  rotate: false
+  xy: 415, 268
+  size: 98, 104
+  orig: 128, 128
+  offset: 17, 11
+  index: -1
+powerups/invincibility/pickup
+  rotate: false
+  xy: 415, 268
+  size: 98, 104
+  orig: 128, 128
+  offset: 17, 11
+  index: -1
+powerups/jetpack/activation/00
+  rotate: false
+  xy: 1255, 473
+  size: 85, 90
+  orig: 192, 192
+  offset: 54, 48
+  index: -1
+powerups/jetpack/activation/01
+  rotate: false
+  xy: 725, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/jetpack/activation/02
+  rotate: false
+  xy: 789, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/jetpack/activation/03
+  rotate: false
+  xy: 1821, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/jetpack/activation/04
+  rotate: false
+  xy: 1893, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/jetpack/activation/05
+  rotate: false
+  xy: 908, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/jetpack/active/00
+  rotate: false
+  xy: 1255, 473
+  size: 85, 90
+  orig: 192, 192
+  offset: 54, 48
+  index: -1
+powerups/jetpack/active/01
+  rotate: false
+  xy: 725, 377
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/jetpack/active/02
+  rotate: false
+  xy: 789, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/jetpack/active/03
+  rotate: false
+  xy: 1821, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/jetpack/active/04
+  rotate: false
+  xy: 1893, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/jetpack/active/05
+  rotate: false
+  xy: 908, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/jetpack/hud
+  rotate: false
+  xy: 522, 571
+  size: 59, 75
+  orig: 96, 96
+  offset: 18, 0
+  index: -1
+powerups/jetpack/icon
+  rotate: false
+  xy: 1857, 268
+  size: 79, 99
+  orig: 128, 128
+  offset: 24, 0
+  index: -1
+powerups/jetpack/pickup
+  rotate: false
+  xy: 1857, 268
+  size: 79, 99
+  orig: 128, 128
+  offset: 24, 0
+  index: -1
+powerups/protective_shield/activation/00
+  rotate: false
+  xy: 1770, 478
+  size: 85, 86
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/protective_shield/activation/01
+  rotate: false
+  xy: 1674, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/protective_shield/activation/02
+  rotate: false
+  xy: 329, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/protective_shield/activation/03
+  rotate: false
+  xy: 1313, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/protective_shield/activation/04
+  rotate: false
+  xy: 1337, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/protective_shield/activation/05
+  rotate: false
+  xy: 304, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/protective_shield/active/00
+  rotate: false
+  xy: 1770, 478
+  size: 85, 86
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/protective_shield/active/01
+  rotate: false
+  xy: 1674, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/protective_shield/active/02
+  rotate: false
+  xy: 329, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/protective_shield/active/03
+  rotate: false
+  xy: 1313, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/protective_shield/active/04
+  rotate: false
+  xy: 1337, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/protective_shield/active/05
+  rotate: false
+  xy: 304, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/protective_shield/hud
+  rotate: false
+  xy: 1050, 569
+  size: 68, 85
+  orig: 96, 96
+  offset: 14, 6
+  index: -1
+powerups/protective_shield/icon
+  rotate: false
+  xy: 2, 153
+  size: 91, 113
+  orig: 128, 128
+  offset: 19, 8
+  index: -1
+powerups/protective_shield/pickup
+  rotate: false
+  xy: 2, 153
+  size: 91, 113
+  orig: 128, 128
+  offset: 19, 8
+  index: -1
+powerups/score_multiplier/activation/00
+  rotate: false
+  xy: 537, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/score_multiplier/activation/01
+  rotate: false
+  xy: 1777, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/score_multiplier/activation/02
+  rotate: false
+  xy: 444, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/score_multiplier/activation/03
+  rotate: false
+  xy: 1440, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/score_multiplier/activation/04
+  rotate: false
+  xy: 1476, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/score_multiplier/activation/05
+  rotate: false
+  xy: 455, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/score_multiplier/active/00
+  rotate: false
+  xy: 537, 480
+  size: 85, 85
+  orig: 192, 192
+  offset: 54, 53
+  index: -1
+powerups/score_multiplier/active/01
+  rotate: false
+  xy: 1777, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/score_multiplier/active/02
+  rotate: false
+  xy: 444, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/score_multiplier/active/03
+  rotate: false
+  xy: 1440, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/score_multiplier/active/04
+  rotate: false
+  xy: 1476, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/score_multiplier/active/05
+  rotate: false
+  xy: 455, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/score_multiplier/hud
+  rotate: false
+  xy: 446, 571
+  size: 70, 76
+  orig: 96, 96
+  offset: 13, 10
+  index: -1
+powerups/score_multiplier/icon
+  rotate: false
+  xy: 1758, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+powerups/score_multiplier/pickup
+  rotate: false
+  xy: 1758, 268
+  size: 93, 101
+  orig: 128, 128
+  offset: 18, 13
+  index: -1
+powerups/speed_boost/activation/00
+  rotate: false
+  xy: 1050, 476
+  size: 85, 87
+  orig: 192, 192
+  offset: 54, 52
+  index: -1
+powerups/speed_boost/activation/01
+  rotate: false
+  xy: 1468, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/speed_boost/activation/02
+  rotate: false
+  xy: 99, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/speed_boost/activation/03
+  rotate: false
+  xy: 1059, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/speed_boost/activation/04
+  rotate: false
+  xy: 1059, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/speed_boost/activation/05
+  rotate: false
+  xy: 2, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/speed_boost/active/00
+  rotate: false
+  xy: 1050, 476
+  size: 85, 87
+  orig: 192, 192
+  offset: 54, 52
+  index: -1
+powerups/speed_boost/active/01
+  rotate: false
+  xy: 1468, 375
+  size: 97, 97
+  orig: 192, 192
+  offset: 48, 47
+  index: -1
+powerups/speed_boost/active/02
+  rotate: false
+  xy: 99, 153
+  size: 109, 109
+  orig: 192, 192
+  offset: 42, 41
+  index: -1
+powerups/speed_boost/active/03
+  rotate: false
+  xy: 1059, 141
+  size: 121, 121
+  orig: 192, 192
+  offset: 36, 35
+  index: -1
+powerups/speed_boost/active/04
+  rotate: false
+  xy: 1059, 2
+  size: 133, 133
+  orig: 192, 192
+  offset: 30, 29
+  index: -1
+powerups/speed_boost/active/05
+  rotate: false
+  xy: 2, 2
+  size: 145, 145
+  orig: 192, 192
+  offset: 24, 23
+  index: -1
+powerups/speed_boost/hud
+  rotate: false
+  xy: 446, 378
+  size: 64, 87
+  orig: 96, 96
+  offset: 18, 4
+  index: -1
+powerups/speed_boost/icon
+  rotate: false
+  xy: 1948, 141
+  size: 84, 116
+  orig: 128, 128
+  offset: 25, 5
+  index: -1
+powerups/speed_boost/pickup
+  rotate: false
+  xy: 1948, 141
+  size: 84, 116
+  orig: 128, 128
+  offset: 25, 5
+  index: -1

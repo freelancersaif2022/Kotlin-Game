@@ -1,0 +1,328 @@
+
+boss_jungle_guardian.png
+size: 2008, 932
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+bosses/jungle_guardian/damage/00
+  rotate: false
+  xy: 2, 260
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/damage/01
+  rotate: false
+  xy: 201, 2
+  size: 191, 250
+  orig: 320, 320
+  offset: 62, 34
+  index: -1
+bosses/jungle_guardian/damage/02
+  rotate: false
+  xy: 819, 2
+  size: 190, 248
+  orig: 320, 320
+  offset: 57, 33
+  index: -1
+bosses/jungle_guardian/damage/03
+  rotate: false
+  xy: 1401, 255
+  size: 185, 245
+  orig: 320, 320
+  offset: 50, 34
+  index: -1
+bosses/jungle_guardian/damage/04
+  rotate: false
+  xy: 819, 2
+  size: 190, 248
+  orig: 320, 320
+  offset: 43, 33
+  index: -1
+bosses/jungle_guardian/damage/05
+  rotate: false
+  xy: 201, 2
+  size: 191, 250
+  orig: 320, 320
+  offset: 48, 34
+  index: -1
+bosses/jungle_guardian/death/00
+  rotate: false
+  xy: 398, 257
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/death/01
+  rotate: false
+  xy: 393, 506
+  size: 193, 240
+  orig: 320, 320
+  offset: 66, 31
+  index: -1
+bosses/jungle_guardian/death/02
+  rotate: false
+  xy: 990, 506
+  size: 195, 235
+  orig: 320, 320
+  offset: 67, 31
+  index: -1
+bosses/jungle_guardian/death/03
+  rotate: false
+  xy: 1191, 506
+  size: 197, 226
+  orig: 320, 320
+  offset: 66, 31
+  index: -1
+bosses/jungle_guardian/death/04
+  rotate: false
+  xy: 1394, 506
+  size: 204, 224
+  orig: 320, 320
+  offset: 64, 31
+  index: -1
+bosses/jungle_guardian/death/05
+  rotate: false
+  xy: 2, 509
+  size: 205, 220
+  orig: 320, 320
+  offset: 65, 30
+  index: -1
+bosses/jungle_guardian/death/06
+  rotate: false
+  xy: 592, 507
+  size: 200, 211
+  orig: 320, 320
+  offset: 68, 30
+  index: -1
+bosses/jungle_guardian/death/07
+  rotate: false
+  xy: 592, 724
+  size: 188, 201
+  orig: 320, 320
+  offset: 73, 30
+  index: -1
+bosses/jungle_guardian/death/08
+  rotate: false
+  xy: 1604, 506
+  size: 170, 191
+  orig: 320, 320
+  offset: 81, 29
+  index: -1
+bosses/jungle_guardian/death/09
+  rotate: false
+  xy: 213, 507
+  size: 152, 189
+  orig: 320, 320
+  offset: 88, 30
+  index: -1
+bosses/jungle_guardian/idle/00
+  rotate: false
+  xy: 398, 257
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/idle/01
+  rotate: false
+  xy: 1800, 2
+  size: 186, 246
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/idle/02
+  rotate: false
+  xy: 1800, 2
+  size: 186, 246
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/idle/03
+  rotate: false
+  xy: 398, 257
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/idle/04
+  rotate: false
+  xy: 798, 506
+  size: 186, 239
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/idle/05
+  rotate: false
+  xy: 798, 506
+  size: 186, 239
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/movement/00
+  rotate: false
+  xy: 201, 258
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/movement/01
+  rotate: false
+  xy: 1015, 255
+  size: 188, 245
+  orig: 320, 320
+  offset: 67, 34
+  index: -1
+bosses/jungle_guardian/movement/02
+  rotate: false
+  xy: 1604, 2
+  size: 190, 246
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/jungle_guardian/movement/03
+  rotate: false
+  xy: 1209, 255
+  size: 186, 245
+  orig: 320, 320
+  offset: 67, 34
+  index: -1
+bosses/jungle_guardian/movement/04
+  rotate: false
+  xy: 1795, 505
+  size: 180, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/movement/05
+  rotate: false
+  xy: 611, 256
+  size: 181, 245
+  orig: 320, 320
+  offset: 63, 36
+  index: -1
+bosses/jungle_guardian/movement/06
+  rotate: false
+  xy: 1416, 2
+  size: 182, 247
+  orig: 320, 320
+  offset: 65, 36
+  index: -1
+bosses/jungle_guardian/movement/07
+  rotate: false
+  xy: 1604, 254
+  size: 185, 246
+  orig: 320, 320
+  offset: 66, 35
+  index: -1
+bosses/jungle_guardian/primary_attack/00
+  rotate: false
+  xy: 201, 258
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/primary_attack/01
+  rotate: false
+  xy: 1015, 2
+  size: 197, 247
+  orig: 320, 320
+  offset: 63, 32
+  index: -1
+bosses/jungle_guardian/primary_attack/02
+  rotate: false
+  xy: 398, 2
+  size: 207, 249
+  orig: 320, 320
+  offset: 58, 35
+  index: -1
+bosses/jungle_guardian/primary_attack/03
+  rotate: false
+  xy: 1795, 254
+  size: 208, 245
+  orig: 320, 320
+  offset: 57, 37
+  index: -1
+bosses/jungle_guardian/primary_attack/04
+  rotate: false
+  xy: 798, 256
+  size: 202, 244
+  orig: 320, 320
+  offset: 58, 37
+  index: -1
+bosses/jungle_guardian/primary_attack/05
+  rotate: false
+  xy: 611, 2
+  size: 202, 248
+  orig: 320, 320
+  offset: 57, 34
+  index: -1
+bosses/jungle_guardian/primary_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 193, 252
+  orig: 320, 320
+  offset: 66, 32
+  index: -1
+bosses/jungle_guardian/primary_attack/07
+  rotate: false
+  xy: 1218, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 67, 32
+  index: -1
+bosses/jungle_guardian/special_attack/00
+  rotate: false
+  xy: 201, 258
+  size: 186, 243
+  orig: 320, 320
+  offset: 67, 29
+  index: -1
+bosses/jungle_guardian/special_attack/01
+  rotate: false
+  xy: 1015, 2
+  size: 197, 247
+  orig: 320, 320
+  offset: 63, 32
+  index: -1
+bosses/jungle_guardian/special_attack/02
+  rotate: false
+  xy: 398, 2
+  size: 207, 249
+  orig: 320, 320
+  offset: 58, 35
+  index: -1
+bosses/jungle_guardian/special_attack/03
+  rotate: false
+  xy: 1795, 254
+  size: 208, 245
+  orig: 320, 320
+  offset: 57, 37
+  index: -1
+bosses/jungle_guardian/special_attack/04
+  rotate: false
+  xy: 798, 256
+  size: 202, 244
+  orig: 320, 320
+  offset: 58, 37
+  index: -1
+bosses/jungle_guardian/special_attack/05
+  rotate: false
+  xy: 611, 2
+  size: 202, 248
+  orig: 320, 320
+  offset: 57, 34
+  index: -1
+bosses/jungle_guardian/special_attack/06
+  rotate: false
+  xy: 2, 2
+  size: 193, 252
+  orig: 320, 320
+  offset: 66, 32
+  index: -1
+bosses/jungle_guardian/special_attack/07
+  rotate: false
+  xy: 1218, 2
+  size: 192, 247
+  orig: 320, 320
+  offset: 67, 32
+  index: -1

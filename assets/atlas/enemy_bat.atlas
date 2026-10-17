@@ -1,0 +1,188 @@
+
+enemy_bat.png
+size: 2044, 232
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+enemies/bat/attack/00
+  rotate: false
+  xy: 1643, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/attack/01
+  rotate: false
+  xy: 943, 2
+  size: 138, 114
+  orig: 192, 192
+  offset: 36, 23
+  index: -1
+enemies/bat/attack/02
+  rotate: false
+  xy: 653, 2
+  size: 140, 115
+  orig: 192, 192
+  offset: 41, 29
+  index: -1
+enemies/bat/attack/03
+  rotate: false
+  xy: 131, 2
+  size: 142, 118
+  orig: 192, 192
+  offset: 43, 29
+  index: -1
+enemies/bat/attack/04
+  rotate: false
+  xy: 507, 2
+  size: 140, 117
+  orig: 192, 192
+  offset: 41, 27
+  index: -1
+enemies/bat/attack/05
+  rotate: false
+  xy: 799, 2
+  size: 138, 115
+  orig: 192, 192
+  offset: 36, 22
+  index: -1
+enemies/bat/damage/00
+  rotate: false
+  xy: 1503, 118
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/damage/01
+  rotate: false
+  xy: 279, 2
+  size: 127, 118
+  orig: 192, 192
+  offset: 45, 28
+  index: -1
+enemies/bat/damage/02
+  rotate: false
+  xy: 2, 2
+  size: 123, 121
+  orig: 192, 192
+  offset: 41, 32
+  index: -1
+enemies/bat/damage/03
+  rotate: false
+  xy: 279, 2
+  size: 127, 118
+  orig: 192, 192
+  offset: 29, 28
+  index: -1
+enemies/bat/death/00
+  rotate: false
+  xy: 1503, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/death/01
+  rotate: false
+  xy: 943, 122
+  size: 141, 91
+  orig: 192, 192
+  offset: 19, 34
+  index: -1
+enemies/bat/death/02
+  rotate: false
+  xy: 1090, 122
+  size: 139, 87
+  orig: 192, 192
+  offset: 16, 50
+  index: -1
+enemies/bat/death/03
+  rotate: false
+  xy: 653, 123
+  size: 130, 86
+  orig: 192, 192
+  offset: 20, 59
+  index: -1
+enemies/bat/death/04
+  rotate: false
+  xy: 1927, 2
+  size: 112, 97
+  orig: 192, 192
+  offset: 30, 56
+  index: -1
+enemies/bat/death/05
+  rotate: false
+  xy: 412, 2
+  size: 89, 118
+  orig: 192, 192
+  offset: 45, 39
+  index: -1
+enemies/bat/idle/00
+  rotate: false
+  xy: 1503, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/idle/01
+  rotate: false
+  xy: 1363, 2
+  size: 134, 112
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/idle/02
+  rotate: false
+  xy: 1503, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/idle/03
+  rotate: false
+  xy: 1363, 120
+  size: 134, 108
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/movement/00
+  rotate: false
+  xy: 1643, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/movement/01
+  rotate: false
+  xy: 1643, 118
+  size: 136, 108
+  orig: 192, 192
+  offset: 27, 25
+  index: -1
+enemies/bat/movement/02
+  rotate: false
+  xy: 1785, 118
+  size: 136, 108
+  orig: 192, 192
+  offset: 27, 25
+  index: -1
+enemies/bat/movement/03
+  rotate: false
+  xy: 1783, 2
+  size: 134, 110
+  orig: 192, 192
+  offset: 29, 18
+  index: -1
+enemies/bat/movement/04
+  rotate: false
+  xy: 1225, 2
+  size: 132, 113
+  orig: 192, 192
+  offset: 31, 25
+  index: -1
+enemies/bat/movement/05
+  rotate: false
+  xy: 1087, 2
+  size: 132, 114
+  orig: 192, 192
+  offset: 31, 24
+  index: -1
