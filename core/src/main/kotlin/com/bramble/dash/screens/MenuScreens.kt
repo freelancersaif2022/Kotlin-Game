@@ -429,7 +429,7 @@ class LeaderboardScreen(game: BrambleDash) : PanelScreen(game, null, "LOCAL LEAD
             content.add(ui.label("${e.distance} m", ui.smallFont, c, scale = 0.8f))
             content.add(ui.label(Characters.byId(e.character).name, ui.smallFont, c, scale = 0.8f))
             content.add(ui.label(Worlds.byId(e.world).name, ui.smallFont, c, scale = 0.8f))
-            content.add(ui.label(java.time.LocalDate.ofEpochDay(e.day).toString(), ui.smallFont, c, scale = 0.7f))
+            content.add(ui.label(BrambleDash.formatEpochDay(e.day), ui.smallFont, c, scale = 0.7f))
             content.row()
         }
         content.top()

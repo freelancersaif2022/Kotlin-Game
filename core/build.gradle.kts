@@ -16,7 +16,7 @@ extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> 
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_1_8)
         // Plain classes instead of invokedynamic keeps the bytecode friendly to every Android dexer.
-        freeCompilerArgs.addAll("-Xlambdas=class", "-Xsam-conversions=class", "-Xstring-concat=inline")
+        freeCompilerArgs.addAll("-Xlambdas=class", "-Xsam-conversions=class", "-Xstring-concat=inline", "-jvm-default=disable")
     }
 }
 

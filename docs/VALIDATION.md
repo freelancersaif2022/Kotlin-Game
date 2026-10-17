@@ -26,7 +26,7 @@ device or emulator, and `dl.google.com` (Android SDK manager / Google Maven) was
 | Audio files exist, decode and measure as below | pass (`tools/validate_audio.py`) |
 | Desktop smoke test: tour of every screen plus a bot-played run with boss, victory, pause and game over | pass (screenshots in `docs/screenshots`) |
 | Layouts at 16:9, 20:9 (1600×720) and 4:3 (1024×768) | checked visually |
-| Debug APK: `tools/build_apk_offline.sh` | built, signed (v2+v3), `apksigner verify` pass |
+| Debug APK: `tools/build_apk_offline.sh` | built, signed (v1+v2+v3), `apksigner verify` pass |
 | `./gradlew :android:assembleDebug` (AGP) | **not run**: Google Maven blocked here |
 | Running on an Android device or emulator | **not done** |
 
@@ -52,7 +52,7 @@ tools/build_apk_offline.sh
 Verified using v2 scheme (APK Signature Scheme v2): true
 Verified using v3 scheme (APK Signature Scheme v3): true
 package: name='com.bramble.dash' versionCode='1' versionName='1.0.0'
-sdkVersion:'26'  targetSdkVersion:'34'
+sdkVersion:'21'  targetSdkVersion:'34'
 launchable-activity: name='com.bramble.dash.android.AndroidLauncher'
 native-code: 'arm64-v8a' 'armeabi-v7a' 'x86' 'x86_64'
 ```

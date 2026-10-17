@@ -21,7 +21,7 @@ val extractBackend by tasks.registering(Copy::class) {
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_1_8)
-        freeCompilerArgs.addAll("-Xlambdas=class", "-Xsam-conversions=class", "-Xstring-concat=inline")
+        freeCompilerArgs.addAll("-Xlambdas=class", "-Xsam-conversions=class", "-Xstring-concat=inline", "-jvm-default=disable")
     }
     sourceSets["main"].kotlin.srcDir(rootProject.file("android/src/main/kotlin"))
 }

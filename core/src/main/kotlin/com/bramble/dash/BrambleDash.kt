@@ -11,7 +11,6 @@ import com.bramble.dash.save.SaveManager
 import com.bramble.dash.save.SaveStore
 import com.bramble.dash.screens.LoadingScreen
 import com.bramble.dash.ui.UiKit
-import java.time.LocalDate
 
 /** Optional platform hooks (desktop debug tools); Android uses the defaults. */
 open class LaunchOptions {
@@ -40,7 +39,24 @@ class BrambleDash(val options: LaunchOptions = LaunchOptions(), private val stor
         private set
 
     /** Local calendar day used by the daily-reward cycle (trusts the device clock). */
-    fun today(): Long = LocalDate.now().toEpochDay()
+    fun today(): Long = epochDayNow()
+
+    companion object {
+        /** Local calendar day since 1970-01-01 (java.time needs Android 8, this works on Android 5+). */
+        fun epochDayNow(): Long {
+            val c = java.util.Calendar.getInstance()
+            val utc = java.util.GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"))
+            utc.clear()
+            utc.set(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH))
+            return utc.timeInMillis / 86_400_000L
+        }
+
+        fun formatEpochDay(day: Long): String {
+            val utc = java.util.GregorianCalendar(java.util.TimeZone.getTimeZone("UTC"))
+            utc.timeInMillis = day * 86_400_000L
+            return "%04d-%02d-%02d".format(utc.get(java.util.Calendar.YEAR), utc.get(java.util.Calendar.MONTH) + 1, utc.get(java.util.Calendar.DAY_OF_MONTH))
+        }
+    }
 
     override fun create() {
         Gdx.input.setCatchKey(com.badlogic.gdx.Input.Keys.BACK, true)

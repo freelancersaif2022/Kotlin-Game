@@ -28,7 +28,7 @@ single-player, with no ads, no accounts, no analytics and no network permission.
 | Kotlin | 2.2.21 | `jvmTarget` 1.8 for the shared module (desktop + Android) |
 | LibGDX | 1.13.1 | core, LWJGL3 backend, Android backend |
 | Gradle | 8.14.3 (wrapper) | |
-| Android Gradle Plugin | 8.10.1 | compileSdk/targetSdk 35, minSdk 26 (Android 8.0) |
+| Android Gradle Plugin | 8.10.1 | compileSdk/targetSdk 35, minSdk 21 (Android 5.0) |
 | JDK | 17+ (tested with 21) | |
 
 KGP 2.2.x supports AGP up to 8.10, and AGP 8.10 needs Gradle 8.11.1 or newer, so these versions are mutually compatible.
