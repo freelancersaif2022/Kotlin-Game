@@ -287,14 +287,14 @@ private val ringerChoices = listOf(
 /** Segmented control with a springy sliding highlight, like iOS's ring/silent selector. */
 @Composable
 private fun RingerSelector(selected: Int, onSelect: (Int) -> Unit) {
-    val shape = RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(20.dp)
     BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .clip(shape)
             .background(Palette.Surface)
             .border(1.dp, Palette.Outline, shape)
-            .padding(6.dp),
+            .padding(4.dp),
     ) {
         val segment = maxWidth / ringerChoices.size
         val offset by animateDpAsState(segment * selected, spring(dampingRatio = 0.75f, stiffness = 500f), label = "ringerX")
@@ -303,28 +303,27 @@ private fun RingerSelector(selected: Int, onSelect: (Int) -> Unit) {
             Modifier
                 .offset(x = offset)
                 .width(segment)
-                .height(76.dp)
-                .shadow(10.dp, RoundedCornerShape(19.dp), ambientColor = color, spotColor = color)
-                .clip(RoundedCornerShape(19.dp))
+                .height(46.dp)
+                .shadow(6.dp, RoundedCornerShape(15.dp), ambientColor = color, spotColor = color)
+                .clip(RoundedCornerShape(15.dp))
                 .background(Brush.verticalGradient(listOf(color, color.copy(alpha = 0.82f)))),
         )
         Row(Modifier.fillMaxWidth()) {
             ringerChoices.forEachIndexed { index, choice ->
                 val active = index == selected
                 val content by animateColorAsState(if (active) Color.White else Palette.TextSecondary, label = "ringerText")
-                Column(
+                Row(
                     Modifier
                         .weight(1f)
-                        .height(76.dp)
-                        .clip(RoundedCornerShape(19.dp))
+                        .height(46.dp)
+                        .clip(RoundedCornerShape(15.dp))
                         .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { onSelect(index) },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(choice.icon, null, tint = content, modifier = Modifier.size(22.dp))
-                    Spacer(Modifier.height(4.dp))
-                    Text(choice.label, style = MaterialTheme.typography.labelLarge, color = content)
-                    Text(choice.caption, style = MaterialTheme.typography.labelSmall, color = content.copy(alpha = 0.75f))
+                    Icon(choice.icon, null, tint = content, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(choice.label, style = MaterialTheme.typography.labelLarge, color = content, maxLines = 1)
                 }
             }
         }

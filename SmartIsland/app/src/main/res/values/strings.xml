@@ -29,4 +29,14 @@
     <string name="widget_title_stopwatch">Stopwatch</string>
     <string name="widget_title_system_stats">System Monitor</string>
     <string name="widget_title_quick_toggles">Quick Toggles</string>
+    <string name="widget_title_island_glance">Island Glance</string>
+    <string name="widget_desc_island_glance">Black island pill with time, battery and music</string>
+    <string name="widget_title_day_progress">Day Progress</string>
+    <string name="widget_desc_day_progress">How much of today, the week, month and year has passed</string>
+    <string name="widget_title_storage_ring">Storage Ring</string>
+    <string name="widget_desc_storage_ring">Used and free storage at a glance</string>
+    <string name="widget_title_dual_clock">Dual Time</string>
+    <string name="widget_desc_dual_clock">Your time and London time side by side</string>
+    <string name="widget_title_smart_glance">Smart Glance</string>
+    <string name="widget_desc_smart_glance">Greeting, date, battery, alarm and music</string>
 </resources>

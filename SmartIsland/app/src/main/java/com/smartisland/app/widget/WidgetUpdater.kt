@@ -22,11 +22,24 @@ object WidgetUpdater {
         update(context, WidgetKind.CHARGING)
         update(context, WidgetKind.DIGITAL_CLOCK)
         update(context, WidgetKind.SYSTEM_STATS)
+        update(context, WidgetKind.ISLAND_GLANCE)
+        update(context, WidgetKind.SMART_GLANCE)
     }
 
     fun updateCharging(context: Context) = update(context, WidgetKind.CHARGING)
-    fun updateStats(context: Context) = update(context, WidgetKind.SYSTEM_STATS)
-    fun updateMedia(context: Context) = update(context, WidgetKind.MEDIA)
+    /** Called every minute while the screen is on. */
+    fun updateStats(context: Context) {
+        update(context, WidgetKind.SYSTEM_STATS)
+        update(context, WidgetKind.STORAGE_RING)
+        update(context, WidgetKind.DAY_PROGRESS)
+        update(context, WidgetKind.SMART_GLANCE)
+    }
+
+    fun updateMedia(context: Context) {
+        update(context, WidgetKind.MEDIA)
+        update(context, WidgetKind.ISLAND_GLANCE)
+        update(context, WidgetKind.SMART_GLANCE)
+    }
     fun updateVolume(context: Context) = update(context, WidgetKind.VOLUME)
     fun updateToggles(context: Context) = update(context, WidgetKind.QUICK_TOGGLES)
     fun updatePower(context: Context) = update(context, WidgetKind.POWER)

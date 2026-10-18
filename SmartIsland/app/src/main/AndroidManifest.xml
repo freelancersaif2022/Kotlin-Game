@@ -242,5 +242,65 @@
                 android:resource="@xml/widget_info_quick_toggles" />
         </receiver>
 
+        <receiver
+            android:name=".widget.IslandGlanceWidget"
+            android:exported="false"
+            android:label="@string/widget_title_island_glance">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_island_glance" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.DayProgressWidget"
+            android:exported="false"
+            android:label="@string/widget_title_day_progress">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_day_progress" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.StorageRingWidget"
+            android:exported="false"
+            android:label="@string/widget_title_storage_ring">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_storage_ring" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.DualClockWidget"
+            android:exported="false"
+            android:label="@string/widget_title_dual_clock">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_dual_clock" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.SmartGlanceWidget"
+            android:exported="false"
+            android:label="@string/widget_title_smart_glance">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_smart_glance" />
+        </receiver>
+
     </application>
 </manifest>

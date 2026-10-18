@@ -27,6 +27,7 @@ import com.smartisland.app.system.Permissions
 import com.smartisland.app.system.SystemActions
 import com.smartisland.app.system.VolumeStream
 import com.smartisland.app.system.systemService
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -50,6 +51,11 @@ object WidgetRenderer {
             WidgetKind.STOPWATCH -> stopwatch(context, views)
             WidgetKind.SYSTEM_STATS -> stats(context, views)
             WidgetKind.QUICK_TOGGLES -> toggles(context, views)
+            WidgetKind.ISLAND_GLANCE -> islandGlance(context, views)
+            WidgetKind.DAY_PROGRESS -> dayProgress(context, views)
+            WidgetKind.STORAGE_RING -> storageRing(context, views)
+            WidgetKind.DUAL_CLOCK -> views.setOnClickPendingIntent(R.id.root, openClockApp(context))
+            WidgetKind.SMART_GLANCE -> smartGlance(context, views)
         }
         return views
     }
@@ -222,6 +228,86 @@ object WidgetRenderer {
         v.setInt(R.id.t_island_icon, "setBackgroundResource", if (islandOn) R.drawable.circle_btn_active else R.drawable.circle_btn)
         v.setTextViewText(R.id.t_island_label, if (islandOn) "Island on" else "Island off")
         v.setOnClickPendingIntent(R.id.t_island, WidgetActionReceiver.pending(context, WidgetActionReceiver.ISLAND))
+    }
+
+    private fun islandGlance(context: Context, v: RemoteViews) {
+        val b = BatterySnapshot.from(context)
+        v.setTextViewText(R.id.ig_battery, "${b.level}%")
+        v.setTextColor(R.id.ig_battery, if (b.isCharging) GREEN else levelColor(b.level))
+        v.setViewVisibility(R.id.ig_bolt, if (b.isCharging) View.VISIBLE else View.GONE)
+        v.setInt(R.id.ig_bolt, "setColorFilter", GREEN)
+        val m = IslandEngine.mediaState.value
+        v.setTextViewText(R.id.ig_media, m?.let { "${it.title} · ${it.artist}" } ?: "Nothing playing")
+        v.setInt(R.id.ig_music, "setColorFilter", m?.accent ?: MUTED)
+        v.setOnClickPendingIntent(R.id.root, openApp(context, "home"))
+    }
+
+    private fun dayProgress(context: Context, v: RemoteViews) {
+        val now = Calendar.getInstance()
+        fun fraction(field: Int): Float {
+            val start = (now.clone() as Calendar).apply {
+                when (field) {
+                    Calendar.DAY_OF_YEAR -> Unit
+                    Calendar.WEEK_OF_YEAR -> set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+                    Calendar.MONTH -> set(Calendar.DAY_OF_MONTH, 1)
+                    Calendar.YEAR -> set(Calendar.DAY_OF_YEAR, 1)
+                }
+                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+                if (timeInMillis > now.timeInMillis) add(Calendar.WEEK_OF_YEAR, -1)
+            }
+            val end = (start.clone() as Calendar).apply {
+                when (field) {
+                    Calendar.DAY_OF_YEAR -> add(Calendar.DAY_OF_YEAR, 1)
+                    Calendar.WEEK_OF_YEAR -> add(Calendar.WEEK_OF_YEAR, 1)
+                    Calendar.MONTH -> add(Calendar.MONTH, 1)
+                    Calendar.YEAR -> add(Calendar.YEAR, 1)
+                }
+            }
+            return ((now.timeInMillis - start.timeInMillis).toFloat() / (end.timeInMillis - start.timeInMillis)).coerceIn(0f, 1f)
+        }
+        listOf(
+            Triple(Calendar.DAY_OF_YEAR, R.id.dp_day_text, R.id.dp_day_bar),
+            Triple(Calendar.WEEK_OF_YEAR, R.id.dp_week_text, R.id.dp_week_bar),
+            Triple(Calendar.MONTH, R.id.dp_month_text, R.id.dp_month_bar),
+            Triple(Calendar.YEAR, R.id.dp_year_text, R.id.dp_year_bar),
+        ).forEach { (field, text, bar) ->
+            val f = fraction(field)
+            v.setTextViewText(text, "${(f * 100).toInt()}%")
+            v.setProgressBar(bar, 1000, (f * 1000).toInt(), false)
+        }
+        v.setOnClickPendingIntent(R.id.root, WidgetActionReceiver.pending(context, WidgetActionReceiver.REFRESH))
+    }
+
+    private fun storageRing(context: Context, v: RemoteViews) {
+        val fs = runCatching { StatFs(Environment.getDataDirectory().path) }.getOrNull()
+        if (fs != null) {
+            val total = fs.totalBytes
+            val used = total - fs.availableBytes
+            v.setProgressBar(R.id.sr_ring, 100, percent(used, total), false)
+            v.setTextViewText(R.id.sr_percent, "${percent(used, total)}%")
+            v.setTextViewText(R.id.sr_free, "${gb(fs.availableBytes)} GB free")
+        }
+        v.setOnClickPendingIntent(R.id.root, WidgetActionReceiver.pending(context, WidgetActionReceiver.REFRESH))
+    }
+
+    private fun smartGlance(context: Context, v: RemoteViews) {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        v.setTextViewText(
+            R.id.sg_greeting,
+            when (hour) {
+                in 5..11 -> "Good morning"
+                in 12..16 -> "Good afternoon"
+                in 17..21 -> "Good evening"
+                else -> "Good night"
+            },
+        )
+        val b = BatterySnapshot.from(context)
+        v.setTextViewText(R.id.sg_battery, if (b.isCharging) "${b.level}% · charging" else "${b.level}%")
+        v.setInt(R.id.sg_bolt, "setColorFilter", if (b.isCharging) GREEN else levelColor(b.level))
+        v.setTextViewText(R.id.sg_alarm, nextAlarm(context) ?: "No alarm")
+        val m = IslandEngine.mediaState.value
+        v.setTextViewText(R.id.sg_media, "♪  " + (m?.let { "${it.title} · ${it.artist}" } ?: "Nothing playing"))
+        v.setOnClickPendingIntent(R.id.root, openApp(context, "home"))
     }
 
     // Helpers ---------------------------------------------------------------------------------

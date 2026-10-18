@@ -44,14 +44,67 @@ class IslandNotificationListener : NotificationListenerService() {
         }
     }
 
+    /** When the phone's audio entered a call; lets the timer survive notification changes. */
+    private var audioCallStart = 0L
+
+    /**
+     * Calls are also detected from the audio mode, so outgoing SIM calls and VoIP calls (Messenger,
+     * WhatsApp...) show the call icon and timer even when the calling app's notification isn't
+     * recognizable. Android 12+ reports mode changes; older versions are polled cheaply.
+     */
+    private val modePoller = object : Runnable {
+        override fun run() {
+            onAudioMode(runCatching { audio.mode }.getOrDefault(AudioManager.MODE_NORMAL))
+            main.postDelayed(this, 1200)
+        }
+    }
+    private var modeListener: Any? = null
+
     override fun onListenerConnected() {
         media = MediaTracker(applicationContext, ComponentName(this, IslandNotificationListener::class.java)).also { it.start() }
         runCatching { activeNotifications }.getOrNull()?.forEach { handleCall(it) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val l = AudioManager.OnModeChangedListener { mode -> main.post { onAudioMode(mode) } }
+            runCatching { audio.addOnModeChangedListener(mainExecutor, l) }.onSuccess { modeListener = l }
+            onAudioMode(audio.mode)
+        }
+        if (modeListener == null) main.post(modePoller)
     }
+
+    private fun onAudioMode(mode: Int) {
+        val inCall = mode == AudioManager.MODE_IN_CALL || mode == AudioManager.MODE_IN_COMMUNICATION
+        if (inCall) {
+            if (audioCallStart == 0L) audioCallStart = System.currentTimeMillis()
+            if (callKey != null) return
+            // Prefer the calling app's own notification (caller name, hang-up button).
+            val sbn = runCatching { activeNotifications }.getOrNull()?.firstOrNull {
+                it.packageName != packageName && (isCallNotification(it) || isVoipOngoing(it))
+            }
+            if (sbn != null && handleCall(sbn, force = true)) return
+            callKey = AUDIO_CALL_KEY
+            IslandEngine.setCall(
+                IslandActivity.Call(
+                    key = AUDIO_CALL_KEY, caller = "Ongoing call", isIncoming = false, startedAt = audioCallStart,
+                    avatar = null, answer = null, decline = null, hangUp = null, open = null,
+                ),
+            )
+        } else {
+            audioCallStart = 0L
+            if (callKey == AUDIO_CALL_KEY) endCall()
+        }
+    }
+
+    private fun isVoipOngoing(sbn: StatusBarNotification): Boolean =
+        sbn.packageName in VOIP_APPS && (sbn.notification.flags and Notification.FLAG_ONGOING_EVENT) != 0
 
     override fun onListenerDisconnected() {
         media?.stop()
         media = null
+        main.removeCallbacks(modePoller)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (modeListener as? AudioManager.OnModeChangedListener)?.let { runCatching { audio.removeOnModeChangedListener(it) } }
+        }
+        modeListener = null
         endCall()
     }
 
@@ -80,7 +133,11 @@ class IslandNotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
-        if (sbn.key == callKey) endCall()
+        if (sbn.key == callKey) {
+            endCall()
+            // Some dialers drop their notification mid-call; fall back to audio detection.
+            main.postDelayed({ onAudioMode(runCatching { audio.mode }.getOrDefault(AudioManager.MODE_NORMAL)) }, 600)
+        }
     }
 
     // Calls -----------------------------------------------------------------------------------
@@ -92,8 +149,8 @@ class IslandNotificationListener : NotificationListenerService() {
         return sbn.packageName in DIALERS && (n.flags and Notification.FLAG_ONGOING_EVENT) != 0
     }
 
-    private fun handleCall(sbn: StatusBarNotification): Boolean {
-        if (!isCallNotification(sbn)) return false
+    private fun handleCall(sbn: StatusBarNotification, force: Boolean = false): Boolean {
+        if (!force && !isCallNotification(sbn) && !(isVoipOngoing(sbn) && audioCallStart > 0L)) return false
         val n = sbn.notification
         val extras = n.extras
 
@@ -112,14 +169,18 @@ class IslandNotificationListener : NotificationListenerService() {
         if (!ongoingFlag && !isIncoming && !usesChronometer && !audioInCall) return true
 
         if (sbn.key != callKey) {
-            callConnectedAt = 0L
+            if (callKey != AUDIO_CALL_KEY) callConnectedAt = 0L
             callAvatar = Bitmaps.fromIcon(this, n.getLargeIcon())
         }
         if (!isIncoming && callConnectedAt == 0L) {
             val reported = n.`when`
             val now = System.currentTimeMillis()
             // Trust the dialer's chronometer base when it is sane, otherwise start counting now.
-            callConnectedAt = if (usesChronometer && reported in (now - 12 * 3600_000L)..now) reported else now
+            callConnectedAt = when {
+                usesChronometer && reported in (now - 12 * 3600_000L)..now -> reported
+                audioCallStart > 0L -> audioCallStart
+                else -> now
+            }
         }
         if (isIncoming) callConnectedAt = 0L
 
@@ -219,6 +280,16 @@ class IslandNotificationListener : NotificationListenerService() {
         const val CALL_TYPE_INCOMING = 1
         const val CALL_TYPE_ONGOING = 2
         const val CALL_TYPE_SCREENING = 3
+
+        const val AUDIO_CALL_KEY = "audio-call"
+
+        /** Calling apps whose ongoing-call notification may not be tagged as a call. */
+        val VOIP_APPS = setOf(
+            "com.facebook.orca", "com.facebook.mlite", "com.whatsapp", "com.whatsapp.w4b", "org.telegram.messenger",
+            "com.instagram.android", "com.skype.raider", "com.viber.voip", "org.thoughtcrime.securesms",
+            "com.google.android.apps.tachyon", "us.zoom.videomeetings", "com.microsoft.teams", "jp.naver.line.android",
+            "com.discord", "com.snapchat.android", "com.imo.android.imoim", "com.tencent.mm",
+        )
 
         /** Stock and vendor in-call UIs, for dialers that don't tag their notification as a call. */
         val DIALERS = setOf(

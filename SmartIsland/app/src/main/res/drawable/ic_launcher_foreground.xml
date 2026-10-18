@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Phone body with metal bezel -->
-    <path android:pathData="M41,22H67A12,12 0 0,1 79,34V108H29V34A12,12 0 0,1 41,22z">
-        <aapt:attr name="android:fillColor">
-            <gradient android:type="linear" android:startX="29" android:startY="22" android:endX="79" android:endY="90">
-                <item android:offset="0" android:color="#FFE9E9F2" />
-                <item android:offset="1" android:color="#FF8E8EA0" />
-            </gradient>
-        </aapt:attr>
+    <!-- Phone: titanium frame, lavender screen, small island -->
+    <path android:pathData="M44,50H64A11,11 0 0,1 75,61V110H33V61A11,11 0 0,1 44,50z">
+        <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="33" android:startY="50" android:endX="75" android:endY="90"><item android:offset="0" android:color="#FFF2F2F8" /><item android:offset="0.5" android:color="#FF6E6E82" /><item android:offset="1" android:color="#FF2A2A36" /></gradient></aapt:attr>
     </path>
-    <path android:fillColor="#FF0B0B10" android:pathData="M41.2,23.6H66.80000000000001A10.6,10.6 0 0,1 77.4,34.2V108H30.6V34.2A10.6,10.6 0 0,1 41.2,23.6z" />
-    <!-- Screen -->
-    <path android:pathData="M41.4,25.4H66.6A9,9 0 0,1 75.6,34.4V108H32.4V34.4A9,9 0 0,1 41.4,25.4z">
-        <aapt:attr name="android:fillColor">
-            <gradient android:type="linear" android:startX="32" android:startY="25" android:endX="76" android:endY="100">
-                <item android:offset="0" android:color="#FF5C3DF0" />
-                <item android:offset="1" android:color="#FF1FA2FF" />
-            </gradient>
-        </aapt:attr>
+    <path android:fillColor="#FF0A0A10" android:pathData="M44.2,51.6H63.800000000000004A9.6,9.6 0 0,1 73.4,61.2V110H34.6V61.2A9.6,9.6 0 0,1 44.2,51.6z" />
+    <path android:pathData="M44.4,53.4H63.599999999999994A8,8 0 0,1 71.6,61.4V110H36.4V61.4A8,8 0 0,1 44.4,53.4z">
+        <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="36" android:startY="53" android:endX="72" android:endY="100"><item android:offset="0" android:color="#FFA9B8FF" /><item android:offset="0.5" android:color="#FFC9A8FF" /><item android:offset="1" android:color="#FFF4B4E8" /></gradient></aapt:attr>
     </path>
-    <path android:fillColor="#33FFFFFF" android:pathData="M32.4,60C46,52 60,70 75.6,58V108H32.4z" />
-    <!-- Tap ripple, island, then the finger touching it -->
-    <group android:translateX="35.6" android:translateY="25.8" android:scaleX="1.6" android:scaleY="1.6">
-        <path android:fillColor="#99FFFFFF" android:pathData="M9,11.24V7.5C9,6.12 10.12,5 11.5,5S14,6.12 14,7.5v3.74c1.21,-0.81 2,-2.18 2,-3.74C16,5.01 13.99,3 11.5,3S7,5.01 7,7.5c0,1.56 0.79,2.93 2,3.74z" />
-    </group>
-    <path android:fillColor="#FF000000" android:pathData="M44.75,28H63.25A4.75,4.75 0 0,1 63.25,37.5H44.75A4.75,4.75 0 0,1 44.75,28z" />
-    <path android:fillColor="#FF2B2B3D" android:pathData="M62.6,31.4a1.35,1.35 0 1,1 0,2.7a1.35,1.35 0 1,1 0,-2.7z" />
-    <group android:translateX="35.6" android:translateY="25.8" android:scaleX="1.6" android:scaleY="1.6">
-        <path android:fillColor="#FFFFFFFF" android:strokeColor="#FF1A1240" android:strokeWidth="0.55" android:pathData="M18.84,15.87l-4.54,-2.26c-0.17,-0.07 -0.35,-0.11 -0.54,-0.11H13v-6c0,-0.83 -0.67,-1.5 -1.5,-1.5S10,6.67 10,7.5v10.74l-3.43,-0.72c-0.08,-0.01 -0.15,-0.03 -0.24,-0.03 -0.31,0 -0.59,0.13 -0.79,0.33l-0.79,0.8 4.94,4.94c0.27,0.27 0.65,0.44 1.06,0.44h6.79c0.75,0 1.33,-0.55 1.44,-1.28l0.75,-5.27c0.01,-0.07 0.02,-0.14 0.02,-0.2 0,-0.62 -0.38,-1.16 -0.91,-1.39z" />
+    <path android:fillColor="#FF0A0A10" android:pathData="M50.8,57H57.2A2.3,2.3 0 0,1 59.5,59.3V59.300000000000004A2.3,2.3 0 0,1 57.2,61.6H50.8A2.3,2.3 0 0,1 48.5,59.300000000000004V59.3A2.3,2.3 0 0,1 50.8,57z" />
+    <path android:fillColor="#E6FFFFFF" android:pathData="M42.5,74H65.5A2.5,2.5 0 0,1 68,76.5V77.5A2.5,2.5 0 0,1 65.5,80H42.5A2.5,2.5 0 0,1 40,77.5V76.5A2.5,2.5 0 0,1 42.5,74z" />
+    <path android:fillColor="#B3FFFFFF" android:pathData="M42.5,82H65.5A2.5,2.5 0 0,1 68,84.5V85.5A2.5,2.5 0 0,1 65.5,88H42.5A2.5,2.5 0 0,1 40,85.5V84.5A2.5,2.5 0 0,1 42.5,82z" />
+    <path android:fillColor="#FF30D158" android:pathData="M42.5,75.2H44.3A1,1 0 0,1 45.3,76.2V77.8A1,1 0 0,1 44.3,78.8H42.5A1,1 0 0,1 41.5,77.8V76.2A1,1 0 0,1 42.5,75.2z" />
+    <path android:fillColor="#FF0A84FF" android:pathData="M42.5,83.2H44.3A1,1 0 0,1 45.3,84.2V85.8A1,1 0 0,1 44.3,86.8H42.5A1,1 0 0,1 41.5,85.8V84.2A1,1 0 0,1 42.5,83.2z" />
+    <!-- Floating expanded island with incoming call, tilted like it pops out -->
+    <group android:rotation="-7" android:pivotX="54" android:pivotY="40" android:scaleX="0.9" android:scaleY="0.9">
+        <path android:pathData="M31.5,29.5H76.5A10.5,10.5 0 0,1 87,40.0V40.0A10.5,10.5 0 0,1 76.5,50.5H31.5A10.5,10.5 0 0,1 21,40.0V40.0A10.5,10.5 0 0,1 31.5,29.5z">
+            <aapt:attr name="android:fillColor"><gradient android:type="linear" android:startX="21" android:startY="30" android:endX="87" android:endY="50"><item android:offset="0" android:color="#5564D2FF" /><item android:offset="0.5" android:color="#55A78BFF" /><item android:offset="1" android:color="#55FF6AD5" /></gradient></aapt:attr>
+        </path>
+        <path android:fillColor="#FF0C0C14" android:strokeWidth="1.5" android:pathData="M31.5,31.5H76.5A8.5,8.5 0 0,1 85,40.0V40.0A8.5,8.5 0 0,1 76.5,48.5H31.5A8.5,8.5 0 0,1 23,40.0V40.0A8.5,8.5 0 0,1 31.5,31.5z">
+            <aapt:attr name="android:strokeColor"><gradient android:type="linear" android:startX="23" android:startY="32" android:endX="85" android:endY="48"><item android:offset="0" android:color="#FF5AD8FF" /><item android:offset="0.5" android:color="#FF9B7BFF" /><item android:offset="1" android:color="#FFFF6AD5" /></gradient></aapt:attr>
+        </path>
+        <path android:fillColor="#FF1E2A44" android:strokeColor="#FF5AD8FF" android:strokeWidth="0.9" android:pathData="M26.5,40a5,5 0 1,0 10,0a5,5 0 1,0 -10,0z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M29.8,36.6a1.7,1.7 0 1,0 3.4,0a1.7,1.7 0 1,0 -3.4,0z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M28.6,41.4c0,-1.7 1.3,-2.7 2.9,-2.7s2.9,1 2.9,2.7z" />
+        <path android:fillColor="#99FFFFFF" android:pathData="M39.8,36.2H52.2A0.8,0.8 0 0,1 53,37.0V37.0A0.8,0.8 0 0,1 52.2,37.8H39.8A0.8,0.8 0 0,1 39,37.0V37.0A0.8,0.8 0 0,1 39.8,36.2z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M40.2,40H56.8A1.2,1.2 0 0,1 58,41.2V41.199999999999996A1.2,1.2 0 0,1 56.8,42.4H40.2A1.2,1.2 0 0,1 39,41.199999999999996V41.2A1.2,1.2 0 0,1 40.2,40z" />
+        <path android:fillColor="#FFFF453A" android:pathData="M63.2,40a4.8,4.8 0 1,0 9.6,0a4.8,4.8 0 1,0 -9.6,0z" />
+        <group android:translateX="65.1" android:translateY="37.1" android:scaleX="0.24" android:scaleY="0.24">
+            <path android:fillColor="#FFFFFFFF" android:pathData="M12,9c-1.6,0 -3.15,0.25 -4.6,0.72v3.1c0,0.39 -0.23,0.74 -0.56,0.9 -0.98,0.49 -1.87,1.12 -2.66,1.85 -0.18,0.18 -0.43,0.28 -0.7,0.28 -0.28,0 -0.53,-0.11 -0.71,-0.29L0.29,13.08c-0.18,-0.17 -0.29,-0.42 -0.29,-0.7 0,-0.28 0.11,-0.53 0.29,-0.71C3.34,8.78 7.46,7 12,7s8.66,1.78 11.71,4.67c0.18,0.18 0.29,0.43 0.29,0.71 0,0.28 -0.11,0.53 -0.29,0.71l-2.48,2.48c-0.18,0.18 -0.43,0.29 -0.71,0.29 -0.27,0 -0.52,-0.11 -0.7,-0.28 -0.79,-0.74 -1.69,-1.36 -2.67,-1.85 -0.33,-0.16 -0.56,-0.5 -0.56,-0.9v-3.1C15.15,9.25 13.6,9 12,9z" />
+        </group>
+        <path android:fillColor="#FF30D158" android:pathData="M73.7,40a4.8,4.8 0 1,0 9.6,0a4.8,4.8 0 1,0 -9.6,0z" />
+        <group android:translateX="75.7" android:translateY="37.2" android:scaleX="0.235" android:scaleY="0.235">
+            <path android:fillColor="#FFFFFFFF" android:pathData="M20.01,15.38c-1.23,0 -2.42,-0.2 -3.53,-0.56 -0.35,-0.12 -0.74,-0.03 -1.01,0.24l-1.57,1.97c-2.83,-1.35 -5.48,-3.9 -6.89,-6.83l1.95,-1.66c0.27,-0.28 0.35,-0.67 0.24,-1.02 -0.37,-1.11 -0.56,-2.3 -0.56,-3.53 0,-0.54 -0.45,-0.99 -0.99,-0.99H4.19C3.65,3 3,3.24 3,3.99 3,13.28 10.73,21 20.01,21c0.71,0 0.99,-0.63 0.99,-1.18v-3.45c0,-0.54 -0.45,-0.99 -0.99,-0.99z" />
+        </group>
     </group>
 </vector>

@@ -244,7 +244,7 @@ fun ProActiveBadge(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null)
             .background(Palette.GoldCardGradient)
             .border(1.dp, Palette.Gold.copy(alpha = 0.8f), shape)
             .then(if (onClick != null) Modifier.pressable(onClick) else Modifier)
-            .padding(start = 8.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
+            .padding(start = 6.dp, end = 14.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -257,10 +257,7 @@ fun ProActiveBadge(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null)
             Icon(Icons.Rounded.Check, null, tint = Palette.OnGold, modifier = Modifier.size(14.dp))
         }
         Spacer(Modifier.width(7.dp))
-        Column {
-            Text("PRO", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.ExtraBold), color = Palette.Gold)
-            Text("Active", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.85f))
-        }
+        Text("PRO", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.6.sp), color = Palette.Gold)
     }
 }
 

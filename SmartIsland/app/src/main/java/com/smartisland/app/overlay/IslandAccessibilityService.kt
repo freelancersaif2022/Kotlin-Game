@@ -79,7 +79,20 @@ class IslandAccessibilityService : AccessibilityService() {
         WidgetUpdater.updateAll(this)
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        if (event?.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
+        val pkg = event.packageName?.toString() ?: return
+        // System UI (shade, volume panel) and keyboards don't change which app is in front.
+        if (pkg == "com.android.systemui" || event.className?.contains("InputMethod") == true) return
+        appInFront = pkg == packageName
+        updateEdgeHandle()
+    }
+
+    private var appInFront = false
+
+    private fun updateEdgeHandle() {
+        edge?.darkHandle?.value = appInFront && !settingsRepo.current.darkMode
+    }
 
     override fun onInterrupt() = Unit
 
@@ -131,6 +144,7 @@ class IslandAccessibilityService : AccessibilityService() {
 
         if (s.edgePanelEnabled && p.isPremium) {
             edge?.show(s.edgePanelRight)
+            updateEdgeHandle()
             edge?.setVisible(!hidden)
         } else {
             edge?.hide()

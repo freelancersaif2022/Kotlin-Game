@@ -141,7 +141,7 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
             onDismiss = { unlockTarget = null },
             icon = Icons.Rounded.LockOpen,
             title = "Unlock ${kind.title}",
-            message = "Watch one short video to unlock this widget forever, free. Or go PRO for all 12 widgets and every premium feature.",
+            message = "Watch one short video to unlock this widget forever, free. Or go PRO for all 17 widgets and every premium feature.",
             confirmText = if (adReady) "Watch ad · Unlock free" else "Preparing ad…",
             confirmIcon = Icons.Rounded.PlayCircle,
             accent = Palette.Primary,
@@ -164,7 +164,7 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
                     }
                 }
             },
-            dismissText = "Go PRO · All 12 widgets",
+            dismissText = "Go PRO · All 17 widgets",
             dismissIcon = Icons.Rounded.WorkspacePremium,
             dismissGold = true,
             onDismissClick = {

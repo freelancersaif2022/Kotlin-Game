@@ -13,6 +13,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -66,6 +67,9 @@ class EdgePanelOverlay(
     private val onAction: (EdgeAction) -> Unit,
 ) {
     private val open = mutableStateOf(false)
+
+    /** Dark handle while our own (light themed) app is in front; light handle over everything else. */
+    val darkHandle = mutableStateOf(false)
     private var window: OverlayWindow? = null
     private var right = true
 
@@ -75,7 +79,7 @@ class EdgePanelOverlay(
         right = onRight
         val gravity = (if (onRight) Gravity.END else Gravity.START) or Gravity.CENTER_VERTICAL
         window = OverlayWindow(context, gravity, onOutsideTouch = { open.value = false }) {
-            EdgePanel(onRight, open, volumePercent) { action ->
+            EdgePanel(onRight, open, darkHandle.value, volumePercent) { action ->
                 if (action == EdgeAction.SCREENSHOT) open.value = false
                 onAction(action)
             }
@@ -95,6 +99,7 @@ class EdgePanelOverlay(
 private fun EdgePanel(
     onRight: Boolean,
     open: MutableState<Boolean>,
+    darkHandle: Boolean,
     volumePercent: () -> Int,
     onAction: (EdgeAction) -> Unit,
 ) {
@@ -137,7 +142,8 @@ private fun EdgePanel(
                         .width(5.dp)
                         .height(78.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.55f)),
+                        .background(if (darkHandle) Color.Black.copy(alpha = 0.55f) else Color.White.copy(alpha = 0.75f))
+                        .border(0.5.dp, if (darkHandle) Color.Transparent else Color.Black.copy(alpha = 0.18f), CircleShape),
                 )
             }
         } else {

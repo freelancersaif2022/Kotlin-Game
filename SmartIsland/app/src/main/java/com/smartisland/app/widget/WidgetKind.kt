@@ -25,7 +25,12 @@ enum class WidgetKind(
     MEDIA("media", "Now Playing", "Album art, track info and playback controls.", true, WidgetSize.LARGE, R.layout.widget_media, MediaWidget::class.java),
     STOPWATCH("stopwatch", "Stopwatch", "Real-time stopwatch that keeps running in the background.", true, WidgetSize.SMALL, R.layout.widget_stopwatch, StopwatchWidget::class.java),
     SYSTEM_STATS("system_stats", "System Monitor", "RAM, storage and battery usage bars.", true, WidgetSize.LARGE, R.layout.widget_system_stats, SystemStatsWidget::class.java),
-    QUICK_TOGGLES("quick_toggles", "Quick Toggles", "Flashlight, ringer mode, Do Not Disturb and island.", true, WidgetSize.WIDE, R.layout.widget_quick_toggles, QuickTogglesWidget::class.java);
+    QUICK_TOGGLES("quick_toggles", "Quick Toggles", "Flashlight, ringer mode, Do Not Disturb and island.", true, WidgetSize.WIDE, R.layout.widget_quick_toggles, QuickTogglesWidget::class.java),
+    ISLAND_GLANCE("island_glance", "Island Glance", "A glowing island pill with live time, battery and now playing.", true, WidgetSize.WIDE, R.layout.widget_island_glance, IslandGlanceWidget::class.java),
+    DAY_PROGRESS("day_progress", "Day Progress", "How much of today, this week, month and year has passed.", true, WidgetSize.LARGE, R.layout.widget_day_progress, DayProgressWidget::class.java),
+    STORAGE_RING("storage_ring", "Storage Ring", "Used and free storage in a sleek gradient ring.", true, WidgetSize.SMALL, R.layout.widget_storage_ring, StorageRingWidget::class.java),
+    DUAL_CLOCK("dual_clock", "Dual Time", "Your time and London time side by side, ticking live.", true, WidgetSize.WIDE, R.layout.widget_dual_clock, DualClockWidget::class.java),
+    SMART_GLANCE("smart_glance", "Smart Glance", "Greeting, date, battery, next alarm and music in one card.", true, WidgetSize.LARGE, R.layout.widget_smart_glance, SmartGlanceWidget::class.java);
 
     companion object {
         fun byId(id: String?): WidgetKind? = entries.firstOrNull { it.id == id }
@@ -44,3 +49,8 @@ class MediaWidget : BaseWidgetProvider(WidgetKind.MEDIA)
 class StopwatchWidget : BaseWidgetProvider(WidgetKind.STOPWATCH)
 class SystemStatsWidget : BaseWidgetProvider(WidgetKind.SYSTEM_STATS)
 class QuickTogglesWidget : BaseWidgetProvider(WidgetKind.QUICK_TOGGLES)
+class IslandGlanceWidget : BaseWidgetProvider(WidgetKind.ISLAND_GLANCE)
+class DayProgressWidget : BaseWidgetProvider(WidgetKind.DAY_PROGRESS)
+class StorageRingWidget : BaseWidgetProvider(WidgetKind.STORAGE_RING)
+class DualClockWidget : BaseWidgetProvider(WidgetKind.DUAL_CLOCK)
+class SmartGlanceWidget : BaseWidgetProvider(WidgetKind.SMART_GLANCE)

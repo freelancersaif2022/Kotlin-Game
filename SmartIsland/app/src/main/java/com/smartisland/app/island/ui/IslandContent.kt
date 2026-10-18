@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -298,7 +299,7 @@ private fun CallExpanded(c: IslandActivity.Call, actions: IslandActions) {
             RoundAction(Icons.Rounded.CallEnd, IslandColors.Red) { actions.send(c.decline) }
             Spacer(Modifier.width(12.dp))
             RoundAction(Icons.Rounded.Call, IslandColors.Green) { actions.send(c.answer) }
-        } else {
+        } else if (c.hangUp != null) {
             RoundAction(Icons.Rounded.CallEnd, IslandColors.Red) { actions.send(c.hangUp) }
         }
     }
@@ -386,27 +387,32 @@ internal fun Waveform(color: Color, playing: Boolean, barHeight: Dp, modifier: M
         if (playing) {
             val transition = rememberInfiniteTransition(label = "wave")
             repeat(bars) { i ->
-                val f by transition.animateFloat(
+                val f = transition.animateFloat(
                     initialValue = 0.25f,
                     targetValue = 1f,
                     animationSpec = infiniteRepeatable(tween(380 + i * 90, easing = FastOutSlowInEasing), RepeatMode.Reverse),
                     label = "bar$i",
                 )
-                Bar(color, barHeight * f)
+                // Scaled in the draw phase: the bars animate without recomposing.
+                Bar(color, barHeight) { f.value }
             }
         } else {
-            repeat(bars) { Bar(color.copy(alpha = 0.7f), barHeight * 0.22f) }
+            repeat(bars) { Bar(color.copy(alpha = 0.7f), barHeight) { 0.22f } }
         }
     }
 }
 
 @Composable
-private fun Bar(color: Color, height: Dp) {
+private fun Bar(color: Color, height: Dp, scale: () -> Float) {
     Box(
         Modifier
             .width(3.dp)
             .height(height)
-            .clip(CircleShape)
+            .graphicsLayer {
+                scaleY = scale()
+                this.shape = CircleShape
+                clip = true
+            }
             .background(color),
     )
 }
