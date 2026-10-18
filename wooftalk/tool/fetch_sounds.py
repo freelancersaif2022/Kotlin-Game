@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import urllib.parse
+import urllib.error
 import urllib.request
 
 API = "https://commons.wikimedia.org/w/api.php"
@@ -80,6 +81,47 @@ def search(query, limit=25):
             "artist": strip_html(meta.get("Artist", {}).get("value")) or "Unknown",
         })
     return out
+
+
+def lookup(titles):
+    data = api({
+        "action": "query",
+        "titles": "|".join("File:" + t for t in titles),
+        "prop": "imageinfo",
+        "iiprop": "url|size|mime|extmetadata",
+        "iiextmetadatafilter": "LicenseShortName|Artist|LicenseUrl",
+    })
+    out = []
+    for p in data.get("query", {}).get("pages", []):
+        ii = (p.get("imageinfo") or [{}])[0]
+        meta = ii.get("extmetadata", {})
+        out.append({
+            "title": p["title"],
+            "url": ii.get("url"),
+            "page": ii.get("descriptionurl"),
+            "size": ii.get("size", 0),
+            "license": strip_html(meta.get("LicenseShortName", {}).get("value")),
+            "license_url": meta.get("LicenseUrl", {}).get("value", ""),
+            "artist": strip_html(meta.get("Artist", {}).get("value")) or "Unknown",
+        })
+    return out
+
+
+def download(url, path):
+    import time
+    for attempt in range(6):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=180) as r, open(path, "wb") as fh:
+                fh.write(r.read())
+            time.sleep(2)
+            return
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == 5:
+                raise
+            wait = 10 * (attempt + 1)
+            print(f"    429, waiting {wait}s")
+            time.sleep(wait)
 
 
 def decode(path, highpass):
@@ -209,48 +251,44 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     credits_path = os.path.join(OUT, "credits.json")
     credits = json.load(open(credits_path)) if os.path.exists(credits_path) else {}
+    sources = json.load(open(os.path.join(os.path.dirname(__file__), "sound_sources.json")))
     for animal in wanted:
-        queries, lo, hi, hp, max_calls = ANIMALS[animal]
-        seen, cands = set(), []
-        for q in queries:
-            try:
-                for c in search(q):
-                    if c["title"] in seen or not c["url"]:
-                        continue
-                    seen.add(c["title"])
-                    cands.append(c)
-            except Exception as e:  # noqa: BLE001
-                print(f"  search failed for {q}: {e}")
-        key = queries[0].split()[0]
-        cands.sort(key=lambda c: key not in c["title"].lower())
-        cands = [c for c in cands if OK_LICENSE.match(c["license"] or "")][:14]
-        print(f"\n== {animal}: {len(cands)} usable candidates")
+        _, lo, hi, hp, max_calls = ANIMALS[animal]
+        titles = sources.get(animal, [])
+        cands = []
+        for i in range(0, len(titles), 20):
+            cands += lookup(titles[i:i + 20])
+        print(f"\n== {animal}: {len(cands)} sources")
+        per_file = max(2, -(-max_calls // max(1, len(cands))) + 1)
         picked = []  # (score, samples, source)
         for c in cands:
-            ok = bool(OK_LICENSE.match(c["license"] or ""))
-            name_ok = any(w in c["title"].lower() for w in queries[0].split()[:1])
-            if not ok or c["size"] > 25_000_000:
+            if not c["url"]:
+                print(f"  missing {c['title']}")
+                continue
+            if not OK_LICENSE.match(c["license"] or ""):
                 print(f"  skip  [{c['license']}] {c['title']}")
                 continue
-            with tempfile.NamedTemporaryFile(suffix=os.path.splitext(c["url"])[1]) as tmp:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                path = os.path.join(tmpdir, "src" + os.path.splitext(c["url"])[1])
                 try:
-                    req = urllib.request.Request(c["url"], headers={"User-Agent": UA})
-                    with urllib.request.urlopen(req, timeout=120) as r:
-                        tmp.write(r.read())
-                    tmp.flush()
-                    x = decode(tmp.name, hp)
+                    download(c["url"], path)
+                    x = decode(path, hp)
                 except Exception as e:  # noqa: BLE001
                     print(f"  fail  {c['title']}: {e}")
                     continue
             calls, snr = find_calls(x, lo, hi)
-            print(f"  ok    [{c['license']}] snr={snr:.0f}dB calls={len(calls)} name_match={name_ok} {c['title']}")
+            print(f"  ok    [{c['license']}] snr={snr:.0f}dB calls={len(calls)} {c['title']}")
             calls.sort(reverse=True)
-            for loud, a, b in calls[:3]:
+            for loud, a, b in calls[:per_file]:
                 pad = int(SR * 0.03)
                 seg = x[max(0, a - pad): min(len(x), b + pad)]
-                score = loud + (6 if name_ok else 0) + min(snr, 40) * 0.3
-                picked.append((score, seg, c))
-        picked.sort(key=lambda t: -t[0])
+                picked.append((loud + min(snr, 40) * 0.3, seg, c))
+        # keep variety: best call of every file first, then the rest
+        firsts, rest, seen_src = [], [], set()
+        for item in sorted(picked, key=lambda t: -t[0]):
+            (rest if item[2]["title"] in seen_src else firsts).append(item)
+            seen_src.add(item[2]["title"])
+        picked = firsts + rest
         picked = picked[:max_calls]
         adir = os.path.join(OUT, animal)
         os.makedirs(adir, exist_ok=True)

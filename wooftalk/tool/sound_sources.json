@@ -1,0 +1,14 @@
+{
+  "dog": ["Barking of a dog.ogg", "Barking of a dog 2.ogg", "Barking dog in Rome.ogg", "Perro ladrando.ogg", "Rottweiler Barking.oga", "Dog barking.webm", "A dog making noises and barking.flac"],
+  "puppy": ["Bark Huayra.ogg", "Barking.ogg", "Perros jugando.mp3", "Ladridos.ogg"],
+  "cat": ["Meow of a pleading cat.oga", "GettingOutImpatient.ogg", "Meow.ogg", "Maullido de gata hembra joven.ogg", "Maullido de gata hembra.ogg", "Meow of a Siamese cat - freemaster2.wav", "MeowUSA.wav", "Felis silvestris catus meows.ogg", "Black cat sound begging the foods.flac"],
+  "wolf": ["Wolf howls.ogg", "Jem howls.ogg"],
+  "duck": ["Mudchute duck 1.ogg", "Mudchute duck 2.ogg", "Pekin duck & mallard.ogg", "Domestic duck sound 01.wav", "Anas platyrhynchos - Mallard - XC112828.ogg", "Anas platyrhynchos - Mallard - XC62258.ogg", "Anas platyrhynchos - Mallard XC518422.mp3"],
+  "cow": ["Mudchute cow 1.ogg", "Single Cow Moo.ogg", "457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav"],
+  "rooster": ["Rooster crowing.oga", "Medium rooster crowing.ogg", "Small rooster crowing.ogg", "Rooster crowing.ogg", "Young rooster crowing.ogg", "KrährufBergischerKräher.ogg", "Kykyryký.ogg", "Kukuriku.flac"],
+  "sheep": ["Mudchute sheep 1.ogg", "Sheep bleat.ogg", "Sheep bleating.ogg", "Lamb bleating and its mother's response.flac", "Corner of a sheep field in summer.ogg"],
+  "pig": ["Mudchute pig 1.ogg", "Mudchute pig 2.ogg", "Mudchute pig 3.ogg", "Pig grunt - Erdie.ogg", "618483 foleyhaven piglet-squeal-01.flac"],
+  "horse": ["Wiehern.ogg", "Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s001.oga", "Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s002.oga", "Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s003.oga", "Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s004.oga", "Segregation-of-information-about-emotional-arousal-and-valence-in-horse-whinnies-srep09989-s2.oga"],
+  "goat": ["Herd of goats bleating.ogg"],
+  "frog": ["Single Frog Croak.oga", "Wood Frogs calling in spring.ogg", "PigFrog EvergladesNP.ogg", "Laubfrosch Balzruf.OGG", "Grasfrosch Paarungsrufe.OGG", "Litoria fallax jul08.ogg", "Rana temporaria croaking at Muhalnitsa, Botevgrad, Bulgaria.ogg"]
+}

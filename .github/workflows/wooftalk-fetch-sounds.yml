@@ -27,12 +27,7 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
 
-      - name: List candidate recordings
-        working-directory: wooftalk
-        run: python3 tool/fetch_sounds.py --list
-
       - name: Download and cut sounds
-        if: hashFiles('wooftalk/tool/sound_sources.json') != ''
         working-directory: wooftalk
         run: python3 tool/fetch_sounds.py ${{ github.event.inputs.animals }}
 
