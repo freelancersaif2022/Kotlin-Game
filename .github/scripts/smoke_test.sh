@@ -13,6 +13,10 @@ mkdir -p "$OUT"
 fail() {
   echo "❌ $*"
   adb logcat -d > "$OUT/logcat.txt" || true
+  echo "----- crash details -----"
+  grep -A40 -E "FATAL EXCEPTION|Unhandled Exception|F/libc|Fatal signal" "$OUT/logcat.txt" | head -150 || true
+  echo "----- flutter / app log -----"
+  grep -E "flutter|golden_hour|AndroidRuntime|DEBUG|impeller|Impeller" "$OUT/logcat.txt" | tail -120 || true
   exit 1
 }
 
