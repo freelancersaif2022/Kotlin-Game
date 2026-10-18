@@ -63,7 +63,13 @@ jobs:
           PROPS
 
       - name: Build release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --build-number=${{ github.run_number }}
+
+      - name: Verify APK signature
+        run: |
+          apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk | grep -E "Verified|Signer #1 certificate (DN|SHA-256)"
+          "$apksigner" verify build/app/outputs/flutter-apk/app-release.apk
 
       - name: Name the APK
         id: apk

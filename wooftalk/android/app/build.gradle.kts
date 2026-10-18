@@ -6,13 +6,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Release signing: put your keystore details in android/key.properties
-// (storeFile, storePassword, keyAlias, keyPassword). Without it the release
-// APK is signed with the debug key so it can still be installed for testing.
-val keyProps = Properties().apply {
-    val f = rootProject.file("key.properties")
+// Release signing. android/key.properties (e.g. your own Play upload key, or
+// the CI secrets) wins; otherwise the committed android/keystore.properties
+// key is used. Both are permanent, so every new APK installs as an update
+// over the previous one instead of failing with "App not installed".
+fun loadProps(name: String) = Properties().apply {
+    val f = rootProject.file(name)
     if (f.exists()) f.inputStream().use { load(it) }
 }
+val keyProps = loadProps("key.properties").takeIf { it.getProperty("storeFile") != null }
+    ?: loadProps("keystore.properties")
 val hasReleaseKey = keyProps.getProperty("storeFile") != null
 
 android {
@@ -44,6 +47,9 @@ android {
                 storePassword = keyProps.getProperty("storePassword")
                 keyAlias = keyProps.getProperty("keyAlias")
                 keyPassword = keyProps.getProperty("keyPassword")
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
             }
         }
     }

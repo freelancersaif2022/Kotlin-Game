@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# The app's permanent signing key is committed on purpose (see keystore.properties).
+!app/wooftalk-release.jks
