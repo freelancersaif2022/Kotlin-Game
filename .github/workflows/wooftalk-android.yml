@@ -76,16 +76,63 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.apk.outputs.name }}
+          name: apk
           path: wooftalk/${{ steps.apk.outputs.name }}
+
+    outputs:
+      name: ${{ steps.apk.outputs.name }}
+      version: ${{ steps.apk.outputs.version }}
+
+  # Boots an Android emulator, installs the APK and makes sure it opens
+  # without crashing before anything is released.
+  smoke-test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Launch app on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash wooftalk/tool/smoke_test.sh "${{ needs.build.outputs.name }}"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: smoke/
+
+  release:
+    needs: [build, smoke-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: wooftalk-v${{ steps.apk.outputs.version }}-build${{ github.run_number }}
-          name: WoofTalk v${{ steps.apk.outputs.version }} (build ${{ github.run_number }})
+          tag_name: wooftalk-v${{ needs.build.outputs.version }}-build${{ github.run_number }}
+          name: WoofTalk v${{ needs.build.outputs.version }} (build ${{ github.run_number }})
           target_commitish: ${{ github.sha }}
           body: |
             Release APK for WoofTalk, the animal voice translator prank app.
+            Tested: installs and opens on an Android 14 emulator without crashing.
             Download the APK below and install it on any Android 7.0+ phone.
-          files: wooftalk/${{ steps.apk.outputs.name }}
+          files: ${{ needs.build.outputs.name }}
