@@ -258,6 +258,16 @@
   },
   {
    "file": "wolf/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg",
+   "title": "File:Wolf howls.ogg",
+   "author": "Unknown",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 3.03,
+   "score": 18.9
+  },
+  {
+   "file": "wolf/2.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Jem_howls.ogg",
    "title": "File:Jem howls.ogg",
    "author": "amethysta",
@@ -267,7 +277,7 @@
    "score": 41.9
   },
   {
-   "file": "wolf/2.wav",
+   "file": "wolf/3.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Jem_howls.ogg",
    "title": "File:Jem howls.ogg",
    "author": "amethysta",
@@ -275,6 +285,26 @@
    "license_url": "",
    "seconds": 1.2,
    "score": 40.9
+  },
+  {
+   "file": "wolf/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg",
+   "title": "File:Wolf howls.ogg",
+   "author": "Unknown",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 3.06,
+   "score": 18.4
+  },
+  {
+   "file": "wolf/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg",
+   "title": "File:Wolf howls.ogg",
+   "author": "Unknown",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 3.06,
+   "score": 18.0
   }
  ],
  "duck": [
@@ -379,6 +409,36 @@
    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
    "seconds": 1.43,
    "score": 20.6
+  },
+  {
+   "file": "cow/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "title": "File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "author": "florianreichelt",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 3.06,
+   "score": 6.9
+  },
+  {
+   "file": "cow/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "title": "File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "author": "florianreichelt",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 3.06,
+   "score": -6.1
+  },
+  {
+   "file": "cow/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "title": "File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav",
+   "author": "florianreichelt",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 3.06,
+   "score": -7.4
   }
  ],
  "rooster": [
@@ -476,6 +536,26 @@
   },
   {
    "file": "sheep/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mudchute_sheep_1.ogg",
+   "title": "File:Mudchute sheep 1.ogg",
+   "author": "Secretlondon",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 1.14,
+   "score": 6.0
+  },
+  {
+   "file": "sheep/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Sheep_bleat.ogg",
+   "title": "File:Sheep bleat.ogg",
+   "author": "Eviatar Bach",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.5,
+   "score": 6.0
+  },
+  {
+   "file": "sheep/5.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
    "title": "File:Corner of a sheep field in summer.ogg",
    "author": "earthcalling",
@@ -485,7 +565,7 @@
    "score": 45.0
   },
   {
-   "file": "sheep/4.wav",
+   "file": "sheep/6.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
    "title": "File:Corner of a sheep field in summer.ogg",
    "author": "earthcalling",
@@ -495,7 +575,7 @@
    "score": 43.9
   },
   {
-   "file": "sheep/5.wav",
+   "file": "sheep/7.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg",
    "title": "File:Sheep bleating.ogg",
    "author": "earthcalling",
@@ -545,6 +625,16 @@
    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
    "seconds": 1.14,
    "score": 21.3
+  },
+  {
+   "file": "pig/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Pig_grunt_-_Erdie.ogg",
+   "title": "File:Pig grunt - Erdie.ogg",
+   "author": "erdie",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "seconds": 0.66,
+   "score": 6.0
   }
  ],
  "horse": [
@@ -744,6 +834,16 @@
   },
   {
    "file": "frog/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Rana_temporaria_croaking_at_Muhalnitsa,_Botevgrad,_Bulgaria.ogg",
+   "title": "File:Rana temporaria croaking at Muhalnitsa, Botevgrad, Bulgaria.ogg",
+   "author": "Dimit\u01cer Boevski",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.26,
+   "score": 20.0
+  },
+  {
+   "file": "frog/6.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Grasfrosch_Paarungsrufe.OGG",
    "title": "File:Grasfrosch Paarungsrufe.OGG",
    "author": "Rabe19 (Diskussion)",
@@ -753,7 +853,7 @@
    "score": 15.5
   },
   {
-   "file": "frog/6.wav",
+   "file": "frog/7.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga",
    "title": "File:Single Frog Croak.oga",
    "author": "MichaeltheFox8621",
@@ -761,16 +861,6 @@
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.47,
    "score": 99.0
-  },
-  {
-   "file": "frog/7.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga",
-   "title": "File:Single Frog Croak.oga",
-   "author": "MichaeltheFox8621",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.45,
-   "score": 98.6
   }
  ]
 }

@@ -17,6 +17,9 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 
 - `cow/0.wav`: [File:Single Cow Moo.ogg](https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg) by MichaeltheFox8621, CC BY-SA 4.0
 - `cow/1.wav`: [File:Mudchute cow 1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_cow_1.ogg) by Secretlondon, CC BY-SA 3.0
+- `cow/2.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
+- `cow/3.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
+- `cow/4.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
 
 ## dog
 
@@ -47,8 +50,8 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `frog/2.wav`: [File:Laubfrosch Balzruf.OGG](https://commons.wikimedia.org/wiki/File:Laubfrosch_Balzruf.OGG) by Rabe19 (Diskussion), Public domain
 - `frog/3.wav`: [File:Litoria fallax jul08.ogg](https://commons.wikimedia.org/wiki/File:Litoria_fallax_jul08.ogg) by Aviceda, CC BY-SA 3.0
 - `frog/4.wav`: [File:Wood Frogs calling in spring.ogg](https://commons.wikimedia.org/wiki/File:Wood_Frogs_calling_in_spring.ogg) by D. Gordon E. Robertson, CC BY-SA 3.0
-- `frog/5.wav`: [File:Grasfrosch Paarungsrufe.OGG](https://commons.wikimedia.org/wiki/File:Grasfrosch_Paarungsrufe.OGG) by Rabe19 (Diskussion), Public domain
-- `frog/6.wav`: [File:Single Frog Croak.oga](https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga) by MichaeltheFox8621, CC BY-SA 4.0
+- `frog/5.wav`: [File:Rana temporaria croaking at Muhalnitsa, Botevgrad, Bulgaria.ogg](https://commons.wikimedia.org/wiki/File:Rana_temporaria_croaking_at_Muhalnitsa,_Botevgrad,_Bulgaria.ogg) by Dimitǎr Boevski, CC BY-SA 4.0
+- `frog/6.wav`: [File:Grasfrosch Paarungsrufe.OGG](https://commons.wikimedia.org/wiki/File:Grasfrosch_Paarungsrufe.OGG) by Rabe19 (Diskussion), Public domain
 - `frog/7.wav`: [File:Single Frog Croak.oga](https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga) by MichaeltheFox8621, CC BY-SA 4.0
 
 ## goat
@@ -77,6 +80,7 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `pig/1.wav`: [File:Mudchute pig 2.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_pig_2.ogg) by Secretlondon, CC BY-SA 3.0
 - `pig/2.wav`: [File:Mudchute pig 3.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_pig_3.ogg) by Secretlondon, CC BY-SA 3.0
 - `pig/3.wav`: [File:618483 foleyhaven piglet-squeal-01.flac](https://commons.wikimedia.org/wiki/File:618483_foleyhaven_piglet-squeal-01.flac) by Foleyhaven  https://freesound.org/people/Foleyhaven/, CC0
+- `pig/4.wav`: [File:Pig grunt - Erdie.ogg](https://commons.wikimedia.org/wiki/File:Pig_grunt_-_Erdie.ogg) by erdie, CC BY 3.0
 
 ## puppy
 
@@ -103,13 +107,18 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `sheep/0.wav`: [File:Lamb bleating and its mother's response.flac](https://commons.wikimedia.org/wiki/File:Lamb_bleating_and_its_mother%27s_response.flac) by Yosef Ben Melamed, CC BY-SA 4.0
 - `sheep/1.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
 - `sheep/2.wav`: [File:Sheep bleating.ogg](https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg) by earthcalling, Public domain
-- `sheep/3.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
-- `sheep/4.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
-- `sheep/5.wav`: [File:Sheep bleating.ogg](https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg) by earthcalling, Public domain
+- `sheep/3.wav`: [File:Mudchute sheep 1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_sheep_1.ogg) by Secretlondon, CC BY-SA 3.0
+- `sheep/4.wav`: [File:Sheep bleat.ogg](https://commons.wikimedia.org/wiki/File:Sheep_bleat.ogg) by Eviatar Bach, CC0
+- `sheep/5.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
+- `sheep/6.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
+- `sheep/7.wav`: [File:Sheep bleating.ogg](https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg) by earthcalling, Public domain
 
 ## wolf
 
 - `wolf/0.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
-- `wolf/1.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
+- `wolf/1.wav`: [File:Wolf howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) by Unknown, Public domain
 - `wolf/2.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
+- `wolf/3.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
+- `wolf/4.wav`: [File:Wolf howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) by Unknown, Public domain
+- `wolf/5.wav`: [File:Wolf howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) by Unknown, Public domain
 
