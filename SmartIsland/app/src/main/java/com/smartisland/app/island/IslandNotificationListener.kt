@@ -69,7 +69,6 @@ class IslandNotificationListener : NotificationListenerService() {
             onAudioMode(audio.mode)
         }
         if (modeListener == null) main.post(modePoller)
-        com.smartisland.app.system.Permissions.returnToAppIfExpected(applicationContext)
     }
 
     private fun onAudioMode(mode: Int) {

@@ -36,16 +36,13 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -67,9 +64,6 @@ interface IslandActions {
 
 enum class IslandMode { IDLE, COMPACT, EXPANDED }
 
-/** Smallest gap between the screen top and an active (non-idle) island. */
-val MinActiveTop = 8.dp
-
 /** Padding around the pill so the glow/shadow is not clipped by the overlay window. */
 val IslandOuterPadding = 10.dp
 
@@ -89,7 +83,6 @@ fun IslandView(
     actions: IslandActions = IslandActions.None,
     maxWidth: Dp = 440.dp,
     glowAllowed: Boolean = true,
-    onFootprint: ((Rect) -> Unit)? = null,
 ) {
     val mode = modeFor(activity, expanded)
     val baseW = settings.widthDp.dp
@@ -110,10 +103,6 @@ fun IslandView(
     // Animated values are read only in the layout and draw phases, so a spring frame never recomposes.
     val widthState = animateDpAsState(targetW, springW, label = "islandW")
     val heightState = animateDpAsState(targetH, springH, label = "islandH")
-    // Live activities never touch the screen edge: when the idle pill sits at the very top (e.g. fitted
-    // to the camera), the active island drops down just enough to keep its rounded top visible.
-    val targetLift = if (mode == IslandMode.IDLE) 0.dp else (MinActiveTop - settings.topOffsetDp.dp).coerceAtLeast(0.dp)
-    val liftState = animateDpAsState(targetLift, springH, label = "islandLift")
 
     val compactRadius = baseH / 2
     val expandedRadius = (targetH / 2).coerceAtMost(40.dp)
@@ -141,21 +130,20 @@ fun IslandView(
     var holdW by remember { mutableStateOf(targetW) }
     var holdH by remember { mutableStateOf(targetH) }
     val footW = maxOf(targetW, holdW)
-    val footH = maxOf(targetH + targetLift, holdH)
+    val footH = maxOf(targetH, holdH)
     SideEffect {
         if (holdW != footW) holdW = footW
         if (holdH != footH) holdH = footH
     }
-    LaunchedEffect(targetW, targetH, targetLift) {
-        snapshotFlow { widthState.value == targetW && heightState.value == targetH && liftState.value == targetLift }.first { it }
+    LaunchedEffect(targetW, targetH) {
+        snapshotFlow { widthState.value == targetW && heightState.value == targetH }.first { it }
         holdW = targetW
-        holdH = targetH + targetLift
+        holdH = targetH
     }
 
     Box(
         modifier
             .padding(IslandOuterPadding)
-            .then(if (onFootprint != null) Modifier.onGloballyPositioned { onFootprint(it.boundsInWindow()) } else Modifier)
             .size(footW, footH),
         contentAlignment = Alignment.TopCenter,
     ) {
@@ -164,9 +152,8 @@ fun IslandView(
                 .layout { measurable, _ ->
                     val w = widthState.value.roundToPx()
                     val h = heightState.value.roundToPx()
-                    val lift = liftState.value.roundToPx()
                     val placeable = measurable.measure(Constraints.fixed(w, h))
-                    layout(w, h + lift) { placeable.place(0, lift) }
+                    layout(w, h) { placeable.place(0, 0) }
                 }
                 .drawBehind {
                     val glow = glowState.value

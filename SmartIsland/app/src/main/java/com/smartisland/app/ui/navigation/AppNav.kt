@@ -230,73 +230,59 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit() =
     if (isTabSwitch()) ExitTransition.None
     else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec) + fadeOut(tween(160))
 
-/**
- * Floating tab bar with a gradient capsule that slides between tabs. The slide runs in the layout and
- * draw phases, so switching tabs never recomposes the bar.
- */
+/** Floating glass tab bar. The tapped tab highlights instantly, before navigation even starts. */
 @Composable
 private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
-    val shape = RoundedCornerShape(30.dp)
-    // The tapped tab lights up immediately, before navigation has even started.
+    val shape = RoundedCornerShape(28.dp)
     var tapped by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(current) { tapped = null }
-    val selectedIndex = tabs.indexOfFirst { it.route == (tapped ?: current) }.coerceAtLeast(0)
-    BoxWithConstraints(
+    val active = tapped ?: current
+    Row(
         Modifier
             .navigationBarsPadding()
-            .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+            .padding(start = 14.dp, end = 14.dp, bottom = 10.dp)
             .fillMaxWidth()
-            .shadow(24.dp, shape, ambientColor = Palette.Primary.copy(alpha = 0.25f), spotColor = Color.Black.copy(alpha = 0.2f))
+            .shadow(20.dp, shape, ambientColor = Color.Black.copy(alpha = 0.12f), spotColor = Color.Black.copy(alpha = 0.18f))
             .clip(shape)
             .background(Palette.TabBar)
             .border(1.dp, Palette.Outline, shape)
-            .padding(6.dp),
+            .padding(vertical = 8.dp, horizontal = 6.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
     ) {
-        val segment = maxWidth / tabs.size
-        val offset = animateDpAsState(segment * selectedIndex, spring(dampingRatio = 0.85f, stiffness = 1400f), label = "tabX")
-        Box(
-            Modifier
-                .offset { IntOffset(offset.value.roundToPx(), 0) }
-                .width(segment)
-                .height(56.dp)
-                .drawBehind {
-                    val r = 24.dp.toPx()
-                    drawRoundRect(
-                        Brush.linearGradient(listOf(Color(0xFF8E72FF), Color(0xFF5B3DF5))),
-                        cornerRadius = CornerRadius(r, r),
-                    )
-                },
-        )
-        Row(Modifier.fillMaxWidth()) {
-            tabs.forEachIndexed { index, tab ->
-                val selected = index == selectedIndex
-                val tint = if (selected) Color.White else Palette.TextSecondary
-                Column(
+        tabs.forEach { tab ->
+            val selected = tab.route == active
+            Column(
+                Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(18.dp))
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) {
+                        tapped = tab.route
+                        onSelect(tab.route)
+                    }
+                    .padding(vertical = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(
                     Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                        ) {
-                            tapped = tab.route
-                            onSelect(tab.route)
-                        },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(if (selected) Palette.Primary.copy(alpha = 0.18f) else Color.Transparent)
+                        .padding(horizontal = 16.dp, vertical = 5.dp),
                 ) {
-                    Icon(if (selected) tab.icon else tab.idleIcon, tab.label, tint = tint, modifier = Modifier.size(22.dp))
-                    Spacer(Modifier.height(3.dp))
-                    Text(
-                        tab.label,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            letterSpacing = 0.2.sp,
-                        ),
-                        color = tint,
-                        maxLines = 1,
+                    Icon(
+                        if (selected) tab.icon else tab.idleIcon, tab.label,
+                        tint = if (selected) Palette.PrimarySoft else Palette.TextSecondary,
+                        modifier = Modifier.size(22.dp),
                     )
                 }
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    tab.label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (selected) Palette.TextPrimary else Palette.TextSecondary,
+                )
             }
         }
     }

@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.smartisland.app.BuildConfig
 import com.smartisland.app.data.Plan
+import com.smartisland.app.system.CrashLog
 import com.smartisland.app.system.OemGuides
 import com.smartisland.app.ui.appContainer
 import com.smartisland.app.ui.components.AppDialog
@@ -153,6 +154,18 @@ fun SettingsScreen(nav: AppNavigator) {
                 if (premium.isPremium && premium.autoRenew) {
                     Divider()
                     SettingRow(Icons.Rounded.Cancel, Palette.Error, "Cancel subscription", "Keeps PRO until the end of the period", onClick = { confirmCancel = true })
+                }
+            }
+
+            val crash = remember { CrashLog.read(context) }
+            if (crash != null) {
+                SectionHeader("Support")
+                GlassCard(padding = 12.dp) {
+                    SettingRow(Icons.Rounded.BugReport, Palette.Error, "Send crash report", "The app stopped earlier. Share this so it can be fixed", onClick = {
+                        val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, crash)
+                        runCatching { context.startActivity(Intent.createChooser(send, "Send crash report")) }
+                        CrashLog.clear(context)
+                    })
                 }
             }
 

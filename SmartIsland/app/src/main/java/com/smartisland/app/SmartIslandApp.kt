@@ -8,6 +8,7 @@ import com.smartisland.app.billing.MockBillingGateway
 import com.smartisland.app.data.PremiumRepository
 import com.smartisland.app.data.SettingsRepository
 import com.smartisland.app.island.IslandEngine
+import com.smartisland.app.system.CrashLog
 import com.smartisland.app.system.VolumeController
 import com.smartisland.app.widget.WidgetUpdater
 import kotlinx.coroutines.MainScope
@@ -34,6 +35,7 @@ class SmartIslandApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        CrashLog.install(this)
         container = AppContainer(this)
         IslandEngine.bindConfig(container.settings.settings, container.premium.state)
 

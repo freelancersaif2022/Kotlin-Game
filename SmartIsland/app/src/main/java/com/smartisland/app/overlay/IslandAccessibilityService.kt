@@ -18,7 +18,6 @@ import com.smartisland.app.data.PremiumState
 import com.smartisland.app.island.IslandActivity
 import com.smartisland.app.island.IslandEngine
 import com.smartisland.app.system.BatterySnapshot
-import com.smartisland.app.system.Permissions
 import com.smartisland.app.system.SystemActions
 import com.smartisland.app.system.VolumeController
 import com.smartisland.app.system.VolumeStream
@@ -78,7 +77,6 @@ class IslandAccessibilityService : AccessibilityService() {
         registerTorchCallback()
         startTicker()
         WidgetUpdater.updateAll(this)
-        Permissions.returnToAppIfExpected(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {

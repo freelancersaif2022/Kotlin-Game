@@ -190,7 +190,6 @@ fun PermissionsScreen(nav: AppNavigator, onDone: (() -> Unit)? = null) {
             confirmText = "Agree & open settings",
             onConfirm = {
                 disclosure = null
-                Permissions.expectReturn(context)
                 Permissions.launch(context, *Permissions.accessibilitySettings(context))
                 snack.show("Tap Smart Island, then turn it on")
             },
@@ -205,7 +204,6 @@ fun PermissionsScreen(nav: AppNavigator, onDone: (() -> Unit)? = null) {
             accent = Palette.Secondary,
             onConfirm = {
                 disclosure = null
-                Permissions.expectReturn(context)
                 Permissions.launch(context, *Permissions.notificationAccessSettings(context))
                 snack.show("Allow notification access for Smart Island")
             },

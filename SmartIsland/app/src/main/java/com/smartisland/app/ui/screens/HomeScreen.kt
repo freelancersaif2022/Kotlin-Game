@@ -112,7 +112,6 @@ fun HomeScreen(nav: AppNavigator) {
                 enabled = settings.enabled,
                 onSetup = { nav.go(Routes.PERMISSIONS) },
                 onRestart = {
-                    Permissions.expectReturn(context)
                     Permissions.launch(context, *Permissions.accessibilitySettings(context))
                 },
                 onToggle = { on -> container.settings.update { it.copy(enabled = on) } },

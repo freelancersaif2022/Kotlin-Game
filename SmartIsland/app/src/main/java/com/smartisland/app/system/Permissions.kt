@@ -108,24 +108,6 @@ object Permissions {
         return runCatching { context.startActivity(appDetails(context).prepared()) }.isSuccess
     }
 
-    /** Remembers that the user went to grant a permission, so the app can come back once it's on. */
-    fun expectReturn(context: Context) {
-        context.getSharedPreferences(RETURN_PREFS, Context.MODE_PRIVATE).edit()
-            .putLong(RETURN_KEY, System.currentTimeMillis()).apply()
-    }
-
-    /** Called when a service gets enabled: reopens the setup screen if the user just came from it. */
-    fun returnToAppIfExpected(context: Context) {
-        val prefs = context.getSharedPreferences(RETURN_PREFS, Context.MODE_PRIVATE)
-        val at = prefs.getLong(RETURN_KEY, 0L)
-        if (at == 0L || System.currentTimeMillis() - at > 5 * 60_000L) return
-        prefs.edit().remove(RETURN_KEY).apply()
-        val intent = Intent(context, com.smartisland.app.MainActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            .putExtra(com.smartisland.app.MainActivity.EXTRA_ROUTE, "permissions")
-        runCatching { context.startActivity(intent) }
-    }
-
     private fun Context.findActivity(): android.app.Activity? {
         var c: Context? = this
         while (c is android.content.ContextWrapper) {
@@ -135,6 +117,4 @@ object Permissions {
         return null
     }
 
-    private const val RETURN_PREFS = "permission_return"
-    private const val RETURN_KEY = "expected_at"
 }
