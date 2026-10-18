@@ -10,6 +10,9 @@ OUT="$2"
 PKG=com.goldenhour.golden_hour
 mkdir -p "$OUT"
 
+# Never let a single adb call hang the job.
+adb() { timeout 60 command adb "$@"; }
+
 fail() {
   echo "❌ $*"
   adb logcat -d > "$OUT/logcat.txt" || true
