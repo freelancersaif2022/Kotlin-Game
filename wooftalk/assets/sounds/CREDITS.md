@@ -65,8 +65,6 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 ## elephant
 
 - `elephant/0.wav`: [File:Elephant voice - trumpeting.ogg](https://commons.wikimedia.org/wiki/File:Elephant_voice_-_trumpeting.ogg) by தகவலுழவன், CC0
-- `elephant/1.wav`: [File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg](https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg) by King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F, CC BY 2.5
-- `elephant/2.wav`: [File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg](https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg) by King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F, CC BY 2.5
 
 ## frog
 

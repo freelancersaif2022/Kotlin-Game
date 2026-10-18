@@ -222,6 +222,66 @@ const _palettes = {
     Color(0xFFFF3B3B),
     Color(0xFFFFB627),
   ),
+  'tiger': _Palette(
+    Color(0xFFFF9A3C),
+    Color(0xFFFFC27E),
+    Color(0xFFE0701F),
+    Color(0xFFFFE9D6),
+    Color(0xFFFFFFFF),
+    iris: Color(0xFF7A9A2A),
+  ),
+  'lion': _Palette(
+    Color(0xFFF5C26B),
+    Color(0xFFFFDFA3),
+    Color(0xFFD99A3D),
+    Color(0xFFC8742A),
+    Color(0xFFFFF3DC),
+    iris: Color(0xFF8A5A1F),
+  ),
+  'zebra': _Palette(
+    Color(0xFFFFFFFF),
+    Color(0xFFFFFFFF),
+    Color(0xFFD9DCE4),
+    Color(0xFF2B2833),
+    Color(0xFF4A4552),
+  ),
+  'deer': _Palette(
+    Color(0xFFC98B55),
+    Color(0xFFE8B585),
+    Color(0xFF9E6435),
+    Color(0xFFF2C9A2),
+    Color(0xFFFFF4E8),
+  ),
+  'bird': _Palette(
+    Color(0xFF5BB8FF),
+    Color(0xFFA8DCFF),
+    Color(0xFF2F86D6),
+    Color(0xFF2F86D6),
+    Color(0xFFFFB627),
+    iris: Color(0xFF1C2A44),
+  ),
+  'elephant': _Palette(
+    Color(0xFFA8B2C2),
+    Color(0xFFCDD4E0),
+    Color(0xFF7D8799),
+    Color(0xFFFFC4D0),
+    Color(0xFFBCC5D3),
+  ),
+  'monkey': _Palette(
+    Color(0xFF9C6B45),
+    Color(0xFFC08A5E),
+    Color(0xFF6E4527),
+    Color(0xFFF2D7B8),
+    Color(0xFFF2D7B8),
+  ),
+  'owl': _Palette(
+    Color(0xFFB07A4C),
+    Color(0xFFD39E6C),
+    Color(0xFF7E5232),
+    Color(0xFFF6E6CC),
+    Color(0xFFFFC233),
+    iris: Color(0xFFE08A00),
+  ),
   'frog': _Palette(
     Color(0xFF7ED957),
     Color(0xFFB5F08A),
@@ -315,6 +375,22 @@ class _AnimalPainter extends CustomPainter {
         _rooster(canvas);
       case 'frog':
         _frog(canvas);
+      case 'tiger':
+        _bigCat(canvas, lion: false);
+      case 'lion':
+        _bigCat(canvas, lion: true);
+      case 'zebra':
+        _zebra(canvas);
+      case 'deer':
+        _deer(canvas);
+      case 'bird':
+        _bird(canvas);
+      case 'elephant':
+        _elephant(canvas);
+      case 'monkey':
+        _monkey(canvas);
+      case 'owl':
+        _owl(canvas);
       default:
         _dog(canvas);
     }
@@ -1138,6 +1214,483 @@ class _AnimalPainter extends CustomPainter {
       c.restore();
       c.drawPath(m, _stroke);
     }
+  }
+
+  void _bigCat(Canvas c, {required bool lion}) {
+    if (lion) {
+      // scalloped mane
+      final mane = Path();
+      const n = 16;
+      for (var i = 0; i <= n; i++) {
+        final a = i / n * 2 * math.pi;
+        final r = 86.0 + (i.isEven ? 0 : 0);
+        final p = Offset(100 + math.cos(a) * r * 0.92, 108 + math.sin(a) * r);
+        if (i == 0) {
+          mane.moveTo(p.dx, p.dy);
+        } else {
+          final prev = (i - 0.5) / n * 2 * math.pi;
+          final ctrl = Offset(
+            100 + math.cos(prev) * (r + 18) * 0.92,
+            108 + math.sin(prev) * (r + 18),
+          );
+          mane.quadraticBezierTo(ctrl.dx, ctrl.dy, p.dx, p.dy);
+        }
+      }
+      mane.close();
+      c.drawPath(
+        mane,
+        _shade(
+          mane.getBounds(),
+          const Color(0xFFE39448),
+          pal.ear,
+          const Color(0xFF9A5418),
+        ),
+      );
+      c.drawPath(mane, _stroke);
+    }
+    for (final side in [-1, 1]) {
+      final e = Offset(100 + side * 44.0, 66 - (ear * side * 4));
+      c.drawCircle(e, 18, _fill(pal.base));
+      c.drawCircle(e, 18, _stroke);
+      c.drawCircle(e, 10, _fill(lion ? pal.dark : pal.ear));
+    }
+    final head = _headPath(w: 132, h: 118, cy: 112);
+    _drawHead(c, head);
+    if (!lion) {
+      c.save();
+      c.clipPath(head);
+      final stripe = _fill(const Color(0xFF2B1B1B));
+      void tri(double x, double y, double w, double h, double rot) {
+        c.save();
+        c.translate(x, y);
+        c.rotate(rot);
+        c.drawPath(
+          Path()
+            ..moveTo(-w / 2, 0)
+            ..quadraticBezierTo(0, h * 0.2, w / 2, 0)
+            ..lineTo(0, h)
+            ..close(),
+          stripe,
+        );
+        c.restore();
+      }
+
+      tri(100, 52, 14, 22, 0);
+      tri(84, 54, 9, 16, -0.25);
+      tri(116, 54, 9, 16, 0.25);
+      for (final side in [-1, 1]) {
+        tri(100 + side * 64.0, 104, 10, 26, side * 1.45);
+        tri(100 + side * 64.0, 124, 8, 22, side * 1.55);
+      }
+      c.restore();
+    }
+    final muzzle = Rect.fromCenter(
+      center: const Offset(100, 136),
+      width: 70,
+      height: 46,
+    );
+    c.drawOval(muzzle, _fill(pal.muzzle));
+    _eyes(c, y: 98, dx: 27, r: 13);
+    _brows(c, y: 78);
+    _cheeks(c, y: 124, dx: 46);
+    _nose(c, y: 126, w: 20, color: const Color(0xFF5E2F2F));
+    _mouth(c, y: 141, w: 30);
+  }
+
+  void _zebra(Canvas c) {
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 30, 58);
+      c.rotate(side * (0.3 + ear * 0.5));
+      final e = Path()
+        ..moveTo(-12, 12)
+        ..quadraticBezierTo(-6, -22, 0, -34)
+        ..quadraticBezierTo(8, -20, 12, 12)
+        ..close();
+      c.drawPath(e, _fill(Colors.white));
+      c.save();
+      c.clipPath(e);
+      c.drawRect(const Rect.fromLTWH(-14, -36, 28, 14), _fill(pal.ear));
+      c.restore();
+      c.drawPath(e, _stroke);
+      c.restore();
+    }
+    // striped mohawk mane
+    final mane = Path()
+      ..moveTo(84, 60)
+      ..quadraticBezierTo(86, 26, 100, 30)
+      ..quadraticBezierTo(114, 26, 116, 60)
+      ..close();
+    c.drawPath(mane, _fill(pal.ear));
+    c.drawPath(mane, _stroke..strokeWidth = 3);
+    final head = _headPath(w: 108, h: 136, cy: 110);
+    _drawHead(c, head);
+    c.save();
+    c.clipPath(head);
+    final stripe = Paint()
+      ..color = pal.ear
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i < 4; i++) {
+      final y = 52.0 + i * 13;
+      c.drawPath(
+        Path()
+          ..moveTo(84, y)
+          ..quadraticBezierTo(100, y + 8, 116, y),
+        stripe,
+      );
+    }
+    for (final side in [-1, 1]) {
+      for (var i = 0; i < 4; i++) {
+        final y = 84.0 + i * 15;
+        c.drawPath(
+          Path()
+            ..moveTo(100 + side * 58.0, y)
+            ..quadraticBezierTo(
+              100 + side * 46.0,
+              y + 6,
+              100 + side * 36.0,
+              y + 14,
+            ),
+          stripe,
+        );
+      }
+    }
+    c.restore();
+    c.drawPath(head, _stroke);
+    _eyes(c, y: 94, dx: 24, r: 12);
+    final muzzle = Rect.fromCenter(
+      center: const Offset(100, 148),
+      width: 84,
+      height: 52,
+    );
+    c.drawOval(
+      muzzle,
+      _shade(muzzle, const Color(0xFF6A6474), pal.muzzle, pal.ear),
+    );
+    c.drawOval(muzzle, _stroke..strokeWidth = 3);
+    for (final side in [-1, 1]) {
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100 + side * 17.0, 140),
+          width: 9,
+          height: 12,
+        ),
+        _fill(const Color(0xFF15121A)),
+      );
+    }
+    _cheeks(c, y: 118, dx: 38);
+    _mouth(c, y: 156, w: 26);
+  }
+
+  void _deer(Canvas c) {
+    // antlers
+    final antler = Paint()
+      ..color = const Color(0xFF7A4A26)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    for (final side in [-1.0, 1.0]) {
+      final p = Path()
+        ..moveTo(100 + side * 22, 62)
+        ..quadraticBezierTo(100 + side * 30, 36, 100 + side * 48, 22)
+        ..moveTo(100 + side * 30, 44)
+        ..lineTo(100 + side * 16, 30)
+        ..moveTo(100 + side * 40, 30)
+        ..lineTo(100 + side * 52, 38);
+      c.drawPath(p, _stroke..strokeWidth = 11);
+      c.drawPath(p, antler);
+    }
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 52, 84);
+      c.rotate(side * (0.4 + ear * 0.6));
+      final e = Rect.fromCenter(
+        center: Offset(side * 16.0, 0),
+        width: 40,
+        height: 20,
+      );
+      c.drawOval(e, _fill(pal.base));
+      c.drawOval(e.deflate(5), _fill(pal.ear));
+      c.drawOval(e, _stroke..strokeWidth = 3);
+      c.restore();
+    }
+    final head = _headPath(w: 112, h: 128, cy: 112);
+    _drawHead(c, head);
+    c.save();
+    c.clipPath(head);
+    final spot = _fill(Colors.white.withValues(alpha: 0.75));
+    for (final o in const [
+      Offset(84, 62),
+      Offset(100, 56),
+      Offset(116, 62),
+      Offset(92, 70),
+      Offset(108, 70),
+    ]) {
+      c.drawCircle(o, 3.2, spot);
+    }
+    c.restore();
+    final muzzle = Rect.fromCenter(
+      center: const Offset(100, 144),
+      width: 60,
+      height: 42,
+    );
+    c.drawOval(muzzle, _fill(pal.muzzle));
+    _eyes(c, y: 100, dx: 24, r: 14);
+    _brows(c, y: 80);
+    _cheeks(c, y: 124, dx: 40);
+    _nose(c, y: 134, w: 20);
+    _mouth(c, y: 150, w: 24);
+  }
+
+  void _bird(Canvas c) {
+    // head feather tuft
+    for (var i = -1; i <= 1; i++) {
+      c.save();
+      c.translate(100 + i * 8.0, 54);
+      c.rotate(i * 0.4 + ear * 0.8);
+      final f = Path()
+        ..moveTo(-6, 6)
+        ..quadraticBezierTo(-6, -18, 2, -26)
+        ..quadraticBezierTo(8, -12, 6, 6)
+        ..close();
+      c.drawPath(f, _fill(pal.dark));
+      c.drawPath(f, _stroke..strokeWidth = 2.6);
+      c.restore();
+    }
+    // wings
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 62, 130);
+      c.rotate(side * (0.5 + ear * 0.8));
+      final w = Path()
+        ..moveTo(0, -24)
+        ..quadraticBezierTo(side * 22.0, -4, side * 6.0, 26)
+        ..quadraticBezierTo(side * -6.0, 0, 0, -24)
+        ..close();
+      c.drawPath(w, _fill(pal.dark));
+      c.drawPath(w, _stroke..strokeWidth = 3);
+      c.restore();
+    }
+    final head = _headPath(w: 132, h: 128, cy: 116);
+    _drawHead(c, head);
+    c.save();
+    c.clipPath(head);
+    c.drawOval(
+      Rect.fromCenter(center: const Offset(100, 168), width: 100, height: 80),
+      _fill(Colors.white.withValues(alpha: 0.9)),
+    );
+    c.restore();
+    c.drawPath(head, _stroke);
+    _eyes(c, y: 100, dx: 26, r: 15);
+    _cheeks(c, y: 124, dx: 46);
+    final open = mouth.clamp(0.0, 1.0) * 12;
+    final beak = _shade(
+      const Rect.fromLTWH(80, 110, 40, 40),
+      const Color(0xFFFFD36B),
+      pal.muzzle,
+      const Color(0xFFE08A00),
+    );
+    if (open > 1) {
+      c.drawPath(
+        Path()
+          ..moveTo(88, 128)
+          ..lineTo(112, 128)
+          ..lineTo(100, 140 + open)
+          ..close(),
+        _fill(const Color(0xFF5E1A2B)),
+      );
+    }
+    final lower = Path()
+      ..moveTo(88, 130)
+      ..lineTo(112, 130)
+      ..lineTo(100, 144 + open)
+      ..close();
+    c.drawPath(lower, beak);
+    c.drawPath(lower, _stroke..strokeWidth = 2.8);
+    final upper = Path()
+      ..moveTo(84, 128 - open * 0.3)
+      ..quadraticBezierTo(100, 112, 116, 128 - open * 0.3)
+      ..lineTo(100, 140 - open * 0.3)
+      ..close();
+    c.drawPath(upper, beak);
+    c.drawPath(upper, _stroke..strokeWidth = 2.8);
+  }
+
+  void _elephant(Canvas c) {
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 58, 104);
+      c.rotate(side * ear * 0.5);
+      final e = Rect.fromCenter(
+        center: Offset(side * 10.0, 0),
+        width: 66,
+        height: 84,
+      );
+      c.drawOval(e, _shade(e, pal.light, pal.base, pal.dark));
+      c.drawOval(e.deflate(10), _fill(pal.ear.withValues(alpha: 0.7)));
+      c.drawOval(e, _stroke);
+      c.restore();
+    }
+    final head = _headPath(w: 118, h: 120, cy: 106);
+    _drawHead(c, head);
+    _eyes(c, y: 92, dx: 26, r: 12);
+    _brows(c, y: 74);
+    _cheeks(c, y: 118, dx: 40);
+    // mouth peeks out beside the trunk
+    final open = mouth.clamp(0.0, 1.0);
+    final mouthCenter = const Offset(124, 146);
+    if (open < 0.08) {
+      c.drawPath(
+        Path()
+          ..moveTo(mouthCenter.dx - 8, mouthCenter.dy - 2)
+          ..quadraticBezierTo(
+            mouthCenter.dx,
+            mouthCenter.dy + 6,
+            mouthCenter.dx + 10,
+            mouthCenter.dy - 3,
+          ),
+        _stroke,
+      );
+    } else {
+      final m = Rect.fromCenter(
+        center: mouthCenter.translate(0, 4 * open),
+        width: 20,
+        height: 8 + 16 * open,
+      );
+      c.drawOval(m, _fill(const Color(0xFF5E1A2B)));
+      c.drawOval(m, _stroke..strokeWidth = 2.6);
+    }
+    // trunk (swings up while talking)
+    final lift = open * 22;
+    final trunk = Path()
+      ..moveTo(88, 116)
+      ..cubicTo(86, 150, 84, 168, 96 - lift * 0.4, 182 - lift)
+      ..quadraticBezierTo(
+        106 - lift * 0.2,
+        186 - lift,
+        110 - lift * 0.1,
+        176 - lift,
+      )
+      ..cubicTo(102, 166, 108, 146, 112, 116)
+      ..close();
+    c.drawPath(trunk, _shade(trunk.getBounds(), pal.light, pal.base, pal.dark));
+    c.drawPath(trunk, _stroke);
+    final wrinkle = _stroke
+      ..strokeWidth = 2
+      ..color = ink.withValues(alpha: 0.5);
+    for (final y in [138.0, 150.0, 162.0]) {
+      c.drawLine(Offset(90, y), Offset(104, y + 1), wrinkle);
+    }
+  }
+
+  void _monkey(Canvas c) {
+    for (final side in [-1, 1]) {
+      final e = Offset(100 + side * 64.0, 104 - ear * side * 4);
+      c.drawCircle(e, 22, _fill(pal.base));
+      c.drawCircle(e, 22, _stroke);
+      c.drawCircle(e, 13, _fill(pal.ear));
+    }
+    final head = _headPath(w: 132, h: 124, cy: 110);
+    _drawHead(c, head);
+    // heart-shaped face
+    final face = Path()
+      ..moveTo(100, 80)
+      ..cubicTo(86, 60, 50, 66, 56, 104)
+      ..cubicTo(58, 128, 70, 166, 100, 168)
+      ..cubicTo(130, 166, 142, 128, 144, 104)
+      ..cubicTo(150, 66, 114, 60, 100, 80)
+      ..close();
+    c.drawPath(
+      face,
+      _shade(
+        face.getBounds(),
+        Colors.white,
+        pal.muzzle,
+        const Color(0xFFDDBA94),
+      ),
+    );
+    c.drawPath(face, _stroke..strokeWidth = 2.6);
+    _eyes(c, y: 100, dx: 22, r: 13);
+    _cheeks(c, y: 124, dx: 34);
+    final nos = _fill(const Color(0xFF6E4527));
+    c.drawOval(
+      Rect.fromCenter(center: const Offset(94, 126), width: 6, height: 8),
+      nos,
+    );
+    c.drawOval(
+      Rect.fromCenter(center: const Offset(106, 126), width: 6, height: 8),
+      nos,
+    );
+    _mouth(c, y: 142, w: 32);
+  }
+
+  void _owl(Canvas c) {
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 44, 62);
+      c.rotate(side * (0.35 + ear * 0.5));
+      final t = Path()
+        ..moveTo(-12, 12)
+        ..lineTo(0, -26)
+        ..lineTo(12, 12)
+        ..close();
+      c.drawPath(t, _fill(pal.dark));
+      c.drawPath(t, _stroke);
+      c.restore();
+    }
+    final head = _headPath(w: 140, h: 128, cy: 112);
+    _drawHead(c, head);
+    c.save();
+    c.clipPath(head);
+    final feather = _stroke
+      ..strokeWidth = 2
+      ..color = pal.dark.withValues(alpha: 0.5);
+    for (var row = 0; row < 3; row++) {
+      for (var i = -2; i <= 2; i++) {
+        final x = 100 + i * 16.0 + (row.isOdd ? 8 : 0), y = 150 + row * 10.0;
+        c.drawArc(
+          Rect.fromCenter(center: Offset(x, y), width: 12, height: 10),
+          0,
+          math.pi,
+          false,
+          feather,
+        );
+      }
+    }
+    c.restore();
+    for (final side in [-1, 1]) {
+      final disc = Rect.fromCenter(
+        center: Offset(100 + side * 28.0, 102),
+        width: 54,
+        height: 54,
+      );
+      c.drawOval(disc, _fill(pal.ear));
+      c.drawOval(disc, _stroke..strokeWidth = 2.4);
+    }
+    _eyes(c, y: 102, dx: 28, r: 17);
+    final open = mouth.clamp(0.0, 1.0) * 10;
+    final beak = _fill(pal.muzzle);
+    if (open > 1) {
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100, 138 + open / 2),
+          width: 12,
+          height: 6 + open,
+        ),
+        _fill(const Color(0xFF5E1A2B)),
+      );
+    }
+    final b = Path()
+      ..moveTo(92, 122)
+      ..quadraticBezierTo(100, 116, 108, 122)
+      ..quadraticBezierTo(104, 134, 100, 140 - open * 0.3)
+      ..quadraticBezierTo(96, 134, 92, 122)
+      ..close();
+    c.drawPath(b, beak);
+    c.drawPath(b, _stroke..strokeWidth = 2.6);
   }
 
   @override

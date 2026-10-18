@@ -165,6 +165,14 @@ const voiceTimings = <String, VoiceTiming>{
   'horse': VoiceTiming(3, 0.2),
   'goat': VoiceTiming(6, 0.12),
   'frog': VoiceTiming(12, 0.06, doubleOnLong: true),
+  'tiger': VoiceTiming(4, 0.2),
+  'lion': VoiceTiming(4, 0.25),
+  'zebra': VoiceTiming(6, 0.12),
+  'deer': VoiceTiming(8, 0.1),
+  'bird': VoiceTiming(16, 0.05, doubleOnLong: true),
+  'elephant': VoiceTiming(3, 0.25),
+  'monkey': VoiceTiming(10, 0.08, doubleOnLong: true),
+  'owl': VoiceTiming(6, 0.15),
 };
 
 class TranslateRequest {

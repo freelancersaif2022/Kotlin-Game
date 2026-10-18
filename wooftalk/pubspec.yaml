@@ -78,6 +78,14 @@ flutter:
     - assets/sounds/horse/
     - assets/sounds/goat/
     - assets/sounds/frog/
+    - assets/sounds/tiger/
+    - assets/sounds/lion/
+    - assets/sounds/zebra/
+    - assets/sounds/deer/
+    - assets/sounds/bird/
+    - assets/sounds/elephant/
+    - assets/sounds/monkey/
+    - assets/sounds/owl/
 
   fonts:
     - family: Fredoka

@@ -6,9 +6,10 @@ and nothing saved.
 
 ## Features
 
-- **12 voices with real animal recordings**: Buddy Dog (free), plus 11 locked
+- **20 voices with real animal recordings**: Buddy Dog (free), plus 19 locked
   voices: Tiny Puppy, Kitty Cat, Night Wolf, Silly Duck, Moo Cow, Loud Rooster,
-  Fluffy Sheep, Happy Pig, Wild Horse, Silly Goat and Froggy.
+  Fluffy Sheep, Happy Pig, Wild Horse, Silly Goat, Froggy, Big Tiger, King Lion,
+  Cool Zebra, Sweet Deer, Tweety Bird, Big Elephant, Cheeky Monkey and Night Owl.
 - **Unlock with rewarded ads**: watch 2 rewarded videos to unlock a voice forever.
 - **Interstitial ad** after every 2nd translation (free users only).
 - **PRO screen** with mock Monthly ($2.99) / Yearly ($19.99) plans that unlock

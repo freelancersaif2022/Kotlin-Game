@@ -202,64 +202,71 @@ class VoiceCard extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 66,
-                  height: 66,
-                  decoration: BoxDecoration(
-                    color: voice.accent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Opacity(
-                    opacity: locked ? 0.55 : 1,
-                    child: Center(
-                      child: AnimalCharacter(
-                        key: ValueKey('${voice.id}$selected'),
-                        voiceId: voice.id,
-                        size: 66,
-                        shadow: false,
-                        alive: selected,
+            SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 66,
+                    height: 66,
+                    decoration: BoxDecoration(
+                      color: voice.accent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Opacity(
+                      opacity: locked ? 0.55 : 1,
+                      child: Center(
+                        child: AnimalCharacter(
+                          key: ValueKey('${voice.id}$selected'),
+                          voiceId: voice.id,
+                          size: 66,
+                          shadow: false,
+                          alive: selected,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  voice.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.title(13.5),
-                ),
-                const SizedBox(height: 3),
-                if (locked)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var i = 0; i < 2; i++)
-                        Container(
-                          width: 16,
-                          height: 5,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            color: i < adProgress
-                                ? AppColors.mint
-                                : AppColors.inkSoft.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        ),
-                    ],
-                  )
-                else
+                  const SizedBox(height: 6),
                   Text(
-                    selected ? 'Selected' : (voice.free ? 'Free' : 'Unlocked'),
-                    style: AppTheme.label(
-                      11,
-                      color: selected ? voice.color : AppColors.inkSoft,
-                    ),
+                    voice.name,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.title(13.5),
                   ),
-              ],
+                  const SizedBox(height: 3),
+                  if (locked)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (var i = 0; i < 2; i++)
+                          Container(
+                            width: 16,
+                            height: 5,
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            decoration: BoxDecoration(
+                              color: i < adProgress
+                                  ? AppColors.mint
+                                  : AppColors.inkSoft.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                      ],
+                    )
+                  else
+                    Text(
+                      selected
+                          ? 'Selected'
+                          : (voice.free ? 'Free' : 'Unlocked'),
+                      style: AppTheme.label(
+                        11,
+                        color: selected ? voice.color : AppColors.inkSoft,
+                      ),
+                    ),
+                ],
+              ),
             ),
             if (locked)
               Positioned(

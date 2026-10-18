@@ -1173,26 +1173,6 @@
    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
    "seconds": 0.94,
    "score": 31.7
-  },
-  {
-   "file": "elephant/1.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg",
-   "title": "File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg",
-   "author": "King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F",
-   "license": "CC BY 2.5",
-   "license_url": "https://creativecommons.org/licenses/by/2.5",
-   "seconds": 3.55,
-   "score": 24.4
-  },
-  {
-   "file": "elephant/2.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg",
-   "title": "File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg",
-   "author": "King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F",
-   "license": "CC BY 2.5",
-   "license_url": "https://creativecommons.org/licenses/by/2.5",
-   "seconds": 3.06,
-   "score": 23.5
   }
  ],
  "monkey": [
