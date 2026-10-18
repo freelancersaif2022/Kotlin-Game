@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.wooftalk.dogtranslator"
+        applicationId = "com.wooftalk.animaltranslator"
         minSdk = 24
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
