@@ -2,177 +2,177 @@
  "dog": [
   {
    "file": "dog/0.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Personality-of-Wild-Male-Crested-Macaques-(Macaca-nigra)-pone.0069383.s001.oga",
-   "title": "File:Personality-of-Wild-Male-Crested-Macaques-(Macaca-nigra)-pone.0069383.s001.oga",
-   "author": "Neumann C, Agil M, Widdig A, Engelhardt A",
-   "license": "CC BY 2.5",
-   "license_url": "https://creativecommons.org/licenses/by/2.5",
+   "source": "https://commons.wikimedia.org/wiki/File:Rottweiler_Barking.oga",
+   "title": "File:Rottweiler Barking.oga",
+   "author": "MichaeltheFox8621",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.41,
-   "score": 124.2
+   "score": 74.7
   },
   {
    "file": "dog/1.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Personality-of-Wild-Male-Crested-Macaques-(Macaca-nigra)-pone.0069383.s001.oga",
-   "title": "File:Personality-of-Wild-Male-Crested-Macaques-(Macaca-nigra)-pone.0069383.s001.oga",
-   "author": "Neumann C, Agil M, Widdig A, Engelhardt A",
-   "license": "CC BY 2.5",
-   "license_url": "https://creativecommons.org/licenses/by/2.5",
-   "seconds": 0.41,
-   "score": 124.2
-  },
-  {
-   "file": "dog/2.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Dog_barking.webm",
    "title": "File:Dog barking.webm",
    "author": "User:Dr. Nono YesMaybe",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.54,
-   "score": 75.6
+   "score": 69.6
+  },
+  {
+   "file": "dog/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Perro_ladrando.ogg",
+   "title": "File:Perro ladrando.ogg",
+   "author": "Armartinell",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.46,
+   "score": 64.2
   },
   {
    "file": "dog/3.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Dog_barking.webm",
-   "title": "File:Dog barking.webm",
-   "author": "User:Dr. Nono YesMaybe",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.53,
-   "score": 75.4
-  },
-  {
-   "file": "dog/4.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Dog_barking.webm",
-   "title": "File:Dog barking.webm",
-   "author": "User:Dr. Nono YesMaybe",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.58,
-   "score": 75.3
-  },
-  {
-   "file": "dog/5.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Barking.ogg",
-   "title": "File:Barking.ogg",
-   "author": "Piecesofuk",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.63,
-   "score": 74.6
-  },
-  {
-   "file": "dog/6.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:This_audio_file_describes_a_particular_Dog_close_in_a_home.ogg",
-   "title": "File:This audio file describes a particular Dog close in a home.ogg",
-   "author": "Wizlet.cme",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.39,
-   "score": 70.2
-  },
-  {
-   "file": "dog/7.wav",
    "source": "https://commons.wikimedia.org/wiki/File:A_dog_making_noises_and_barking.flac",
    "title": "File:A dog making noises and barking.flac",
    "author": "Amada44",
    "license": "CC BY-SA 3.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
    "seconds": 0.64,
-   "score": 69.9
+   "score": 63.9
+  },
+  {
+   "file": "dog/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Barking_of_a_dog_2.ogg",
+   "title": "File:Barking of a dog 2.ogg",
+   "author": "Amada44",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.46,
+   "score": 61.6
+  },
+  {
+   "file": "dog/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Barking_of_a_dog.ogg",
+   "title": "File:Barking of a dog.ogg",
+   "author": "Amada44",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.27,
+   "score": 57.1
+  },
+  {
+   "file": "dog/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Barking_dog_in_Rome.ogg",
+   "title": "File:Barking dog in Rome.ogg",
+   "author": "Nicholas Gemini",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.28,
+   "score": 32.3
+  },
+  {
+   "file": "dog/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Rottweiler_Barking.oga",
+   "title": "File:Rottweiler Barking.oga",
+   "author": "MichaeltheFox8621",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.63,
+   "score": 73.4
   }
  ],
  "puppy": [
   {
    "file": "puppy/0.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:VOA_Learning_English_Trending_Today-_Puppy_Bowl.ogg",
-   "title": "File:VOA Learning English Trending Today- Puppy Bowl.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.68,
-   "score": 73.0
+   "source": "https://commons.wikimedia.org/wiki/File:Barking.ogg",
+   "title": "File:Barking.ogg",
+   "author": "Piecesofuk",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.64,
+   "score": 76.7
   },
   {
    "file": "puppy/1.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:VOA_Learning_English_Trending_Today-_Puppy_Bowl.ogg",
-   "title": "File:VOA Learning English Trending Today- Puppy Bowl.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.66,
-   "score": 71.9
+   "source": "https://commons.wikimedia.org/wiki/File:Ladridos.ogg",
+   "title": "File:Ladridos.ogg",
+   "author": "Luisalvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.32,
+   "score": 51.0
   },
   {
    "file": "puppy/2.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:VOA_Learning_English_Trending_Today-_Puppy_Bowl.ogg",
-   "title": "File:VOA Learning English Trending Today- Puppy Bowl.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.51,
-   "score": 71.9
+   "source": "https://commons.wikimedia.org/wiki/File:Perros_jugando.mp3",
+   "title": "File:Perros jugando.mp3",
+   "author": "Luis Alvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.17,
+   "score": 43.2
   },
   {
    "file": "puppy/3.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:The_Puppy_Bowl_is_an_alternative_to_the_real_Super_Bowl.ogg",
-   "title": "File:The Puppy Bowl is an alternative to the real Super Bowl.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.53,
-   "score": 70.0
+   "source": "https://commons.wikimedia.org/wiki/File:Bark_Huayra.ogg",
+   "title": "File:Bark Huayra.ogg",
+   "author": "redpanal.org",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.36,
+   "score": 42.7
   },
   {
    "file": "puppy/4.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:The_Puppy_Bowl_is_set_to_be_broadcast.ogg",
-   "title": "File:The Puppy Bowl is set to be broadcast.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.5,
-   "score": 49.5
+   "source": "https://commons.wikimedia.org/wiki/File:Ladridos.ogg",
+   "title": "File:Ladridos.ogg",
+   "author": "Luisalvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.29,
+   "score": 50.9
   },
   {
    "file": "puppy/5.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:%E2%80%9CPuppy_Bowl%E2%80%9D_was_even_a_trending_sports_topic_on_Facebook.ogg",
-   "title": "File:\u201cPuppy Bowl\u201d was even a trending sports topic on Facebook.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.15,
-   "score": 48.3
+   "source": "https://commons.wikimedia.org/wiki/File:Ladridos.ogg",
+   "title": "File:Ladridos.ogg",
+   "author": "Luisalvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.34,
+   "score": 50.8
   },
   {
    "file": "puppy/6.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:The_Puppy_Bowl_is_set_to_be_broadcast.ogg",
-   "title": "File:The Puppy Bowl is set to be broadcast.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.32,
-   "score": 46.2
+   "source": "https://commons.wikimedia.org/wiki/File:Perros_jugando.mp3",
+   "title": "File:Perros jugando.mp3",
+   "author": "Luis Alvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.57,
+   "score": 40.5
   },
   {
    "file": "puppy/7.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:The_Puppy_Bowl_is_set_to_be_broadcast.ogg",
-   "title": "File:The Puppy Bowl is set to be broadcast.ogg",
-   "author": "VOA Learning English",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 0.44,
-   "score": 44.8
+   "source": "https://commons.wikimedia.org/wiki/File:Perros_jugando.mp3",
+   "title": "File:Perros jugando.mp3",
+   "author": "Luis Alvaz",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.45,
+   "score": 37.8
   }
  ],
  "cat": [
   {
    "file": "cat/0.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Meow_of_a_pleading_cat.oga",
-   "title": "File:Meow of a pleading cat.oga",
-   "author": "Heismark",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.51,
-   "score": 91.6
+   "source": "https://commons.wikimedia.org/wiki/File:MeowUSA.wav",
+   "title": "File:MeowUSA.wav",
+   "author": "SalomeCzapiewski",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.75,
+   "score": 106.3
   },
   {
    "file": "cat/1.wav",
@@ -181,21 +181,31 @@
    "author": "Heismark",
    "license": "Public domain",
    "license_url": "",
-   "seconds": 1.56,
-   "score": 88.2
+   "seconds": 1.51,
+   "score": 85.6
   },
   {
    "file": "cat/2.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Meow_of_a_pleading_cat.oga",
-   "title": "File:Meow of a pleading cat.oga",
-   "author": "Heismark",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.18,
-   "score": 87.3
+   "source": "https://commons.wikimedia.org/wiki/File:Meow_of_a_Siamese_cat_-_freemaster2.wav",
+   "title": "File:Meow of a Siamese cat - freemaster2.wav",
+   "author": "freemaster2",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 1.1,
+   "score": 63.7
   },
   {
    "file": "cat/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Felis_silvestris_catus_meows.ogg",
+   "title": "File:Felis silvestris catus meows.ogg",
+   "author": "Tobias Puderer",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 1.35,
+   "score": 60.1
+  },
+  {
+   "file": "cat/4.wav",
    "source": "https://commons.wikimedia.org/wiki/File:GettingOutImpatient.ogg",
    "title": "File:GettingOutImpatient.ogg",
    "author": "Heismark",
@@ -205,58 +215,160 @@
    "score": 55.2
   },
   {
-   "file": "cat/4.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:GettingOutImpatient.ogg",
-   "title": "File:GettingOutImpatient.ogg",
-   "author": "Heismark",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.03,
-   "score": 54.6
-  },
-  {
    "file": "cat/5.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:GettingOutImpatient.ogg",
-   "title": "File:GettingOutImpatient.ogg",
-   "author": "Heismark",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.29,
-   "score": 51.2
+   "source": "https://commons.wikimedia.org/wiki/File:Black_cat_sound_begging_the_foods.flac",
+   "title": "File:Black cat sound begging the foods.flac",
+   "author": "\ub9e4\uc77c \ub204\uad70\uac00\uac00 \ub3c4\ub451\ub9de\uc744 \ub54c\ub9c8\ub2e4",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.73,
+   "score": 45.5
   },
   {
    "file": "cat/6.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Miaulementcornisg.ogg",
-   "title": "File:Miaulementcornisg.ogg",
-   "author": "Ilpleuttoujours",
+   "source": "https://commons.wikimedia.org/wiki/File:Meow.ogg",
+   "title": "File:Meow.ogg",
+   "author": "The original uploader was Dcrosby at English Wikipedia.",
    "license": "CC BY-SA 3.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
-   "seconds": 1.16,
-   "score": 48.4
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 0.57,
+   "score": 31.5
   },
   {
    "file": "cat/7.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Purring_and_meowing.ogg",
-   "title": "File:Purring and meowing.ogg",
-   "author": "Barvinok",
-   "license": "CC BY-SA 3.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
-   "seconds": 0.78,
-   "score": 34.4
+   "source": "https://commons.wikimedia.org/wiki/File:Maullido_de_gata_hembra.ogg",
+   "title": "File:Maullido de gata hembra.ogg",
+   "author": "George Miquilena",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.96,
+   "score": 28.2
   }
  ],
- "wolf": [],
- "duck": [],
+ "wolf": [
+  {
+   "file": "wolf/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Jem_howls.ogg",
+   "title": "File:Jem howls.ogg",
+   "author": "amethysta",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.21,
+   "score": 45.9
+  },
+  {
+   "file": "wolf/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Jem_howls.ogg",
+   "title": "File:Jem howls.ogg",
+   "author": "amethysta",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.02,
+   "score": 41.9
+  },
+  {
+   "file": "wolf/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Jem_howls.ogg",
+   "title": "File:Jem howls.ogg",
+   "author": "amethysta",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.2,
+   "score": 40.9
+  }
+ ],
+ "duck": [
+  {
+   "file": "duck/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_-_XC62258.ogg",
+   "title": "File:Anas platyrhynchos - Mallard - XC62258.ogg",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.33,
+   "score": 50.7
+  },
+  {
+   "file": "duck/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_-_XC112828.ogg",
+   "title": "File:Anas platyrhynchos - Mallard - XC112828.ogg",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.6,
+   "score": 40.7
+  },
+  {
+   "file": "duck/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_XC518422.mp3",
+   "title": "File:Anas platyrhynchos - Mallard XC518422.mp3",
+   "author": "Marie-Lan Ta\u00ff Pamart",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.43,
+   "score": 28.3
+  },
+  {
+   "file": "duck/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mudchute_duck_2.ogg",
+   "title": "File:Mudchute duck 2.ogg",
+   "author": "Secretlondon",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 0.45,
+   "score": 27.1
+  },
+  {
+   "file": "duck/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Domestic_duck_sound_01.wav",
+   "title": "File:Domestic duck sound 01.wav",
+   "author": "Ganesh Mohan T",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.32,
+   "score": 25.4
+  },
+  {
+   "file": "duck/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mudchute_duck_1.ogg",
+   "title": "File:Mudchute duck 1.ogg",
+   "author": "Secretlondon",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 0.69,
+   "score": 20.6
+  },
+  {
+   "file": "duck/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Pekin_duck_%26_mallard.ogg",
+   "title": "File:Pekin duck & mallard.ogg",
+   "author": "WaderClub",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.37,
+   "score": 20.3
+  },
+  {
+   "file": "duck/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_-_XC62258.ogg",
+   "title": "File:Anas platyrhynchos - Mallard - XC62258.ogg",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.23,
+   "score": 47.5
+  }
+ ],
  "cow": [
   {
    "file": "cow/0.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:LL-Q150_(fra)-0x010C-cow-boys.wav",
-   "title": "File:LL-Q150 (fra)-0x010C-cow-boys.wav",
-   "author": "Speaker: 0x010C\nRecorder: 0x010C",
+   "source": "https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg",
+   "title": "File:Single Cow Moo.ogg",
+   "author": "MichaeltheFox8621",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 0.66,
-   "score": 78.0
+   "seconds": 2.54,
+   "score": 61.9
   },
   {
    "file": "cow/1.wav",
@@ -266,61 +378,81 @@
    "license": "CC BY-SA 3.0",
    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
    "seconds": 1.43,
-   "score": 26.6
+   "score": 20.6
   }
  ],
  "rooster": [
   {
    "file": "rooster/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Kukuriku.flac",
+   "title": "File:Kukuriku.flac",
+   "author": "Yosef Ben Melamed",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 2.13,
+   "score": 68.5
+  },
+  {
+   "file": "rooster/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Rooster_crowing.oga",
+   "title": "File:Rooster crowing.oga",
+   "author": "Georgethewriter",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 1.75,
+   "score": 60.5
+  },
+  {
+   "file": "rooster/2.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Rooster_crowing.ogg",
    "title": "File:Rooster crowing.ogg",
    "author": "Filo g\u00e8n'",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 1.9,
-   "score": 66.3
-  },
-  {
-   "file": "rooster/1.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Small_rooster_crowing.ogg",
-   "title": "File:Small rooster crowing.ogg",
-   "author": "alys",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.52,
-   "score": 48.4
-  },
-  {
-   "file": "rooster/2.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Medium_rooster_crowing.ogg",
-   "title": "File:Medium rooster crowing.ogg",
-   "author": "alys",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 2.59,
-   "score": 42.7
+   "score": 60.3
   },
   {
    "file": "rooster/3.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Kokrhaj%C3%ADc%C3%AD_slepice,_2024-04-01,_07_44_58.mp3",
-   "title": "File:Kokrhaj\u00edc\u00ed slepice, 2024-04-01, 07 44 58.mp3",
-   "author": "Draceane",
+   "source": "https://commons.wikimedia.org/wiki/File:Kykyryk%C3%BD.ogg",
+   "title": "File:Kykyryk\u00fd.ogg",
+   "author": "Juan de Vojn\u00edkov at Czech Wikipedia",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 1.3,
+   "score": 59.6
+  },
+  {
+   "file": "rooster/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Kr%C3%A4hrufBergischerKr%C3%A4her.ogg",
+   "title": "File:Kr\u00e4hrufBergischerKr\u00e4her.ogg",
+   "author": "Opzwartbeek",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "seconds": 2.35,
-   "score": 22.6
+   "seconds": 3.53,
+   "score": 59.0
+  },
+  {
+   "file": "rooster/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Young_rooster_crowing.ogg",
+   "title": "File:Young rooster crowing.ogg",
+   "author": "Filo g\u00e8n'",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.54,
+   "score": 56.0
   }
  ],
  "sheep": [
   {
    "file": "sheep/0.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
-   "title": "File:Corner of a sheep field in summer.ogg",
-   "author": "earthcalling",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.66,
-   "score": 51.8
+   "source": "https://commons.wikimedia.org/wiki/File:Lamb_bleating_and_its_mother%27s_response.flac",
+   "title": "File:Lamb bleating and its mother's response.flac",
+   "author": "Yosef Ben Melamed",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.9,
+   "score": 55.1
   },
   {
    "file": "sheep/1.wav",
@@ -329,38 +461,48 @@
    "author": "earthcalling",
    "license": "Public domain",
    "license_url": "",
-   "seconds": 1.44,
-   "score": 51.0
+   "seconds": 1.66,
+   "score": 45.8
   },
   {
    "file": "sheep/2.wav",
-   "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
-   "title": "File:Corner of a sheep field in summer.ogg",
-   "author": "earthcalling",
-   "license": "Public domain",
-   "license_url": "",
-   "seconds": 1.17,
-   "score": 49.9
-  },
-  {
-   "file": "sheep/3.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg",
    "title": "File:Sheep bleating.ogg",
    "author": "earthcalling",
    "license": "Public domain",
    "license_url": "",
    "seconds": 1.66,
-   "score": 49.0
+   "score": 43.0
+  },
+  {
+   "file": "sheep/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
+   "title": "File:Corner of a sheep field in summer.ogg",
+   "author": "earthcalling",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.44,
+   "score": 45.0
   },
   {
    "file": "sheep/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg",
+   "title": "File:Corner of a sheep field in summer.ogg",
+   "author": "earthcalling",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.17,
+   "score": 43.9
+  },
+  {
+   "file": "sheep/5.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg",
    "title": "File:Sheep bleating.ogg",
    "author": "earthcalling",
    "license": "Public domain",
    "license_url": "",
    "seconds": 1.16,
-   "score": 47.7
+   "score": 41.7
   }
  ],
  "pig": [
@@ -372,7 +514,37 @@
    "license": "CC BY-SA 3.0",
    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
    "seconds": 0.26,
-   "score": 40.3
+   "score": 34.3
+  },
+  {
+   "file": "pig/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mudchute_pig_2.ogg",
+   "title": "File:Mudchute pig 2.ogg",
+   "author": "Secretlondon",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 0.28,
+   "score": 31.5
+  },
+  {
+   "file": "pig/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mudchute_pig_3.ogg",
+   "title": "File:Mudchute pig 3.ogg",
+   "author": "Secretlondon",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 0.19,
+   "score": 25.7
+  },
+  {
+   "file": "pig/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:618483_foleyhaven_piglet-squeal-01.flac",
+   "title": "File:618483 foleyhaven piglet-squeal-01.flac",
+   "author": "Foleyhaven  https://freesound.org/people/Foleyhaven/",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 1.14,
+   "score": 21.3
   }
  ],
  "horse": [
@@ -384,10 +556,50 @@
    "license": "CC BY 4.0",
    "license_url": "https://creativecommons.org/licenses/by/4.0",
    "seconds": 2.0,
-   "score": 130.4
+   "score": 124.4
   },
   {
    "file": "horse/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s003.oga",
+   "title": "File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s003.oga",
+   "author": "Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 2.59,
+   "score": 69.5
+  },
+  {
+   "file": "horse/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s004.oga",
+   "title": "File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s004.oga",
+   "author": "Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 1.91,
+   "score": 58.4
+  },
+  {
+   "file": "horse/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s002.oga",
+   "title": "File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s002.oga",
+   "author": "Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 2.16,
+   "score": 57.5
+  },
+  {
+   "file": "horse/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s001.oga",
+   "title": "File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s001.oga",
+   "author": "Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 1.26,
+   "score": 37.9
+  },
+  {
+   "file": "horse/5.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Wiehern.ogg",
    "title": "File:Wiehern.ogg",
    "author": "H\u00fc.",
@@ -397,7 +609,88 @@
    "score": 30.6
   }
  ],
- "goat": [],
+ "goat": [
+  {
+   "file": "goat/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.7,
+   "score": 48.6
+  },
+  {
+   "file": "goat/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.49,
+   "score": 45.0
+  },
+  {
+   "file": "goat/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.25,
+   "score": 43.6
+  },
+  {
+   "file": "goat/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.36,
+   "score": 42.2
+  },
+  {
+   "file": "goat/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.21,
+   "score": 38.1
+  },
+  {
+   "file": "goat/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.66,
+   "score": 37.6
+  },
+  {
+   "file": "goat/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.84,
+   "score": 36.9
+  },
+  {
+   "file": "goat/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Herd_of_goats_bleating.ogg",
+   "title": "File:Herd of goats bleating.ogg",
+   "author": "stephan",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.43,
+   "score": 36.3
+  }
+ ],
  "frog": [
   {
    "file": "frog/0.wav",
@@ -407,27 +700,77 @@
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.47,
-   "score": 105.4
+   "score": 99.4
   },
   {
    "file": "frog/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:PigFrog_EvergladesNP.ogg",
+   "title": "File:PigFrog EvergladesNP.ogg",
+   "author": "NPS Natural Sounds &amp; Night Skies Division",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.66,
+   "score": 61.1
+  },
+  {
+   "file": "frog/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Laubfrosch_Balzruf.OGG",
+   "title": "File:Laubfrosch Balzruf.OGG",
+   "author": "Rabe19 (Diskussion)",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.17,
+   "score": 41.4
+  },
+  {
+   "file": "frog/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Litoria_fallax_jul08.ogg",
+   "title": "File:Litoria fallax jul08.ogg",
+   "author": "Aviceda",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.12,
+   "score": 35.9
+  },
+  {
+   "file": "frog/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Wood_Frogs_calling_in_spring.ogg",
+   "title": "File:Wood Frogs calling in spring.ogg",
+   "author": "D. Gordon E. Robertson",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.59,
+   "score": 35.4
+  },
+  {
+   "file": "frog/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Grasfrosch_Paarungsrufe.OGG",
+   "title": "File:Grasfrosch Paarungsrufe.OGG",
+   "author": "Rabe19 (Diskussion)",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.32,
+   "score": 15.5
+  },
+  {
+   "file": "frog/6.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga",
    "title": "File:Single Frog Croak.oga",
    "author": "MichaeltheFox8621",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.47,
-   "score": 105.0
+   "score": 99.0
   },
   {
-   "file": "frog/2.wav",
+   "file": "frog/7.wav",
    "source": "https://commons.wikimedia.org/wiki/File:Single_Frog_Croak.oga",
    "title": "File:Single Frog Croak.oga",
    "author": "MichaeltheFox8621",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "seconds": 0.45,
-   "score": 104.6
+   "score": 98.6
   }
  ]
 }
