@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.os.SystemClock
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -14,6 +15,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -28,8 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -108,7 +114,9 @@ fun IslandView(
     val currentOnExpandedChange by rememberUpdatedState(onExpandedChange)
     val currentActions by rememberUpdatedState(actions)
 
-    val glowColor = Color(accentFor(activity, settings))
+    val accent by animateColorAsState(Color(settings.accentColor), tween(300), label = "accent")
+    val glowOn = glowAllowed && settings.glow
+    val glowAlpha by animateFloatAsState(if (glowOn) 1f else 0f, tween(300), label = "glow")
     val shape = RoundedCornerShape(radius)
 
     Box(modifier.padding(IslandOuterPadding), contentAlignment = Alignment.TopCenter) {
@@ -119,15 +127,26 @@ fun IslandView(
                     scaleX = pressScale
                     scaleY = pressScale
                 }
-                .then(
-                    if (glowAllowed && settings.glow && mode != IslandMode.IDLE) {
-                        Modifier.shadow(10.dp, shape, ambientColor = glowColor, spotColor = glowColor)
-                    } else {
-                        Modifier
-                    },
-                )
+                .drawBehind {
+                    if (glowAlpha <= 0f) return@drawBehind
+                    // A soft halo built from fading rings: identical on every device and API level,
+                    // unlike colored elevation shadows.
+                    val r = radius.toPx()
+                    val step = 1.8.dp.toPx()
+                    for (i in 1..5) {
+                        val grow = step * i
+                        drawRoundRect(
+                            color = accent.copy(alpha = glowAlpha * (0.34f / i)),
+                            topLeft = Offset(-grow, -grow),
+                            size = Size(size.width + grow * 2, size.height + grow * 2),
+                            cornerRadius = CornerRadius(r + grow, r + grow),
+                            style = Stroke(width = step * 1.4f),
+                        )
+                    }
+                }
                 .clip(shape)
                 .background(Color.Black)
+                .then(if (glowOn) Modifier.border(1.2.dp, accent.copy(alpha = 0.9f * glowAlpha), shape) else Modifier)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = {
@@ -157,7 +176,7 @@ fun IslandView(
                 },
                 label = "islandContent",
             ) { frame ->
-                IslandContent(frame.activity, frame.mode, baseH, actions)
+                IslandContent(frame.activity, frame.mode, baseH, actions, accent)
             }
         }
     }
@@ -187,14 +206,6 @@ private fun expandedHeight(activity: IslandActivity): Dp = when (activity) {
     is IslandActivity.Notice -> 80.dp
     is IslandActivity.Charging -> 92.dp
     else -> 84.dp
-}
-
-private fun accentFor(activity: IslandActivity, settings: IslandSettings): Int = when (activity) {
-    is IslandActivity.Media -> activity.accent
-    is IslandActivity.Call -> IslandColors.GREEN_ARGB
-    is IslandActivity.Charging -> IslandColors.GREEN_ARGB
-    is IslandActivity.LowBattery -> IslandColors.RED_ARGB
-    else -> settings.accentColor
 }
 
 private fun onTap(

@@ -22,8 +22,21 @@ android {
         buildConfigField("boolean", "MOCK_BILLING", "true")
     }
 
+    signingConfigs {
+        // Test key so CI release APKs install and update in place. For Play, set the SIGNING_* env vars
+        // (GitHub secrets) to your private upload key instead; never ship this test key to the store.
+        create("release") {
+            val ks = System.getenv("SIGNING_KEYSTORE")
+            storeFile = if (ks != null) file(ks) else file("smartisland-test.jks")
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD") ?: "smartisland"
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: "smartisland"
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD") ?: "smartisland"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

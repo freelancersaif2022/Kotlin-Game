@@ -70,9 +70,9 @@ import com.smartisland.app.ui.components.SnackController
 import com.smartisland.app.ui.components.SwitchRow
 import com.smartisland.app.ui.components.TabHeader
 import com.smartisland.app.ui.components.pressable
+import com.smartisland.app.ui.components.tabBarPadding
 import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.navigation.Routes
-import com.smartisland.app.ui.navigation.TabContentBottomPadding
 import com.smartisland.app.ui.theme.Palette
 import kotlin.math.roundToInt
 
@@ -103,7 +103,7 @@ fun IslandScreen(nav: AppNavigator) {
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = TabContentBottomPadding),
+            .tabBarPadding(),
     ) {
         TabHeader("Island", "Customize")
         Column(Modifier.padding(horizontal = 16.dp)) {
@@ -152,57 +152,82 @@ fun IslandScreen(nav: AppNavigator) {
                 }
             }
 
-            SectionHeader("Live activities")
-            GlassCard(padding = 12.dp) {
-                SwitchRow(Icons.Rounded.MusicNote, Color(0xFFFF375F), "Music & media", "Album art, waveform and controls", s.showMedia, { v -> repo.update { it.copy(showMedia = v) } })
-                Divider()
-                SwitchRow(Icons.Rounded.Call, Palette.Success, "Calls", "Answer or decline from the island", s.showCalls, { v -> repo.update { it.copy(showCalls = v) } })
-                Divider()
-                SwitchRow(Icons.Rounded.BatteryChargingFull, Palette.Success, "Charging & battery", "Charging animation and low battery", s.showCharging, { v -> repo.update { it.copy(showCharging = v) } })
-                Divider()
-                SwitchRow(Icons.Rounded.NotificationsActive, Palette.Warning, "Ringer mode", "Silent, vibrate and ring changes", s.showRinger, { v -> repo.update { it.copy(showRinger = v) } })
-                Divider()
-                SwitchRow(
-                    Icons.Rounded.Notifications, Palette.Secondary, "Notification alerts", "Messages pop out of the island",
-                    s.showNotifications, { v -> repo.update { it.copy(showNotifications = v) } }, locked = !pro, onLockedClick = paywall,
-                )
-                Divider()
-                SwitchRow(
-                    Icons.AutoMirrored.Rounded.VolumeUp, Palette.PrimarySoft, "Volume HUD", "Volume keys show a 0–100% bar on the island",
-                    s.replaceVolumePanel, { v -> repo.update { it.copy(replaceVolumePanel = v) } }, locked = !pro, onLockedClick = paywall,
-                )
-            }
+            // Split into sections so a slider drag only recomposes the preview and size card.
+            ActivitiesSection(repo, pro, paywall, s.showMedia, s.showCalls, s.showCharging, s.showRinger, s.showNotifications, s.replaceVolumePanel)
+            StyleSection(repo, pro, paywall, s.accentColor, s.glow, s.haptics)
+            BehaviorSection(repo, pro, paywall, s.hideInLandscape, s.edgePanelEnabled, s.edgePanelRight)
+        }
+    }
+}
 
-            SectionHeader("Style") { if (!pro) ProBadge() }
-            GlassCard {
-                Text("Accent color", style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
-                Spacer(Modifier.height(12.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    IslandSettings.ACCENTS.forEach { c ->
-                        ColorDot(Color(c), selected = s.accentColor == c) {
-                            if (pro) repo.update { it.copy(accentColor = c) } else paywall()
-                        }
-                    }
-                }
-                Spacer(Modifier.height(10.dp))
-                SwitchRow(Icons.Rounded.AutoAwesome, Palette.Cyan, "Glow", "Soft colored halo around the island", s.glow, { v -> repo.update { it.copy(glow = v) } }, locked = !pro, onLockedClick = paywall)
-                SwitchRow(Icons.Rounded.TouchApp, Palette.Primary, "Haptics", "Vibrate on tap and long-press", s.haptics, { v -> repo.update { it.copy(haptics = v) } })
-            }
+@Composable
+private fun ActivitiesSection(
+    repo: SettingsRepository,
+    pro: Boolean,
+    paywall: () -> Unit,
+    showMedia: Boolean,
+    showCalls: Boolean,
+    showCharging: Boolean,
+    showRinger: Boolean,
+    showNotifications: Boolean,
+    volumeHud: Boolean,
+) {
+    SectionHeader("Live activities")
+    GlassCard(padding = 12.dp) {
+        SwitchRow(Icons.Rounded.MusicNote, Color(0xFFFF375F), "Music & media", "Album art, waveform and controls", showMedia, { v -> repo.update { it.copy(showMedia = v) } })
+        Divider()
+        SwitchRow(Icons.Rounded.Call, Palette.Success, "Calls", "Answer, decline and live call timer", showCalls, { v -> repo.update { it.copy(showCalls = v) } })
+        Divider()
+        SwitchRow(Icons.Rounded.BatteryChargingFull, Palette.Success, "Charging & battery", "Charging animation and low battery", showCharging, { v -> repo.update { it.copy(showCharging = v) } })
+        Divider()
+        SwitchRow(Icons.Rounded.NotificationsActive, Palette.Warning, "Ringer mode", "Silent, vibrate and ring changes", showRinger, { v -> repo.update { it.copy(showRinger = v) } })
+        Divider()
+        SwitchRow(
+            Icons.Rounded.Notifications, Palette.Secondary, "Notification alerts", "Messages pop out of the island",
+            showNotifications, { v -> repo.update { it.copy(showNotifications = v) } }, locked = !pro, onLockedClick = paywall,
+        )
+        Divider()
+        SwitchRow(
+            Icons.AutoMirrored.Rounded.VolumeUp, Palette.Primary, "Volume HUD", "Volume keys show a 0–100% bar on the island",
+            volumeHud, { v -> repo.update { it.copy(replaceVolumePanel = v) } }, locked = !pro, onLockedClick = paywall,
+        )
+    }
+}
 
-            SectionHeader("Behavior")
-            GlassCard(padding = 12.dp) {
-                SwitchRow(Icons.Rounded.ScreenRotation, Palette.Secondary, "Hide in landscape", "Stay out of the way in games and videos", s.hideInLandscape, { v -> repo.update { it.copy(hideInLandscape = v) } })
-                Divider()
-                SwitchRow(
-                    Icons.Rounded.VerticalSplit, Palette.Warning, "Edge panel", "Floating power & volume buttons on the screen edge",
-                    s.edgePanelEnabled, { v -> repo.update { it.copy(edgePanelEnabled = v) } }, locked = !pro, onLockedClick = paywall,
-                )
-                if (pro && s.edgePanelEnabled) {
-                    Row(Modifier.padding(start = 52.dp, top = 4.dp, bottom = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Chip("Left edge", !s.edgePanelRight, Modifier.weight(1f)) { repo.update { it.copy(edgePanelRight = false) } }
-                        Chip("Right edge", s.edgePanelRight, Modifier.weight(1f)) { repo.update { it.copy(edgePanelRight = true) } }
-                    }
+@Composable
+private fun StyleSection(repo: SettingsRepository, pro: Boolean, paywall: () -> Unit, accent: Int, glow: Boolean, haptics: Boolean) {
+    SectionHeader("Style") { if (!pro) ProBadge() }
+    GlassCard {
+        Text("Accent color", style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
+        Text("Colors the glow, volume bar and alerts", style = MaterialTheme.typography.bodySmall, color = Palette.TextSecondary)
+        Spacer(Modifier.height(12.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            IslandSettings.ACCENTS.forEach { c ->
+                ColorDot(Color(c), selected = accent == c) {
+                    if (pro) repo.update { it.copy(accentColor = c) } else paywall()
                 }
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        SwitchRow(Icons.Rounded.AutoAwesome, Palette.Cyan, "Glow", "Soft halo in your accent color", glow, { v -> repo.update { it.copy(glow = v) } }, locked = !pro, onLockedClick = paywall)
+        SwitchRow(Icons.Rounded.TouchApp, Palette.Primary, "Haptics", "Vibrate on tap and long-press", haptics, { v -> repo.update { it.copy(haptics = v) } })
+    }
+}
+
+@Composable
+private fun BehaviorSection(repo: SettingsRepository, pro: Boolean, paywall: () -> Unit, hideLandscape: Boolean, edge: Boolean, edgeRight: Boolean) {
+    SectionHeader("Behavior")
+    GlassCard(padding = 12.dp) {
+        SwitchRow(Icons.Rounded.ScreenRotation, Palette.Secondary, "Hide in landscape", "Stay out of the way in games and videos", hideLandscape, { v -> repo.update { it.copy(hideInLandscape = v) } })
+        Divider()
+        SwitchRow(
+            Icons.Rounded.VerticalSplit, Palette.Warning, "Edge panel", "Floating power & volume buttons on the screen edge",
+            edge, { v -> repo.update { it.copy(edgePanelEnabled = v) } }, locked = !pro, onLockedClick = paywall,
+        )
+        if (pro && edge) {
+            Row(Modifier.padding(start = 52.dp, top = 4.dp, bottom = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Chip("Left edge", !edgeRight, Modifier.weight(1f)) { repo.update { it.copy(edgePanelRight = false) } }
+                Chip("Right edge", edgeRight, Modifier.weight(1f)) { repo.update { it.copy(edgePanelRight = true) } }
             }
         }
     }
@@ -263,7 +288,7 @@ private fun ColorDot(color: Color, selected: Boolean, onClick: () -> Unit) {
             .size(32.dp)
             .clip(CircleShape)
             .background(color)
-            .border(if (selected) 3.dp else 0.dp, Color.White, CircleShape)
+            .border(if (selected) 3.dp else 0.dp, Palette.TextPrimary.copy(alpha = 0.85f), CircleShape)
             .pressable(onClick),
         contentAlignment = Alignment.Center,
     ) {

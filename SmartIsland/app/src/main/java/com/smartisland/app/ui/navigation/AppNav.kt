@@ -1,6 +1,7 @@
 package com.smartisland.app.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -39,8 +40,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -168,9 +171,15 @@ fun AppRoot(request: RouteRequest?, onRequestHandled: () -> Unit) {
                 composable(Routes.BATTERY_GUIDE) { BatteryGuideScreen(navigator) }
             }
 
-            Column(Modifier.align(Alignment.BottomCenter)) {
-                AppSnackbarHost(snack)
-                if (currentRoute in Routes.tabs) {
+            val onTab = currentRoute in Routes.tabs
+            Column(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .then(if (onTab) Modifier else Modifier.navigationBarsPadding()),
+            ) {
+                // Keep snackbars above the screen's own bottom buttons and the system navigation bar.
+                AppSnackbarHost(snack, Modifier.padding(bottom = if (!onTab && currentRoute in routesWithBottomCta) 78.dp else 0.dp))
+                if (onTab) {
                     BottomBar(currentRoute) { navigator.go(it) }
                 }
             }
@@ -178,24 +187,29 @@ fun AppRoot(request: RouteRequest?, onRequestHandled: () -> Unit) {
     }
 }
 
+/** Screens with a pinned bottom button that snackbars must sit above. */
+private val routesWithBottomCta = setOf(Routes.PAYWALL, Routes.BATTERY_GUIDE, Routes.ONBOARDING)
+
+private val slideSpec = tween<IntOffset>(240, easing = FastOutSlowInEasing)
+
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabSwitch(): Boolean =
     initialState.destination.route in Routes.tabs && targetState.destination.route in Routes.tabs
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.enter() =
-    if (isTabSwitch()) fadeIn(tween(180))
-    else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(280)) + fadeIn(tween(200))
+    if (isTabSwitch()) fadeIn(tween(140))
+    else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, slideSpec) + fadeIn(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.exit() =
-    if (isTabSwitch()) fadeOut(tween(120))
-    else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(280), targetOffset = { it / 4 }) + fadeOut(tween(200))
+    if (isTabSwitch()) fadeOut(tween(90))
+    else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, slideSpec, targetOffset = { it / 4 }) + fadeOut(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnter() =
-    if (isTabSwitch()) fadeIn(tween(180))
-    else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(280), initialOffset = { it / 4 }) + fadeIn(tween(200))
+    if (isTabSwitch()) fadeIn(tween(140))
+    else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec, initialOffset = { it / 4 }) + fadeIn(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit() =
-    if (isTabSwitch()) fadeOut(tween(120))
-    else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(280)) + fadeOut(tween(200))
+    if (isTabSwitch()) fadeOut(tween(90))
+    else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec) + fadeOut(tween(160))
 
 /** Floating glass tab bar. */
 @Composable
@@ -206,8 +220,9 @@ private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
             .navigationBarsPadding()
             .padding(start = 14.dp, end = 14.dp, bottom = 10.dp)
             .fillMaxWidth()
+            .shadow(20.dp, shape, ambientColor = Color.Black.copy(alpha = 0.12f), spotColor = Color.Black.copy(alpha = 0.18f))
             .clip(shape)
-            .background(Color(0xF2141420))
+            .background(Palette.TabBar)
             .border(1.dp, Palette.Outline, shape)
             .padding(vertical = 8.dp, horizontal = 6.dp),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -247,6 +262,3 @@ private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
         }
     }
 }
-
-/** Bottom padding every tab screen adds so content can scroll above the floating bar. */
-val TabContentBottomPadding = 120.dp

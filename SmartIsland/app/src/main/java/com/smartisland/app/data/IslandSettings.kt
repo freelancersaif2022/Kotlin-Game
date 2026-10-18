@@ -24,6 +24,7 @@ data class IslandSettings(
     val edgePanelEnabled: Boolean = false,
     val edgePanelRight: Boolean = true,
     val onboardingDone: Boolean = false,
+    val darkMode: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_WIDTH = 118f

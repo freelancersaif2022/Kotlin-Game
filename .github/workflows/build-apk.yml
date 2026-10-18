@@ -27,12 +27,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       # ubuntu-latest ships the Android SDK (ANDROID_HOME); AGP installs any missing platform itself.
-      - name: Build debug APK
-        run: ./gradlew --no-daemon assembleDebug
+      # Release build: R8-optimized and non-debuggable, which is what makes Compose fast on device.
+      - name: Build release APK
+        run: ./gradlew --no-daemon assembleRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SmartIsland-debug-apk
-          path: SmartIsland/app/build/outputs/apk/debug/*.apk
+          name: SmartIsland-release-apk
+          path: SmartIsland/app/build/outputs/apk/release/*.apk
           if-no-files-found: error

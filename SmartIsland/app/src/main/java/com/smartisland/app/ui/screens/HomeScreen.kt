@@ -30,14 +30,11 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.VerticalSplit
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,26 +44,25 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.smartisland.app.island.IslandActivity
 import com.smartisland.app.island.IslandEngine
 import com.smartisland.app.system.SystemActions
 import com.smartisland.app.ui.appContainer
 import com.smartisland.app.ui.components.AppSwitch
 import com.smartisland.app.ui.components.Demo
+import com.smartisland.app.ui.components.GetProButton
 import com.smartisland.app.ui.components.GlassCard
 import com.smartisland.app.ui.components.IconBadge
 import com.smartisland.app.ui.components.LocalSnack
-import com.smartisland.app.ui.components.PhoneTopPreview
 import com.smartisland.app.ui.components.PrimaryButton
+import com.smartisland.app.ui.components.ProActiveBadge
 import com.smartisland.app.ui.components.ProBadge
 import com.smartisland.app.ui.components.SectionHeader
 import com.smartisland.app.ui.components.StatusChip
 import com.smartisland.app.ui.components.TabHeader
 import com.smartisland.app.ui.components.pressable
-import com.smartisland.app.ui.components.rememberShowcase
+import com.smartisland.app.ui.components.tabBarPadding
 import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.navigation.Routes
-import com.smartisland.app.ui.navigation.TabContentBottomPadding
 import com.smartisland.app.ui.rememberBattery
 import com.smartisland.app.ui.rememberPermissionStatus
 import com.smartisland.app.ui.reportAction
@@ -79,16 +75,9 @@ fun HomeScreen(nav: AppNavigator) {
     val snack = LocalSnack.current
     val settings by container.settings.settings.collectAsStateWithLifecycle()
     val premium by container.premium.state.collectAsStateWithLifecycle()
-    val live by IslandEngine.current.collectAsStateWithLifecycle()
     val running by IslandEngine.serviceRunning.collectAsStateWithLifecycle()
     val perms = rememberPermissionStatus()
     val battery = rememberBattery()
-
-    val showcase = rememberShowcase()
-    // Real events and the "Try it" demos both flow through the engine; fall back to the showcase when idle.
-    val usingLive = live != IslandActivity.Idle
-    val previewActivity = if (usingLive) live else showcase.first
-    var previewExpanded by remember { mutableStateOf(false) }
 
     fun requirePremium(block: () -> Unit) {
         if (premium.isPremium) block() else nav.go(Routes.PAYWALL)
@@ -98,39 +87,21 @@ fun HomeScreen(nav: AppNavigator) {
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = TabContentBottomPadding),
+            .tabBarPadding(),
     ) {
         TabHeader(
             title = "Smart Island",
             subtitle = greeting(),
             trailing = {
                 if (premium.isPremium) {
-                    ProBadge()
+                    ProActiveBadge(onClick = { nav.go(Routes.SETTINGS) })
                 } else {
-                    Row(
-                        Modifier
-                            .clip(CircleShape)
-                            .background(Palette.GoldGradient)
-                            .pressable({ nav.go(Routes.PAYWALL) })
-                            .padding(horizontal = 14.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color(0xFF3A2600), modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Get PRO", style = MaterialTheme.typography.labelLarge, color = Color(0xFF3A2600))
-                    }
+                    GetProButton({ nav.go(Routes.PAYWALL) })
                 }
             },
         )
 
         Column(Modifier.padding(horizontal = 16.dp)) {
-            Spacer(Modifier.height(10.dp))
-            PhoneTopPreview(
-                settings = settings,
-                activity = previewActivity,
-                expanded = if (usingLive) previewExpanded else showcase.second,
-                onExpandedChange = { previewExpanded = it },
-            )
             Spacer(Modifier.height(12.dp))
             StatusCard(
                 ready = perms.coreReady,
@@ -154,7 +125,7 @@ fun HomeScreen(nav: AppNavigator) {
             }
             AnimatedVisibility(!running) {
                 Text(
-                    "Previews play here. Finish setup to see them on top of every app.",
+                    "Finish setup to see these on top of every app.",
                     style = MaterialTheme.typography.bodySmall,
                     color = Palette.TextTertiary,
                     modifier = Modifier.padding(top = 8.dp, start = 4.dp),
@@ -201,10 +172,6 @@ fun HomeScreen(nav: AppNavigator) {
             SectionHeader("Battery")
             BatteryCard(battery.level, battery.isCharging, battery.isFast, battery.watts, battery.temperatureC, battery.healthLabel)
 
-            if (!premium.isPremium) {
-                Spacer(Modifier.height(16.dp))
-                UpsellBanner { nav.go(Routes.PAYWALL) }
-            }
         }
     }
 }
@@ -343,24 +310,6 @@ private fun Stat(label: String, value: String, modifier: Modifier) {
     ) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = Palette.TextSecondary)
         Text(value, style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary, maxLines = 1)
-    }
-}
-
-@Composable
-internal fun UpsellBanner(onClick: () -> Unit) {
-    GlassCard(onClick = onClick, brush = Palette.PrimaryGradient) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("Unlock Smart Island PRO", style = MaterialTheme.typography.titleMedium, color = Color.White)
-                Text(
-                    "All 12 widgets, alerts, volume HUD, edge panel and styles.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.8f),
-                )
-            }
-            Spacer(Modifier.width(10.dp))
-            Icon(Icons.Rounded.WorkspacePremium, null, tint = Palette.Gold, modifier = Modifier.size(36.dp))
-        }
     }
 }
 

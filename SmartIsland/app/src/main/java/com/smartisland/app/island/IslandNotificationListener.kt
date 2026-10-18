@@ -3,11 +3,15 @@ package com.smartisland.app.island
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.ComponentName
+import android.media.AudioManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.smartisland.app.system.Bitmaps
+import com.smartisland.app.system.systemService
 
 /**
  * Feeds calls, media sessions and (premium) notification alerts into [IslandEngine].
@@ -19,7 +23,26 @@ class IslandNotificationListener : NotificationListenerService() {
 
     private var media: MediaTracker? = null
     private var callKey: String? = null
+    private var lastCallSbn: StatusBarNotification? = null
+    /** Wall-clock time a call connected, kept stable across notification re-posts. */
+    private var callConnectedAt = 0L
     private val lastNoticeAt = HashMap<String, Long>()
+    private val main = Handler(Looper.getMainLooper())
+    private val audio by lazy { systemService<AudioManager>() }
+    private var callAvatar: android.graphics.Bitmap? = null
+
+    /**
+     * Many dialers answer a call without re-posting the notification in a recognizable way, so while a
+     * call is shown we watch the audio mode: RINGTONE means ringing, IN_CALL / IN_COMMUNICATION means
+     * the call connected and the timer must run.
+     */
+    private val callWatcher = object : Runnable {
+        override fun run() {
+            val sbn = lastCallSbn ?: return
+            handleCall(sbn)
+            main.postDelayed(this, 1000)
+        }
+    }
 
     override fun onListenerConnected() {
         media = MediaTracker(applicationContext, ComponentName(this, IslandNotificationListener::class.java)).also { it.start() }
@@ -29,8 +52,21 @@ class IslandNotificationListener : NotificationListenerService() {
     override fun onListenerDisconnected() {
         media?.stop()
         media = null
+        endCall()
+    }
+
+    override fun onDestroy() {
+        main.removeCallbacksAndMessages(null)
+        super.onDestroy()
+    }
+
+    private fun endCall() {
         callKey?.let { IslandEngine.clearCall(it) }
         callKey = null
+        lastCallSbn = null
+        callAvatar = null
+        callConnectedAt = 0L
+        main.removeCallbacks(callWatcher)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -44,28 +80,48 @@ class IslandNotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
-        if (sbn.key == callKey) {
-            IslandEngine.clearCall(sbn.key)
-            callKey = null
-        }
+        if (sbn.key == callKey) endCall()
     }
 
     // Calls -----------------------------------------------------------------------------------
 
-    private fun handleCall(sbn: StatusBarNotification): Boolean {
+    private fun isCallNotification(sbn: StatusBarNotification): Boolean {
         val n = sbn.notification
-        if (n.category != Notification.CATEGORY_CALL) return false
+        if (n.category == Notification.CATEGORY_CALL) return true
+        if (n.extras.getString(Notification.EXTRA_TEMPLATE)?.contains("CallStyle") == true) return true
+        return sbn.packageName in DIALERS && (n.flags and Notification.FLAG_ONGOING_EVENT) != 0
+    }
+
+    private fun handleCall(sbn: StatusBarNotification): Boolean {
+        if (!isCallNotification(sbn)) return false
+        val n = sbn.notification
         val extras = n.extras
 
         val callType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) extras.getInt(Notification.EXTRA_CALL_TYPE, 0) else 0
         val ongoingFlag = (n.flags and Notification.FLAG_ONGOING_EVENT) != 0
         val usesChronometer = extras.getBoolean(Notification.EXTRA_SHOW_CHRONOMETER, false)
-        val isIncoming = when (callType) {
-            CALL_TYPE_INCOMING, CALL_TYPE_SCREENING -> true
-            CALL_TYPE_ONGOING -> false
-            else -> !usesChronometer && (n.fullScreenIntent != null || (n.actions?.size ?: 0) >= 2)
+        val mode = runCatching { audio.mode }.getOrDefault(AudioManager.MODE_NORMAL)
+        val audioInCall = mode == AudioManager.MODE_IN_CALL || mode == AudioManager.MODE_IN_COMMUNICATION
+        val isIncoming = when {
+            callType == CALL_TYPE_ONGOING || usesChronometer -> false
+            callType == CALL_TYPE_INCOMING || callType == CALL_TYPE_SCREENING -> !audioInCall
+            audioInCall -> false
+            mode == AudioManager.MODE_RINGTONE -> true
+            else -> n.fullScreenIntent != null || (n.actions?.size ?: 0) >= 2
         }
-        if (!ongoingFlag && !isIncoming && !usesChronometer) return true
+        if (!ongoingFlag && !isIncoming && !usesChronometer && !audioInCall) return true
+
+        if (sbn.key != callKey) {
+            callConnectedAt = 0L
+            callAvatar = Bitmaps.fromIcon(this, n.getLargeIcon())
+        }
+        if (!isIncoming && callConnectedAt == 0L) {
+            val reported = n.`when`
+            val now = System.currentTimeMillis()
+            // Trust the dialer's chronometer base when it is sane, otherwise start counting now.
+            callConnectedAt = if (usesChronometer && reported in (now - 12 * 3600_000L)..now) reported else now
+        }
+        if (isIncoming) callConnectedAt = 0L
 
         val caller = callerName(n) ?: "Unknown"
         val actions = n.actions.orEmpty()
@@ -81,14 +137,16 @@ class IslandNotificationListener : NotificationListenerService() {
         val hangUp = extraIntent(n, "android.hangUpIntent") ?: byTitle("hang up", "end", "hangup")
             ?: if (!isIncoming && actions.isNotEmpty()) actions.last().actionIntent else null
 
-        val avatar = Bitmaps.fromIcon(this, n.getLargeIcon())
+        val avatar = callAvatar
         callKey = sbn.key
+        if (lastCallSbn == null) main.postDelayed(callWatcher, 1000)
+        lastCallSbn = sbn
         IslandEngine.setCall(
             IslandActivity.Call(
                 key = sbn.key,
                 caller = caller,
                 isIncoming = isIncoming,
-                startedAt = if (usesChronometer) n.`when` else 0L,
+                startedAt = if (isIncoming) 0L else callConnectedAt,
                 avatar = avatar,
                 answer = answer,
                 decline = decline,
@@ -161,5 +219,12 @@ class IslandNotificationListener : NotificationListenerService() {
         const val CALL_TYPE_INCOMING = 1
         const val CALL_TYPE_ONGOING = 2
         const val CALL_TYPE_SCREENING = 3
+
+        /** Stock and vendor in-call UIs, for dialers that don't tag their notification as a call. */
+        val DIALERS = setOf(
+            "com.google.android.dialer", "com.android.dialer", "com.android.incallui", "com.android.server.telecom",
+            "com.samsung.android.incallui", "com.samsung.android.dialer", "com.oplus.incallui", "com.coloros.incallui",
+            "com.android.phone", "com.miui.voip", "com.vivo.incallui", "com.huawei.contacts", "com.hihonor.contacts",
+        )
     }
 }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -51,6 +52,11 @@ fun AppDialog(
     dismissText: String? = "Not now",
     onDismissClick: () -> Unit = onDismiss,
     dismissible: Boolean = true,
+    confirmIcon: ImageVector? = null,
+    confirmGold: Boolean = false,
+    dismissIcon: ImageVector? = null,
+    dismissGold: Boolean = false,
+    header: (@Composable () -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     Dialog(
@@ -80,14 +86,18 @@ fun AppDialog(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(
-                Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(accent.copy(alpha = 0.16f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(icon, null, tint = accent, modifier = Modifier.size(30.dp))
+            if (header != null) {
+                header()
+            } else {
+                Box(
+                    Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Brush.radialGradient(listOf(accent.copy(alpha = 0.28f), accent.copy(alpha = 0.08f)))),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(icon, null, tint = accent, modifier = Modifier.size(30.dp))
+                }
             }
             Spacer(Modifier.height(16.dp))
             Text(title, style = MaterialTheme.typography.titleLarge, color = Palette.TextPrimary, textAlign = TextAlign.Center)
@@ -99,8 +109,14 @@ fun AppDialog(
             }
             Spacer(Modifier.height(22.dp))
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                PrimaryButton(confirmText, onConfirm, Modifier.fillMaxWidth(), color = accent)
-                if (dismissText != null) GhostButton(dismissText, onDismissClick, Modifier.fillMaxWidth())
+                PrimaryButton(confirmText, onConfirm, Modifier.fillMaxWidth(), icon = confirmIcon, color = accent, gold = confirmGold)
+                if (dismissText != null) {
+                    if (dismissGold) {
+                        PrimaryButton(dismissText, onDismissClick, Modifier.fillMaxWidth(), icon = dismissIcon, gold = true)
+                    } else {
+                        GhostButton(dismissText, onDismissClick, Modifier.fillMaxWidth(), dismissIcon)
+                    }
+                }
             }
         }
     }

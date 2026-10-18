@@ -2,15 +2,22 @@ package com.smartisland.app.ui.screens
 
 import android.media.AudioManager
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +56,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -68,9 +77,9 @@ import com.smartisland.app.ui.components.SectionHeader
 import com.smartisland.app.ui.components.SliderRow
 import com.smartisland.app.ui.components.TabHeader
 import com.smartisland.app.ui.components.pressable
+import com.smartisland.app.ui.components.tabBarPadding
 import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.navigation.Routes
-import com.smartisland.app.ui.navigation.TabContentBottomPadding
 import com.smartisland.app.ui.reportAction
 import com.smartisland.app.ui.theme.Palette
 import com.smartisland.app.widget.WidgetUpdater
@@ -95,7 +104,7 @@ fun ControlsScreen(nav: AppNavigator) {
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = TabContentBottomPadding),
+            .tabBarPadding(),
     ) {
         TabHeader("Controls", "Power & volume")
         Column(Modifier.padding(horizontal = 16.dp)) {
@@ -109,8 +118,8 @@ fun ControlsScreen(nav: AppNavigator) {
                 Spacer(Modifier.height(16.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     BigButton("Alerts", Icons.Rounded.Notifications, Color(0xFF5E5CE6)) { reportAction(SystemActions.notifications(), snack, setup) }
-                    BigButton("Quick panel", Icons.Rounded.SpaceDashboard, Color(0xFF2C2C3A)) { reportAction(SystemActions.quickSettings(), snack, setup) }
-                    BigButton("Recents", Icons.Rounded.ViewCarousel, Color(0xFF2C2C3A)) { reportAction(SystemActions.recents(), snack, setup) }
+                    BigButton("Quick panel", Icons.Rounded.SpaceDashboard, Palette.Cyan) { reportAction(SystemActions.quickSettings(), snack, setup) }
+                    BigButton("Recents", Icons.Rounded.ViewCarousel, Palette.Success) { reportAction(SystemActions.recents(), snack, setup) }
                 }
                 Spacer(Modifier.height(12.dp))
                 Text(
@@ -150,24 +159,27 @@ fun ControlsScreen(nav: AppNavigator) {
 
             SectionHeader("Ringer mode")
             val ringer = remember(revision) { volume.ringerMode }
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                RingerOption("Ring", Icons.Rounded.NotificationsActive, ringer == AudioManager.RINGER_MODE_NORMAL, Modifier.weight(1f)) {
-                    volume.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
-                    revision++
-                }
-                RingerOption("Vibrate", Icons.Rounded.Vibration, ringer == AudioManager.RINGER_MODE_VIBRATE, Modifier.weight(1f)) {
-                    volume.setRingerMode(AudioManager.RINGER_MODE_VIBRATE)
-                    revision++
-                }
-                RingerOption("Silent", Icons.Rounded.NotificationsOff, ringer == AudioManager.RINGER_MODE_SILENT, Modifier.weight(1f)) {
-                    if (!volume.setRingerMode(AudioManager.RINGER_MODE_SILENT)) {
+            RingerSelector(
+                selected = when (ringer) {
+                    AudioManager.RINGER_MODE_SILENT -> 2
+                    AudioManager.RINGER_MODE_VIBRATE -> 1
+                    else -> 0
+                },
+                onSelect = { index ->
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    val mode = when (index) {
+                        2 -> AudioManager.RINGER_MODE_SILENT
+                        1 -> AudioManager.RINGER_MODE_VIBRATE
+                        else -> AudioManager.RINGER_MODE_NORMAL
+                    }
+                    if (!volume.setRingerMode(mode) && mode == AudioManager.RINGER_MODE_SILENT) {
                         snack.error("Silent mode needs Do Not Disturb access", "Allow") {
                             Permissions.launch(context, Permissions.dndSettings())
                         }
                     }
                     revision++
-                }
-            }
+                },
+            )
 
             SectionHeader("Flashlight")
             GlassCard(onClick = {
@@ -264,19 +276,57 @@ private fun BigButton(label: String, icon: ImageVector, color: Color, onClick: (
     }
 }
 
+private data class RingerChoice(val label: String, val caption: String, val icon: ImageVector, val color: Color)
+
+private val ringerChoices = listOf(
+    RingerChoice("Ring", "Sound on", Icons.Rounded.NotificationsActive, Palette.Primary),
+    RingerChoice("Vibrate", "Buzz only", Icons.Rounded.Vibration, Palette.Warning),
+    RingerChoice("Silent", "Muted", Icons.Rounded.NotificationsOff, Palette.Error),
+)
+
+/** Segmented control with a springy sliding highlight, like iOS's ring/silent selector. */
 @Composable
-private fun RingerOption(label: String, icon: ImageVector, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    val bg by animateColorAsState(if (selected) Palette.Primary else Palette.Surface, label = "ringer")
-    Column(
-        modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .pressable(onClick)
-            .padding(vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+private fun RingerSelector(selected: Int, onSelect: (Int) -> Unit) {
+    val shape = RoundedCornerShape(24.dp)
+    BoxWithConstraints(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Palette.Surface)
+            .border(1.dp, Palette.Outline, shape)
+            .padding(6.dp),
     ) {
-        Icon(icon, null, tint = if (selected) Color.White else Palette.TextSecondary)
-        Spacer(Modifier.height(6.dp))
-        Text(label, style = MaterialTheme.typography.labelLarge, color = if (selected) Color.White else Palette.TextSecondary)
+        val segment = maxWidth / ringerChoices.size
+        val offset by animateDpAsState(segment * selected, spring(dampingRatio = 0.75f, stiffness = 500f), label = "ringerX")
+        val color by animateColorAsState(ringerChoices[selected].color, label = "ringerColor")
+        Box(
+            Modifier
+                .offset(x = offset)
+                .width(segment)
+                .height(76.dp)
+                .shadow(10.dp, RoundedCornerShape(19.dp), ambientColor = color, spotColor = color)
+                .clip(RoundedCornerShape(19.dp))
+                .background(Brush.verticalGradient(listOf(color, color.copy(alpha = 0.82f)))),
+        )
+        Row(Modifier.fillMaxWidth()) {
+            ringerChoices.forEachIndexed { index, choice ->
+                val active = index == selected
+                val content by animateColorAsState(if (active) Color.White else Palette.TextSecondary, label = "ringerText")
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .height(76.dp)
+                        .clip(RoundedCornerShape(19.dp))
+                        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { onSelect(index) },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Icon(choice.icon, null, tint = content, modifier = Modifier.size(22.dp))
+                    Spacer(Modifier.height(4.dp))
+                    Text(choice.label, style = MaterialTheme.typography.labelLarge, color = content)
+                    Text(choice.caption, style = MaterialTheme.typography.labelSmall, color = content.copy(alpha = 0.75f))
+                }
+            }
+        }
     }
 }

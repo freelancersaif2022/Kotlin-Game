@@ -60,6 +60,8 @@ import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.theme.Palette
 import kotlinx.coroutines.launch
 
+private val previewSettings = IslandSettings(glow = true)
+
 private data class Page(val title: String, val body: String, val features: List<Triple<ImageVector, Color, String>>)
 
 private val pages = listOf(
@@ -115,7 +117,7 @@ fun OnboardingScreen(nav: AppNavigator) {
 private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
     val pager = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
-    val showcase = rememberShowcase(2000L)
+    val showcase = rememberShowcase()
     val last = pager.currentPage == pages.lastIndex
 
     Column(
@@ -131,7 +133,7 @@ private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
                 .padding(horizontal = 20.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Smart Island", style = MaterialTheme.typography.titleMedium, color = Palette.TextPrimary, modifier = Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             Text(
                 "Skip",
                 style = MaterialTheme.typography.labelLarge,
@@ -144,16 +146,17 @@ private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
         }
 
         Box(Modifier.padding(horizontal = 20.dp)) {
+            val media = remember { Demo.media() }
             val activity: IslandActivity = when (pager.currentPage) {
                 0 -> showcase.first
-                1 -> Demo.media()
+                1 -> media
                 else -> Demo.volume()
             }
             PhoneTopPreview(
-                IslandSettings(glow = true),
+                previewSettings,
                 activity,
                 expanded = if (pager.currentPage == 0) showcase.second else pager.currentPage == 1,
-                height = 240.dp,
+                height = 260.dp,
             )
         }
 

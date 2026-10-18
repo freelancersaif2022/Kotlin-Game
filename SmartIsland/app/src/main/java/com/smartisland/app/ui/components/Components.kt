@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
@@ -40,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -49,7 +52,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.smartisland.app.ui.theme.Palette
+
+/** Space tab screens leave at the bottom so the floating tab bar never covers content. */
+val TabBarClearance = 112.dp
+
+/** Bottom padding for scrolling tab screens: navigation bar inset + floating tab bar. */
+fun Modifier.tabBarPadding(): Modifier = this.navigationBarsPadding().padding(bottom = TabBarClearance)
 
 /** Press-to-shrink feedback used by every tappable card and button. */
 @Composable
@@ -73,23 +83,36 @@ fun PrimaryButton(
     icon: ImageVector? = null,
     color: Color = Palette.Primary,
     enabled: Boolean = true,
+    gold: Boolean = false,
 ) {
-    val brush = if (color == Palette.Primary) Palette.PrimaryGradient else SolidColor(color)
+    val brush = when {
+        !enabled -> SolidColor(Palette.SurfaceHigh)
+        gold -> Palette.GoldGradient
+        color == Palette.Primary -> Palette.PrimaryGradient
+        else -> SolidColor(color)
+    }
+    val content = when {
+        !enabled -> Palette.TextTertiary
+        gold -> Palette.OnGold
+        else -> Color.White
+    }
+    val shape = RoundedCornerShape(18.dp)
     Row(
         modifier
             .height(54.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(if (enabled) brush else SolidColor(Palette.SurfaceHigh))
+            .clip(shape)
+            .background(brush)
+            .then(if (gold) Modifier.border(1.dp, Color.White.copy(alpha = 0.5f), shape) else Modifier)
             .pressable(onClick, enabled)
             .padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Icon(icon, null, tint = content, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
         }
-        Text(text, style = MaterialTheme.typography.labelLarge, color = if (enabled) Color.White else Palette.TextTertiary)
+        Text(text, style = MaterialTheme.typography.labelLarge, color = content, maxLines = 1)
     }
 }
 
@@ -100,6 +123,7 @@ fun GhostButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
             .height(50.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Palette.SurfaceHigh)
+            .border(1.dp, Palette.Outline, RoundedCornerShape(16.dp))
             .pressable(onClick)
             .padding(horizontal = 18.dp),
         horizontalArrangement = Arrangement.Center,
@@ -160,18 +184,83 @@ fun IconBadge(icon: ImageVector, color: Color, size: Dp = 38.dp) {
     }
 }
 
+/** Small gold "PRO" seal used on every premium-only option. */
 @Composable
 fun ProBadge(modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(8.dp)
     Row(
         modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(shape)
             .background(Palette.GoldGradient)
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .border(0.8.dp, Color.White.copy(alpha = 0.55f), shape)
+            .padding(horizontal = 7.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color(0xFF3A2600), modifier = Modifier.size(11.dp))
-        Spacer(Modifier.width(2.dp))
-        Text("PRO", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold), color = Color(0xFF3A2600))
+        Icon(Icons.Rounded.WorkspacePremium, null, tint = Palette.OnGold, modifier = Modifier.size(12.dp))
+        Spacer(Modifier.width(3.dp))
+        Text(
+            "PRO",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.8.sp),
+            color = Palette.OnGold,
+        )
+    }
+}
+
+/** Header call-to-action for free users. */
+@Composable
+fun GetProButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val shape = CircleShape
+    Row(
+        modifier
+            .shadow(10.dp, shape, ambientColor = Palette.Gold, spotColor = Palette.GoldDeep)
+            .clip(shape)
+            .background(Palette.GoldGradient)
+            .border(1.dp, Color.White.copy(alpha = 0.6f), shape)
+            .pressable(onClick)
+            .padding(start = 10.dp, end = 14.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .background(Palette.OnGold),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Rounded.WorkspacePremium, null, tint = Palette.Gold, modifier = Modifier.size(14.dp))
+        }
+        Spacer(Modifier.width(8.dp))
+        Text("Get PRO", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Palette.OnGold)
+    }
+}
+
+/** Header badge shown once the subscription is active. */
+@Composable
+fun ProActiveBadge(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
+    val shape = CircleShape
+    Row(
+        modifier
+            .clip(shape)
+            .background(Palette.GoldCardGradient)
+            .border(1.dp, Palette.Gold.copy(alpha = 0.8f), shape)
+            .then(if (onClick != null) Modifier.pressable(onClick) else Modifier)
+            .padding(start = 8.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .background(Palette.GoldGradient),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Rounded.Check, null, tint = Palette.OnGold, modifier = Modifier.size(14.dp))
+        }
+        Spacer(Modifier.width(7.dp))
+        Column {
+            Text("PRO", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.ExtraBold), color = Palette.Gold)
+            Text("Active", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.85f))
+        }
     }
 }
 
@@ -269,9 +358,9 @@ fun AppSwitch(checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
             checkedThumbColor = Color.White,
             checkedTrackColor = Palette.Primary,
             checkedBorderColor = Color.Transparent,
-            uncheckedThumbColor = Color(0xFFB0B0BA),
-            uncheckedTrackColor = Palette.SurfaceHigh,
-            uncheckedBorderColor = Color(0x33FFFFFF),
+            uncheckedThumbColor = if (Palette.isDark) Color(0xFFB0B0BA) else Color.White,
+            uncheckedTrackColor = if (Palette.isDark) Palette.SurfaceHigh else Color(0xFFDCDCE4),
+            uncheckedBorderColor = Color.Transparent,
         ),
     )
 }
@@ -311,7 +400,7 @@ fun SliderRow(
             valueRange = range,
             steps = steps,
             colors = SliderDefaults.colors(
-                thumbColor = Color.White,
+                thumbColor = if (Palette.isDark) Color.White else color,
                 activeTrackColor = color,
                 inactiveTrackColor = Palette.SurfaceHigh,
                 activeTickColor = Color.Transparent,

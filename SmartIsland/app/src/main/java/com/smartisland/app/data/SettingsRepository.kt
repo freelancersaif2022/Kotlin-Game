@@ -2,6 +2,8 @@ package com.smartisland.app.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,14 +20,10 @@ class SettingsRepository(context: Context) {
     private val _settings = MutableStateFlow(read())
     val settings: StateFlow<IslandSettings> = _settings.asStateFlow()
 
-    // Held as a field: SharedPreferences only keeps weak references to listeners.
-    private val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
-        _settings.value = read()
-    }
+    private val main = Handler(Looper.getMainLooper())
 
-    init {
-        prefs.registerOnSharedPreferenceChangeListener(listener)
-    }
+    /** Slider drags update many times per second; disk writes are batched to one per pause. */
+    private val persist = Runnable { write(_settings.value) }
 
     val current: IslandSettings get() = _settings.value
 
@@ -33,7 +31,14 @@ class SettingsRepository(context: Context) {
         val next = transform(_settings.value)
         if (next == _settings.value) return
         _settings.value = next
-        write(next)
+        main.removeCallbacks(persist)
+        main.postDelayed(persist, WRITE_DELAY_MS)
+    }
+
+    /** Writes any pending change now; called when the app goes to the background. */
+    fun flush() {
+        main.removeCallbacks(persist)
+        write(_settings.value)
     }
 
     fun resetGeometry() = update {
@@ -67,6 +72,7 @@ class SettingsRepository(context: Context) {
             edgePanelEnabled = prefs.getBoolean(K_EDGE, d.edgePanelEnabled),
             edgePanelRight = prefs.getBoolean(K_EDGE_RIGHT, d.edgePanelRight),
             onboardingDone = prefs.getBoolean(K_ONBOARDED, d.onboardingDone),
+            darkMode = prefs.getBoolean(K_DARK, d.darkMode),
         )
     }
 
@@ -92,6 +98,7 @@ class SettingsRepository(context: Context) {
             .putBoolean(K_EDGE, s.edgePanelEnabled)
             .putBoolean(K_EDGE_RIGHT, s.edgePanelRight)
             .putBoolean(K_ONBOARDED, s.onboardingDone)
+            .putBoolean(K_DARK, s.darkMode)
             .apply()
     }
 
@@ -116,5 +123,7 @@ class SettingsRepository(context: Context) {
         const val K_EDGE = "edge_panel"
         const val K_EDGE_RIGHT = "edge_right"
         const val K_ONBOARDED = "onboarding_done"
+        const val K_DARK = "dark_mode"
+        const val WRITE_DELAY_MS = 250L
     }
 }

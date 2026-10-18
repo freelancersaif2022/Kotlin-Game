@@ -87,7 +87,7 @@ private val Sub = TextStyle(color = IslandColors.Gray, fontSize = 13.sp)
 private val CompactLabel = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
 
 @Composable
-internal fun IslandContent(activity: IslandActivity, mode: IslandMode, baseHeight: Dp, actions: IslandActions) {
+internal fun IslandContent(activity: IslandActivity, mode: IslandMode, baseHeight: Dp, actions: IslandActions, accent: Color) {
     when (activity) {
         IslandActivity.Idle -> Box(Modifier.fillMaxSize())
         is IslandActivity.Media ->
@@ -100,11 +100,11 @@ internal fun IslandContent(activity: IslandActivity, mode: IslandMode, baseHeigh
             Text("Low Battery", style = CompactLabel.copy(color = IslandColors.Red))
             BatteryWithLevel(activity.level, IslandColors.Red)
         }
-        is IslandActivity.Volume -> VolumeCompact(activity, baseHeight)
-        is IslandActivity.Ringer -> RingerCompact(activity, baseHeight)
-        is IslandActivity.Notice -> NoticeExpanded(activity)
+        is IslandActivity.Volume -> VolumeCompact(activity, baseHeight, accent)
+        is IslandActivity.Ringer -> RingerCompact(activity, baseHeight, accent)
+        is IslandActivity.Notice -> NoticeExpanded(activity, accent)
         is IslandActivity.Info -> CompactRow(baseHeight) {
-            Text(activity.label, style = CompactLabel.copy(color = White))
+            Text(activity.label, style = CompactLabel.copy(color = accent))
             Text(activity.detail, style = CompactLabel.copy(color = IslandColors.Gray))
         }
     }
@@ -169,7 +169,7 @@ private fun ChargingCompact(ch: IslandActivity.Charging, baseHeight: Dp) {
 }
 
 @Composable
-private fun VolumeCompact(v: IslandActivity.Volume, baseHeight: Dp) {
+private fun VolumeCompact(v: IslandActivity.Volume, baseHeight: Dp, accent: Color) {
     val fraction by animateFloatAsState(v.percent / 100f, tween(140), label = "vol")
     CompactRow(baseHeight) {
         Icon(
@@ -189,7 +189,7 @@ private fun VolumeCompact(v: IslandActivity.Volume, baseHeight: Dp) {
                     .fillMaxHeight()
                     .fillMaxWidth(fraction)
                     .clip(CircleShape)
-                    .background(White),
+                    .background(accent),
             )
         }
         Spacer(Modifier.width(10.dp))
@@ -198,11 +198,11 @@ private fun VolumeCompact(v: IslandActivity.Volume, baseHeight: Dp) {
 }
 
 @Composable
-private fun RingerCompact(r: IslandActivity.Ringer, baseHeight: Dp) {
+private fun RingerCompact(r: IslandActivity.Ringer, baseHeight: Dp, accent: Color) {
     val (icon, label, color) = when (r.mode) {
         AudioManager.RINGER_MODE_SILENT -> Triple(Icons.Rounded.NotificationsOff, "Silent", IslandColors.Red)
         AudioManager.RINGER_MODE_VIBRATE -> Triple(Icons.Rounded.Vibration, "Vibrate", IslandColors.Orange)
-        else -> Triple(Icons.Rounded.NotificationsActive, "Ring", White)
+        else -> Triple(Icons.Rounded.NotificationsActive, "Ring", accent)
     }
     CompactRow(baseHeight) {
         Icon(icon, null, tint = color, modifier = Modifier.size(18.dp))
@@ -330,7 +330,7 @@ private fun ChargingExpanded(ch: IslandActivity.Charging) {
 }
 
 @Composable
-private fun NoticeExpanded(n: IslandActivity.Notice) {
+private fun NoticeExpanded(n: IslandActivity.Notice, accent: Color) {
     Row(
         Modifier
             .fillMaxSize()
@@ -351,7 +351,7 @@ private fun NoticeExpanded(n: IslandActivity.Notice) {
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(n.appName.uppercase(), style = Sub.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium), maxLines = 1, modifier = Modifier.weight(1f))
+                Text(n.appName.uppercase(), style = Sub.copy(fontSize = 11.sp, fontWeight = FontWeight.Medium, color = accent), maxLines = 1, modifier = Modifier.weight(1f))
                 Text("now", style = Sub.copy(fontSize = 11.sp))
             }
             Text(n.title, style = Title.copy(fontSize = 14.sp), maxLines = 1, overflow = TextOverflow.Ellipsis)

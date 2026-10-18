@@ -166,6 +166,7 @@ fun PermissionsScreen(nav: AppNavigator, onDone: (() -> Unit)? = null) {
                 }
             }
             Spacer(Modifier.height(20.dp))
+            if (onDone == null) Spacer(Modifier.navigationBarsPadding())
         }
 
         if (onDone != null) {

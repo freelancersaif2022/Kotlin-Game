@@ -3,10 +3,14 @@ package com.smartisland.app.overlay
 import android.content.Context
 import android.view.Gravity
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -109,8 +114,11 @@ private fun EdgePanel(
     AnimatedContent(
         targetState = open.value,
         transitionSpec = {
-            (fadeIn(tween(180)) + slideInHorizontally(tween(220)) { if (onRight) it / 2 else -it / 2 })
-                .togetherWith(fadeOut(tween(120)))
+            // The window resizes once (snap); the panel itself scales out of the screen edge.
+            val origin = TransformOrigin(if (onRight) 1f else 0f, 0.5f)
+            (fadeIn(tween(140)) + scaleIn(spring(dampingRatio = 0.78f, stiffness = 520f), initialScale = 0.82f, transformOrigin = origin))
+                .togetherWith(fadeOut(tween(90)) + scaleOut(tween(110), targetScale = 0.9f, transformOrigin = origin))
+                .using(SizeTransform(clip = false) { _, _ -> snap() })
         },
         label = "edge",
     ) { isOpen ->
