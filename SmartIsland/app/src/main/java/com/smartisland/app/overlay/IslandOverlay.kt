@@ -12,8 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,8 +40,9 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * The always-on island, built from two windows:
  *
- * - a full-width, non-touchable window that draws the island. Its width never changes, so the island
- *   can grow, shrink and morph without the window being re-centred (which made it jitter sideways);
+ * - a non-touchable window that draws the island. It is always as wide as the fully expanded island,
+ *   so the island grows, shrinks and morphs inside it without the window ever being resized or
+ *   re-centred (resizing is what made it jitter sideways);
  * - a small invisible window that covers only the island and forwards touches to it, so the rest of
  *   the status bar stays fully usable (e.g. pulling down the notification shade).
  */
@@ -78,9 +78,9 @@ class IslandOverlay(
     }
 
     private val visualParams = baseParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.WRAP_CONTENT,
         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-    )
+    ).apply { gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL }
 
     private val touchParams = baseParams(
         1,
@@ -114,17 +114,16 @@ class IslandOverlay(
         val activity by IslandEngine.current.collectAsState()
         // A new kind of activity always starts collapsed; updates of the same kind keep the state.
         LaunchedEffect(activity::class) { expanded.value = false }
-        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        val islandMax = islandMaxWidth(s, LocalConfiguration.current.screenWidthDp.toFloat()).dp
+        // Fixed-width box: the window keeps this width whatever the island is doing.
+        Box(Modifier.width(islandMax + IslandOuterPadding * 2), contentAlignment = Alignment.TopCenter) {
             IslandView(
                 activity = activity,
                 settings = s,
                 expanded = expanded.value,
                 onExpandedChange = { expanded.value = it },
                 actions = actions,
-                maxWidth = screenWidth - 16.dp,
-                // The window never goes above the screen top; any remaining offset is applied here.
-                modifier = Modifier.offset(x = s.xOffsetDp.dp, y = (s.topOffsetDp - IslandOuterPadding.value).coerceAtMost(0f).dp),
+                maxWidth = islandMax,
                 onFootprint = ::onFootprint,
             )
         }
@@ -161,12 +160,18 @@ class IslandOverlay(
             val dx = footprint.left.toFloat()
             val dy = footprint.top.toFloat()
             ev.offsetLocation(dx, dy)
-            composeView?.dispatchTouchEvent(ev)
+            runCatching { composeView?.dispatchTouchEvent(ev) }
             ev.offsetLocation(-dx, -dy)
             true
         }
-        if (runCatching { wm.addView(touch, touchParams) }.isSuccess) touchView = touch
-        syncTouchWindow()
+        if (runCatching { wm.addView(touch, touchParams) }.isSuccess) {
+            touchView = touch
+            syncTouchWindow()
+        } else {
+            // Fallback: let the drawing window take touches itself.
+            visualParams.flags = visualParams.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+            runCatching { wm.updateViewLayout(frame, visualParams) }
+        }
     }
 
     fun hide() {
@@ -186,12 +191,18 @@ class IslandOverlay(
     }
 
     fun applyGeometry(s: IslandSettings) {
-        val y = px((s.topOffsetDp - IslandOuterPadding.value).coerceAtLeast(0f))
-        if (visualParams.y == y) return
+        // Same placement as the classic single-window island: centred, nudged by the offsets.
+        val x = px(s.xOffsetDp)
+        val y = px(s.topOffsetDp - IslandOuterPadding.value)
+        if (visualParams.x == x && visualParams.y == y) return
+        visualParams.x = x
         visualParams.y = y
         visualRoot?.let { runCatching { wm.updateViewLayout(it, visualParams) } }
-        syncTouchWindow()
+        visualRoot?.post { syncTouchWindow() }
     }
+
+    private fun islandMaxWidth(s: IslandSettings, screenWidthDp: Float): Float =
+        s.expandedWidthDp.coerceAtMost(screenWidthDp - 16f)
 
     private fun onFootprint(bounds: Rect) {
         val r = android.graphics.Rect(
@@ -199,7 +210,8 @@ class IslandOverlay(
         )
         if (r == footprint) return
         footprint = r
-        syncTouchWindow()
+        // Wait for the window to be positioned, then follow it on screen.
+        visualRoot?.post { syncTouchWindow() } ?: syncTouchWindow()
     }
 
     /** Moves the invisible touch window over the island (or disables it while hidden). */
@@ -211,8 +223,12 @@ class IslandOverlay(
         } else {
             touchParams.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
         }
-        val x = visualParams.x + footprint.left
-        val y = visualParams.y + footprint.top
+        // Real on-screen position of the drawing window, so the touch area matches even if the system
+        // clamps or shifts the window.
+        val loc = IntArray(2)
+        visualRoot?.getLocationOnScreen(loc)
+        val x = loc[0] + footprint.left
+        val y = loc[1] + footprint.top
         val w = footprint.width().coerceAtLeast(1)
         val h = footprint.height().coerceAtLeast(1)
         if (touchParams.flags == flags && touchParams.x == x && touchParams.y == y && touchParams.width == w && touchParams.height == h) return

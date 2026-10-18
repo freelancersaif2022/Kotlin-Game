@@ -40,6 +40,9 @@ import com.smartisland.app.ui.theme.Palette
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/** Same value as @color/background, which the system splash and window use. */
+private val SplashBackground = Color(0xFFF4F4F8)
+
 /** The app icon as a rounded square, built from the adaptive icon layers so it always matches. */
 @Composable
 fun AppIcon(size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
@@ -79,17 +82,18 @@ fun BrandSplash(onFinished: () -> Unit) {
         screenAlpha.animateTo(0f, tween(220))
         onFinished()
     }
-    val dark = Palette.isDark
+    // Always the same light brand look, starting from the exact system splash color, so the launch goes
+    // straight from the icon-less system splash into this screen with no black or white flash.
     Box(
         Modifier
             .fillMaxSize()
             .graphicsLayer { alpha = screenAlpha.value }
-            .background(Palette.HeroGradient)
+            .background(SplashBackground)
             .drawBehind {
                 // Soft brand glows behind the icon.
                 val c = Offset(size.width / 2, size.height / 2)
                 drawCircle(
-                    Brush.radialGradient(listOf(Palette.Primary.copy(alpha = if (dark) 0.35f else 0.22f), Color.Transparent), center = c, radius = size.width * 0.7f),
+                    Brush.radialGradient(listOf(Palette.Primary.copy(alpha = 0.22f), Color.Transparent), center = c, radius = size.width * 0.7f),
                     radius = size.width * 0.7f, center = c,
                 )
                 drawCircle(
@@ -142,12 +146,12 @@ fun BrandSplash(onFinished: () -> Unit) {
             Text(
                 "Smart Island",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = 0.4.sp),
-                color = Palette.TextPrimary,
+                color = Color(0xFF111118),
             )
             Text(
                 "Your island. Live.",
                 style = MaterialTheme.typography.labelMedium,
-                color = Palette.TextSecondary,
+                color = Color(0xFF5E5F6E),
             )
         }
     }

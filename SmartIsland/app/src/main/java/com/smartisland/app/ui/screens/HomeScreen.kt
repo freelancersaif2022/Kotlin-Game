@@ -41,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.smartisland.app.island.IslandEngine
+import com.smartisland.app.system.Permissions
 import com.smartisland.app.system.SystemActions
 import com.smartisland.app.ui.appContainer
 import com.smartisland.app.ui.components.AppSwitch
@@ -72,6 +74,7 @@ import java.util.Calendar
 @Composable
 fun HomeScreen(nav: AppNavigator) {
     val container = appContainer()
+    val context = LocalContext.current
     val snack = LocalSnack.current
     val settings by container.settings.settings.collectAsStateWithLifecycle()
     val premium by container.premium.state.collectAsStateWithLifecycle()
@@ -108,6 +111,10 @@ fun HomeScreen(nav: AppNavigator) {
                 running = running,
                 enabled = settings.enabled,
                 onSetup = { nav.go(Routes.PERMISSIONS) },
+                onRestart = {
+                    Permissions.expectReturn(context)
+                    Permissions.launch(context, *Permissions.accessibilitySettings(context))
+                },
                 onToggle = { on -> container.settings.update { it.copy(enabled = on) } },
             )
 
@@ -177,7 +184,7 @@ fun HomeScreen(nav: AppNavigator) {
 }
 
 @Composable
-private fun StatusCard(ready: Boolean, running: Boolean, enabled: Boolean, onSetup: () -> Unit, onToggle: (Boolean) -> Unit) {
+private fun StatusCard(ready: Boolean, running: Boolean, enabled: Boolean, onSetup: () -> Unit, onRestart: () -> Unit, onToggle: (Boolean) -> Unit) {
     GlassCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -185,13 +192,14 @@ private fun StatusCard(ready: Boolean, running: Boolean, enabled: Boolean, onSet
                     !ready -> StatusChip("Setup required", Palette.Warning)
                     !enabled -> StatusChip("Island paused", Palette.TextSecondary)
                     running -> StatusChip("Island is live", Palette.Success)
-                    else -> StatusChip("Starting…", Palette.Secondary)
+                    else -> StatusChip("Island stopped", Palette.Error)
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
                     when {
                         !ready -> "Grant 2 permissions to show the island over every app."
                         !enabled -> "Turn the island back on any time."
+                        !running -> "Android stopped the island service. Turn Smart Island off and on in Accessibility to restart it."
                         else -> "Calls, music and charging appear automatically."
                     },
                     style = MaterialTheme.typography.bodyMedium,
@@ -204,6 +212,9 @@ private fun StatusCard(ready: Boolean, running: Boolean, enabled: Boolean, onSet
         if (!ready) {
             Spacer(Modifier.height(14.dp))
             PrimaryButton("Finish setup", onSetup, Modifier.fillMaxWidth())
+        } else if (enabled && !running) {
+            Spacer(Modifier.height(14.dp))
+            PrimaryButton("Restart island", onRestart, Modifier.fillMaxWidth())
         }
     }
 }

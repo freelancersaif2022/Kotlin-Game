@@ -1,6 +1,8 @@
 package com.smartisland.app.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -48,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -212,19 +215,19 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabSwitch(): Boo
     initialState.destination.route in Routes.tabs && targetState.destination.route in Routes.tabs
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.enter() =
-    if (isTabSwitch()) fadeIn(tween(140))
+    if (isTabSwitch()) EnterTransition.None
     else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, slideSpec) + fadeIn(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.exit() =
-    if (isTabSwitch()) fadeOut(tween(90))
+    if (isTabSwitch()) ExitTransition.None
     else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, slideSpec, targetOffset = { it / 4 }) + fadeOut(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnter() =
-    if (isTabSwitch()) fadeIn(tween(140))
+    if (isTabSwitch()) EnterTransition.None
     else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec, initialOffset = { it / 4 }) + fadeIn(tween(160))
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit() =
-    if (isTabSwitch()) fadeOut(tween(90))
+    if (isTabSwitch()) ExitTransition.None
     else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec) + fadeOut(tween(160))
 
 /**
@@ -234,7 +237,10 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit() =
 @Composable
 private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
     val shape = RoundedCornerShape(30.dp)
-    val selectedIndex = tabs.indexOfFirst { it.route == current }.coerceAtLeast(0)
+    // The tapped tab lights up immediately, before navigation has even started.
+    var tapped by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(current) { tapped = null }
+    val selectedIndex = tabs.indexOfFirst { it.route == (tapped ?: current) }.coerceAtLeast(0)
     BoxWithConstraints(
         Modifier
             .navigationBarsPadding()
@@ -247,7 +253,7 @@ private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
             .padding(6.dp),
     ) {
         val segment = maxWidth / tabs.size
-        val offset = animateDpAsState(segment * selectedIndex, spring(dampingRatio = 0.78f, stiffness = 650f), label = "tabX")
+        val offset = animateDpAsState(segment * selectedIndex, spring(dampingRatio = 0.85f, stiffness = 1400f), label = "tabX")
         Box(
             Modifier
                 .offset { IntOffset(offset.value.roundToPx(), 0) }
@@ -264,7 +270,7 @@ private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
         Row(Modifier.fillMaxWidth()) {
             tabs.forEachIndexed { index, tab ->
                 val selected = index == selectedIndex
-                val tint by animateColorAsState(if (selected) Color.White else Palette.TextSecondary, tween(160), label = "tabTint")
+                val tint = if (selected) Color.White else Palette.TextSecondary
                 Column(
                     Modifier
                         .weight(1f)
@@ -272,7 +278,10 @@ private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
-                        ) { onSelect(tab.route) },
+                        ) {
+                            tapped = tab.route
+                            onSelect(tab.route)
+                        },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {

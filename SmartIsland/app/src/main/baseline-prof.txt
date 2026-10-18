@@ -1,0 +1,4 @@
+# Ahead-of-time compile all of Smart Island's own code on install (Compose libraries ship their own
+# rules), so screens, scrolling and the island overlay run at full speed from the first launch.
+HSPLcom/smartisland/app/**;->**(**)**
+Lcom/smartisland/app/**;

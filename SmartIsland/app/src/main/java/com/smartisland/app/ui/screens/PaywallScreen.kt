@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -96,16 +94,18 @@ fun PaywallScreen(nav: AppNavigator) {
     var confirm by remember { mutableStateOf<SubscriptionProduct?>(null) }
     var processing by remember { mutableStateOf(false) }
 
-    Box(
+    // Content scrolls above a pinned purchase section; they never overlap.
+    Column(
         Modifier
             .fillMaxSize()
             .background(Palette.HeroGradient),
     ) {
         Column(
             Modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 190.dp),
+                .padding(bottom = 20.dp),
         ) {
             ScreenTopBar("", onBack = nav::back)
             Column(Modifier.padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -120,19 +120,13 @@ fun PaywallScreen(nav: AppNavigator) {
                     textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(22.dp))
-                // Monthly first, then the yearly best-value plan (selected by default), side by side.
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Max)
-                        .padding(top = 10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    billing.products.sortedBy { it.plan == Plan.YEARLY }.forEach { product ->
-                        PlanCard(product, product == selected, Modifier.weight(1f).fillMaxHeight()) { selected = product }
-                    }
+                // Monthly first, then the yearly best-value plan (selected by default).
+                Spacer(Modifier.height(4.dp))
+                billing.products.sortedBy { it.plan == Plan.YEARLY }.forEach { product ->
+                    PlanCard(product, product == selected) { selected = product }
+                    Spacer(Modifier.height(14.dp))
                 }
-                Spacer(Modifier.height(22.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     "EVERYTHING IN PRO",
                     style = MaterialTheme.typography.labelSmall,
@@ -155,7 +149,6 @@ fun PaywallScreen(nav: AppNavigator) {
 
         Column(
             Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .background(Palette.Background.copy(alpha = 0.96f))
                 .navigationBarsPadding()
@@ -306,50 +299,43 @@ private fun PerkRow(perk: Perk) {
 }
 
 @Composable
-private fun PlanCard(product: SubscriptionProduct, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun PlanCard(product: SubscriptionProduct, selected: Boolean, onClick: () -> Unit) {
     val bg by animateColorAsState(if (selected) Palette.Primary.copy(alpha = 0.10f) else Palette.Surface, label = "planBg")
-    val shape = RoundedCornerShape(24.dp)
-    Box(modifier) {
-        Column(
+    val shape = RoundedCornerShape(22.dp)
+    Box(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Row(
             Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .clip(shape)
                 .background(bg)
                 .border(if (selected) 2.dp else 1.dp, if (selected) Palette.PrimaryGradient else SolidColor(Palette.Outline), shape)
                 .pressable(onClick)
-                .padding(start = 16.dp, end = 16.dp, top = 22.dp, bottom = 16.dp),
+                .padding(18.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(product.title.uppercase(), style = MaterialTheme.typography.labelLarge, color = if (selected) Palette.PrimarySoft else Palette.TextSecondary, modifier = Modifier.weight(1f))
-                Box(
-                    Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(if (selected) Palette.PrimaryGradient else SolidColor(Color.Transparent))
-                        .border(if (selected) 0.dp else 1.5.dp, Palette.TextTertiary, CircleShape),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (selected) Icon(Icons.Rounded.Check, null, tint = Color.White, modifier = Modifier.size(15.dp))
-                }
-            }
-            Spacer(Modifier.height(10.dp))
-            Text(product.price, style = MaterialTheme.typography.headlineMedium, color = Palette.TextPrimary, maxLines = 1)
-            Text("per ${product.period}", style = MaterialTheme.typography.bodySmall, color = Palette.TextSecondary)
-            Spacer(Modifier.weight(1f))
-            Spacer(Modifier.height(12.dp))
             Box(
                 Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Palette.Outline),
-            )
-            Spacer(Modifier.height(10.dp))
-            Text(product.pricePerMonth, style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
-            Text(
-                if (product.trialDays > 0) "${product.trialDays} days free" else "Cancel anytime",
-                style = MaterialTheme.typography.bodySmall,
-                color = if (product.trialDays > 0) Palette.Success else Palette.TextSecondary,
-            )
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(if (selected) Palette.PrimaryGradient else SolidColor(Color.Transparent))
+                    .border(if (selected) 0.dp else 2.dp, Palette.TextTertiary, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (selected) Icon(Icons.Rounded.Check, null, tint = Color.White, modifier = Modifier.size(16.dp))
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(product.title, style = MaterialTheme.typography.titleMedium, color = Palette.TextPrimary)
+                Text(
+                    if (product.trialDays > 0) "${product.trialDays}-day free trial · ${product.pricePerMonth}" else "${product.pricePerMonth} · cancel anytime",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (product.trialDays > 0) Palette.Success else Palette.TextSecondary,
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(product.price, style = MaterialTheme.typography.titleLarge, color = Palette.TextPrimary)
+                Text("per ${product.period}", style = MaterialTheme.typography.bodySmall, color = Palette.TextSecondary)
+            }
         }
         product.badge?.let { badge ->
             Text(
@@ -357,11 +343,11 @@ private fun PlanCard(product: SubscriptionProduct, selected: Boolean, modifier: 
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
                 color = Palette.OnGold,
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-10).dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = (-16).dp, y = (-9).dp)
                     .clip(RoundedCornerShape(50))
                     .background(Palette.GoldGradient)
-                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                    .padding(horizontal = 10.dp, vertical = 3.dp),
             )
         }
     }

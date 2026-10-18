@@ -79,5 +79,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.ads)
     implementation(libs.user.messaging.platform)
+    implementation(libs.androidx.profileinstaller)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

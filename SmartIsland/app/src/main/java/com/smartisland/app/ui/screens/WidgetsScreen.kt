@@ -3,6 +3,8 @@ package com.smartisland.app.ui.screens
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -259,7 +261,7 @@ private fun previewSize(size: WidgetSize): Pair<Dp, Dp> = when (size) {
  * recycled by the lazy list and only re-inflates when it is reused for a different widget.
  */
 @Composable
-private fun WidgetPreview(kind: WidgetKind, modifier: Modifier = Modifier) {
+private fun WidgetPreview(kind: WidgetKind, modifier: Modifier = Modifier, cached: Boolean = true) {
     val (w, h) = previewSize(kind.size)
     AndroidView(
         factory = { ctx -> FrameLayout(ctx) },
@@ -267,14 +269,31 @@ private fun WidgetPreview(kind: WidgetKind, modifier: Modifier = Modifier) {
             if (frame.tag != kind.id) {
                 frame.tag = kind.id
                 frame.removeAllViews()
-                val views = WidgetRenderer.render(frame.context, kind, forceUnlocked = true)
-                runCatching { frame.addView(views.apply(frame.context.applicationContext, frame)) }
+                val view = if (cached) PreviewCache.get(frame.context, kind) else PreviewCache.inflate(frame.context, kind)
+                (view?.parent as? ViewGroup)?.removeView(view)
+                view?.let { frame.addView(it) }
             }
         },
         modifier = modifier
             .then(if (w == Dp.Unspecified) Modifier.fillMaxWidth() else Modifier.width(w))
             .height(h),
     )
+}
+
+/**
+ * Inflated widget previews kept for the life of the process, so coming back to this screen (e.g. from
+ * the PRO screen) re-uses them instead of inflating 17 widgets again.
+ */
+private object PreviewCache {
+    private val views = HashMap<String, View>()
+
+    fun get(context: Context, kind: WidgetKind): View? =
+        views[kind.id] ?: inflate(context, kind)?.also { views[kind.id] = it }
+
+    fun inflate(context: Context, kind: WidgetKind): View? = runCatching {
+        val app = context.applicationContext
+        WidgetRenderer.render(app, kind, forceUnlocked = true).apply(app, FrameLayout(app))
+    }.getOrNull()
 }
 
 @Composable
@@ -287,7 +306,7 @@ private fun DialogWidgetHeader(kind: WidgetKind) {
             .background(Palette.WallpaperGradient),
         contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.graphicsLayer { scaleX = 0.62f; scaleY = 0.62f }) { WidgetPreview(kind, Modifier.width(300.dp)) }
+        Box(Modifier.graphicsLayer { scaleX = 0.62f; scaleY = 0.62f }) { WidgetPreview(kind, Modifier.width(300.dp), cached = false) }
         ProBadge(
             Modifier
                 .align(Alignment.TopEnd)

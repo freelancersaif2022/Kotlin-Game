@@ -1,9 +1,7 @@
 package com.smartisland.app
 
-import android.app.UiModeManager
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -28,8 +26,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        val startDark = container.settings.current.darkMode
-        applySystemBars(startDark)
+        // The launch screen is always light (it matches the system splash color, so there is no flash).
+        applySystemBars(false)
         super.onCreate(savedInstanceState)
         container.premium.renewIfNeeded()
         container.ads.gatherConsent(this)
@@ -39,11 +37,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settings by container.settings.settings.collectAsStateWithLifecycle()
             val dark = settings.darkMode
-            LaunchedEffect(dark) {
-                applySystemBars(dark)
-                syncSystemNightMode(dark)
-            }
             var showSplash by remember { mutableStateOf(coldStart) }
+            LaunchedEffect(dark, showSplash) { applySystemBars(dark && !showSplash) }
             SmartIslandTheme(dark) {
                 Box {
                     AppRoot(routeRequest.value) { routeRequest.value = null }
@@ -70,14 +65,6 @@ class MainActivity : ComponentActivity() {
             SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
         }
         enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
-    }
-
-    /** Android 12+: lets the system splash screen match the chosen theme on the next launch. */
-    private fun syncSystemNightMode(dark: Boolean) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
-        val ui = getSystemService(UiModeManager::class.java) ?: return
-        val mode = if (dark) UiModeManager.MODE_NIGHT_YES else UiModeManager.MODE_NIGHT_NO
-        if (ui.nightMode != mode) runCatching { ui.setApplicationNightMode(mode) }
     }
 
     private fun handle(intent: Intent?) {

@@ -30,7 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -135,26 +135,17 @@ fun PhoneTopPreview(
                 .fillMaxSize()
                 .clip(inner)
                 .background(Palette.WallpaperGradient)
-                .drawBehind {
-                    // Soft color blobs give the wallpaper depth without any bitmap.
-                    drawCircle(
-                        Brush.radialGradient(
-                            listOf(Color(0x99FF5EA8), Color.Transparent),
-                            center = Offset(size.width * 0.15f, size.height * 0.95f),
-                            radius = size.width * 0.55f,
-                        ),
-                        radius = size.width * 0.55f,
-                        center = Offset(size.width * 0.15f, size.height * 0.95f),
-                    )
-                    drawCircle(
-                        Brush.radialGradient(
-                            listOf(Color(0x8854C7FF), Color.Transparent),
-                            center = Offset(size.width * 0.9f, size.height * 0.35f),
-                            radius = size.width * 0.5f,
-                        ),
-                        radius = size.width * 0.5f,
-                        center = Offset(size.width * 0.9f, size.height * 0.35f),
-                    )
+                .drawWithCache {
+                    // Soft color blobs give the wallpaper depth; the brushes are built once per size,
+                    // not on every frame while the screen scrolls.
+                    val pinkCenter = Offset(size.width * 0.15f, size.height * 0.95f)
+                    val blueCenter = Offset(size.width * 0.9f, size.height * 0.35f)
+                    val pink = Brush.radialGradient(listOf(Color(0x99FF5EA8), Color.Transparent), center = pinkCenter, radius = size.width * 0.55f)
+                    val blue = Brush.radialGradient(listOf(Color(0x8854C7FF), Color.Transparent), center = blueCenter, radius = size.width * 0.5f)
+                    onDrawBehind {
+                        drawCircle(pink, radius = size.width * 0.55f, center = pinkCenter)
+                        drawCircle(blue, radius = size.width * 0.5f, center = blueCenter)
+                    }
                 },
         ) {
             val maxW = maxWidth
