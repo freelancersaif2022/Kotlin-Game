@@ -15,3 +15,12 @@
 
 # --- Google Play Billing ---
 -keep class com.android.vending.billing.** { *; }
+
+# --- Flutter plugins called from Dart by name (JNI / Pigeon) ---
+# shared_preferences calls SharedPreferencesApiRegistrar.getAll via JNI; R8
+# renamed it -> NoSuchMethodError and nothing could be saved.
+-keep class io.flutter.plugins.** { *; }
+-keep class dev.fluttercommunity.plus.** { *; }
+-keep class com.baseflow.** { *; }
+-keep class io.flutter.plugins.googlemobileads.** { *; }
+-keep class kotlin.coroutines.Continuation { *; }
