@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Island</string>
+    <string name="accessibility_description">Smart Island uses this service to show the island over other apps, to perform the lock screen, power menu and screenshot actions you tap, and, only if you turn on the Volume HUD, to handle the volume keys. It does not read screen content or collect personal data.</string>
+    <string name="accessibility_summary">Shows the island and powers software power and volume buttons.</string>
+    <string name="tile_lock">Lock screen</string>
+    <string name="tile_island">Island</string>
+    <string name="widget_desc_digital_clock">Large live clock with date and battery</string>
+    <string name="widget_desc_analog_clock">Analog clock with sweeping second hand</string>
+    <string name="widget_desc_battery_ring">Circular battery gauge</string>
+    <string name="widget_desc_calendar">Today\'s date and next alarm</string>
+    <string name="widget_desc_power">Power menu, lock and screenshot buttons</string>
+    <string name="widget_desc_volume">Volume control with 0 to 100% bar</string>
+    <string name="widget_desc_charging">Live charging speed and battery health</string>
+    <string name="widget_desc_world_clock">Time in four world cities</string>
+    <string name="widget_desc_media">Now playing with playback controls</string>
+    <string name="widget_desc_stopwatch">Real-time stopwatch</string>
+    <string name="widget_desc_system_stats">RAM, storage and battery usage</string>
+    <string name="widget_desc_quick_toggles">Flashlight, ringer, focus and island toggles</string>
+    <string name="widget_title_digital_clock">Digital Clock</string>
+    <string name="widget_title_analog_clock">Analog Clock</string>
+    <string name="widget_title_battery_ring">Battery Ring</string>
+    <string name="widget_title_calendar">Calendar</string>
+    <string name="widget_title_power">Power Buttons</string>
+    <string name="widget_title_volume">Volume Control</string>
+    <string name="widget_title_charging">Charging Pulse</string>
+    <string name="widget_title_world_clock">World Clock</string>
+    <string name="widget_title_media">Now Playing</string>
+    <string name="widget_title_stopwatch">Stopwatch</string>
+    <string name="widget_title_system_stats">System Monitor</string>
+    <string name="widget_title_quick_toggles">Quick Toggles</string>
+</resources>

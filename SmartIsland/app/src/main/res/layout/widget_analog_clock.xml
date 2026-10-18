@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:padding="10dp">
+
+    <AnalogClock
+        android:id="@+id/analog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dial="@drawable/clock_dial"
+        android:hand_hour="@drawable/clock_hand_hour"
+        android:hand_minute="@drawable/clock_hand_minute"
+        android:hand_second="@drawable/clock_hand_second" />
+
+    <TextClock
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="34dp"
+        android:fontFamily="sans-serif-medium"
+        android:format12Hour="EEE d"
+        android:format24Hour="EEE d"
+        android:textAllCaps="true"
+        android:textColor="#FFFF9F0A"
+        android:textSize="10sp" />
+</FrameLayout>

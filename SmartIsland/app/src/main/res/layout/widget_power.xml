@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/btn_power"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_power_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_red"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_power" />
+
+        <TextView
+            android:id="@+id/btn_power_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Power"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_lock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_lock_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn_active"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_lock" />
+
+        <TextView
+            android:id="@+id/btn_lock_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Lock"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_screenshot"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_screenshot_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_blue"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_screenshot" />
+
+        <TextView
+            android:id="@+id/btn_screenshot_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Screenshot"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_shade"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_shade_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_bell" />
+
+        <TextView
+            android:id="@+id/btn_shade_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Alerts"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

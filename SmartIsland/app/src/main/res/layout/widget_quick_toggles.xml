@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/t_torch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/t_torch_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_flashlight" />
+
+        <TextView
+            android:id="@+id/t_torch_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Flashlight"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/t_ringer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/t_ringer_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_bell" />
+
+        <TextView
+            android:id="@+id/t_ringer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Ring"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/t_dnd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/t_dnd_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_dnd" />
+
+        <TextView
+            android:id="@+id/t_dnd_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Focus"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/t_island"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/t_island_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/circle_btn_active"
+            android:padding="12dp"
+            android:src="@drawable/ic_w_island" />
+
+        <TextView
+            android:id="@+id/t_island_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Island"
+            android:textColor="#E6FFFFFF"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>
