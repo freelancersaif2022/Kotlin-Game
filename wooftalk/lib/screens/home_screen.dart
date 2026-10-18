@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../main.dart';
@@ -66,10 +65,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (_phase == _Phase.recording) return _stop();
     _busy = true;
     try {
-      final perm = await _engine.ensurePermission();
+      final allowed = await _engine.ensurePermission();
       if (!mounted) return;
-      if (perm != MicPermission.granted) {
-        _showPermissionPopup(perm == MicPermission.permanentlyDenied);
+      if (!allowed) {
+        _showPermissionPopup();
         return;
       }
       await _engine.startRecording();
@@ -160,24 +159,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // Popups
   // ---------------------------------------------------------------------------
 
-  void _showPermissionPopup(bool permanent) {
+  void _showPermissionPopup() {
     showFancyDialog(
       context,
       builder: (ctx) => AppDialog(
         heroBackground: AppColors.purpleGradient,
         hero: const Icon(Icons.mic_rounded, color: Colors.white, size: 52),
         title: 'Mic access needed',
-        message: permanent
-            ? 'Enable the microphone in Settings so your pet can hear you. Your voice never leaves your phone.'
-            : 'We need the microphone to hear what you say. Your voice is processed on your phone only.',
+        message:
+            'We need the microphone to hear what you say. Your voice is processed on your phone only. '
+            'If no prompt appears, enable it in Settings › Apps › WoofTalk › Permissions.',
         actions: [
           GradientButton(
-            label: permanent ? 'Open Settings' : 'Allow microphone',
-            icon: permanent ? Icons.settings_rounded : Icons.mic_rounded,
+            label: 'Allow microphone',
+            icon: Icons.mic_rounded,
             gradient: AppColors.purpleGradient,
             onTap: () {
               Navigator.pop(ctx);
-              permanent ? openAppSettings() : _onMic();
+              _onMic();
             },
           ),
           TextLinkButton('Not now', onTap: () => Navigator.pop(ctx)),

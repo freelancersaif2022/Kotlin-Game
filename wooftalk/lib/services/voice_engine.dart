@@ -6,12 +6,9 @@ import 'dart:typed_data';
 
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
 import '../audio/translator_engine.dart';
-
-enum MicPermission { granted, denied, permanentlyDenied }
 
 /// Live mic capture (kept in memory only – nothing is saved), translation in
 /// a background isolate and playback of the animal voice.
@@ -41,15 +38,8 @@ class VoiceEngine {
   TranslationResult? lastResult;
   String? lastFile;
 
-  Future<MicPermission> ensurePermission() async {
-    var status = await Permission.microphone.status;
-    if (status.isGranted) return MicPermission.granted;
-    status = await Permission.microphone.request();
-    if (status.isGranted) return MicPermission.granted;
-    return status.isPermanentlyDenied
-        ? MicPermission.permanentlyDenied
-        : MicPermission.denied;
-  }
+  /// Asks for the microphone if needed. Returns true when it can be used.
+  Future<bool> ensurePermission() => _recorder.hasPermission();
 
   Future<void> startRecording() async {
     await _player.stop();
