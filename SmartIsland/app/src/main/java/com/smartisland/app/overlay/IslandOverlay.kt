@@ -69,7 +69,8 @@ class IslandOverlay(
             expanded = expanded.value,
             onExpandedChange = { expanded.value = it },
             actions = actions,
-            maxWidth = screenWidth - 16.dp,
+            // Island + its glow margin must fit on screen, or the window clips the island's sides.
+            maxWidth = screenWidth - IslandOuterPadding * 2 - 12.dp,
         )
     }
 

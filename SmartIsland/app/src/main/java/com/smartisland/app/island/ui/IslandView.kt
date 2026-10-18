@@ -8,7 +8,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,24 +15,22 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -42,15 +39,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.smartisland.app.data.IslandSettings
 import com.smartisland.app.island.IslandActivity
 import com.smartisland.app.island.MediaCommands
-import kotlinx.coroutines.flow.first
 
 /** Callbacks the island needs from its host. The in-app previews use [None]. */
 interface IslandActions {
@@ -100,18 +94,17 @@ fun IslandView(
 
     val springW = spring<Dp>(dampingRatio = 0.74f, stiffness = Spring.StiffnessMediumLow)
     val springH = spring<Dp>(dampingRatio = 0.80f, stiffness = Spring.StiffnessMediumLow)
-    // Animated values are read only in the layout and draw phases, so a spring frame never recomposes.
-    val widthState = animateDpAsState(targetW, springW, label = "islandW")
-    val heightState = animateDpAsState(targetH, springH, label = "islandH")
+    val width by animateDpAsState(targetW, springW, label = "islandW")
+    val height by animateDpAsState(targetH, springH, label = "islandH")
 
     val compactRadius = baseH / 2
     val expandedRadius = (targetH / 2).coerceAtMost(40.dp)
     val targetRadius = (if (mode == IslandMode.EXPANDED) expandedRadius else compactRadius) *
         (0.35f + 0.65f * settings.roundness.coerceIn(0f, 1f))
-    val radiusState = animateDpAsState(targetRadius, springH, label = "islandR")
+    val radius by animateDpAsState(targetRadius, springH, label = "islandR")
 
     var pressed by remember { mutableStateOf(false) }
-    val pressState = animateFloatAsState(if (pressed) 0.96f else 1f, spring(stiffness = Spring.StiffnessMedium), label = "press")
+    val pressScale by animateFloatAsState(if (pressed) 0.96f else 1f, spring(stiffness = Spring.StiffnessMedium), label = "press")
 
     val haptics = LocalHapticFeedback.current
     val currentActivity by rememberUpdatedState(activity)
@@ -123,49 +116,27 @@ fun IslandView(
 
     val accent by animateColorAsState(Color(settings.accentColor), tween(300), label = "accent")
     val glowOn = glowAllowed && settings.glow
-    val glowState = animateFloatAsState(if (glowOn) 1f else 0f, tween(300), label = "glow")
+    val glowAlpha by animateFloatAsState(if (glowOn) 1f else 0f, tween(300), label = "glow")
+    val shape = RoundedCornerShape(radius)
 
-    // The footprint (and so the overlay window) jumps to the biggest size of a transition up front and
-    // shrinks once the spring settles: two window relayouts per change instead of one per frame.
-    var holdW by remember { mutableStateOf(targetW) }
-    var holdH by remember { mutableStateOf(targetH) }
-    val footW = maxOf(targetW, holdW)
-    val footH = maxOf(targetH, holdH)
-    SideEffect {
-        if (holdW != footW) holdW = footW
-        if (holdH != footH) holdH = footH
-    }
-    LaunchedEffect(targetW, targetH) {
-        snapshotFlow { widthState.value == targetW && heightState.value == targetH }.first { it }
-        holdW = targetW
-        holdH = targetH
-    }
-
-    Box(
-        modifier
-            .padding(IslandOuterPadding)
-            .size(footW, footH),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    Box(modifier.padding(IslandOuterPadding), contentAlignment = Alignment.TopCenter) {
         Box(
             Modifier
-                .layout { measurable, _ ->
-                    val w = widthState.value.roundToPx()
-                    val h = heightState.value.roundToPx()
-                    val placeable = measurable.measure(Constraints.fixed(w, h))
-                    layout(w, h) { placeable.place(0, 0) }
+                .size(width, height)
+                .graphicsLayer {
+                    scaleX = pressScale
+                    scaleY = pressScale
                 }
                 .drawBehind {
-                    val glow = glowState.value
-                    if (glow <= 0f) return@drawBehind
+                    if (glowAlpha <= 0f) return@drawBehind
                     // A soft halo built from fading rings: identical on every device and API level,
                     // unlike colored elevation shadows.
-                    val r = radiusState.value.toPx()
+                    val r = radius.toPx()
                     val step = 1.8.dp.toPx()
                     for (i in 1..5) {
                         val grow = step * i
                         drawRoundRect(
-                            color = accent.copy(alpha = glow * (0.34f / i)),
+                            color = accent.copy(alpha = glowAlpha * (0.34f / i)),
                             topLeft = Offset(-grow, -grow),
                             size = Size(size.width + grow * 2, size.height + grow * 2),
                             cornerRadius = CornerRadius(r + grow, r + grow),
@@ -173,28 +144,9 @@ fun IslandView(
                         )
                     }
                 }
-                .graphicsLayer {
-                    scaleX = pressState.value
-                    scaleY = pressState.value
-                    shape = RoundedCornerShape(radiusState.value)
-                    clip = true
-                }
-                .drawWithContent {
-                    drawContent()
-                    val glow = glowState.value
-                    if (glow > 0f) {
-                        val stroke = 1.2.dp.toPx()
-                        val r = radiusState.value.toPx()
-                        drawRoundRect(
-                            color = accent.copy(alpha = 0.9f * glow),
-                            topLeft = Offset(stroke / 2, stroke / 2),
-                            size = Size(size.width - stroke, size.height - stroke),
-                            cornerRadius = CornerRadius(r, r),
-                            style = Stroke(stroke),
-                        )
-                    }
-                }
+                .clip(shape)
                 .background(Color.Black)
+                .then(if (glowOn) Modifier.border(1.2.dp, accent.copy(alpha = 0.9f * glowAlpha), shape) else Modifier)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = {
@@ -218,9 +170,9 @@ fun IslandView(
                 targetState = Frame(activity, mode),
                 contentKey = { it.activity::class to it.mode },
                 transitionSpec = {
-                    (fadeIn(tween(220, delayMillis = 70)) + scaleIn(tween(300, delayMillis = 30), initialScale = 0.88f))
-                        .togetherWith(fadeOut(tween(80)))
-                        .using(SizeTransform(clip = false) { _, _ -> snap() })
+                    (fadeIn(tween(240, delayMillis = 80)) + scaleIn(tween(320, delayMillis = 40), initialScale = 0.86f))
+                        .togetherWith(fadeOut(tween(90)))
+                        .using(SizeTransform(clip = false))
                 },
                 label = "islandContent",
             ) { frame ->
