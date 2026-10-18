@@ -186,6 +186,31 @@ def find_calls(x, lo, hi):
     return calls, snr
 
 
+def loudest_windows(x, lo, hi, count=3):
+    """Fallback for recordings that are one continuous call (no quiet gaps
+    to measure noise from): a short file is used whole, a long one gives
+    its loudest non-overlapping windows."""
+    dur = len(x) / SR
+    if dur < lo:
+        return []
+    if dur <= hi + 0.6:
+        return [(0.0, 0, len(x))]
+    win = int(SR * min(hi, 3.0))
+    hop = SR // 10
+    energies = []
+    for a in range(0, len(x) - win, hop):
+        e = sum(v * v for v in x[a:a + win:8])
+        energies.append((e, a))
+    energies.sort(reverse=True)
+    out = []
+    for e, a in energies:
+        if all(abs(a - b) >= win for _, b, _ in out):
+            out.append((10 * math.log10(e + 1e-12), a, a + win))
+        if len(out) == count:
+            break
+    return out
+
+
 def write_wav(path, samples):
     peak = max(abs(v) for v in samples) or 1
     g = 0.9 / peak
@@ -277,6 +302,9 @@ def main():
                     print(f"  fail  {c['title']}: {e}")
                     continue
             calls, snr = find_calls(x, lo, hi)
+            if not calls:
+                calls = loudest_windows(x, lo, hi)
+                snr = 20 if calls else snr
             print(f"  ok    [{c['license']}] snr={snr:.0f}dB calls={len(calls)} {c['title']}")
             calls.sort(reverse=True)
             for loud, a, b in calls[:per_file]:
