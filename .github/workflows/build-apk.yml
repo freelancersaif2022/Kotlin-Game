@@ -24,10 +24,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
-
       - uses: gradle/actions/setup-gradle@v4
 
+      # ubuntu-latest ships the Android SDK (ANDROID_HOME); AGP installs any missing platform itself.
       - name: Build debug APK
         run: ./gradlew --no-daemon assembleDebug
 
