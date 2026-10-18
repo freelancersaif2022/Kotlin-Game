@@ -234,23 +234,22 @@ def write_wav(path, samples):
 
 
 LIST_QUERIES = {
-    "dog": ["dog barking", "dog bark", "Canis familiaris bark", "barking dog", "dog woof", "puppy barking", "puppy yelp", "puppy whimper"],
-    "cat": ["cat meow", "meowing", "Felis catus", "kitten meow"],
-    "wolf": ["wolf howl", "wolves howling", "Canis lupus howl"],
-    "duck": ["duck quack", "Anas platyrhynchos", "mallard", "duck quacking"],
-    "cow": ["cow moo", "mooing", "Bos taurus", "cattle"],
-    "rooster": ["rooster crowing", "Gallus gallus domesticus", "cock crow"],
-    "sheep": ["sheep bleating", "Ovis aries", "lamb bleating"],
-    "pig": ["pig grunt", "Sus scrofa domesticus", "pigs oinking", "piglet"],
-    "horse": ["horse neigh", "whinny", "Equus caballus"],
-    "goat": ["goat bleat", "Capra hircus", "goats bleating", "kid goat"],
-    "frog": ["frog croak", "bullfrog", "Lithobates", "Hyla", "Rana temporaria", "tree frog call"],
+    "tiger": ["tiger roar", "Panthera tigris", "tiger growl", "tiger chuff"],
+    "zebra": ["zebra", "Equus quagga", "zebra call", "Equus burchellii"],
+    "deer": ["deer call", "red deer roar", "Cervus elaphus", "deer bark", "fawn bleat", "Muntiacus", "roe deer"],
+    "bird": ["bird song", "songbird", "Turdus merula", "Erithacus rubecula", "canary singing", "sparrow chirp"],
+    "lion": ["lion roar", "Panthera leo", "lion growl"],
+    "elephant": ["elephant trumpet", "Loxodonta", "Elephas maximus", "elephant call"],
+    "monkey": ["monkey call", "gibbon", "macaque", "howler monkey", "Alouatta", "chimpanzee"],
+    "owl": ["owl hoot", "Strix aluco", "Bubo bubo", "owl call"],
 }
 
 
 def list_candidates():
     import time
     for animal, queries in LIST_QUERIES.items():
+        if animal in json.load(open(os.path.join(os.path.dirname(__file__), "sound_sources.json"))):
+            continue
         seen = set()
         print(f"\n##### {animal}")
         for q in queries:
