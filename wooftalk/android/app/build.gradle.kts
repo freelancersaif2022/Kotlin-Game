@@ -51,6 +51,15 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName(if (hasReleaseKey) "release" else "debug")
+            // R8 strips classes that AndroidX WorkManager/Room (pulled in by
+            // the Google Mobile Ads SDK) create by reflection, which crashed
+            // the app on launch. Keep code shrinking off for release builds.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }
