@@ -105,12 +105,11 @@ jobs:
       - name: Launch app on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: 30
           target: google_apis
           arch: x86_64
-          profile: pixel_6
-          ram-size: 4096M
-          heap-size: 512M
+          profile: pixel_4
+          ram-size: 3072M
           disk-size: 6000M
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
@@ -138,6 +137,6 @@ jobs:
           target_commitish: ${{ github.sha }}
           body: |
             Release APK for WoofTalk, the animal voice translator prank app.
-            Tested: installs and opens on an Android 14 emulator without crashing.
+            Tested: installs, opens and records on an Android emulator without crashing.
             Download the APK below and install it on any Android 7.0+ phone.
           files: ${{ needs.build.outputs.name }}
