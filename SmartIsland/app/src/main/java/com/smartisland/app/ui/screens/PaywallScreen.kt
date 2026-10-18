@@ -3,10 +3,13 @@ package com.smartisland.app.ui.screens
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,8 +44,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +69,8 @@ import com.smartisland.app.ui.findActivity
 import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.theme.Palette
 import kotlinx.coroutines.launch
+
+private val paywallPreviewSettings = IslandSettings(glow = true)
 
 private data class Perk(val icon: ImageVector, val color: Color, val title: String, val detail: String)
 
@@ -102,19 +109,8 @@ fun PaywallScreen(nav: AppNavigator) {
         ) {
             ScreenTopBar("", onBack = nav::back)
             Column(Modifier.padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                PhoneTopPreview(IslandSettings(glow = true), showcase.first, showcase.second, height = 200.dp)
-                Spacer(Modifier.height(22.dp))
-                Box(
-                    Modifier
-                        .size(58.dp)
-                        .shadow(16.dp, CircleShape, ambientColor = Palette.Gold, spotColor = Palette.GoldDeep)
-                        .clip(CircleShape)
-                        .background(Palette.GoldGradient),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Rounded.WorkspacePremium, null, tint = Palette.OnGold, modifier = Modifier.size(32.dp))
-                }
-                Spacer(Modifier.height(14.dp))
+                PhoneTopPreview(paywallPreviewSettings, showcase.first, showcase.second, height = 220.dp)
+                Spacer(Modifier.height(24.dp))
                 Text("Smart Island PRO", style = MaterialTheme.typography.headlineMedium, color = Palette.TextPrimary)
                 Spacer(Modifier.height(6.dp))
                 Text(
@@ -124,12 +120,19 @@ fun PaywallScreen(nav: AppNavigator) {
                     textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(22.dp))
-                // Monthly first, then the yearly best-value plan (selected by default).
-                billing.products.sortedBy { it.plan == Plan.YEARLY }.forEach { product ->
-                    PlanCard(product, product == selected) { selected = product }
-                    Spacer(Modifier.height(14.dp))
+                // Monthly first, then the yearly best-value plan (selected by default), side by side.
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Max)
+                        .padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    billing.products.sortedBy { it.plan == Plan.YEARLY }.forEach { product ->
+                        PlanCard(product, product == selected, Modifier.weight(1f).fillMaxHeight()) { selected = product }
+                    }
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(22.dp))
                 Text(
                     "EVERYTHING IN PRO",
                     style = MaterialTheme.typography.labelSmall,
@@ -303,56 +306,62 @@ private fun PerkRow(perk: Perk) {
 }
 
 @Composable
-private fun PlanCard(product: SubscriptionProduct, selected: Boolean, onClick: () -> Unit) {
-    val border by animateColorAsState(if (selected) Palette.Primary else Palette.Outline, label = "plan")
-    val bg by animateColorAsState(if (selected) Palette.Primary.copy(alpha = 0.12f) else Palette.Surface, label = "planBg")
-    val shape = RoundedCornerShape(22.dp)
-    Box(Modifier.fillMaxWidth()) {
-        Row(
+private fun PlanCard(product: SubscriptionProduct, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val bg by animateColorAsState(if (selected) Palette.Primary.copy(alpha = 0.10f) else Palette.Surface, label = "planBg")
+    val shape = RoundedCornerShape(24.dp)
+    Box(modifier) {
+        Column(
             Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .clip(shape)
                 .background(bg)
-                .border(if (selected) 2.dp else 1.dp, border, shape)
+                .border(if (selected) 2.dp else 1.dp, if (selected) Palette.PrimaryGradient else SolidColor(Palette.Outline), shape)
                 .pressable(onClick)
-                .padding(18.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(start = 16.dp, end = 16.dp, top = 22.dp, bottom = 16.dp),
         ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(product.title.uppercase(), style = MaterialTheme.typography.labelLarge, color = if (selected) Palette.PrimarySoft else Palette.TextSecondary, modifier = Modifier.weight(1f))
+                Box(
+                    Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(if (selected) Palette.PrimaryGradient else SolidColor(Color.Transparent))
+                        .border(if (selected) 0.dp else 1.5.dp, Palette.TextTertiary, CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (selected) Icon(Icons.Rounded.Check, null, tint = Color.White, modifier = Modifier.size(15.dp))
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Text(product.price, style = MaterialTheme.typography.headlineMedium, color = Palette.TextPrimary, maxLines = 1)
+            Text("per ${product.period}", style = MaterialTheme.typography.bodySmall, color = Palette.TextSecondary)
+            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(12.dp))
             Box(
                 Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(if (selected) Palette.Primary else Color.Transparent)
-                    .border(2.dp, if (selected) Palette.Primary else Palette.TextTertiary, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (selected) Icon(Icons.Rounded.Check, null, tint = Color.White, modifier = Modifier.size(16.dp))
-            }
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(product.title, style = MaterialTheme.typography.titleMedium, color = Palette.TextPrimary)
-                Text(
-                    if (product.trialDays > 0) "${product.trialDays}-day free trial · ${product.pricePerMonth}" else product.pricePerMonth,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Palette.TextSecondary,
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(product.price, style = MaterialTheme.typography.titleLarge, color = Palette.TextPrimary)
-                Text("per ${product.period}", style = MaterialTheme.typography.bodySmall, color = Palette.TextSecondary)
-            }
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Palette.Outline),
+            )
+            Spacer(Modifier.height(10.dp))
+            Text(product.pricePerMonth, style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
+            Text(
+                if (product.trialDays > 0) "${product.trialDays} days free" else "Cancel anytime",
+                style = MaterialTheme.typography.bodySmall,
+                color = if (product.trialDays > 0) Palette.Success else Palette.TextSecondary,
+            )
         }
         product.badge?.let { badge ->
             Text(
                 badge,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
                 color = Palette.OnGold,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = (-16).dp, y = (-9).dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .align(Alignment.TopCenter)
+                    .offset(y = (-10).dp)
+                    .clip(RoundedCornerShape(50))
                     .background(Palette.GoldGradient)
-                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
             )
         }
     }

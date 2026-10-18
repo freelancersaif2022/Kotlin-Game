@@ -4,6 +4,7 @@ import android.media.AudioManager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,17 +53,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -83,6 +88,9 @@ import com.smartisland.app.ui.navigation.Routes
 import com.smartisland.app.ui.reportAction
 import com.smartisland.app.ui.theme.Palette
 import com.smartisland.app.widget.WidgetUpdater
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ControlsScreen(nav: AppNavigator) {
@@ -94,8 +102,19 @@ fun ControlsScreen(nav: AppNavigator) {
 
     // Bumped whenever the system reports a volume change so every slider re-reads its stream.
     var revision by remember { mutableIntStateOf(0) }
-    SystemBroadcastEffect("android.media.VOLUME_CHANGED_ACTION", AudioManager.RINGER_MODE_CHANGED_ACTION) { revision++ }
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { revision++ }
+    var ringerRevision by remember { mutableIntStateOf(0) }
+    // Shown instantly on tap; the real change happens off the main thread right after.
+    var pendingRinger by remember { mutableStateOf<Int?>(null) }
+    val scope = rememberCoroutineScope()
+    SystemBroadcastEffect("android.media.VOLUME_CHANGED_ACTION") { revision++ }
+    SystemBroadcastEffect(AudioManager.RINGER_MODE_CHANGED_ACTION) {
+        pendingRinger = null
+        ringerRevision++
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        revision++
+        ringerRevision++
+    }
     var torch by remember { mutableStateOf(SystemActions.torchOn) }
 
     val setup = { nav.go(Routes.PERMISSIONS) }
@@ -158,7 +177,7 @@ fun ControlsScreen(nav: AppNavigator) {
             }
 
             SectionHeader("Ringer mode")
-            val ringer = remember(revision) { volume.ringerMode }
+            val ringer = pendingRinger ?: remember(ringerRevision) { volume.ringerMode }
             RingerSelector(
                 selected = when (ringer) {
                     AudioManager.RINGER_MODE_SILENT -> 2
@@ -172,12 +191,19 @@ fun ControlsScreen(nav: AppNavigator) {
                         1 -> AudioManager.RINGER_MODE_VIBRATE
                         else -> AudioManager.RINGER_MODE_NORMAL
                     }
-                    if (!volume.setRingerMode(mode) && mode == AudioManager.RINGER_MODE_SILENT) {
-                        snack.error("Silent mode needs Do Not Disturb access", "Allow") {
-                            Permissions.launch(context, Permissions.dndSettings())
+                    pendingRinger = mode
+                    scope.launch {
+                        val ok = withContext(Dispatchers.Default) { volume.setRingerMode(mode) }
+                        if (!ok) {
+                            pendingRinger = null
+                            ringerRevision++
+                            if (mode == AudioManager.RINGER_MODE_SILENT) {
+                                snack.error("Silent mode needs Do Not Disturb access", "Allow") {
+                                    Permissions.launch(context, Permissions.dndSettings())
+                                }
+                            }
                         }
                     }
-                    revision++
                 },
             )
 
@@ -297,16 +323,18 @@ private fun RingerSelector(selected: Int, onSelect: (Int) -> Unit) {
             .padding(4.dp),
     ) {
         val segment = maxWidth / ringerChoices.size
-        val offset by animateDpAsState(segment * selected, spring(dampingRatio = 0.75f, stiffness = 500f), label = "ringerX")
-        val color by animateColorAsState(ringerChoices[selected].color, label = "ringerColor")
+        val offset = animateDpAsState(segment * selected, spring(dampingRatio = 0.8f, stiffness = 700f), label = "ringerX")
+        val color = animateColorAsState(ringerChoices[selected].color, tween(180), label = "ringerColor")
+        // Position and color are read in the layout/draw phases, so the slide never recomposes.
         Box(
             Modifier
-                .offset(x = offset)
+                .offset { IntOffset(offset.value.roundToPx(), 0) }
                 .width(segment)
                 .height(46.dp)
-                .shadow(6.dp, RoundedCornerShape(15.dp), ambientColor = color, spotColor = color)
-                .clip(RoundedCornerShape(15.dp))
-                .background(Brush.verticalGradient(listOf(color, color.copy(alpha = 0.82f)))),
+                .drawBehind {
+                    val r = 15.dp.toPx()
+                    drawRoundRect(color.value, cornerRadius = CornerRadius(r, r))
+                },
         )
         Row(Modifier.fillMaxWidth()) {
             ringerChoices.forEachIndexed { index, choice ->

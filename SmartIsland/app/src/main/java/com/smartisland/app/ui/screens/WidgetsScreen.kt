@@ -11,21 +11,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.AddToHomeScreen
 import androidx.compose.material.icons.rounded.LockOpen
@@ -41,11 +37,14 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,9 +59,9 @@ import com.smartisland.app.ui.components.PrimaryButton
 import com.smartisland.app.ui.components.ProBadge
 import com.smartisland.app.ui.components.SnackType
 import com.smartisland.app.ui.components.StatusChip
-import com.smartisland.app.ui.components.TabBarClearance
 import com.smartisland.app.ui.components.TabHeader
 import com.smartisland.app.ui.components.pressable
+import com.smartisland.app.ui.components.tabBarPadding
 import com.smartisland.app.ui.findActivity
 import com.smartisland.app.ui.navigation.AppNavigator
 import com.smartisland.app.ui.navigation.Routes
@@ -85,8 +84,8 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
     var filter by remember { mutableStateOf(Filter.ALL) }
     var unlockTarget by remember { mutableStateOf<WidgetKind?>(null) }
     var manualAddTarget by remember { mutableStateOf<WidgetKind?>(null) }
-    val listState = rememberLazyListState()
-    val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val scroll = rememberScrollState()
+    val itemTops = remember { HashMap<String, Int>() }
 
     val kinds = WidgetKind.entries.filter {
         when (filter) {
@@ -99,19 +98,23 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
     LaunchedEffect(highlight) {
         val target = WidgetKind.byId(highlight) ?: return@LaunchedEffect
         filter = Filter.ALL
-        listState.animateScrollToItem(WidgetKind.entries.indexOf(target) + 1)
+        withFrameNanos { }
+        itemTops[target.id]?.let { scroll.animateScrollTo(it) }
         if (!premium.isWidgetUnlocked(target.id, target.premium)) unlockTarget = target
         onHighlightShown()
     }
     LaunchedEffect(Unit) { container.ads.preload() }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = TabBarClearance + navBottom),
+    // A plain scrolling column: all previews are built once when the screen opens, so scrolling only
+    // draws and never inflates anything mid-fling.
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(scroll)
+            .tabBarPadding(),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        item {
+        Column {
             TabHeader("Widgets", "${WidgetKind.entries.size} live widgets")
             Row(
                 Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
@@ -120,19 +123,23 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
                 Filter.entries.forEach { f -> FilterChip(f.label, f == filter) { filter = f } }
             }
         }
-        items(kinds, key = { it.id }, contentType = { it.size }) { kind ->
-            val unlocked = premium.isWidgetUnlocked(kind.id, kind.premium)
-            WidgetCard(
-                kind = kind,
-                unlocked = unlocked,
-                unlockedByAd = kind.premium && !premium.isPremium && kind.id in premium.unlockedWidgets,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                onAdd = {
-                    if (!pinWidget(context, kind)) manualAddTarget = kind
-                },
-                onUnlock = { unlockTarget = kind },
-                onGoPro = { nav.go(Routes.PAYWALL) },
-            )
+        kinds.forEach { kind ->
+            key(kind.id) {
+                val unlocked = premium.isWidgetUnlocked(kind.id, kind.premium)
+                WidgetCard(
+                    kind = kind,
+                    unlocked = unlocked,
+                    unlockedByAd = kind.premium && !premium.isPremium && kind.id in premium.unlockedWidgets,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .onGloballyPositioned { itemTops[kind.id] = it.positionInParent().y.toInt() },
+                    onAdd = {
+                        if (!pinWidget(context, kind)) manualAddTarget = kind
+                    },
+                    onUnlock = { unlockTarget = kind },
+                    onGoPro = { nav.go(Routes.PAYWALL) },
+                )
+            }
         }
     }
 
@@ -256,7 +263,6 @@ private fun WidgetPreview(kind: WidgetKind, modifier: Modifier = Modifier) {
     val (w, h) = previewSize(kind.size)
     AndroidView(
         factory = { ctx -> FrameLayout(ctx) },
-        onReset = {},
         update = { frame ->
             if (frame.tag != kind.id) {
                 frame.tag = kind.id

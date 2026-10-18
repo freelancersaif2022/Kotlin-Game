@@ -1,7 +1,10 @@
 package com.smartisland.app.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -11,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +22,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
@@ -40,11 +51,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -86,14 +102,14 @@ object Routes {
 /** A navigation request coming from outside Compose (widget tap, tile, notification). */
 data class RouteRequest(val route: String, val highlight: String? = null, val id: Long = System.nanoTime())
 
-private data class Tab(val route: String, val label: String, val icon: ImageVector)
+private data class Tab(val route: String, val label: String, val icon: ImageVector, val idleIcon: ImageVector)
 
 private val tabs = listOf(
-    Tab(Routes.HOME, "Home", Icons.Rounded.Home),
-    Tab(Routes.ISLAND, "Island", Icons.Rounded.AutoAwesome),
-    Tab(Routes.WIDGETS, "Widgets", Icons.Rounded.Widgets),
-    Tab(Routes.CONTROLS, "Controls", Icons.Rounded.Tune),
-    Tab(Routes.SETTINGS, "Settings", Icons.Rounded.Settings),
+    Tab(Routes.HOME, "Home", Icons.Rounded.Home, Icons.Outlined.Home),
+    Tab(Routes.ISLAND, "Island", Icons.Rounded.AutoAwesome, Icons.Outlined.AutoAwesome),
+    Tab(Routes.WIDGETS, "Widgets", Icons.Rounded.Widgets, Icons.Outlined.Widgets),
+    Tab(Routes.CONTROLS, "Controls", Icons.Rounded.Tune, Icons.Outlined.Tune),
+    Tab(Routes.SETTINGS, "Settings", Icons.Rounded.Settings, Icons.Outlined.Settings),
 )
 
 /** Lets any screen navigate without threading the controller through every composable. */
@@ -211,53 +227,67 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit() =
     if (isTabSwitch()) fadeOut(tween(90))
     else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, slideSpec) + fadeOut(tween(160))
 
-/** Floating glass tab bar. */
+/**
+ * Floating tab bar with a gradient capsule that slides between tabs. The slide runs in the layout and
+ * draw phases, so switching tabs never recomposes the bar.
+ */
 @Composable
 private fun BottomBar(current: String?, onSelect: (String) -> Unit) {
-    val shape = RoundedCornerShape(28.dp)
-    Row(
+    val shape = RoundedCornerShape(30.dp)
+    val selectedIndex = tabs.indexOfFirst { it.route == current }.coerceAtLeast(0)
+    BoxWithConstraints(
         Modifier
             .navigationBarsPadding()
-            .padding(start = 14.dp, end = 14.dp, bottom = 10.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
             .fillMaxWidth()
-            .shadow(20.dp, shape, ambientColor = Color.Black.copy(alpha = 0.12f), spotColor = Color.Black.copy(alpha = 0.18f))
+            .shadow(24.dp, shape, ambientColor = Palette.Primary.copy(alpha = 0.25f), spotColor = Color.Black.copy(alpha = 0.2f))
             .clip(shape)
             .background(Palette.TabBar)
             .border(1.dp, Palette.Outline, shape)
-            .padding(vertical = 8.dp, horizontal = 6.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
+            .padding(6.dp),
     ) {
-        tabs.forEach { tab ->
-            val selected = tab.route == current
-            Column(
-                Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(18.dp))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                    ) { onSelect(tab.route) }
-                    .padding(vertical = 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(
+        val segment = maxWidth / tabs.size
+        val offset = animateDpAsState(segment * selectedIndex, spring(dampingRatio = 0.78f, stiffness = 650f), label = "tabX")
+        Box(
+            Modifier
+                .offset { IntOffset(offset.value.roundToPx(), 0) }
+                .width(segment)
+                .height(56.dp)
+                .drawBehind {
+                    val r = 24.dp.toPx()
+                    drawRoundRect(
+                        Brush.linearGradient(listOf(Color(0xFF8E72FF), Color(0xFF5B3DF5))),
+                        cornerRadius = CornerRadius(r, r),
+                    )
+                },
+        )
+        Row(Modifier.fillMaxWidth()) {
+            tabs.forEachIndexed { index, tab ->
+                val selected = index == selectedIndex
+                val tint by animateColorAsState(if (selected) Color.White else Palette.TextSecondary, tween(160), label = "tabTint")
+                Column(
                     Modifier
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(if (selected) Palette.Primary.copy(alpha = 0.18f) else Color.Transparent)
-                        .padding(horizontal = 16.dp, vertical = 5.dp),
+                        .weight(1f)
+                        .height(56.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ) { onSelect(tab.route) },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
-                        tab.icon, tab.label,
-                        tint = if (selected) Palette.PrimarySoft else Palette.TextSecondary,
-                        modifier = Modifier.size(22.dp),
+                    Icon(if (selected) tab.icon else tab.idleIcon, tab.label, tint = tint, modifier = Modifier.size(22.dp))
+                    Spacer(Modifier.height(3.dp))
+                    Text(
+                        tab.label,
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                            letterSpacing = 0.2.sp,
+                        ),
+                        color = tint,
+                        maxLines = 1,
                     )
                 }
-                Spacer(Modifier.height(3.dp))
-                Text(
-                    tab.label,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (selected) Palette.TextPrimary else Palette.TextSecondary,
-                )
             }
         }
     }

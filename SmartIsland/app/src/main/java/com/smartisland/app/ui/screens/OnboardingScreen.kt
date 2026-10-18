@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Lock
@@ -46,7 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -122,41 +129,71 @@ private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
     val scope = rememberCoroutineScope()
     val showcase = rememberShowcase()
     val last = pager.currentPage == pages.lastIndex
+    val dark = Palette.isDark
 
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .background(Palette.HeroGradient)
+            .drawBehind {
+                // Brand glows give the intro depth without any images.
+                drawCircle(
+                    Brush.radialGradient(
+                        listOf(Palette.Primary.copy(alpha = if (dark) 0.32f else 0.20f), Color.Transparent),
+                        center = Offset(size.width * 0.15f, size.height * 0.2f), radius = size.width * 0.8f,
+                    ),
+                    radius = size.width * 0.8f, center = Offset(size.width * 0.15f, size.height * 0.2f),
+                )
+                drawCircle(
+                    Brush.radialGradient(
+                        listOf(Color(0x4432ADE6), Color.Transparent),
+                        center = Offset(size.width * 0.95f, size.height * 0.45f), radius = size.width * 0.6f,
+                    ),
+                    radius = size.width * 0.6f, center = Offset(size.width * 0.95f, size.height * 0.45f),
+                )
+            }
             .statusBarsPadding()
             .navigationBarsPadding(),
     ) {
         // The phone preview scales with the screen so the page text always has room on small phones.
-        val previewHeight = (maxHeight * 0.30f).coerceIn(170.dp, 250.dp)
+        val previewHeight = (maxHeight * 0.31f).coerceIn(170.dp, 260.dp)
         Column(Modifier.fillMaxSize()) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 4.dp),
+                    .padding(horizontal = 20.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Spacer(Modifier.weight(1f))
+                Text(
+                    "${pager.currentPage + 1} / ${pages.size}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Palette.TextSecondary,
+                    modifier = Modifier.weight(1f),
+                )
                 Text(
                     "Skip",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Palette.TextSecondary,
+                    color = Palette.TextPrimary,
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(CircleShape)
+                        .background(Palette.Surface.copy(alpha = 0.7f))
+                        .border(1.dp, Palette.Outline, CircleShape)
                         .pressable(onSkip)
-                        .padding(8.dp),
+                        .padding(horizontal = 16.dp, vertical = 7.dp),
                 )
             }
 
-            Box(Modifier.padding(horizontal = 20.dp)) {
+            Box(
+                Modifier
+                    .padding(horizontal = 20.dp, vertical = 6.dp)
+                    .shadow(28.dp, RoundedCornerShape(44.dp), ambientColor = Palette.Primary, spotColor = Palette.Primary),
+            ) {
                 val media = remember { Demo.media() }
+                val volume = remember { Demo.volume() }
                 val activity: IslandActivity = when (pager.currentPage) {
                     0 -> showcase.first
                     1 -> media
-                    else -> Demo.volume()
+                    else -> volume
                 }
                 PhoneTopPreview(
                     previewSettings,
@@ -172,23 +209,36 @@ private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
                     Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 26.dp, vertical = 18.dp),
+                        .padding(horizontal = 22.dp, vertical = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(page.title, style = MaterialTheme.typography.headlineMedium, color = Palette.TextPrimary, textAlign = TextAlign.Center)
-                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        page.title,
+                        style = MaterialTheme.typography.headlineMedium.copy(brush = Palette.PrimaryGradient),
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(8.dp))
                     Text(page.body, style = MaterialTheme.typography.bodyMedium, color = Palette.TextSecondary, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(16.dp))
-                    page.features.forEach { (icon, color, text) ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            IconBadge(icon, color, 36.dp)
-                            Spacer(Modifier.width(14.dp))
-                            Text(text, style = MaterialTheme.typography.bodyLarge, color = Palette.TextPrimary, modifier = Modifier.weight(1f))
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(Palette.Surface.copy(alpha = if (dark) 0.75f else 0.85f))
+                            .border(1.dp, Palette.Outline, RoundedCornerShape(24.dp))
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                    ) {
+                        page.features.forEach { (icon, color, text) ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 7.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                IconBadge(icon, color, 36.dp)
+                                Spacer(Modifier.width(14.dp))
+                                Text(text, style = MaterialTheme.typography.bodyLarge, color = Palette.TextPrimary, modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
@@ -197,29 +247,30 @@ private fun Intro(onContinue: () -> Unit, onSkip: () -> Unit) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp, bottom = 4.dp),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                repeat(pages.size) { i ->
-                    val w by animateDpAsState(if (i == pager.currentPage) 22.dp else 7.dp, label = "dot")
-                    Box(
-                        Modifier
-                            .padding(horizontal = 3.dp)
-                            .size(width = w, height = 7.dp)
-                            .clip(CircleShape)
-                            .background(if (i == pager.currentPage) Palette.Primary else Palette.SurfaceHigh),
-                    )
-                }
-            }
-            PrimaryButton(
-                if (last) "Set up Smart Island" else "Next",
-                {
-                    if (last) onContinue() else scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
-                },
-                Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 12.dp),
-            )
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row(Modifier.weight(1f)) {
+                    repeat(pages.size) { i ->
+                        val w by animateDpAsState(if (i == pager.currentPage) 26.dp else 8.dp, label = "dot")
+                        Box(
+                            Modifier
+                                .padding(end = 6.dp)
+                                .size(width = w, height = 8.dp)
+                                .clip(CircleShape)
+                                .background(if (i == pager.currentPage) Palette.PrimaryGradient else SolidColor(Palette.TextTertiary.copy(alpha = 0.4f))),
+                        )
+                    }
+                }
+                PrimaryButton(
+                    if (last) "Get started" else "Next",
+                    {
+                        if (last) onContinue() else scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
+                    },
+                    Modifier.width(if (last) 180.dp else 140.dp),
+                    icon = Icons.AutoMirrored.Rounded.ArrowForward,
+                )
+            }
         }
     }
 }
