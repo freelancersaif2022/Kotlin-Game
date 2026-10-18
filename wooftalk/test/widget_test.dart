@@ -10,7 +10,7 @@ void main() {
 
   test('only the dog voice is free, five voices are locked', () async {
     final state = AppState(await SharedPreferences.getInstance());
-    expect(voices.length, 6);
+    expect(voices.length, 12);
     expect(voices.where(state.isUnlocked).map((v) => v.id), ['dog']);
   });
 

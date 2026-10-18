@@ -13,10 +13,12 @@ import '../services/app_state.dart';
 import '../services/voice_engine.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animal_character.dart';
+import '../widgets/app_logo.dart';
 import '../widgets/common.dart';
 import '../widgets/home_widgets.dart';
 import '../widgets/popups.dart';
 import '../widgets/synced_character.dart';
+import 'credits_screen.dart';
 import 'premium_screen.dart';
 import 'unlock_dialog.dart';
 
@@ -48,6 +50,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _busy = false;
 
   VoiceEngine get _engine => AppScope.engineOf(context);
+
+  @override
+  void initState() {
+    super.initState();
+    // Start the ads SDK after the home screen is on screen so its heavy
+    // native setup never competes with the splash/first-frame animations.
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) AdService.instance.init();
+    });
+  }
 
   @override
   void dispose() {
@@ -200,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             _InfoRow(Icons.stop_circle_rounded, 'Tap stop when you are done.'),
             _InfoRow(
               Icons.auto_awesome_rounded,
-              'Your rhythm turns into a brand-new animal voice every time.',
+              'Your rhythm is turned into real recorded animal calls, mixed differently every time.',
             ),
             _InfoRow(
               Icons.lock_rounded,
@@ -214,6 +226,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         actions: [
           GradientButton(label: 'Got it!', onTap: () => Navigator.pop(ctx)),
+          TextLinkButton(
+            'Sound credits',
+            onTap: () {
+              Navigator.pop(ctx);
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const CreditsScreen()),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -338,20 +359,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: AppTheme.softShadow(AppColors.coral),
-            ),
-            child: const Icon(
-              Icons.pets_rounded,
-              color: Colors.white,
-              size: 26,
-            ),
-          ),
+          const AppLogo(size: 44, radius: 13),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

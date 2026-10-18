@@ -315,16 +315,17 @@ class _PremiumScreenState extends State<PremiumScreen>
     );
   }
 
-  /// Row of the five premium voices.
+  /// All premium voices.
   Widget _voiceRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      runSpacing: 8,
       children: [
         for (final v in voices.where((v) => !v.free))
           Container(
-            width: 54,
-            height: 54,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: 50,
+            height: 50,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
             decoration: BoxDecoration(
               color: v.accent,
               shape: BoxShape.circle,
@@ -337,7 +338,12 @@ class _PremiumScreenState extends State<PremiumScreen>
               ],
             ),
             child: Center(
-              child: AnimalCharacter(voiceId: v.id, size: 50, shadow: false),
+              child: AnimalCharacter(
+                voiceId: v.id,
+                size: 46,
+                shadow: false,
+                alive: false,
+              ),
             ),
           ),
       ],
@@ -345,8 +351,11 @@ class _PremiumScreenState extends State<PremiumScreen>
   }
 
   Widget _features() {
-    const items = [
-      (Icons.lock_open_rounded, 'Unlock all 5 premium voices'),
+    final items = [
+      (
+        Icons.lock_open_rounded,
+        'Unlock all ${voices.length - 1} premium voices',
+      ),
       (Icons.block_rounded, '100% ad-free, no videos ever'),
       (Icons.auto_awesome_rounded, 'New voices first, free forever'),
       (Icons.favorite_rounded, 'Support future updates'),

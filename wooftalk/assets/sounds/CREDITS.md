@@ -17,9 +17,6 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 
 - `cow/0.wav`: [File:Single Cow Moo.ogg](https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg) by MichaeltheFox8621, CC BY-SA 4.0
 - `cow/1.wav`: [File:Mudchute cow 1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_cow_1.ogg) by Secretlondon, CC BY-SA 3.0
-- `cow/2.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
-- `cow/3.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
-- `cow/4.wav`: [File:457569 florianreichelt peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav](https://commons.wikimedia.org/wiki/File:457569_florianreichelt_peaceful-sound-of-a-herd-of-cows-in-the-swiss-alps.wav) by florianreichelt, CC0
 
 ## dog
 

@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -75,6 +76,33 @@ class VoiceEngine {
     _bytes.clear();
   }
 
+  final _clipCache = <String, VoiceClips>{};
+
+  /// Loads the real recorded calls bundled for [voiceId] (cached).
+  Future<VoiceClips> clipsFor(String voiceId) async {
+    final cached = _clipCache[voiceId];
+    if (cached != null) return cached;
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final paths =
+        manifest
+            .listAssets()
+            .where(
+              (a) =>
+                  a.startsWith('assets/sounds/$voiceId/') && a.endsWith('.wav'),
+            )
+            .toList()
+          ..sort();
+    final clips = <Float32List>[];
+    for (final path in paths) {
+      final data = await rootBundle.load(path);
+      final clip = decodeWav16(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+      );
+      if (clip.isNotEmpty) clips.add(clip);
+    }
+    return _clipCache[voiceId] = VoiceClips(voiceId, clips);
+  }
+
   /// Translates the captured speech. Returns null when no voice was heard.
   Future<TranslationResult?> translateSpeech(
     Uint8List pcm,
@@ -83,7 +111,7 @@ class VoiceEngine {
     final req = TranslateRequest(
       pcm,
       sampleRate,
-      voiceId,
+      await clipsFor(voiceId),
       DateTime.now().microsecondsSinceEpoch,
     );
     final result = await Isolate.run(() => translate(req));
@@ -94,14 +122,15 @@ class VoiceEngine {
   /// Short sample used to preview a voice before unlocking it.
   Future<TranslationResult> preview(String voiceId) async {
     final seed = DateTime.now().microsecondsSinceEpoch;
+    final clips = await clipsFor(voiceId);
     final result = await Isolate.run(
-      () => synthesizeFromSyllables(
+      () => arrangeCalls(
         const [
           Syllable(0, 0.25, 1),
           Syllable(0.45, 0.3, 0.8),
           Syllable(0.95, 0.5, 0.9),
         ],
-        voiceId,
+        clips,
         seed,
       ),
     );

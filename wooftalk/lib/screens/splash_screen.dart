@@ -1,12 +1,12 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
-import '../services/ad_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/animal_character.dart';
+import '../widgets/app_logo.dart';
 import 'home_screen.dart';
 
+/// Lightweight animated splash. Everything is driven by a single controller
+/// and only transforms/opacity change per frame, so it stays smooth even
+/// while the engine is still warming up.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -15,219 +15,131 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _intro = AnimationController(
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1600),
-  )..forward();
-  late final AnimationController _loop = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  )..repeat();
+    duration: const Duration(milliseconds: 2200),
+  );
+
+  late final Animation<double> _logo = CurvedAnimation(
+    parent: _c,
+    curve: const Interval(0, 0.45, curve: Curves.easeOutBack),
+  );
+  late final Animation<double> _title = CurvedAnimation(
+    parent: _c,
+    curve: const Interval(0.25, 0.6, curve: Curves.easeOutCubic),
+  );
+  late final Animation<double> _progress = CurvedAnimation(
+    parent: _c,
+    curve: const Interval(0.35, 1, curve: Curves.easeInOut),
+  );
 
   @override
   void initState() {
     super.initState();
-    AdService.instance.init();
-    Future.delayed(const Duration(milliseconds: 2800), _goHome);
+    // Start after the first frame so the animation never skips its opening.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _c.forward().whenComplete(_goHome);
+    });
   }
 
   void _goHome() {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 600),
+        transitionDuration: const Duration(milliseconds: 450),
         pageBuilder: (_, _, _) => const HomeScreen(),
-        transitionsBuilder: (_, a, _, child) => FadeTransition(
-          opacity: a,
-          child: ScaleTransition(
-            scale: Tween(
-              begin: 1.06,
-              end: 1.0,
-            ).animate(CurvedAnimation(parent: a, curve: Curves.easeOut)),
-            child: child,
-          ),
-        ),
+        transitionsBuilder: (_, a, _, child) =>
+            FadeTransition(opacity: a, child: child),
       ),
     );
   }
 
   @override
   void dispose() {
-    _intro.dispose();
-    _loop.dispose();
+    _c.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const title = 'WoofTalk';
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFA23A), Color(0xFFFF4E7A), Color(0xFF7B5CFF)],
-          ),
-        ),
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_intro, _loop]),
-          builder: (context, _) {
-            final t = _intro.value;
-            final hero = Curves.elasticOut.transform(
-              ((t - 0.05) / 0.6).clamp(0.0, 1.0),
-            );
-            return Stack(
-              children: [
-                // sun-burst rays
-                Positioned.fill(
-                  child: CustomPaint(painter: _RaysPainter(_loop.value, t)),
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Transform.scale(
-                        scale: hero,
-                        child: Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.18),
-                                blurRadius: 30,
-                                offset: const Offset(0, 16),
-                              ),
-                            ],
-                          ),
-                          child: const Center(
-                            child: AnimalCharacter(
-                              voiceId: 'dog',
-                              size: 180,
-                              shadow: false,
-                              mood: CharacterMood.listening,
-                            ),
-                          ),
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(gradient: LogoColors.tile),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const Spacer(flex: 3),
+              ScaleTransition(
+                scale: _logo,
+                child: FadeTransition(
+                  opacity: _logo,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF2A1466)
+                              .withValues(alpha: 0.35),
+                          blurRadius: 30,
+                          offset: const Offset(0, 14),
                         ),
-                      ),
-                      const SizedBox(height: 28),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (var i = 0; i < title.length; i++)
-                            Builder(
-                              builder: (_) {
-                                final start = 0.35 + i * 0.05;
-                                final p = Curves.elasticOut.transform(
-                                  ((t - start) / 0.5).clamp(0.0, 1.0),
-                                );
-                                return Transform.translate(
-                                  offset: Offset(0, (1 - p) * 40),
-                                  child: Opacity(
-                                    opacity: p.clamp(0.0, 1.0),
-                                    child: Text(
-                                      title[i],
-                                      style:
-                                          AppTheme.title(
-                                            48,
-                                            color: Colors.white,
-                                          ).copyWith(
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.2,
-                                                ),
-                                                offset: const Offset(0, 4),
-                                                blurRadius: 8,
-                                              ),
-                                            ],
-                                          ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                        ],
+                      ],
+                    ),
+                    child: const AppLogo(size: 150, radius: 26),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              FadeTransition(
+                opacity: _title,
+                child: SlideTransition(
+                  position: Tween(
+                    begin: const Offset(0, 0.4),
+                    end: Offset.zero,
+                  ).animate(_title),
+                  child: Column(
+                    children: [
+                      Text(
+                        'WoofTalk',
+                        style: AppTheme.title(44, color: Colors.white),
                       ),
                       const SizedBox(height: 6),
-                      Opacity(
-                        opacity: ((t - 0.7) / 0.3).clamp(0.0, 1.0),
-                        child: Text(
-                          'Talk like an animal in any language',
-                          style: AppTheme.label(
-                            16,
-                            color: Colors.white.withValues(alpha: 0.92),
-                          ),
+                      Text(
+                        'Talk like an animal in any language',
+                        style: AppTheme.label(
+                          15.5,
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Positioned(
-                  bottom: 70,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (var i = 0; i < 3; i++)
-                        Builder(
-                          builder: (_) {
-                            final p = math.sin(
-                              (_loop.value - i * 0.15) * 2 * math.pi,
-                            );
-                            return Transform.translate(
-                              offset: Offset(0, -p.clamp(0.0, 1.0) * 10),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                                child: Icon(
-                                  Icons.pets_rounded,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  size: 22,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                    ],
+              ),
+              const Spacer(flex: 3),
+              SizedBox(
+                width: 140,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: AnimatedBuilder(
+                    animation: _progress,
+                    builder: (_, _) => LinearProgressIndicator(
+                      value: _progress.value,
+                      minHeight: 6,
+                      color: Colors.white,
+                      backgroundColor: Colors.white.withValues(alpha: 0.25),
+                    ),
                   ),
                 ),
-              ],
-            );
-          },
+              ),
+              const SizedBox(height: 56),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-class _RaysPainter extends CustomPainter {
-  _RaysPainter(this.spin, this.fade);
-
-  final double spin, fade;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final c = Offset(size.width / 2, size.height / 2 - 60);
-    final p = Paint()..color = Colors.white.withValues(alpha: 0.07 * fade);
-    final r = size.longestSide;
-    for (var i = 0; i < 12; i++) {
-      final a = i * math.pi / 6 + spin * math.pi / 6;
-      final path = Path()
-        ..moveTo(c.dx, c.dy)
-        ..lineTo(c.dx + math.cos(a - 0.12) * r, c.dy + math.sin(a - 0.12) * r)
-        ..lineTo(c.dx + math.cos(a + 0.12) * r, c.dy + math.sin(a + 0.12) * r)
-        ..close();
-      canvas.drawPath(path, p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_RaysPainter old) => old.spin != spin || old.fade != fade;
 }

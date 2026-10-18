@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'animal_synth.dart';
 import 'dsp.dart';
 
 /// A chunk of speech (roughly one syllable or word).
@@ -120,34 +119,82 @@ class TranslationResult {
   final int words;
 }
 
+/// Real recorded animal calls (mono, [clipRate] Hz) for one voice.
+class VoiceClips {
+  const VoiceClips(this.voiceId, this.clips);
+
+  final String voiceId;
+  final List<Float32List> clips;
+}
+
+const clipRate = 22050;
+
+/// How a voice lays its calls over the speaker's rhythm.
+class VoiceTiming {
+  const VoiceTiming(
+    this.maxWords,
+    this.minGap, {
+    this.doubleOnLong = false,
+    this.pitch = 1,
+  });
+
+  /// Upper bound of calls per translation (long calls like howls need fewer).
+  final int maxWords;
+
+  /// Silence between two calls, in seconds.
+  final double minGap;
+
+  /// Short calls (barks, quacks) answer a long syllable with two calls.
+  final bool doubleOnLong;
+
+  /// Playback-rate multiplier applied to the recordings (puppy = small dog
+  /// barks played slightly higher).
+  final double pitch;
+}
+
+const voiceTimings = <String, VoiceTiming>{
+  'dog': VoiceTiming(14, 0.08, doubleOnLong: true),
+  'puppy': VoiceTiming(16, 0.06, doubleOnLong: true, pitch: 1.22),
+  'cat': VoiceTiming(7, 0.12),
+  'wolf': VoiceTiming(3, 0.2),
+  'duck': VoiceTiming(12, 0.06, doubleOnLong: true),
+  'cow': VoiceTiming(4, 0.2),
+  'rooster': VoiceTiming(3, 0.25),
+  'sheep': VoiceTiming(6, 0.12),
+  'pig': VoiceTiming(12, 0.06, doubleOnLong: true),
+  'horse': VoiceTiming(3, 0.2),
+  'goat': VoiceTiming(6, 0.12),
+  'frog': VoiceTiming(12, 0.06, doubleOnLong: true),
+};
+
 class TranslateRequest {
-  TranslateRequest(this.pcm, this.sampleRate, this.voiceId, this.seed);
+  TranslateRequest(this.pcm, this.sampleRate, this.voice, this.seed);
 
   final Uint8List pcm;
   final int sampleRate;
-  final String voiceId;
+  final VoiceClips voice;
   final int seed;
 }
 
-/// Full pipeline: human speech → animal speech WAV.
+/// Full pipeline: human speech → real animal calls following its rhythm.
 /// Returns null when no speech could be detected.
 TranslationResult? translate(TranslateRequest req) {
   final syllables = analyzeSpeech(req.pcm, req.sampleRate);
-  if (syllables.isEmpty) return null;
-  return synthesizeFromSyllables(syllables, req.voiceId, req.seed);
+  if (syllables.isEmpty || req.voice.clips.isEmpty) return null;
+  return arrangeCalls(syllables, req.voice, req.seed);
 }
 
-TranslationResult synthesizeFromSyllables(
+TranslationResult arrangeCalls(
   List<Syllable> syllables,
-  String voiceId,
+  VoiceClips voice,
   int seed,
 ) {
   final rng = math.Random(seed);
-  final profile = voiceProfiles[voiceId] ?? voiceProfiles['dog']!;
+  final timing = voiceTimings[voice.voiceId] ?? const VoiceTiming(8, 0.1);
 
   // Group syllables so long-call animals (wolf, cow) don't get spammed.
   final groups = <Syllable>[];
-  final perWord = math.max(1, (syllables.length / profile.maxWords).ceil());
+  final perWord = math.max(1, (syllables.length / timing.maxWords).ceil());
   for (var i = 0; i < syllables.length; i += perWord) {
     final g = syllables.sublist(i, math.min(i + perWord, syllables.length));
     final dur = g.last.start + g.last.duration - g.first.start;
@@ -155,36 +202,57 @@ TranslationResult synthesizeFromSyllables(
     groups.add(Syllable(g.first.start, dur / g.length, inten));
   }
 
-  // Lay the animal words on a timeline following the speaker's rhythm.
-  final placed = <(CallSpec, double)>[];
-  var cursor = 0.12;
+  // Pick clips: random, never the same one twice in a row, each slightly
+  // re-pitched so no two translations sound the same.
+  final placed =
+      <(Float32List, double, double, double)>[]; // clip, at, rate, gain
+  var cursor = 0.1;
+  var last = -1;
   final firstStart = groups.first.start;
-  for (final g in groups) {
-    final want = 0.12 + (g.start - firstStart) * 0.8;
-    var t = math.max(cursor, want);
-    final word = profile.builder(rng, g.duration, g.intensity);
-    var end = t;
-    for (final c in word) {
-      final at = t + c.delay;
-      placed.add((c.spec.withGain(0.75 + 0.25 * g.intensity), at));
-      end = math.max(end, at + c.spec.duration);
+  Float32List pick() {
+    var i = rng.nextInt(voice.clips.length);
+    if (voice.clips.length > 1 && i == last) {
+      i = (i + 1 + rng.nextInt(voice.clips.length - 1)) % voice.clips.length;
     }
-    cursor = end + profile.minGap + rng.nextDouble() * 0.12;
+    last = i;
+    return voice.clips[i];
+  }
+
+  for (final g in groups) {
+    final want = 0.1 + (g.start - firstStart) * 0.8;
+    var t = math.max(cursor, want);
+    final calls = timing.doubleOnLong && g.duration > 0.4 ? 2 : 1;
+    for (var k = 0; k < calls; k++) {
+      final clip = pick();
+      final rate = timing.pitch * (0.9 + rng.nextDouble() * 0.22);
+      final gain = (0.7 + 0.3 * g.intensity) * (k == 0 ? 1 : 0.85);
+      placed.add((clip, t, rate, gain));
+      t += clip.length / clipRate / rate + timing.minGap * (k == 0 ? 0.6 : 1);
+    }
+    cursor = t + timing.minGap + rng.nextDouble() * 0.1;
     if (cursor > 14) break;
   }
 
-  final total = cursor + 0.6;
-  final buf = Float64List((total * kSampleRate).round());
-  for (final (spec, at) in placed) {
-    renderCall(spec, buf, (at * kSampleRate).round(), rng);
+  final total = cursor + 0.25;
+  final buf = Float64List((total * clipRate).round());
+  for (final (clip, at, rate, gain) in placed) {
+    final offset = (at * clipRate).round();
+    final n = (clip.length / rate).floor();
+    for (var i = 0; i < n; i++) {
+      final idx = offset + i;
+      if (idx >= buf.length) break;
+      // linear-interpolated resample = natural pitch/speed variation
+      final pos = i * rate;
+      final j = pos.floor();
+      if (j + 1 >= clip.length) break;
+      final f = pos - j;
+      buf[idx] += (clip[j] * (1 - f) + clip[j + 1] * f) * gain;
+    }
   }
-  applyReverb(buf, profile.reverb);
-  removeDc(buf);
   normalize(buf);
-  _fadeTail(buf);
 
   // Mouth animation envelope.
-  const hop = 1323; // 30 ms
+  const hop = clipRate * 30 ~/ 1000;
   final mouth = <double>[];
   var maxRms = 1e-9;
   for (var i = 0; i + hop <= buf.length; i += hop) {
@@ -201,17 +269,59 @@ TranslationResult synthesizeFromSyllables(
   }
 
   return TranslationResult(
-    voiceId,
-    encodeWav(buf),
+    voice.voiceId,
+    encodeWav(buf, sampleRate: clipRate),
     mouth,
-    buf.length / kSampleRate,
-    groups.length,
+    buf.length / clipRate,
+    placed.length,
   );
 }
 
-void _fadeTail(Float64List buf) {
-  const n = 4410;
-  for (var i = 0; i < n && i < buf.length; i++) {
-    buf[buf.length - 1 - i] *= i / n;
+/// Reads a 16-bit PCM mono WAV (as produced by tool/fetch_sounds.py).
+Float32List decodeWav16(Uint8List bytes) {
+  final d = ByteData.sublistView(bytes);
+  var o = 12;
+  while (o + 8 <= bytes.length) {
+    final id = String.fromCharCodes(bytes.sublist(o, o + 4));
+    final size = d.getUint32(o + 4, Endian.little);
+    if (id == 'data') {
+      final n = math.min(size, bytes.length - o - 8) ~/ 2;
+      final out = Float32List(n);
+      for (var i = 0; i < n; i++) {
+        out[i] = d.getInt16(o + 8 + i * 2, Endian.little) / 32768.0;
+      }
+      return trimSilence(out);
+    }
+    o += 8 + size + (size.isOdd ? 1 : 0);
   }
+  return Float32List(0);
+}
+
+/// Cuts quiet lead-in/tail so a call starts right on its beat.
+Float32List trimSilence(Float32List x, {double threshold = 0.06}) {
+  var peak = 0.0;
+  for (final v in x) {
+    if (v.abs() > peak) peak = v.abs();
+  }
+  if (peak == 0) return x;
+  final t = peak * threshold;
+  var a = 0, b = x.length - 1;
+  while (a < b && x[a].abs() < t) {
+    a++;
+  }
+  while (b > a && x[b].abs() < t) {
+    b--;
+  }
+  const pad = clipRate ~/ 50; // 20 ms
+  a = math.max(0, a - pad);
+  b = math.min(x.length, b + pad);
+  final out = Float32List.sublistView(x, a, b);
+  // short fades so cuts never click
+  final fade = math.min(clipRate ~/ 100, out.length ~/ 4);
+  final copy = Float32List.fromList(out);
+  for (var i = 0; i < fade; i++) {
+    copy[i] *= i / fade;
+    copy[copy.length - 1 - i] *= i / fade;
+  }
+  return copy;
 }

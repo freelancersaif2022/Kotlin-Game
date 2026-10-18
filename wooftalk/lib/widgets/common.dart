@@ -259,16 +259,21 @@ class _BubblesPainter extends CustomPainter {
     for (final b in _bubbles) {
       final dx = math.sin(a * (b[3] as double) + (b[0] as double) * 6) * 18;
       final dy = math.cos(a * (b[3] as double) + (b[1] as double) * 6) * 22;
-      final p = Paint()
-        ..color = Color(b[4].toInt()).withValues(alpha: 0.35)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 30);
+      // Radial gradients look like soft blurred blobs but are far cheaper
+      // than a blur mask filter (which was redrawn every frame).
+      final center = Offset(
+        size.width * (b[0] as double) + dx,
+        size.height * (b[1] as double) + dy,
+      );
+      final r = (b[2] as double) * 1.6;
+      final color = Color(b[4].toInt());
       canvas.drawCircle(
-        Offset(
-          size.width * (b[0] as double) + dx,
-          size.height * (b[1] as double) + dy,
-        ),
-        b[2] as double,
-        p,
+        center,
+        r,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [color.withValues(alpha: 0.45), color.withValues(alpha: 0)],
+          ).createShader(Rect.fromCircle(center: center, radius: r)),
       );
     }
     // drifting paw prints

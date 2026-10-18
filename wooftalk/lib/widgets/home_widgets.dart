@@ -216,9 +216,11 @@ class VoiceCard extends StatelessWidget {
                     opacity: locked ? 0.55 : 1,
                     child: Center(
                       child: AnimalCharacter(
+                        key: ValueKey('${voice.id}$selected'),
                         voiceId: voice.id,
                         size: 66,
                         shadow: false,
+                        alive: selected,
                       ),
                     ),
                   ),
