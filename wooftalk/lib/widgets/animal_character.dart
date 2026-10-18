@@ -186,6 +186,50 @@ const _palettes = {
     Color(0xFFFFB7C5),
     Color(0xFFFFB7C5),
   ),
+  'pig': _Palette(
+    Color(0xFFFFB3C1),
+    Color(0xFFFFD9E0),
+    Color(0xFFE68A9E),
+    Color(0xFFF39AAE),
+    Color(0xFFFF9AB0),
+  ),
+  'sheep': _Palette(
+    Color(0xFFF6E9DA),
+    Color(0xFFFFF8F0),
+    Color(0xFFD9C4AD),
+    Color(0xFFC9A98A),
+    Color(0xFFFFFFFF),
+  ),
+  'goat': _Palette(
+    Color(0xFFEFE4D6),
+    Color(0xFFFFFAF2),
+    Color(0xFFCDB89F),
+    Color(0xFFD9C3A8),
+    Color(0xFFFFFFFF),
+    iris: Color(0xFF8A6A1F),
+  ),
+  'horse': _Palette(
+    Color(0xFFB97A4B),
+    Color(0xFFD9A273),
+    Color(0xFF8A5530),
+    Color(0xFF5A3420),
+    Color(0xFFE9C7A2),
+  ),
+  'rooster': _Palette(
+    Color(0xFFFFF4E2),
+    Color(0xFFFFFFFF),
+    Color(0xFFE9D3B0),
+    Color(0xFFFF3B3B),
+    Color(0xFFFFB627),
+  ),
+  'frog': _Palette(
+    Color(0xFF7ED957),
+    Color(0xFFB5F08A),
+    Color(0xFF3FA83A),
+    Color(0xFF3FA83A),
+    Color(0xFFDDF7C4),
+    iris: Color(0xFF2D6A1F),
+  ),
 };
 
 class _AnimalPainter extends CustomPainter {
@@ -259,6 +303,18 @@ class _AnimalPainter extends CustomPainter {
         _wolf(canvas);
       case 'puppy':
         _dog(canvas, puppy: true);
+      case 'pig':
+        _pig(canvas);
+      case 'sheep':
+        _sheep(canvas);
+      case 'goat':
+        _goat(canvas);
+      case 'horse':
+        _horse(canvas);
+      case 'rooster':
+        _rooster(canvas);
+      case 'frog':
+        _frog(canvas);
       default:
         _dog(canvas);
     }
@@ -753,6 +809,335 @@ class _AnimalPainter extends CustomPainter {
       nos,
     );
     _mouth(c, y: 152, w: 28);
+  }
+
+  void _pig(Canvas c) {
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 42, 64);
+      c.rotate(side * (0.35 + ear * 0.6));
+      final e = Path()
+        ..moveTo(-16, 10)
+        ..quadraticBezierTo(-6, -26, 4, -30)
+        ..quadraticBezierTo(16, -14, 18, 10)
+        ..close();
+      c.drawPath(e, _shade(e.getBounds(), pal.light, pal.ear, pal.dark));
+      c.drawPath(e, _stroke);
+      c.restore();
+    }
+    final head = _headPath(w: 136, h: 120, cy: 112);
+    _drawHead(c, head);
+    _eyes(c, y: 96, dx: 28, r: 12);
+    _brows(c, y: 78);
+    _cheeks(c, y: 118, dx: 48);
+    final snout = Rect.fromCenter(
+      center: const Offset(100, 128),
+      width: 58,
+      height: 38,
+    );
+    c.drawOval(snout, _shade(snout, pal.light, pal.muzzle, pal.dark));
+    c.drawOval(snout, _stroke..strokeWidth = 3);
+    final nos = _fill(const Color(0xFFB34A62));
+    for (final side in [-1, 1]) {
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100 + side * 11.0, 128),
+          width: 9,
+          height: 14,
+        ),
+        nos,
+      );
+    }
+    _mouth(c, y: 152, w: 26);
+  }
+
+  /// Puffy wool cloud used by the sheep.
+  void _wool(Canvas c, List<Offset> puffs, double r) {
+    final fill = _shade(
+      Rect.fromLTWH(30, 30, 140, 140),
+      Colors.white,
+      const Color(0xFFFBF8F4),
+      const Color(0xFFDCD5CC),
+    );
+    for (final o in puffs) {
+      c.drawCircle(o, r + 1.7, _fill(ink));
+    }
+    for (final o in puffs) {
+      c.drawCircle(o, r, fill);
+    }
+  }
+
+  void _sheep(Canvas c) {
+    _wool(c, const [
+      Offset(52, 78),
+      Offset(70, 56),
+      Offset(100, 48),
+      Offset(130, 56),
+      Offset(148, 78),
+      Offset(156, 106),
+      Offset(44, 106),
+      Offset(150, 132),
+      Offset(50, 132),
+    ], 24);
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 46, 100);
+      c.rotate(side * (0.2 + ear * 0.6));
+      final e = Rect.fromCenter(
+        center: Offset(side * 18.0, 0),
+        width: 38,
+        height: 18,
+      );
+      c.drawOval(e, _fill(pal.ear));
+      c.drawOval(e, _stroke..strokeWidth = 3);
+      c.restore();
+    }
+    final face = _headPath(w: 98, h: 116, cy: 116);
+    _drawHead(c, face);
+    _wool(c, const [Offset(84, 64), Offset(100, 58), Offset(116, 64)], 13);
+    _eyes(c, y: 104, dx: 21, r: 12);
+    _cheeks(c, y: 128, dx: 34);
+    _nose(c, y: 136, w: 16, color: const Color(0xFF5E4636));
+    _mouth(c, y: 150, w: 24);
+  }
+
+  void _goat(Canvas c) {
+    for (final side in [-1, 1]) {
+      // curved horns
+      final h = Path()
+        ..moveTo(100 + side * 18.0, 66)
+        ..quadraticBezierTo(100 + side * 26.0, 30, 100 + side * 52.0, 34)
+        ..quadraticBezierTo(100 + side * 34.0, 40, 100 + side * 30.0, 70)
+        ..close();
+      c.drawPath(
+        h,
+        _shade(
+          h.getBounds(),
+          const Color(0xFFE0D8CE),
+          const Color(0xFFB9AFA3),
+          const Color(0xFF8D8277),
+        ),
+      );
+      c.drawPath(h, _stroke..strokeWidth = 3);
+      c.save();
+      c.translate(100 + side * 44, 92);
+      c.rotate(side * (0.45 + ear * 0.6));
+      final e = Path()
+        ..moveTo(0, -9)
+        ..quadraticBezierTo(side * 34.0, -6, side * 44.0, 8)
+        ..quadraticBezierTo(side * 26.0, 12, 0, 9)
+        ..close();
+      c.drawPath(e, _fill(pal.ear));
+      c.drawPath(e, _stroke..strokeWidth = 3);
+      c.restore();
+    }
+    final head = _headPath(w: 104, h: 130, cy: 112);
+    _drawHead(c, head);
+    final beard = Path()
+      ..moveTo(88, 166)
+      ..quadraticBezierTo(100, 200, 112, 166)
+      ..close();
+    c.drawPath(beard, _fill(pal.dark));
+    c.drawPath(beard, _stroke..strokeWidth = 3);
+    _eyes(c, y: 98, dx: 22, r: 12);
+    _brows(c, y: 80);
+    _cheeks(c, y: 124, dx: 36);
+    final muzzle = Rect.fromCenter(
+      center: const Offset(100, 142),
+      width: 64,
+      height: 40,
+    );
+    c.drawOval(muzzle, _fill(pal.light));
+    _nose(c, y: 134, w: 18, color: const Color(0xFF6B4E3D));
+    _mouth(c, y: 150, w: 24);
+  }
+
+  void _horse(Canvas c) {
+    for (final side in [-1, 1]) {
+      c.save();
+      c.translate(100 + side * 30, 58);
+      c.rotate(side * (0.25 + ear * 0.5));
+      final e = Path()
+        ..moveTo(-12, 12)
+        ..quadraticBezierTo(-6, -22, 0, -34)
+        ..quadraticBezierTo(8, -20, 12, 12)
+        ..close();
+      c.drawPath(e, _shade(e.getBounds(), pal.light, pal.base, pal.dark));
+      c.drawPath(e, _stroke);
+      c.restore();
+    }
+    final head = _headPath(w: 108, h: 136, cy: 110);
+    _drawHead(c, head);
+    // mane tuft
+    final mane = Path()
+      ..moveTo(78, 52)
+      ..quadraticBezierTo(90, 30, 100, 46)
+      ..quadraticBezierTo(112, 26, 122, 52)
+      ..quadraticBezierTo(108, 70, 100, 62)
+      ..quadraticBezierTo(90, 72, 78, 52)
+      ..close();
+    c.drawPath(mane, _fill(pal.ear));
+    c.drawPath(mane, _stroke..strokeWidth = 3);
+    c.drawPath(
+      Path()
+        ..moveTo(100, 66)
+        ..lineTo(94, 86)
+        ..lineTo(106, 86)
+        ..close(),
+      _fill(Colors.white.withValues(alpha: 0.85)),
+    );
+    _eyes(c, y: 94, dx: 24, r: 12);
+    _brows(c, y: 76);
+    final muzzle = Rect.fromCenter(
+      center: const Offset(100, 146),
+      width: 86,
+      height: 54,
+    );
+    c.drawOval(muzzle, _shade(muzzle, Colors.white, pal.muzzle, pal.light));
+    c.drawOval(muzzle, _stroke..strokeWidth = 3);
+    final nos = _fill(const Color(0xFF5A3420));
+    for (final side in [-1, 1]) {
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100 + side * 18.0, 138),
+          width: 9,
+          height: 13,
+        ),
+        nos,
+      );
+    }
+    _mouth(c, y: 156, w: 28);
+  }
+
+  void _rooster(Canvas c) {
+    // comb
+    final comb = Path()
+      ..moveTo(76, 66)
+      ..quadraticBezierTo(70, 40, 86, 44)
+      ..quadraticBezierTo(88, 24, 102, 32)
+      ..quadraticBezierTo(112, 18, 120, 38)
+      ..quadraticBezierTo(136, 40, 126, 66)
+      ..close();
+    c.drawPath(
+      comb,
+      _shade(
+        comb.getBounds(),
+        const Color(0xFFFF7A6B),
+        pal.ear,
+        const Color(0xFFC81E1E),
+      ),
+    );
+    c.drawPath(comb, _stroke);
+    final head = _headPath(w: 124, h: 124, cy: 114);
+    _drawHead(c, head);
+    _eyes(c, y: 98, dx: 26, r: 13, iris: const Color(0xFFC25B00));
+    _brows(c, y: 78);
+    _cheeks(c, y: 120, dx: 44);
+    // wattle
+    final wattle = Path()
+      ..moveTo(92, 146)
+      ..quadraticBezierTo(86, 178, 100, 176)
+      ..quadraticBezierTo(114, 178, 108, 146)
+      ..close();
+    c.drawPath(wattle, _fill(pal.ear));
+    c.drawPath(wattle, _stroke..strokeWidth = 3);
+    final open = mouth.clamp(0.0, 1.0) * 14;
+    final beakColor = _shade(
+      const Rect.fromLTWH(76, 110, 48, 50),
+      const Color(0xFFFFD36B),
+      pal.muzzle,
+      const Color(0xFFE08A00),
+    );
+    final lower = Path()
+      ..moveTo(84, 134)
+      ..lineTo(116, 134)
+      ..lineTo(100, 148 + open)
+      ..close();
+    if (open > 1) {
+      c.drawPath(
+        Path()
+          ..moveTo(86, 133)
+          ..lineTo(114, 133)
+          ..lineTo(100, 144 + open)
+          ..close(),
+        _fill(const Color(0xFF5E1A2B)),
+      );
+    }
+    c.drawPath(lower, beakColor);
+    c.drawPath(lower, _stroke..strokeWidth = 3);
+    final upper = Path()
+      ..moveTo(80, 132 - open * 0.3)
+      ..quadraticBezierTo(100, 112, 120, 132 - open * 0.3)
+      ..lineTo(100, 146 - open * 0.3)
+      ..close();
+    c.drawPath(upper, beakColor);
+    c.drawPath(upper, _stroke..strokeWidth = 3);
+  }
+
+  void _frog(Canvas c) {
+    // eye bumps
+    for (final side in [-1, 1]) {
+      final r = Rect.fromCenter(
+        center: Offset(100 + side * 32.0, 72),
+        width: 50,
+        height: 46,
+      );
+      c.drawOval(r, _shade(r, pal.light, pal.base, pal.dark));
+      c.drawOval(r, _stroke);
+    }
+    final head = _headPath(w: 158, h: 108, cy: 122);
+    _drawHead(c, head);
+    for (final side in [-1, 1]) {
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100 + side * 32.0, 76),
+          width: 48,
+          height: 42,
+        ),
+        _shade(
+          Rect.fromCenter(
+            center: Offset(100 + side * 32.0, 76),
+            width: 48,
+            height: 42,
+          ),
+          pal.light,
+          pal.base,
+          pal.dark,
+        ),
+      );
+    }
+    _eyes(c, y: 74, dx: 32, r: 15);
+    _cheeks(c, y: 124, dx: 52);
+    c.drawCircle(const Offset(92, 112), 2.4, _fill(ink));
+    c.drawCircle(const Offset(108, 112), 2.4, _fill(ink));
+    final open = mouth.clamp(0.0, 1.0);
+    if (open < 0.08) {
+      c.drawPath(
+        Path()
+          ..moveTo(52, 128)
+          ..quadraticBezierTo(100, 158, 148, 128),
+        _stroke,
+      );
+    } else {
+      final m = Path()
+        ..moveTo(56, 128)
+        ..quadraticBezierTo(100, 140, 144, 128)
+        ..quadraticBezierTo(100, 150 + open * 30, 56, 128)
+        ..close();
+      c.drawPath(m, _fill(const Color(0xFF5E1A2B)));
+      c.save();
+      c.clipPath(m);
+      c.drawOval(
+        Rect.fromCenter(
+          center: Offset(100, 150 + open * 24),
+          width: 50,
+          height: 26,
+        ),
+        _fill(const Color(0xFFFF7A90)),
+      );
+      c.restore();
+      c.drawPath(m, _stroke);
+    }
   }
 
   @override

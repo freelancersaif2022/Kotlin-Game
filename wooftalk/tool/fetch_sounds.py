@@ -166,7 +166,45 @@ def write_wav(path, samples):
         fh.write(data.tobytes())
 
 
+LIST_QUERIES = {
+    "dog": ["dog barking", "dog bark", "Canis familiaris bark", "barking dog", "dog woof", "puppy barking", "puppy yelp", "puppy whimper"],
+    "cat": ["cat meow", "meowing", "Felis catus", "kitten meow"],
+    "wolf": ["wolf howl", "wolves howling", "Canis lupus howl"],
+    "duck": ["duck quack", "Anas platyrhynchos", "mallard", "duck quacking"],
+    "cow": ["cow moo", "mooing", "Bos taurus", "cattle"],
+    "rooster": ["rooster crowing", "Gallus gallus domesticus", "cock crow"],
+    "sheep": ["sheep bleating", "Ovis aries", "lamb bleating"],
+    "pig": ["pig grunt", "Sus scrofa domesticus", "pigs oinking", "piglet"],
+    "horse": ["horse neigh", "whinny", "Equus caballus"],
+    "goat": ["goat bleat", "Capra hircus", "goats bleating", "kid goat"],
+    "frog": ["frog croak", "bullfrog", "Lithobates", "Hyla", "Rana temporaria", "tree frog call"],
+}
+
+
+def list_candidates():
+    import time
+    for animal, queries in LIST_QUERIES.items():
+        seen = set()
+        print(f"\n##### {animal}")
+        for q in queries:
+            try:
+                res = search(q, 40)
+            except Exception as e:  # noqa: BLE001
+                print(f"  search failed {q}: {e}")
+                time.sleep(5)
+                continue
+            for c in res:
+                if c["title"] in seen:
+                    continue
+                seen.add(c["title"])
+                ok = "OK " if OK_LICENSE.match(c["license"] or "") else "NO "
+                print(f"  {ok}{c['size']//1000:>6}KB [{c['license']}] {c['title']}")
+            time.sleep(1.5)
+
+
 def main():
+    if sys.argv[1:2] == ["--list"]:
+        return list_candidates()
     wanted = sys.argv[1:] or list(ANIMALS)
     os.makedirs(OUT, exist_ok=True)
     credits_path = os.path.join(OUT, "credits.json")
