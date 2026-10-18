@@ -2,6 +2,17 @@
 
 All sounds come from Wikimedia Commons and were trimmed into short clips.
 
+## bird
+
+- `bird/0.wav`: [File:Turdus merula 2.ogg](https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg) by Oona Räisänen (Mysid), Public domain
+- `bird/1.wav`: [File:Turdus merula.ogg](https://commons.wikimedia.org/wiki/File:Turdus_merula.ogg) by Mazarin07, CC BY-SA 3.0
+- `bird/2.wav`: [File:Turdus merula - Common Blackbird XC573899.mp3](https://commons.wikimedia.org/wiki/File:Turdus_merula_-_Common_Blackbird_XC573899.mp3) by Lorenzo, CC BY-SA 4.0
+- `bird/3.wav`: [File:House Sparrows chirping.ogg](https://commons.wikimedia.org/wiki/File:House_Sparrows_chirping.ogg) by QWerk, CC BY-SA 3.0
+- `bird/4.wav`: [File:Erithacus rubecula - European Robin - XC114615.ogg](https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_-_European_Robin_-_XC114615.ogg) by Jonathon Jongsma, CC BY-SA 3.0
+- `bird/5.wav`: [File:Erithacus rubecula - European Robin XC441752.mp3](https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_-_European_Robin_XC441752.mp3) by Jan Cibulka, CC BY-SA 4.0
+- `bird/6.wav`: [File:Turdus merula 2.ogg](https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg) by Oona Räisänen (Mysid), Public domain
+- `bird/7.wav`: [File:Turdus merula 2.ogg](https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg) by Oona Räisänen (Mysid), Public domain
+
 ## cat
 
 - `cat/0.wav`: [File:MeowUSA.wav](https://commons.wikimedia.org/wiki/File:MeowUSA.wav) by SalomeCzapiewski, CC0
@@ -17,6 +28,17 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 
 - `cow/0.wav`: [File:Single Cow Moo.ogg](https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg) by MichaeltheFox8621, CC BY-SA 4.0
 - `cow/1.wav`: [File:Mudchute cow 1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_cow_1.ogg) by Secretlondon, CC BY-SA 3.0
+
+## deer
+
+- `deer/0.wav`: [File:Muntjac HQ 1.ogg](https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg) by Jidanni, CC BY-SA 4.0
+- `deer/1.wav`: [File:Barking deer.ogg](https://commons.wikimedia.org/wiki/File:Barking_deer.ogg) by L. Shyamal, CC BY-SA 2.5
+- `deer/2.wav`: [File:Male roe deer growl.ogg](https://commons.wikimedia.org/wiki/File:Male_roe_deer_growl.ogg) by 1bumer, CC BY-SA 4.0
+- `deer/3.wav`: [File:Red Deer (Cervus elaphus) (W1CDR0001424 BD3).ogg](https://commons.wikimedia.org/wiki/File:Red_Deer_(Cervus_elaphus)_(W1CDR0001424_BD3).ogg) by Unknown, CC BY-SA 4.0
+- `deer/4.wav`: [File:Hirsch roehrt.ogg](https://commons.wikimedia.org/wiki/File:Hirsch_roehrt.ogg) by Jugrü, CC BY-SA 3.0
+- `deer/5.wav`: [File:Muntjac HQ 1.ogg](https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg) by Jidanni, CC BY-SA 4.0
+- `deer/6.wav`: [File:Muntjac HQ 1.ogg](https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg) by Jidanni, CC BY-SA 4.0
+- `deer/7.wav`: [File:Barking deer.ogg](https://commons.wikimedia.org/wiki/File:Barking_deer.ogg) by L. Shyamal, CC BY-SA 2.5
 
 ## dog
 
@@ -39,6 +61,12 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `duck/5.wav`: [File:Mudchute duck 1.ogg](https://commons.wikimedia.org/wiki/File:Mudchute_duck_1.ogg) by Secretlondon, CC BY-SA 3.0
 - `duck/6.wav`: [File:Pekin duck & mallard.ogg](https://commons.wikimedia.org/wiki/File:Pekin_duck_%26_mallard.ogg) by WaderClub, CC BY-SA 4.0
 - `duck/7.wav`: [File:Anas platyrhynchos - Mallard - XC62258.ogg](https://commons.wikimedia.org/wiki/File:Anas_platyrhynchos_-_Mallard_-_XC62258.ogg) by Jonathon Jongsma, CC BY-SA 3.0
+
+## elephant
+
+- `elephant/0.wav`: [File:Elephant voice - trumpeting.ogg](https://commons.wikimedia.org/wiki/File:Elephant_voice_-_trumpeting.ogg) by தகவலுழவன், CC0
+- `elephant/1.wav`: [File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg](https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg) by King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F, CC BY 2.5
+- `elephant/2.wav`: [File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg](https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg) by King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F, CC BY 2.5
 
 ## frog
 
@@ -70,6 +98,37 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `horse/3.wav`: [File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s002.oga](https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s002.oga) by Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M, CC BY 4.0
 - `horse/4.wav`: [File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s001.oga](https://commons.wikimedia.org/wiki/File:Mares-Prefer-the-Voices-of-Highly-Fertile-Stallions-pone.0118468.s001.oga) by Lemasson A, Remeuf K, Trabalon M, Cuir F, Hausberger M, CC BY 4.0
 - `horse/5.wav`: [File:Wiehern.ogg](https://commons.wikimedia.org/wiki/File:Wiehern.ogg) by Hü., Public domain
+
+## lion
+
+- `lion/0.wav`: [File:Lionroar.wav](https://commons.wikimedia.org/wiki/File:Lionroar.wav) by Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlström, Matthew Wijers, Benno I. Simmons, CC BY 4.0
+- `lion/1.wav`: [File:Lion raring-sound1TamilNadu178.ogg](https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg) by த*உழவன், Public domain
+- `lion/2.wav`: [File:Lionroar.wav](https://commons.wikimedia.org/wiki/File:Lionroar.wav) by Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlström, Matthew Wijers, Benno I. Simmons, CC BY 4.0
+- `lion/3.wav`: [File:Lionroar.wav](https://commons.wikimedia.org/wiki/File:Lionroar.wav) by Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlström, Matthew Wijers, Benno I. Simmons, CC BY 4.0
+- `lion/4.wav`: [File:Lionroar.wav](https://commons.wikimedia.org/wiki/File:Lionroar.wav) by Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlström, Matthew Wijers, Benno I. Simmons, CC BY 4.0
+- `lion/5.wav`: [File:Lion raring-sound1TamilNadu178.ogg](https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg) by த*உழவன், Public domain
+
+## monkey
+
+- `monkey/0.wav`: [File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg](https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg) by Unknown, CC BY 4.0
+- `monkey/1.wav`: [File:Campbell's-Monkeys-Use-Affixation-to-Alter-Call-Meaning-pone.0007808.s003.ogg](https://commons.wikimedia.org/wiki/File:Campbell%27s-Monkeys-Use-Affixation-to-Alter-Call-Meaning-pone.0007808.s003.ogg) by Ouattara K, Lemasson A, Zuberbühler K, CC BY 2.5
+- `monkey/2.wav`: [File:Lar Gibbon hoots.ogg](https://commons.wikimedia.org/wiki/File:Lar_Gibbon_hoots.ogg) by FunkMonk, CC BY-SA 3.0
+- `monkey/3.wav`: [File:Howler monkey.ogg](https://commons.wikimedia.org/wiki/File:Howler_monkey.ogg) by David O'Hara, CC BY 3.0
+- `monkey/4.wav`: [File:Pant-hoot call made by a male chimpanzee.ogg](https://commons.wikimedia.org/wiki/File:Pant-hoot_call_made_by_a_male_chimpanzee.ogg) by Pawel Fedurek et al., CC BY 4.0
+- `monkey/5.wav`: [File:Hoolock Gibbon Call.ogg](https://commons.wikimedia.org/wiki/File:Hoolock_Gibbon_Call.ogg) by Chinmayisk, CC BY-SA 4.0
+- `monkey/6.wav`: [File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg](https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg) by Unknown, CC BY 4.0
+- `monkey/7.wav`: [File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg](https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg) by Unknown, CC BY 4.0
+
+## owl
+
+- `owl/0.wav`: [File:XN Strix aluco 003.ogg](https://commons.wikimedia.org/wiki/File:XN_Strix_aluco_003.ogg) by Guido Gerding, CC BY-SA 3.0
+- `owl/1.wav`: [File:Strix aluco male.oga](https://commons.wikimedia.org/wiki/File:Strix_aluco_male.oga) by Vianney Bajart, CC BY-SA 4.0
+- `owl/2.wav`: [File:Tawny Owl (Strix aluco).ogg](https://commons.wikimedia.org/wiki/File:Tawny_Owl_(Strix_aluco).ogg) by Chris Taklis, CC BY-SA 4.0
+- `owl/3.wav`: [File:Bubo bubo - Eurasian Eagle-Owl XC461330.mp3](https://commons.wikimedia.org/wiki/File:Bubo_bubo_-_Eurasian_Eagle-Owl_XC461330.mp3) by Mirko Tomasi, CC BY-SA 4.0
+- `owl/4.wav`: [File:Strix aluco - Tawny Owl XC565861.mp3](https://commons.wikimedia.org/wiki/File:Strix_aluco_-_Tawny_Owl_XC565861.mp3) by Alvaro Ortiz Troncoso, CC BY-SA 4.0
+- `owl/5.wav`: [File:Strix aluco - Tawny Owl XC86915.mp3](https://commons.wikimedia.org/wiki/File:Strix_aluco_-_Tawny_Owl_XC86915.mp3) by Alexander Kurthy, CC BY-SA 4.0
+- `owl/6.wav`: [File:Strix aluco male.oga](https://commons.wikimedia.org/wiki/File:Strix_aluco_male.oga) by Vianney Bajart, CC BY-SA 4.0
+- `owl/7.wav`: [File:Tawny Owl (Strix aluco).ogg](https://commons.wikimedia.org/wiki/File:Tawny_Owl_(Strix_aluco).ogg) by Chris Taklis, CC BY-SA 4.0
 
 ## pig
 
@@ -110,6 +169,15 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `sheep/6.wav`: [File:Corner of a sheep field in summer.ogg](https://commons.wikimedia.org/wiki/File:Corner_of_a_sheep_field_in_summer.ogg) by earthcalling, Public domain
 - `sheep/7.wav`: [File:Sheep bleating.ogg](https://commons.wikimedia.org/wiki/File:Sheep_bleating.ogg) by earthcalling, Public domain
 
+## tiger
+
+- `tiger/0.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+- `tiger/1.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+- `tiger/2.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+- `tiger/3.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+- `tiger/4.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+- `tiger/5.wav`: [File:439280 schots angry-tiger.wav](https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav) by schots, CC0
+
 ## wolf
 
 - `wolf/0.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
@@ -118,4 +186,11 @@ All sounds come from Wikimedia Commons and were trimmed into short clips.
 - `wolf/3.wav`: [File:Jem howls.ogg](https://commons.wikimedia.org/wiki/File:Jem_howls.ogg) by amethysta, Public domain
 - `wolf/4.wav`: [File:Wolf howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) by Unknown, Public domain
 - `wolf/5.wav`: [File:Wolf howls.ogg](https://commons.wikimedia.org/wiki/File:Wolf_howls.ogg) by Unknown, Public domain
+
+## zebra
+
+- `zebra/0.wav`: [File:Grévys zebra (Sound Effects).ogg](https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg) by DiegoC472, CC BY-SA 4.0
+- `zebra/1.wav`: [File:Grévys zebra (Sound Effects).ogg](https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg) by DiegoC472, CC BY-SA 4.0
+- `zebra/2.wav`: [File:Grévys zebra (Sound Effects).ogg](https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg) by DiegoC472, CC BY-SA 4.0
+- `zebra/3.wav`: [File:Grévys zebra (Sound Effects).ogg](https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg) by DiegoC472, CC BY-SA 4.0
 

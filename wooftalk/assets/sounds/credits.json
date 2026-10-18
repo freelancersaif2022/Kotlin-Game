@@ -832,5 +832,531 @@
    "seconds": 0.47,
    "score": 99.0
   }
+ ],
+ "tiger": [
+  {
+   "file": "tiger/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 1.41,
+   "score": 23.2
+  },
+  {
+   "file": "tiger/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 1.65,
+   "score": 23.2
+  },
+  {
+   "file": "tiger/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 2.15,
+   "score": 22.7
+  },
+  {
+   "file": "tiger/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.88,
+   "score": 22.7
+  },
+  {
+   "file": "tiger/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 1.17,
+   "score": 22.6
+  },
+  {
+   "file": "tiger/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:439280_schots_angry-tiger.wav",
+   "title": "File:439280 schots angry-tiger.wav",
+   "author": "schots",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 2.63,
+   "score": 22.5
+  }
+ ],
+ "lion": [
+  {
+   "file": "lion/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lionroar.wav",
+   "title": "File:Lionroar.wav",
+   "author": "Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlstr\u00f6m, Matthew Wijers, Benno I. Simmons",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.81,
+   "score": 38.5
+  },
+  {
+   "file": "lion/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg",
+   "title": "File:Lion raring-sound1TamilNadu178.ogg",
+   "author": "\u0ba4*\u0b89\u0bb4\u0bb5\u0ba9\u0bcd",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.82,
+   "score": 30.4
+  },
+  {
+   "file": "lion/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lionroar.wav",
+   "title": "File:Lionroar.wav",
+   "author": "Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlstr\u00f6m, Matthew Wijers, Benno I. Simmons",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.67,
+   "score": 37.8
+  },
+  {
+   "file": "lion/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lionroar.wav",
+   "title": "File:Lionroar.wav",
+   "author": "Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlstr\u00f6m, Matthew Wijers, Benno I. Simmons",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.63,
+   "score": 37.6
+  },
+  {
+   "file": "lion/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lionroar.wav",
+   "title": "File:Lionroar.wav",
+   "author": "Jonathan Growcott, Alex Lobora, Andrew Markham, Charlotte E. Searle, Johan Wahlstr\u00f6m, Matthew Wijers, Benno I. Simmons",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.85,
+   "score": 37.6
+  },
+  {
+   "file": "lion/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lion_raring-sound1TamilNadu178.ogg",
+   "title": "File:Lion raring-sound1TamilNadu178.ogg",
+   "author": "\u0ba4*\u0b89\u0bb4\u0bb5\u0ba9\u0bcd",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.59,
+   "score": 30.3
+  }
+ ],
+ "zebra": [
+  {
+   "file": "zebra/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg",
+   "title": "File:Gr\u00e9vys zebra (Sound Effects).ogg",
+   "author": "DiegoC472",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 2.17,
+   "score": 48.9
+  },
+  {
+   "file": "zebra/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg",
+   "title": "File:Gr\u00e9vys zebra (Sound Effects).ogg",
+   "author": "DiegoC472",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.85,
+   "score": 48.0
+  },
+  {
+   "file": "zebra/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg",
+   "title": "File:Gr\u00e9vys zebra (Sound Effects).ogg",
+   "author": "DiegoC472",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.67,
+   "score": 47.8
+  },
+  {
+   "file": "zebra/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Gr%C3%A9vys_zebra_(Sound_Effects).ogg",
+   "title": "File:Gr\u00e9vys zebra (Sound Effects).ogg",
+   "author": "DiegoC472",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.82,
+   "score": 27.5
+  }
+ ],
+ "deer": [
+  {
+   "file": "deer/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg",
+   "title": "File:Muntjac HQ 1.ogg",
+   "author": "Jidanni",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.09,
+   "score": 69.0
+  },
+  {
+   "file": "deer/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Barking_deer.ogg",
+   "title": "File:Barking deer.ogg",
+   "author": "L. Shyamal",
+   "license": "CC BY-SA 2.5",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.5",
+   "seconds": 0.95,
+   "score": 59.9
+  },
+  {
+   "file": "deer/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Male_roe_deer_growl.ogg",
+   "title": "File:Male roe deer growl.ogg",
+   "author": "1bumer",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.57,
+   "score": 50.4
+  },
+  {
+   "file": "deer/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Red_Deer_(Cervus_elaphus)_(W1CDR0001424_BD3).ogg",
+   "title": "File:Red Deer (Cervus elaphus) (W1CDR0001424 BD3).ogg",
+   "author": "Unknown",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 2.35,
+   "score": 41.8
+  },
+  {
+   "file": "deer/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Hirsch_roehrt.ogg",
+   "title": "File:Hirsch roehrt.ogg",
+   "author": "Jugr\u00fc",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.94,
+   "score": 36.5
+  },
+  {
+   "file": "deer/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg",
+   "title": "File:Muntjac HQ 1.ogg",
+   "author": "Jidanni",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.83,
+   "score": 67.8
+  },
+  {
+   "file": "deer/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Muntjac_HQ_1.ogg",
+   "title": "File:Muntjac HQ 1.ogg",
+   "author": "Jidanni",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.84,
+   "score": 66.9
+  },
+  {
+   "file": "deer/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Barking_deer.ogg",
+   "title": "File:Barking deer.ogg",
+   "author": "L. Shyamal",
+   "license": "CC BY-SA 2.5",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.5",
+   "seconds": 0.98,
+   "score": 57.1
+  }
+ ],
+ "bird": [
+  {
+   "file": "bird/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg",
+   "title": "File:Turdus merula 2.ogg",
+   "author": "Oona R\u00e4is\u00e4nen (Mysid)",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.43,
+   "score": 67.2
+  },
+  {
+   "file": "bird/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Turdus_merula.ogg",
+   "title": "File:Turdus merula.ogg",
+   "author": "Mazarin07",
+   "license": "CC BY-SA 3.0",
+   "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "seconds": 1.3,
+   "score": 47.3
+  },
+  {
+   "file": "bird/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Turdus_merula_-_Common_Blackbird_XC573899.mp3",
+   "title": "File:Turdus merula - Common Blackbird XC573899.mp3",
+   "author": "Lorenzo",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.01,
+   "score": 42.6
+  },
+  {
+   "file": "bird/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:House_Sparrows_chirping.ogg",
+   "title": "File:House Sparrows chirping.ogg",
+   "author": "QWerk",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.23,
+   "score": 39.9
+  },
+  {
+   "file": "bird/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_-_European_Robin_-_XC114615.ogg",
+   "title": "File:Erithacus rubecula - European Robin - XC114615.ogg",
+   "author": "Jonathon Jongsma",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 0.45,
+   "score": 39.5
+  },
+  {
+   "file": "bird/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_-_European_Robin_XC441752.mp3",
+   "title": "File:Erithacus rubecula - European Robin XC441752.mp3",
+   "author": "Jan Cibulka",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.58,
+   "score": 17.7
+  },
+  {
+   "file": "bird/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg",
+   "title": "File:Turdus merula 2.ogg",
+   "author": "Oona R\u00e4is\u00e4nen (Mysid)",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 1.14,
+   "score": 65.7
+  },
+  {
+   "file": "bird/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Turdus_merula_2.ogg",
+   "title": "File:Turdus merula 2.ogg",
+   "author": "Oona R\u00e4is\u00e4nen (Mysid)",
+   "license": "Public domain",
+   "license_url": "",
+   "seconds": 0.85,
+   "score": 64.3
+  }
+ ],
+ "elephant": [
+  {
+   "file": "elephant/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Elephant_voice_-_trumpeting.ogg",
+   "title": "File:Elephant voice - trumpeting.ogg",
+   "author": "\u0ba4\u0b95\u0bb5\u0bb2\u0bc1\u0bb4\u0bb5\u0ba9\u0bcd",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "seconds": 0.94,
+   "score": 31.7
+  },
+  {
+   "file": "elephant/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg",
+   "title": "File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s001.ogg",
+   "author": "King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F",
+   "license": "CC BY 2.5",
+   "license_url": "https://creativecommons.org/licenses/by/2.5",
+   "seconds": 3.55,
+   "score": 24.4
+  },
+  {
+   "file": "elephant/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg",
+   "title": "File:Bee-Threat-Elicits-Alarm-Call-in-African-Elephants-pone.0010346.s003.ogg",
+   "author": "King L, Soltis J, Douglas-Hamilton I, Savage A, Vollrath F",
+   "license": "CC BY 2.5",
+   "license_url": "https://creativecommons.org/licenses/by/2.5",
+   "seconds": 3.06,
+   "score": 23.5
+  }
+ ],
+ "monkey": [
+  {
+   "file": "monkey/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg",
+   "title": "File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg",
+   "author": "Unknown",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.86,
+   "score": 48.3
+  },
+  {
+   "file": "monkey/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Campbell%27s-Monkeys-Use-Affixation-to-Alter-Call-Meaning-pone.0007808.s003.ogg",
+   "title": "File:Campbell's-Monkeys-Use-Affixation-to-Alter-Call-Meaning-pone.0007808.s003.ogg",
+   "author": "Ouattara K, Lemasson A, Zuberb\u00fchler K",
+   "license": "CC BY 2.5",
+   "license_url": "https://creativecommons.org/licenses/by/2.5",
+   "seconds": 0.34,
+   "score": 38.4
+  },
+  {
+   "file": "monkey/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Lar_Gibbon_hoots.ogg",
+   "title": "File:Lar Gibbon hoots.ogg",
+   "author": "FunkMonk",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 1.49,
+   "score": 32.3
+  },
+  {
+   "file": "monkey/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Howler_monkey.ogg",
+   "title": "File:Howler monkey.ogg",
+   "author": "David O'Hara",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "seconds": 2.2,
+   "score": 31.5
+  },
+  {
+   "file": "monkey/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Pant-hoot_call_made_by_a_male_chimpanzee.ogg",
+   "title": "File:Pant-hoot call made by a male chimpanzee.ogg",
+   "author": "Pawel Fedurek et al.",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 1.05,
+   "score": 25.0
+  },
+  {
+   "file": "monkey/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Hoolock_Gibbon_Call.ogg",
+   "title": "File:Hoolock Gibbon Call.ogg",
+   "author": "Chinmayisk",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 3.06,
+   "score": 14.9
+  },
+  {
+   "file": "monkey/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg",
+   "title": "File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg",
+   "author": "Unknown",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.95,
+   "score": 46.9
+  },
+  {
+   "file": "monkey/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Vervet_Monkey_(Chlorocebus_pygerythrus)_(W_CERCOPITHECUS_AETHIOPS_R2_C2).ogg",
+   "title": "File:Vervet Monkey (Chlorocebus pygerythrus) (W CERCOPITHECUS AETHIOPS R2 C2).ogg",
+   "author": "Unknown",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "seconds": 0.87,
+   "score": 46.5
+  }
+ ],
+ "owl": [
+  {
+   "file": "owl/0.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:XN_Strix_aluco_003.ogg",
+   "title": "File:XN Strix aluco 003.ogg",
+   "author": "Guido Gerding",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "seconds": 2.1,
+   "score": 123.8
+  },
+  {
+   "file": "owl/1.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Strix_aluco_male.oga",
+   "title": "File:Strix aluco male.oga",
+   "author": "Vianney Bajart",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.28,
+   "score": 66.8
+  },
+  {
+   "file": "owl/2.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Tawny_Owl_(Strix_aluco).ogg",
+   "title": "File:Tawny Owl (Strix aluco).ogg",
+   "author": "Chris Taklis",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.02,
+   "score": 52.7
+  },
+  {
+   "file": "owl/3.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Bubo_bubo_-_Eurasian_Eagle-Owl_XC461330.mp3",
+   "title": "File:Bubo bubo - Eurasian Eagle-Owl XC461330.mp3",
+   "author": "Mirko Tomasi",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 0.46,
+   "score": 36.8
+  },
+  {
+   "file": "owl/4.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Strix_aluco_-_Tawny_Owl_XC565861.mp3",
+   "title": "File:Strix aluco - Tawny Owl XC565861.mp3",
+   "author": "Alvaro Ortiz Troncoso",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.11,
+   "score": 36.1
+  },
+  {
+   "file": "owl/5.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Strix_aluco_-_Tawny_Owl_XC86915.mp3",
+   "title": "File:Strix aluco - Tawny Owl XC86915.mp3",
+   "author": "Alexander Kurthy",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.3,
+   "score": 34.5
+  },
+  {
+   "file": "owl/6.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Strix_aluco_male.oga",
+   "title": "File:Strix aluco male.oga",
+   "author": "Vianney Bajart",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.77,
+   "score": 62.9
+  },
+  {
+   "file": "owl/7.wav",
+   "source": "https://commons.wikimedia.org/wiki/File:Tawny_Owl_(Strix_aluco).ogg",
+   "title": "File:Tawny Owl (Strix aluco).ogg",
+   "author": "Chris Taklis",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "seconds": 1.88,
+   "score": 51.3
+  }
  ]
 }
