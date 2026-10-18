@@ -40,6 +40,14 @@ ANIMALS = {
     "horse": (["horse neighing", "horse whinny", "horse neigh"], 0.60, 3.00, 100, 6),
     "goat": (["goat bleating", "goat"], 0.25, 1.80, 120, 8),
     "frog": (["frog croaking", "frog call", "frog"], 0.06, 1.20, 100, 8),
+    "tiger": (["tiger roar"], 0.5, 4.0, 60, 6),
+    "lion": (["lion roar"], 0.5, 5.0, 50, 6),
+    "zebra": (["zebra"], 0.3, 3.0, 100, 6),
+    "deer": (["deer"], 0.2, 3.0, 80, 8),
+    "bird": (["bird"], 0.08, 1.6, 800, 8),
+    "elephant": (["elephant"], 0.4, 3.5, 60, 6),
+    "monkey": (["monkey"], 0.15, 3.0, 150, 8),
+    "owl": (["owl"], 0.2, 2.5, 150, 8),
 }
 
 
