@@ -1,0 +1,129 @@
+name: Golden Hour APK
+
+on:
+  push:
+    branches: [main, ccr-95b21c3d-3mn8cb]
+    paths:
+      - 'golden_hour/**'
+      - '.github/workflows/golden-hour-apk.yml'
+      - '.github/scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: golden-hour-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: '3.47.7'
+
+jobs:
+  build:
+    name: Build release APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: golden_hour
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Unit tests (astronomy accuracy + UI rendering)
+        run: flutter test
+        env:
+          TZ: UTC
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/GoldenHour.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GoldenHour-apk
+          path: golden_hour/build/GoldenHour.apk
+          if-no-files-found: error
+
+  emulator-test:
+    name: Install & run on Android emulator
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: GoldenHour-apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run smoke test on emulator (Android 14)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back emulated
+          script: bash .github/scripts/smoke_test.sh GoldenHour.apk smoke-output
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: emulator-screenshots-and-logs
+          path: smoke-output/
+
+  release:
+    name: Publish APK as GitHub Release
+    needs: emulator-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: GoldenHour-apk
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: emulator-screenshots-and-logs
+          path: screens
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: golden-hour-build-${{ github.run_number }}
+          name: Golden Hour APK (build ${{ github.run_number }})
+          prerelease: true
+          target_commitish: ${{ github.sha }}
+          body: |
+            Release APK built from `${{ github.sha }}` and tested on an Android 14 emulator
+            (installed, launched, onboarding + every tab opened, no crashes).
+
+            **Install:** download `GoldenHour.apk` on your phone → open it → allow "Install unknown apps".
+            Ads use Google's test IDs; subscriptions work after they are created in the Play Console.
+          files: |
+            GoldenHour.apk
+            screens/*.png
