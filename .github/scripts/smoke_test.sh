@@ -11,7 +11,8 @@ PKG=com.goldenhour.golden_hour
 mkdir -p "$OUT"
 
 # Never let a single adb call hang the job.
-adb() { timeout 60 command adb "$@"; }
+ADB_BIN=$(command -v adb)
+adb() { timeout 60 "$ADB_BIN" "$@"; }
 
 fail() {
   echo "❌ $*"
