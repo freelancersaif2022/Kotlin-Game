@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="es_background">#FF070B14</color>
+    <color name="es_primary">#FF3DDCFF</color>
+    <color name="es_secondary">#FF7C5CFF</color>
+    <color name="es_icon_bg_start">#FF0E1A3A</color>
+    <color name="es_icon_bg_end">#FF050912</color>
+</resources>

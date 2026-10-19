@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EyeScroll</string>
+    <string name="accessibility_label">EyeScroll – hands-free scrolling</string>
+    <string name="accessibility_description">EyeScroll lets you scroll any app hands-free. When you turn eye scrolling on, the front camera watches where you look: looking at the top of the screen scrolls up and looking at the bottom scrolls down. This service is used only to perform those scroll gestures for you and to show the floating on/off button. It does not read your screen content, typing or passwords, and camera frames are processed on your device only — nothing is recorded or uploaded.</string>
+    <string name="accessibility_summary">Scroll any app with your eyes</string>
+    <string name="tile_label">Eye scroll</string>
+    <string name="notification_channel">Eye scrolling</string>
+    <string name="notification_channel_desc">Shown while the camera is tracking your eyes</string>
+    <string name="notification_title">Eye scrolling is on</string>
+    <string name="notification_text">Look at the top or bottom of the screen to scroll</string>
+    <string name="notification_stop">Turn off</string>
+</resources>
