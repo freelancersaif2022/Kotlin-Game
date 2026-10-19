@@ -42,8 +42,8 @@ class EyeScrollAccessibilityService : AccessibilityService() {
                 .collect { (settings, status) ->
                     if (settings.showBubble && settings.onboardingDone) {
                         val b = bubble ?: FloatingBubble(this@EyeScrollAccessibilityService, store).also {
-                            it.onTap = ::toggleTracking
-                            it.onLongPress = ::openApp
+                            it.onTap = { toggleTracking() }
+                            it.onLongPress = { openApp() }
                             it.show()
                             bubble = it
                         }

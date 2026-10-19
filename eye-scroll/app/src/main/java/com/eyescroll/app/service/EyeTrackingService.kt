@@ -48,7 +48,7 @@ class EyeTrackingService : LifecycleService(), FaceTracker.Listener {
     private val main = Handler(Looper.getMainLooper())
     private var tracker: FaceTracker? = null
     @Volatile private var controller: GazeController? = null
-    private var jobs = mutableListOf<Job>()
+    private val jobs = mutableListOf<Job>()
 
     @Volatile private var lastActivityMs = 0L
     @Volatile private var lastFaceMs = 0L
