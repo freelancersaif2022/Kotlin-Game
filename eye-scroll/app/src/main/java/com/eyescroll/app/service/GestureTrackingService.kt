@@ -274,7 +274,7 @@ class GestureTrackingService : LifecycleService(), HandTracker.Listener {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         return NotificationCompat.Builder(this, EyeScrollApp.CHANNEL_TRACKING)
-            .setSmallIcon(R.drawable.ic_stat_eye)
+            .setSmallIcon(R.drawable.ic_tile)
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_text))
             .setColor(0xFF3DDCFF.toInt())
