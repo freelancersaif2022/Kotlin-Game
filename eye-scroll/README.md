@@ -47,7 +47,7 @@ cd eye-scroll
    - `EYESCROLL_KEY_ALIAS`
    - `EYESCROLL_KEY_PASSWORD`
 
-   Without these secrets, builds are signed with a temporary debug key. Those builds are fine for testing, but you have to uninstall the old build before installing a new one.
+   Without these secrets, builds are signed with the public test key in `signing/eyescroll-test.jks`. Each test build installs over the previous one, but never upload a build signed with that key to Play.
 3. Upload the `.aab` from the release to Play Console.
 4. In Play Console, fill in:
    - the **Accessibility API declaration**: the app uses gestures to scroll for users who can't or don't want to touch the screen, and it does not read screen content

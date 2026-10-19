@@ -5,8 +5,9 @@ plugins {
 }
 
 // Release signing: provide these env vars (e.g. from GitHub secrets) to sign with your own
-// upload key for Google Play. Without them the release build falls back to the debug key so
-// the APK can still be installed for testing.
+// upload key for Google Play. Without them the build uses the fixed test key in
+// signing/eyescroll-test.jks, so every test APK installs over the previous one.
+// That key is public – never use it for Google Play.
 val releaseKeystore: String? = System.getenv("EYESCROLL_KEYSTORE")
 val buildNumber: Int = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
 
@@ -35,6 +36,12 @@ android {
                 keyPassword = System.getenv("EYESCROLL_KEY_PASSWORD")
             }
         }
+        create("test") {
+            storeFile = rootProject.file("signing/eyescroll-test.jks")
+            storePassword = "eyescroll-test"
+            keyAlias = "eyescroll"
+            keyPassword = "eyescroll-test"
+        }
     }
 
     buildTypes {
@@ -47,7 +54,7 @@ android {
             signingConfig = if (releaseKeystore != null) {
                 signingConfigs.getByName("release")
             } else {
-                signingConfigs.getByName("debug")
+                signingConfigs.getByName("test")
             }
         }
     }

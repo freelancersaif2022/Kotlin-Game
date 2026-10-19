@@ -98,7 +98,8 @@ class FaceTracker(
             landmarker = FaceLandmarker.createFromOptions(context, options)
         } catch (e: Throwable) {
             val root = generateSequence(e) { it.cause }.last()
-            listener.onError("Could not load face model: ${root.javaClass.simpleName} ${root.message ?: ""}".trim())
+            val abis = android.os.Build.SUPPORTED_ABIS.joinToString()
+            listener.onError("Could not load face model: ${root.javaClass.simpleName} ${root.message ?: ""} [CPU: $abis]")
         }
     }
 
