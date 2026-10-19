@@ -2,51 +2,41 @@ package com.eyescroll.app.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.eyescroll.app.gesture.GestureMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-enum class ScrollStyle(val label: String, val description: String) {
-    NATURAL("Natural", "Finger up = page moves up, like swiping the screen"),
-    JOYSTICK("Joystick", "Finger up = go back up the page"),
-}
-
-enum class PadSize(val label: String, val widthDp: Int, val heightDp: Int) {
-    SMALL("Small", 40, 104),
-    MEDIUM("Medium", 48, 128),
-    LARGE("Large", 58, 156),
-}
-
-enum class ScrollSpeed(val label: String, val durationMs: Long) {
-    SMOOTH("Smooth", 420),
-    BALANCED("Balanced", 300),
-    FAST("Fast", 200),
+enum class ScrollDistance(val label: String, val fraction: Float) {
+    SHORT("Short", 0.25f),
+    MEDIUM("Medium", 0.45f),
+    LONG("Long", 0.65f),
 }
 
 data class AppSettings(
     val onboardingDone: Boolean = false,
-    /** Floating pad visible (needs the accessibility service). */
-    val padEnabled: Boolean = true,
-    val style: ScrollStyle = ScrollStyle.NATURAL,
-    /** How far (dp) the finger must move before it counts as a scroll. */
-    val triggerDp: Int = 8,
-    /** Fraction of the screen scrolled by a full-length swipe on the pad. */
-    val maxDistance: Float = 0.7f,
-    val speed: ScrollSpeed = ScrollSpeed.BALANCED,
-    /** 0..1: how fast it keeps scrolling while you hold. */
-    val holdSpeed: Float = 0.5f,
-    val padSize: PadSize = PadSize.MEDIUM,
-    val padOpacity: Float = 0.9f,
-    val haptics: Boolean = true,
-    val padX: Int = -1,
-    val padY: Int = -1,
+    val mode: GestureMode = GestureMode.SWIPE,
+    /** Swipe: hand up = page moves up (touchscreen feel). Hold: finger up = scroll up. */
+    val natural: Boolean = true,
+    /** 0 = needs a big movement, 1 = reacts to a small movement. */
+    val sensitivity: Float = 0.5f,
+    val scrollDistance: ScrollDistance = ScrollDistance.MEDIUM,
+    /** Hold mode: delay between repeated scrolls. */
+    val repeatMs: Int = 700,
+    /** Camera turns off automatically after this many idle seconds; 0 = never. */
+    val autoOffSeconds: Int = 60,
+    val targetFps: Int = 30,
+    val showBubble: Boolean = true,
+    val vibrate: Boolean = true,
+    val bubbleX: Int = -1,
+    val bubbleY: Int = -1,
 )
 
 /** Small SharedPreferences-backed store, exposed as a StateFlow so UI and services stay in sync. */
 class SettingsStore private constructor(context: Context) {
 
     private val prefs: SharedPreferences =
-        context.applicationContext.getSharedPreferences("fingerscroll", Context.MODE_PRIVATE)
+        context.applicationContext.getSharedPreferences("airscroll", Context.MODE_PRIVATE)
 
     private val _settings = MutableStateFlow(read())
     val settings: StateFlow<AppSettings> = _settings.asStateFlow()
@@ -63,34 +53,34 @@ class SettingsStore private constructor(context: Context) {
         val d = AppSettings()
         return AppSettings(
             onboardingDone = prefs.getBoolean("onboardingDone", d.onboardingDone),
-            padEnabled = prefs.getBoolean("padEnabled", d.padEnabled),
-            style = enumOr(prefs.getString("style", null), d.style),
-            triggerDp = prefs.getInt("triggerDp", d.triggerDp),
-            maxDistance = prefs.getFloat("maxDistance", d.maxDistance),
-            speed = enumOr(prefs.getString("speed", null), d.speed),
-            holdSpeed = prefs.getFloat("holdSpeed", d.holdSpeed),
-            padSize = enumOr(prefs.getString("padSize", null), d.padSize),
-            padOpacity = prefs.getFloat("padOpacity", d.padOpacity),
-            haptics = prefs.getBoolean("haptics", d.haptics),
-            padX = prefs.getInt("padX", d.padX),
-            padY = prefs.getInt("padY", d.padY),
+            mode = enumOr(prefs.getString("mode", null), d.mode),
+            natural = prefs.getBoolean("natural", d.natural),
+            sensitivity = prefs.getFloat("sensitivity", d.sensitivity),
+            scrollDistance = enumOr(prefs.getString("scrollDistance", null), d.scrollDistance),
+            repeatMs = prefs.getInt("repeatMs", d.repeatMs),
+            autoOffSeconds = prefs.getInt("autoOffSeconds", d.autoOffSeconds),
+            targetFps = prefs.getInt("targetFps", d.targetFps),
+            showBubble = prefs.getBoolean("showBubble", d.showBubble),
+            vibrate = prefs.getBoolean("vibrate", d.vibrate),
+            bubbleX = prefs.getInt("bubbleX", d.bubbleX),
+            bubbleY = prefs.getInt("bubbleY", d.bubbleY),
         )
     }
 
     private fun write(s: AppSettings) {
         prefs.edit()
             .putBoolean("onboardingDone", s.onboardingDone)
-            .putBoolean("padEnabled", s.padEnabled)
-            .putString("style", s.style.name)
-            .putInt("triggerDp", s.triggerDp)
-            .putFloat("maxDistance", s.maxDistance)
-            .putString("speed", s.speed.name)
-            .putFloat("holdSpeed", s.holdSpeed)
-            .putString("padSize", s.padSize.name)
-            .putFloat("padOpacity", s.padOpacity)
-            .putBoolean("haptics", s.haptics)
-            .putInt("padX", s.padX)
-            .putInt("padY", s.padY)
+            .putString("mode", s.mode.name)
+            .putBoolean("natural", s.natural)
+            .putFloat("sensitivity", s.sensitivity)
+            .putString("scrollDistance", s.scrollDistance.name)
+            .putInt("repeatMs", s.repeatMs)
+            .putInt("autoOffSeconds", s.autoOffSeconds)
+            .putInt("targetFps", s.targetFps)
+            .putBoolean("showBubble", s.showBubble)
+            .putBoolean("vibrate", s.vibrate)
+            .putInt("bubbleX", s.bubbleX)
+            .putInt("bubbleY", s.bubbleY)
             .apply()
     }
 

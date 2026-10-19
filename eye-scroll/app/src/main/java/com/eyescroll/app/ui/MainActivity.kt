@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eyescroll.app.data.SettingsStore
 import com.eyescroll.app.ui.components.AnimatedBackground
+import com.eyescroll.app.ui.screens.GestureTestScreen
 import com.eyescroll.app.ui.screens.HomeScreen
 import com.eyescroll.app.ui.screens.OnboardingScreen
 import com.eyescroll.app.ui.screens.PracticeScreen
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-enum class Screen { Onboarding, Setup, Home, Practice }
+enum class Screen { Onboarding, Setup, Home, Practice, Test }
 
 @Composable
 private fun EyeScrollRoot() {
@@ -59,7 +60,7 @@ private fun EyeScrollRoot() {
     var screen by rememberSaveable {
         mutableStateOf(if (store.current.onboardingDone) Screen.Home else Screen.Onboarding)
     }
-    BackHandler(enabled = screen == Screen.Practice || (screen == Screen.Setup && settings.onboardingDone)) {
+    BackHandler(enabled = screen == Screen.Practice || screen == Screen.Test || (screen == Screen.Setup && settings.onboardingDone)) {
         screen = Screen.Home
     }
 
@@ -80,10 +81,12 @@ private fun EyeScrollRoot() {
                     store.update { it.copy(onboardingDone = true) }
                     screen = Screen.Setup
                 })
-                Screen.Setup -> SetupScreen(onDone = { screen = Screen.Home })
+                Screen.Setup -> SetupScreen(onTest = { screen = Screen.Test }, onDone = { screen = Screen.Home })
+                Screen.Test -> GestureTestScreen(onBack = { screen = Screen.Home })
                 Screen.Home -> HomeScreen(
                     onSetup = { screen = Screen.Setup },
                     onPractice = { screen = Screen.Practice },
+                    onTest = { screen = Screen.Test },
                 )
                 Screen.Practice -> PracticeScreen(onBack = { screen = Screen.Home })
             }

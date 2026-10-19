@@ -43,8 +43,10 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // MediaPipe loads classes by reflection (Flogger, protobuf); shrinking breaks the
+            // hand model with ExceptionInInitializerError, so the release build is not minified.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = if (releaseKeystore != null) {
                 signingConfigs.getByName("release")
@@ -61,6 +63,11 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    androidResources {
+        // MediaPipe memory-maps the model, so it must be stored uncompressed.
+        noCompress += "task"
     }
 
     buildFeatures {
@@ -93,6 +100,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-service:2.8.7")
 
+
+    val cameraX = "1.4.2"
+    implementation("androidx.camera:camera-core:$cameraX")
+    implementation("androidx.camera:camera-camera2:$cameraX")
+    implementation("androidx.camera:camera-lifecycle:$cameraX")
+    implementation("androidx.camera:camera-view:$cameraX")
+
+    implementation("com.google.mediapipe:tasks-vision:0.10.26")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 

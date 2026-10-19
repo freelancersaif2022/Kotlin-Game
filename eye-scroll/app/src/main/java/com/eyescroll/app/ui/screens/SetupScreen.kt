@@ -1,7 +1,14 @@
 package com.eyescroll.app.ui.screens
 
+import android.Manifest
+import android.app.Activity
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,8 +31,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -41,22 +52,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import com.eyescroll.app.ui.components.GhostButton
 import com.eyescroll.app.ui.components.GlassCard
 import com.eyescroll.app.ui.components.GradientButton
-import com.eyescroll.app.ui.components.PadGlyph
 import com.eyescroll.app.ui.components.StepBadge
+import com.eyescroll.app.ui.components.AirGestureGlyph
 import com.eyescroll.app.ui.theme.EsColors
 
 @Composable
-fun SetupScreen(onDone: () -> Unit) {
+fun SetupScreen(onTest: () -> Unit, onDone: () -> Unit) {
     val context = LocalContext.current
-    val state = rememberSetupState().state.value
-    var showDisclosure by remember { mutableStateOf(false) }
-    var showGuide by rememberSaveable { mutableStateOf(true) }
+    val holder = rememberSetupState()
+    val state = holder.state.value
+    var cameraDenials by rememberSaveable { mutableStateOf(0) }
+    var showA11yDisclosure by remember { mutableStateOf(false) }
+    var showA11yGuide by rememberSaveable { mutableStateOf(false) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) cameraDenials++
+        holder.refresh()
+    }
+    val notifLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { holder.refresh() }
+
+    val progress by animateFloatAsState(state.doneCount / 3f, tween(600), label = "progress")
 
     Column(Modifier.fillMaxSize().systemBarsPadding()) {
         Column(
@@ -69,71 +93,104 @@ fun SetupScreen(onDone: () -> Unit) {
             Text("Quick setup", style = MaterialTheme.typography.headlineMedium, color = EsColors.Text, modifier = Modifier.enterAnimation(0))
             Spacer(Modifier.height(6.dp))
             Text(
-                "Only one permission is needed — no camera, no internet.",
+                "Three short steps. Each one explains exactly why it's needed.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = EsColors.TextMuted,
                 modifier = Modifier.enterAnimation(1),
             )
-            Spacer(Modifier.height(18.dp))
-
-            GlassCard(
-                Modifier.fillMaxWidth().padding(bottom = 12.dp).animateContentSize().enterAnimation(2),
-                highlighted = !state.accessibility,
+            Spacer(Modifier.height(16.dp))
+            Box(
+                Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(50)).background(Color.White.copy(alpha = 0.07f)).enterAnimation(1),
             ) {
+                Box(Modifier.fillMaxHeight().fillMaxWidth(progress).clip(RoundedCornerShape(50)).background(EsColors.Accent))
+            }
+            Text(
+                "${state.doneCount} of 3 done",
+                style = MaterialTheme.typography.labelMedium,
+                color = EsColors.TextMuted,
+                modifier = Modifier.padding(top = 8.dp, bottom = 12.dp),
+            )
+
+            // 1. Camera
+            StepCard(
+                index = 1,
+                done = state.camera,
+                icon = Icons.Filled.Face,
+                title = "Camera",
+                body = "Used only while air scrolling is ON, to see your finger move. Processed on your phone, never saved or uploaded.",
+                action = if (cameraDenials >= 2) "Open app settings" else "Allow camera",
+                modifier = Modifier.enterAnimation(2),
+            ) {
+                val activity = context as? Activity
+                val permanentlyDenied = cameraDenials >= 1 && activity != null &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)
+                if (cameraDenials >= 2 || permanentlyDenied) openAppDetails(context)
+                else cameraLauncher.launch(Manifest.permission.CAMERA)
+            }
+
+            // 2. Notifications
+            StepCard(
+                index = 2,
+                done = state.notifications,
+                icon = Icons.Filled.Notifications,
+                title = "Notifications",
+                tag = "Recommended",
+                body = "Shows a small notification while the camera is on, with a one-tap \"Turn off\" button.",
+                action = "Allow notifications",
+                modifier = Modifier.enterAnimation(3),
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+
+            // 3. Accessibility
+            StepCard(
+                index = 3,
+                done = state.accessibility,
+                icon = Icons.Filled.Settings,
+                title = "Accessibility service",
+                body = "Lets AirScroll do the scroll for you in any app and show the floating on/off dot. It does not read your screen or typing.",
+                action = "Turn on in Settings",
+                modifier = Modifier.enterAnimation(4),
+                secondary = if (!state.accessibility) {
+                    { showA11yGuide = !showA11yGuide }
+                } else null,
+                secondaryLabel = if (showA11yGuide) "Hide guide" else "Show me how",
+                extra = {
+                    AnimatedVisibility(
+                        visible = showA11yGuide && !state.accessibility,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut(),
+                    ) { AccessibilityGuide(onOpenAppInfo = { openAppDetails(context) }) }
+                },
+            ) { showA11yDisclosure = true }
+
+            // Try it
+            GlassCard(Modifier.fillMaxWidth().padding(bottom = 12.dp).enterAnimation(5), padding = 18.dp) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    StepBadge(1, state.accessibility)
+                    AirGestureGlyph(Modifier.size(width = 64.dp, height = 96.dp))
                     Spacer(Modifier.width(14.dp))
-                    Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.Settings, null, tint = EsColors.Primary, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Accessibility service", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-                    }
-                    if (state.accessibility) Text("Done", style = MaterialTheme.typography.labelMedium, color = EsColors.Success)
-                }
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    "Lets FingerScroll show the floating pad and scroll the app you are using. It does not read or store your messages, typing or passwords.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = EsColors.TextMuted,
-                )
-                AnimatedVisibility(
-                    visible = showGuide && !state.accessibility,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
-                ) { AccessibilityGuide(onOpenAppInfo = { openAppDetails(context) }) }
-                if (!state.accessibility) {
-                    Spacer(Modifier.height(14.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        GradientButton("Turn on in Settings", { showDisclosure = true }, Modifier.weight(1f))
-                        GhostButton(if (showGuide) "Hide guide" else "Show me how", { showGuide = !showGuide })
+                    Column(Modifier.weight(1f)) {
+                        Text("Test your gestures", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            "See the camera detect your finger live before you start.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = EsColors.TextMuted,
+                        )
                     }
                 }
+                Spacer(Modifier.height(12.dp))
+                GradientButton("Open gesture test", onTest, Modifier.fillMaxWidth(), enabled = state.camera, icon = Icons.Filled.PlayArrow)
             }
 
-            AnimatedVisibility(state.accessibility, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-                GlassCard(Modifier.fillMaxWidth().padding(bottom = 12.dp), padding = 18.dp) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PadGlyph(Modifier.size(width = 56.dp, height = 110.dp))
-                        Spacer(Modifier.width(16.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("The pad is on your screen", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                "Look at the right edge. Move your thumb slightly up or down on it and release — or keep holding to keep scrolling.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = EsColors.TextMuted,
-                            )
-                        }
-                    }
-                }
-            }
-
-            GlassCard(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 16.dp).enterAnimation(3), padding = 16.dp) {
+            GlassCard(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 16.dp).enterAnimation(6), padding = 16.dp) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Lock, null, tint = EsColors.Success, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        "Privacy: FingerScroll has no camera and no internet permission and collects nothing.",
+                        "Your privacy: the camera is used only while air scrolling is on. No photos, no video, nothing uploaded.",
                         style = MaterialTheme.typography.bodySmall,
                         color = EsColors.TextMuted,
                     )
@@ -143,7 +200,7 @@ fun SetupScreen(onDone: () -> Unit) {
 
         Column(Modifier.padding(horizontal = 20.dp, vertical = 14.dp)) {
             GradientButton(
-                text = if (state.requiredDone) "All set — let's go" else "Turn on the service above",
+                text = if (state.requiredDone) "All set — let's go" else "Finish the steps above",
                 onClick = onDone,
                 enabled = state.requiredDone,
                 modifier = Modifier.fillMaxWidth(),
@@ -151,7 +208,7 @@ fun SetupScreen(onDone: () -> Unit) {
             if (!state.requiredDone) {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "I'll do it later",
+                    "I'll finish later",
                     style = MaterialTheme.typography.labelLarge,
                     color = EsColors.TextMuted,
                     modifier = Modifier
@@ -164,33 +221,88 @@ fun SetupScreen(onDone: () -> Unit) {
         }
     }
 
-    if (showDisclosure) {
+    if (showA11yDisclosure) {
         AlertDialog(
-            onDismissRequest = { showDisclosure = false },
+            onDismissRequest = { showA11yDisclosure = false },
             containerColor = EsColors.SurfaceHigh,
             icon = { Icon(Icons.Filled.Info, null, tint = EsColors.Primary) },
             title = { Text("Accessibility permission", color = EsColors.Text) },
             text = {
                 Text(
-                    "FingerScroll uses Android's Accessibility API to:\n\n" +
-                        "• show the floating scroll pad above other apps\n" +
-                        "• scroll the app you are using when you move your finger on the pad\n\n" +
-                        "It does NOT read, store or send your messages, typing, passwords or other screen content, and it has no internet access.\n\n" +
-                        "On the next screen tap \"FingerScroll\" and switch it on.",
+                    "AirScroll uses Android's Accessibility API to:\n\n" +
+                        "• perform scroll swipes for you when you move your finger up or down in the air\n" +
+                        "• show the floating on/off dot above other apps\n\n" +
+                        "It does NOT read the content of your screen, your messages, typing or passwords, and it sends no data anywhere.\n\n" +
+                        "On the next screen tap \"AirScroll\" and switch it on.",
                     color = EsColors.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
-                    showDisclosure = false
+                    showA11yDisclosure = false
+                    showA11yGuide = true
                     openAccessibilitySettings(context)
                 }) { Text("Agree & open settings", color = EsColors.Primary, fontWeight = FontWeight.SemiBold) }
             },
             dismissButton = {
-                TextButton(onClick = { showDisclosure = false }) { Text("Not now", color = EsColors.TextMuted) }
+                TextButton(onClick = { showA11yDisclosure = false }) { Text("Not now", color = EsColors.TextMuted) }
             },
         )
+    }
+}
+
+@Composable
+private fun StepCard(
+    index: Int,
+    done: Boolean,
+    icon: ImageVector,
+    title: String,
+    body: String,
+    action: String,
+    modifier: Modifier = Modifier,
+    tag: String? = null,
+    actionEnabled: Boolean = true,
+    showActionWhenDone: Boolean = false,
+    secondary: (() -> Unit)? = null,
+    secondaryLabel: String = "",
+    extra: @Composable () -> Unit = {},
+    onAction: () -> Unit,
+) {
+    GlassCard(modifier.fillMaxWidth().padding(bottom = 12.dp).animateContentSize(), highlighted = !done) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            StepBadge(index, done)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(icon, null, tint = EsColors.Primary, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(title, style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+                }
+                if (tag != null && !done) {
+                    Text(tag, style = MaterialTheme.typography.labelSmall, color = EsColors.Warning, modifier = Modifier.padding(top = 2.dp))
+                }
+            }
+            if (done) {
+                Text("Done", style = MaterialTheme.typography.labelMedium, color = EsColors.Success)
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Text(body, style = MaterialTheme.typography.bodyMedium, color = EsColors.TextMuted)
+        extra()
+        if (!done || showActionWhenDone) {
+            Spacer(Modifier.height(14.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (done) {
+                    GhostButton(action, onAction, Modifier.weight(1f))
+                } else {
+                    GradientButton(action, onAction, Modifier.weight(1f), enabled = actionEnabled)
+                }
+                if (secondary != null) {
+                    GhostButton(secondaryLabel, secondary)
+                }
+            }
+        }
     }
 }
 
@@ -198,10 +310,10 @@ fun SetupScreen(onDone: () -> Unit) {
 private fun AccessibilityGuide(onOpenAppInfo: () -> Unit) {
     Column(Modifier.padding(top = 14.dp)) {
         val steps = listOf(
-            "Tap \"Turn on in Settings\" below",
+            "Tap \"Agree & open settings\" below",
             "Find \"Installed apps\" or \"Downloaded apps\"",
-            "Tap \"FingerScroll – one-finger scrolling\"",
-            "Switch \"Use FingerScroll\" ON and tap Allow",
+            "Tap \"AirScroll – touch-free scrolling\"",
+            "Switch \"Use AirScroll\" ON and tap Allow",
             "Come back here — this step turns green",
         )
         steps.forEachIndexed { i, s ->
@@ -225,7 +337,7 @@ private fun AccessibilityGuide(onOpenAppInfo: () -> Unit) {
             }
             Spacer(Modifier.height(6.dp))
             Text(
-                "Android 13+ protects apps installed from an APK file. Open App info → tap ⋮ (top-right) → \"Allow restricted settings\", then switch FingerScroll on again.",
+                "Android 13+ protects apps installed from an APK file. Open App info → tap ⋮ (top-right) → \"Allow restricted settings\", then switch AirScroll on again.",
                 style = MaterialTheme.typography.bodySmall,
                 color = EsColors.TextMuted,
             )

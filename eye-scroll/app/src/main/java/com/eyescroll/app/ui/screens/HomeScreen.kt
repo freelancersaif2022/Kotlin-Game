@@ -29,6 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.List
@@ -56,31 +58,37 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.eyescroll.app.data.PadSize
-import com.eyescroll.app.data.ScrollSpeed
-import com.eyescroll.app.data.ScrollStyle
+import com.eyescroll.app.data.AppSettings
+import com.eyescroll.app.data.ScrollDistance
 import com.eyescroll.app.data.SettingsStore
-import com.eyescroll.app.scroll.PadBus
-import com.eyescroll.app.scroll.ScrollDirection
+import com.eyescroll.app.gesture.GestureMode
+import com.eyescroll.app.gesture.ScrollDirection
+import com.eyescroll.app.gesture.TrackingBus
+import com.eyescroll.app.gesture.TrackingPhase
+import com.eyescroll.app.gesture.TrackingStatus
+import com.eyescroll.app.service.GestureTrackingService
+import com.eyescroll.app.ui.components.AirGestureGlyph
 import com.eyescroll.app.ui.components.BulletRow
 import com.eyescroll.app.ui.components.GlassCard
-import com.eyescroll.app.ui.components.PadGlyph
 import com.eyescroll.app.ui.components.PowerOrb
 import com.eyescroll.app.ui.components.SectionLabel
 import com.eyescroll.app.ui.components.StatusPill
 import com.eyescroll.app.ui.theme.EsColors
 
 @Composable
-fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
+fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit, onTest: () -> Unit) {
     val context = LocalContext.current
     val store = remember { SettingsStore.get(context) }
     val settings by store.settings.collectAsStateWithLifecycle()
-    val status by PadBus.status.collectAsStateWithLifecycle()
+    val status by TrackingBus.status.collectAsStateWithLifecycle()
     val setup = rememberSetupState().state.value
-    val padOn = settings.padEnabled && setup.accessibility
 
     val toggle: () -> Unit = {
-        if (!setup.accessibility) onSetup() else store.update { it.copy(padEnabled = !it.padEnabled) }
+        when {
+            status.isActive -> GestureTrackingService.stop(context)
+            setup.camera -> GestureTrackingService.start(context)
+            else -> onSetup()
+        }
     }
 
     Column(
@@ -92,29 +100,26 @@ fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
     ) {
         // Header
         Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 8.dp).enterAnimation(0), verticalAlignment = Alignment.CenterVertically) {
-            PadGlyph(Modifier.size(width = 26.dp, height = 44.dp), thumb = 0f, showFinger = false)
+            AirGestureGlyph(Modifier.size(width = 34.dp, height = 44.dp), offset = 0f, glow = false)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
-                Text("FingerScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
-                Text("One-finger scrolling", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+                Text("AirScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
+                Text("Scroll without touching", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
             }
-            when {
-                !setup.accessibility -> StatusPill("Setup needed", EsColors.Warning)
-                padOn -> StatusPill("Pad on", EsColors.Success, pulsing = true)
-                else -> StatusPill("Pad off", EsColors.TextMuted)
-            }
+            val (label, color) = phaseLabel(status)
+            StatusPill(label, color, pulsing = status.isActive)
         }
 
         // Hero
-        GlassCard(Modifier.fillMaxWidth().padding(top = 10.dp).enterAnimation(1), highlighted = padOn, padding = 22.dp) {
+        GlassCard(Modifier.fillMaxWidth().padding(top = 10.dp).enterAnimation(1), highlighted = status.isActive, padding = 22.dp) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                PowerOrb(active = padOn, enabled = true, onClick = toggle)
+                PowerOrb(active = status.isActive, enabled = true, onClick = toggle)
                 Spacer(Modifier.height(14.dp))
                 Text(
                     when {
-                        !setup.accessibility -> "Finish setup to start"
-                        padOn -> "Scroll pad is ON"
-                        else -> "Tap to show the scroll pad"
+                        status.isActive -> "Air scrolling is ON"
+                        !setup.camera -> "Finish setup to start"
+                        else -> "Tap to start air scrolling"
                     },
                     style = MaterialTheme.typography.headlineSmall,
                     color = EsColors.Text,
@@ -122,17 +127,26 @@ fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    when {
-                        !setup.accessibility -> "Turn on the FingerScroll accessibility service (30 seconds)."
-                        padOn -> "Open any app and move your thumb slightly up or down on the pad."
-                        else -> "Also available from the \"Scroll pad\" quick-settings tile."
-                    },
+                    subtitle(status, settings),
                     style = MaterialTheme.typography.bodyMedium,
                     color = EsColors.TextMuted,
                     textAlign = TextAlign.Center,
                 )
-                AnimatedVisibility(padOn && status.scrollCount > 0, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                val msg = status.message
+                AnimatedVisibility(msg != null, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                    Row(
+                        Modifier.padding(top = 14.dp).clip(RoundedCornerShape(14.dp))
+                            .background(EsColors.Warning.copy(alpha = 0.10f)).padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Filled.Info, null, tint = EsColors.Warning, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text(msg ?: "", style = MaterialTheme.typography.bodySmall, color = EsColors.Text)
+                    }
+                }
+                AnimatedVisibility(status.isActive, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
                     Row(Modifier.padding(top = 16.dp)) {
+                        Metric("Hand", if (status.hand.handFound) "Seen ✓" else "—", Modifier.weight(1f))
                         Metric("Scrolls", "${status.scrollCount}", Modifier.weight(1f))
                         Metric(
                             "Last",
@@ -143,20 +157,24 @@ fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
                             },
                             Modifier.weight(1f),
                         )
-                        Metric("Mode", if (status.holding) "Holding" else settings.style.label, Modifier.weight(1f))
+                        Metric("Speed", "${status.fps}/s", Modifier.weight(1f))
                     }
                 }
             }
         }
 
-        AnimatedVisibility(!setup.accessibility, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+        AnimatedVisibility(!setup.requiredDone, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
             GlassCard(Modifier.fillMaxWidth().padding(top = 14.dp), onClick = onSetup, padding = 16.dp) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Warning, null, tint = EsColors.Warning)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Accessibility service is off", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-                        Text("Needed to show the pad and scroll other apps", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+                        Text("Setup not finished", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+                        val missing = buildList {
+                            if (!setup.camera) add("camera")
+                            if (!setup.accessibility) add("accessibility")
+                        }.joinToString(", ")
+                        Text("Still needed: $missing", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
                     }
                     Text("Open", style = MaterialTheme.typography.labelLarge, color = EsColors.Primary)
                 }
@@ -164,88 +182,111 @@ fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
         }
 
         Row(Modifier.fillMaxWidth().padding(top = 14.dp).enterAnimation(2), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            QuickAction(Icons.Filled.Face, "Test", Modifier.weight(1f)) { if (setup.camera) onTest() else onSetup() }
             QuickAction(Icons.Filled.List, "Practice", Modifier.weight(1f), onPractice)
-            QuickAction(Icons.Filled.Refresh, "Reset pad", Modifier.weight(1f)) {
-                store.update { it.copy(padX = -1, padY = -1, padEnabled = true) }
-            }
             QuickAction(Icons.Filled.Build, "Setup", Modifier.weight(1f), onSetup)
         }
 
         Spacer(Modifier.height(22.dp))
-        SectionLabel("Scrolling")
+        SectionLabel("Gesture")
         GlassCard(Modifier.fillMaxWidth().enterAnimation(3)) {
+            Text("Mode", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Spacer(Modifier.height(10.dp))
+            Segmented(listOf("Swipe", "Point & hold"), settings.mode.ordinal) { i ->
+                store.update { it.copy(mode = GestureMode.entries[i]) }
+            }
+            Text(
+                if (settings.mode == GestureMode.SWIPE) "Flick your finger up or down in the air — one scroll per flick."
+                else "Raise or lower your finger and hold it — keeps scrolling until you bring it back.",
+                style = MaterialTheme.typography.bodySmall,
+                color = EsColors.TextMuted,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            Divider()
             Text("Direction", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
             Spacer(Modifier.height(10.dp))
-            Segmented(ScrollStyle.entries.map { it.label }, settings.style.ordinal) { i ->
-                store.update { it.copy(style = ScrollStyle.entries[i]) }
+            Segmented(listOf("Natural", "Reversed"), if (settings.natural) 0 else 1) { i ->
+                store.update { it.copy(natural = i == 0) }
             }
-            Text(settings.style.description, style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                when {
+                    settings.mode == GestureMode.SWIPE && settings.natural -> "Flick up = page moves up (like swiping the screen)."
+                    settings.mode == GestureMode.SWIPE -> "Flick up = go back up the page."
+                    settings.natural -> "Finger up = scroll up, finger down = scroll down."
+                    else -> "Finger up = scroll down, finger down = scroll up."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = EsColors.TextMuted,
+                modifier = Modifier.padding(top = 8.dp),
+            )
             Divider()
             LabeledSlider(
                 title = "Sensitivity",
-                valueText = "${settings.triggerDp} dp",
-                hint = "How slight a movement starts a scroll · lower = more sensitive",
-                value = settings.triggerDp.toFloat(),
-                range = 3f..24f,
-                steps = 20,
-            ) { v -> store.update { it.copy(triggerDp = v.toInt()) } }
-            Divider()
-            LabeledSlider(
-                title = "Scroll distance",
-                valueText = "${(settings.maxDistance * 100).toInt()}% of screen",
-                hint = "How far a full swipe on the pad scrolls",
-                value = settings.maxDistance,
-                range = 0.3f..0.85f,
-            ) { v -> store.update { it.copy(maxDistance = v) } }
-            Divider()
-            Text("Scroll speed", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-            Spacer(Modifier.height(10.dp))
-            Segmented(ScrollSpeed.entries.map { it.label }, settings.speed.ordinal) { i ->
-                store.update { it.copy(speed = ScrollSpeed.entries[i]) }
+                valueText = when {
+                    settings.sensitivity < 0.34f -> "Big moves"
+                    settings.sensitivity < 0.67f -> "Balanced"
+                    else -> "Tiny moves"
+                },
+                hint = "Higher reacts to a smaller finger movement",
+                value = settings.sensitivity,
+                range = 0f..1f,
+            ) { v -> store.update { it.copy(sensitivity = v) } }
+            if (settings.mode == GestureMode.HOLD) {
+                Divider()
+                LabeledSlider(
+                    title = "Hold repeat speed",
+                    valueText = String.format("%.1f s", settings.repeatMs / 1000f),
+                    hint = "While you hold, scroll once every…",
+                    value = settings.repeatMs.toFloat(),
+                    range = 300f..1500f,
+                    steps = 11,
+                ) { v -> store.update { it.copy(repeatMs = v.toInt()) } }
             }
             Divider()
-            LabeledSlider(
-                title = "Hold-to-scroll speed",
-                valueText = when {
-                    settings.holdSpeed < 0.34f -> "Relaxed"
-                    settings.holdSpeed < 0.67f -> "Normal"
-                    else -> "Rapid"
-                },
-                hint = "How fast it keeps scrolling while you hold",
-                value = settings.holdSpeed,
-                range = 0f..1f,
-            ) { v -> store.update { it.copy(holdSpeed = v) } }
+            Text("Scroll distance", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Spacer(Modifier.height(10.dp))
+            Segmented(ScrollDistance.entries.map { it.label }, settings.scrollDistance.ordinal) { i ->
+                store.update { it.copy(scrollDistance = ScrollDistance.entries[i]) }
+            }
         }
 
         Spacer(Modifier.height(18.dp))
-        SectionLabel("Pad")
+        SectionLabel("Camera on demand")
         GlassCard(Modifier.fillMaxWidth().enterAnimation(4)) {
-            Text("Size", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Text("Auto-off when idle", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Text("Camera turns off after this long without scrolling", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
             Spacer(Modifier.height(10.dp))
-            Segmented(PadSize.entries.map { it.label }, settings.padSize.ordinal) { i ->
-                store.update { it.copy(padSize = PadSize.entries[i]) }
+            val autoOptions = listOf(30, 60, 120, 300, 0)
+            Segmented(listOf("30s", "1m", "2m", "5m", "Never"), autoOptions.indexOf(settings.autoOffSeconds).coerceAtLeast(0)) { i ->
+                store.update { it.copy(autoOffSeconds = autoOptions[i]) }
             }
             Divider()
-            LabeledSlider(
-                title = "Opacity when idle",
-                valueText = "${(settings.padOpacity * 100).toInt()}%",
-                hint = "The pad becomes fully visible while you touch it",
-                value = settings.padOpacity,
-                range = 0.3f..1f,
-            ) { v -> store.update { it.copy(padOpacity = v) } }
+            Text("Camera speed", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Text("Checks per second · higher feels more instant", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+            Spacer(Modifier.height(10.dp))
+            val fpsOptions = listOf(15, 24, 30)
+            Segmented(listOf("15 /s · saver", "24 /s", "30 /s · fast"), fpsOptions.indexOf(settings.targetFps).coerceAtLeast(0)) { i ->
+                store.update { it.copy(targetFps = fpsOptions[i]) }
+            }
             Divider()
-            ToggleRow("Haptic feedback", "A light tick when a scroll starts", settings.haptics) { v ->
-                store.update { it.copy(haptics = v) }
+            ToggleRow(
+                "Floating on/off dot",
+                if (setup.accessibility) "Tap to toggle camera · drag to move · long-press opens app" else "Needs the accessibility service",
+                settings.showBubble,
+            ) { v -> store.update { it.copy(showBubble = v) } }
+            Divider()
+            ToggleRow("Vibrate on scroll", "A tiny tick each time it scrolls", settings.vibrate) { v ->
+                store.update { it.copy(vibrate = v) }
             }
         }
 
         Spacer(Modifier.height(18.dp))
         SectionLabel("How to use")
         GlassCard(Modifier.fillMaxWidth().enterAnimation(5)) {
-            BulletRow(Icons.Filled.KeyboardArrowUp, "Swipe & release", "Move your thumb slightly up or down on the pad and let go — one smooth scroll. Move further for a longer scroll.")
-            BulletRow(Icons.Filled.KeyboardArrowDown, "Swipe & hold", "Keep holding after the move and it keeps scrolling. Pull further to go faster. Let go to stop.", EsColors.Secondary)
-            BulletRow(Icons.Filled.ThumbUp, "Move the pad", "Long-press the pad without moving, then drag it anywhere. It snaps to the screen edge.", EsColors.Success)
-            BulletRow(Icons.Filled.Star, "Quick toggle", "Add the \"Scroll pad\" tile to quick settings to show or hide the pad in one tap.", EsColors.Warning)
+            BulletRow(Icons.Filled.Face, "Turn on", "Tap the floating dot, the \"Air scroll\" quick-settings tile, or the big button above.")
+            BulletRow(Icons.Filled.KeyboardArrowUp, "Swipe mode", "Point your index finger at the phone and flick it up or down, 30–150 cm from the camera.")
+            BulletRow(Icons.Filled.KeyboardArrowDown, "Point & hold mode", "Hold your finger still for half a second, then raise or lower it and keep it there.", EsColors.Secondary)
+            BulletRow(Icons.Filled.Star, "Best results", "Good light, whole hand visible to the front camera, phone resting on a stand or table.", EsColors.Warning)
         }
 
         Spacer(Modifier.height(18.dp))
@@ -254,13 +295,31 @@ fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
                 Icon(Icons.Filled.Lock, null, tint = EsColors.Success, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    "Private: no camera, no internet, nothing on your screen is stored or sent anywhere.",
+                    "Private: camera frames are processed on-device and discarded instantly. Nothing is recorded or uploaded.",
                     style = MaterialTheme.typography.bodySmall,
                     color = EsColors.TextMuted,
                 )
             }
         }
     }
+}
+
+private fun phaseLabel(s: TrackingStatus): Pair<String, Color> = when (s.phase) {
+    TrackingPhase.OFF -> "Off" to EsColors.TextMuted
+    TrackingPhase.STARTING -> "Starting" to EsColors.Warning
+    TrackingPhase.TRACKING -> "Hand seen" to EsColors.Success
+    TrackingPhase.NO_HAND -> "Show hand" to Color(0xFFFF8A3D)
+    TrackingPhase.ERROR -> "Error" to EsColors.Danger
+}
+
+private fun subtitle(s: TrackingStatus, settings: AppSettings): String = when {
+    s.phase == TrackingPhase.STARTING -> "Starting the camera…"
+    s.isActive -> buildString {
+        append(if (settings.mode == GestureMode.SWIPE) "Flick your finger up or down in the air" else "Raise or lower your finger and hold")
+        if (s.autoOffIn >= 0) append("\nAuto-off in ${s.autoOffIn}s")
+    }
+    settings.autoOffSeconds > 0 -> "The camera turns on only now and switches off after ${if (settings.autoOffSeconds >= 60) "${settings.autoOffSeconds / 60} min" else "${settings.autoOffSeconds} s"} without scrolling."
+    else -> "The camera turns on only when you start it."
 }
 
 @Composable

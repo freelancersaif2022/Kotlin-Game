@@ -1,16 +1,19 @@
 package com.eyescroll.app.service
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.eyescroll.app.data.SettingsStore
+import com.eyescroll.app.gesture.TrackingBus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-/** Quick-settings tile: show or hide the floating scroll pad. */
+/** Quick-settings tile: swipe down and tap "Air scroll" to turn the camera on/off. */
 class ScrollTileService : TileService() {
 
     private var scope: CoroutineScope? = null
@@ -19,7 +22,7 @@ class ScrollTileService : TileService() {
         super.onStartListening()
         val s = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         scope = s
-        s.launch { SettingsStore.get(this@ScrollTileService).settings.collect { refresh(it.padEnabled) } }
+        s.launch { TrackingBus.status.collect { refresh(it.isActive) } }
     }
 
     override fun onStopListening() {
@@ -28,21 +31,26 @@ class ScrollTileService : TileService() {
         super.onStopListening()
     }
 
+    @SuppressLint("StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
-        SettingsStore.get(this).update { it.copy(padEnabled = !it.padEnabled, onboardingDone = true) }
+        val intent = Intent(this, TrackingLauncherActivity::class.java)
+            .setAction(TrackingLauncherActivity.ACTION_TOGGLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        if (Build.VERSION.SDK_INT >= 34) {
+            val pi = PendingIntent.getActivity(this, 7, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            startActivityAndCollapse(pi)
+        } else {
+            @Suppress("DEPRECATION")
+            startActivityAndCollapse(intent)
+        }
     }
 
-    private fun refresh(enabled: Boolean) {
+    private fun refresh(active: Boolean) {
         val tile = qsTile ?: return
-        val serviceOn = ScrollAccessibilityService.isRunning
-        tile.state = if (enabled && serviceOn) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+        tile.state = if (active) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = when {
-                !serviceOn -> "Setup needed"
-                enabled -> "Pad on"
-                else -> "Pad off"
-            }
+            tile.subtitle = if (active) "Camera on" else "Off"
         }
         tile.updateTile()
     }

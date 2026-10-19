@@ -46,15 +46,16 @@
         android:fillColor="#66FFFFFF"
         android:pathData="M41.5,46h10a1.5,1.5 0,0 1,0 3h-10a1.5,1.5 0,0 1,0 -3zM41.5,52.5h7a1.5,1.5 0,0 1,0 3h-7a1.5,1.5 0,0 1,0 -3zM41.5,59h9a1.5,1.5 0,0 1,0 3h-9a1.5,1.5 0,0 1,0 -3z" />
 
-    <!-- touch ripple -->
+    <!-- air motion arcs above the fingertip -->
     <path
-        android:pathData="M50.5,53a9.5,9.5 0,1 0,19 0a9.5,9.5 0,1 0,-19 0"
-        android:strokeWidth="1.6"
-        android:strokeColor="#993DDCFF"
+        android:pathData="M54,49.5Q60,44.5 66,49.5M51,44Q60,36.5 69,44"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeColor="#FF3DDCFF"
         android:fillColor="#00000000" />
 
     <!-- folded fingers -->
-    <path android:pathData="M66,72a5,5 0,0 1,10 0v40h-10z">
+    <path android:pathData="M66,76a5,5 0,0 1,10 0v36h-10z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="linear"
@@ -67,7 +68,7 @@
     </path>
 
     <!-- index finger -->
-    <path android:pathData="M54,56a6,6 0,0 1,12 0v56h-12z">
+    <path android:pathData="M54,60a6,6 0,0 1,12 0v52h-12z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="linear"
@@ -84,5 +85,5 @@
         android:fillColor="#FFE6EEFF"
         android:strokeWidth="0.8"
         android:strokeColor="#FFB3C2E3"
-        android:pathData="M56.6,55.6a3.4,3.4 0,0 1,6.8 0v3.4q-3.4,1.6 -6.8,0z" />
+        android:pathData="M56.6,59.6a3.4,3.4 0,0 1,6.8 0v3.4q-3.4,1.6 -6.8,0z" />
 </vector>

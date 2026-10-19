@@ -1,11 +1,23 @@
 package com.eyescroll.app
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import com.eyescroll.app.service.ScrollAccessibilityService
 
+/** Single place that answers "is everything set up?" for UI, dot and tile. */
 object Readiness {
+
+    fun hasCamera(context: Context): Boolean =
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
+    fun hasNotifications(context: Context): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
     fun isAccessibilityEnabled(context: Context): Boolean {
         if (ScrollAccessibilityService.isRunning) return true
@@ -18,4 +30,6 @@ object Readiness {
             ComponentName.unflattenFromString(it)?.let { c -> c == me } ?: false
         }
     }
+
+    fun canStartTracking(context: Context): Boolean = hasCamera(context)
 }

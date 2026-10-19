@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.eyescroll.app.ui.components.BulletRow
 import com.eyescroll.app.ui.components.GlassCard
 import com.eyescroll.app.ui.components.GradientButton
-import com.eyescroll.app.ui.components.PadGlyph
+import com.eyescroll.app.ui.components.AirGestureGlyph
 import com.eyescroll.app.ui.theme.EsColors
 import kotlinx.coroutines.launch
 
@@ -65,7 +65,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("FingerScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
+            Text("AirScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
             Spacer(Modifier.weight(1f))
             if (pager.currentPage < 2) {
                 Text(
@@ -83,19 +83,19 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         HorizontalPager(state = pager, modifier = Modifier.weight(1f)) { page ->
             when (page) {
                 0 -> OnboardingPage(
-                    title = "Scroll any app\nwith a tiny swipe",
-                    body = "A small floating pad sits at the edge of your screen. Move your thumb slightly up or down on it and the app scrolls for you — smooth and fast.",
+                    title = "Scroll without\ntouching the screen",
+                    body = "Point your finger at the phone and move it up or down in the air. The front camera sees it and the app scrolls for you — Chrome, Instagram, YouTube, anything."
                 ) { PhoneDemo() }
                 1 -> OnboardingPage(
-                    title = "Swipe, or hold\nto keep going",
-                    body = "Slight move and release = one smooth scroll. Move and keep holding = keeps scrolling until you let go. Long-press the pad to move it anywhere.",
-                ) { PadGlyph(Modifier.size(width = 160.dp, height = 260.dp)) }
-                else -> OnboardingPage(title = "Ready in 30 seconds", body = null) {
+                    title = "Camera only\nwhen you want",
+                    body = "Tap the floating dot to turn air scrolling on, tap again and the camera is off instantly. It also switches off by itself when you stop using it.",
+                ) { AirGestureGlyph(Modifier.size(width = 180.dp, height = 260.dp)) }
+                else -> OnboardingPage(title = "Ready in 1 minute", body = null) {
                     GlassCard(Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
-                        BulletRow(Icons.Filled.ThumbUp, "One-handed comfort", "Scroll long pages, feeds and chats with a small thumb movement instead of big swipes.")
-                        BulletRow(Icons.Filled.KeyboardArrowDown, "Works everywhere", "Chrome, Instagram, YouTube, WhatsApp, news apps, PDFs and more.", EsColors.Secondary)
-                        BulletRow(Icons.Filled.Lock, "Private", "No camera, no internet, no data collected. Nothing on your screen is read or stored.", EsColors.Success)
-                        BulletRow(Icons.Filled.Build, "One permission", "Just turn on the FingerScroll accessibility service.", EsColors.Warning)
+                        BulletRow(Icons.Filled.ThumbUp, "Hands-free", "Cooking, eating, wet or dirty hands, phone on a stand — scroll without touching it.")
+                        BulletRow(Icons.Filled.KeyboardArrowDown, "Two gesture modes", "Swipe: flick your finger. Point & hold: keep scrolling while your finger stays up or down.", EsColors.Secondary)
+                        BulletRow(Icons.Filled.Lock, "100% on your phone", "Camera frames are analysed on-device and discarded instantly. Nothing is recorded or uploaded.", EsColors.Success)
+                        BulletRow(Icons.Filled.Build, "Quick setup", "Allow the camera and turn on the AirScroll accessibility service.", EsColors.Warning)
                     }
                 }
             }
@@ -154,7 +154,7 @@ private fun OnboardingPage(title: String, body: String?, illustration: @Composab
     }
 }
 
-/** A phone whose feed scrolls while a fingertip nudges the floating pad. */
+/** A phone whose feed scrolls while a hand gestures in the air next to it. */
 @Composable
 private fun PhoneDemo() {
     val t = rememberInfiniteTransition(label = "phone")
@@ -165,10 +165,12 @@ private fun PhoneDemo() {
             keyframes {
                 durationMillis = 3600
                 0f at 0
-                0f at 900
-                -0.32f at 1500 using FastOutSlowInEasing
-                -0.32f at 2500
-                0f at 3100 using FastOutSlowInEasing
+                0f at 800
+                -0.25f at 1300 using FastOutSlowInEasing
+                -0.25f at 2600
+                -0.5f at 3100 using FastOutSlowInEasing
+                -0.5f at 3450
+                0f at 3600
             },
         ),
         label = "scroll",
@@ -198,6 +200,6 @@ private fun PhoneDemo() {
                 }
             }
         }
-        PadGlyph(Modifier.align(Alignment.CenterEnd).offset(x = (-4).dp).size(width = 48.dp, height = 120.dp))
+        AirGestureGlyph(Modifier.align(Alignment.CenterEnd).offset(x = 22.dp).size(width = 90.dp, height = 150.dp), glow = false)
     }
 }

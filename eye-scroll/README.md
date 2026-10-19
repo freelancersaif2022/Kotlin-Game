@@ -1,27 +1,23 @@
-# FingerScroll
+# AirScroll
 
-Scroll any Android app with a tiny thumb movement. A small floating pad sits at the edge of the screen. Move your thumb slightly up or down on it and the app underneath scrolls for you.
+Scroll any Android app **without touching the screen**. The front camera watches your hand; moving your index finger up or down in the air scrolls the app you are using.
 
-The app is built with Kotlin and Jetpack Compose. It has no camera access, no internet access and collects no data.
+The app is built with Kotlin, Jetpack Compose, CameraX and the MediaPipe Hand Landmarker (21 points per hand). All processing happens on the device.
 
 ## How it works
 
-| On the pad | Result |
-|---|---|
-| Move slightly up/down, then release | One smooth scroll (an injected swipe gesture). A longer movement scrolls further. |
-| Move, then keep holding | Keeps scrolling step by step (accessibility scroll actions). Pulling further makes it faster; letting go stops it. |
-| Long-press without moving, then drag | Moves the pad. It snaps to the screen edge. |
-
-- **Natural** direction (the default): finger up moves the page up, like swiping the screen. **Joystick** direction is the reverse.
-- Settings: sensitivity, scroll distance, scroll speed, hold-to-scroll speed, pad size, idle opacity and haptics.
-- There is a quick-settings tile called "Scroll pad" to show or hide the pad, and an in-app practice feed.
-
-The app has to use two different scrolling methods because Android cancels injected gestures while a real finger touches the screen. While you hold the pad, the app scrolls the main scrollable view with accessibility scroll actions instead. After you release, it injects a smooth swipe that ends with a short hold, so the list stops exactly where the swipe ends instead of flinging.
+- **Camera on demand.** The camera runs only while air scrolling is on. You can turn it on or off with the floating dot, the "Air scroll" quick-settings tile, the notification's *Turn off* button, or the app itself. It turns off automatically when idle (30 s to 5 min, or never), when the screen turns off, or when no hand is seen for 30 s.
+- **Swipe mode (the default).** Flick your finger up or down by about one hand-length, and one smooth scroll happens. The return movement is ignored, so it never scrolls back by accident.
+- **Point & hold mode.** The app learns where your finger rests. Hold the finger above that point and it keeps scrolling up; hold it below and it keeps scrolling down, until you bring it back.
+- Thresholds are measured in hand sizes, so detection works whether your hand is 30 cm or 1.5 m from the phone.
+- **Settings:** mode, direction (natural or reversed), sensitivity, scroll distance, hold repeat speed, auto-off time, camera speed (15/24/30 checks per second), the floating dot, and vibration.
+- **Gesture test screen.** It shows a camera preview, the fingertip position and every gesture the app detects.
 
 Code:
-- `service/FloatingPad.kt`: the pad and its touch handling
-- `service/ScrollAccessibilityService.kt`: the scrolling
-- `scroll/ScrollMath.kt`: the movement-to-scroll math (unit tested)
+- `gesture/HandTracker.kt`: camera and hand model
+- `gesture/GestureDetector.kt`: turns movement into gestures (unit tested)
+- `service/GestureTrackingService.kt`: the camera foreground service
+- `service/ScrollAccessibilityService.kt`: scroll gestures and the floating dot
 
 ## Build
 
@@ -47,10 +43,11 @@ cd eye-scroll
    Without these secrets, builds are signed with the public test key in `signing/eyescroll-test.jks`. Each test build installs over the previous one, but never upload a build signed with that key to Play.
 3. Upload the `.aab` from the release to Play Console.
 4. In Play Console, fill in:
-   - the **Accessibility API declaration**: the app performs scroll gestures and scroll actions for users who want one-handed or low-effort scrolling, and it does not collect or share screen content
-   - a privacy policy stating that no data is collected
+   - the **Accessibility API declaration**: the app performs scroll gestures for users who can't or don't want to touch the screen, and it does not read screen content
+   - the **foreground service (camera) declaration**, with a short demo video
+   - a privacy policy stating that camera frames are processed on-device and never stored or shared
 5. New personal developer accounts must run a closed test with at least 12 testers for 14 days before going to production.
 
 ## Installing the APK directly (Android 13+)
 
-When you turn the accessibility service on, Android may say **"Restricted setting"**. Go to *App info → ⋮ → Allow restricted settings*, then switch FingerScroll on again. The setup screen in the app walks through this.
+When you turn the accessibility service on, Android may say **"Restricted setting"**. Go to *App info → ⋮ → Allow restricted settings*, then switch AirScroll on again. The setup screen in the app walks through this.

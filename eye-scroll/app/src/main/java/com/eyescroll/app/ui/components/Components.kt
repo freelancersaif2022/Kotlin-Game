@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eyescroll.app.ui.theme.EsColors
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -179,112 +180,89 @@ fun GhostButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
 }
 
 /**
- * The floating scroll pad, drawn in Compose. With [thumb] = null it plays a demo loop where a
- * fingertip slides slightly up and down; otherwise the thumb sits at [thumb] (-1 = up, 1 = down).
+ * A hand pointing its index finger, moving up and down in the air with motion arcs.
+ * With [offset] = null it plays a demo loop; otherwise the hand sits at [offset] (-1 = up, 1 = down).
  */
 @Composable
-fun PadGlyph(modifier: Modifier = Modifier, thumb: Float? = null, showFinger: Boolean = true) {
-    val t = rememberInfiniteTransition(label = "pad")
+fun AirGestureGlyph(modifier: Modifier = Modifier, offset: Float? = null, glow: Boolean = true) {
+    val t = rememberInfiniteTransition(label = "hand")
     val demo by t.animateFloat(
-        initialValue = 0f,
-        targetValue = 0f,
+        initialValue = 0.6f,
+        targetValue = 0.6f,
         animationSpec = infiniteRepeatable(
             keyframes {
                 durationMillis = 3600
-                0f at 0
-                0f at 400
-                -1f at 900 using FastOutSlowInEasing
-                -1f at 1200
-                0f at 1450 using FastOutSlowInEasing
-                0f at 2000
-                1f at 2500 using FastOutSlowInEasing
-                1f at 2800
-                0f at 3050 using FastOutSlowInEasing
+                0.6f at 0
+                0.6f at 400
+                -0.7f at 800 using FastOutSlowInEasing
+                -0.7f at 1100
+                0.6f at 1800 using FastOutSlowInEasing
+                0.6f at 2200
+                -0.7f at 2600 using FastOutSlowInEasing
+                -0.7f at 2900
+                0.6f at 3600 using FastOutSlowInEasing
             },
         ),
         label = "demo",
     )
-    val target = thumb ?: demo
-    val pos by animateFloatAsState(target, spring(dampingRatio = 0.6f, stiffness = 500f), label = "thumb")
+    val target = offset ?: demo
+    val pos by animateFloatAsState(target, spring(dampingRatio = 0.7f, stiffness = 400f), label = "hand")
+    // Moving direction for the motion arcs (demo: up while rising).
+    val prev = remember { floatArrayOf(pos) }
+    val velocity = pos - prev[0]
+    prev[0] = pos
 
     Canvas(modifier) {
         val w = size.width
         val h = size.height
-        val padW = minOf(w * 0.8f, h * 0.4f)
-        val padH = padW / 0.4f
-        val left = (w - padW) / 2f
-        val top = (h - padH) / 2f
+        val unit = minOf(w, h * 0.62f)
         val cx = w / 2f
-        val cy = h / 2f
-        val r = CornerRadius(padW / 2, padW / 2)
-        val up = pos < -0.35f
-        val down = pos > 0.35f
-        val accent = when {
-            up -> EsColors.Primary
-            down -> EsColors.Secondary
-            else -> Color(0xFF96A5C3)
-        }
-        if (up || down) {
+        val cy = h / 2f + pos * h * 0.16f
+        if (glow) {
             drawCircle(
-                Brush.radialGradient(listOf(accent.copy(alpha = 0.35f), Color.Transparent), Offset(cx, cy), padH * 0.6f),
-                padH * 0.6f,
-                Offset(cx, cy),
+                Brush.radialGradient(listOf(EsColors.Primary.copy(alpha = 0.28f), Color.Transparent), Offset(cx, cy), unit * 0.8f),
+                unit * 0.8f, Offset(cx, cy),
             )
         }
+        val skin = Brush.verticalGradient(listOf(Color(0xFFF6F8FF), Color(0xFFBBC8E6)), cy - unit * 0.6f, cy + unit * 0.6f)
+        // index finger
+        val fw = unit * 0.16f
+        drawRoundRect(skin, Offset(cx - fw / 2, cy - unit * 0.62f), Size(fw, unit * 0.62f), CornerRadius(fw / 2, fw / 2))
+        // nail
         drawRoundRect(
-            Brush.verticalGradient(listOf(Color(0xFF1A243E), Color(0xFF0A0E1A)), top, top + padH),
-            Offset(left, top), Size(padW, padH), r,
+            Color(0xFFE3EBFF), Offset(cx - fw * 0.3f, cy - unit * 0.6f + fw * 0.1f), Size(fw * 0.6f, fw * 0.55f),
+            CornerRadius(fw * 0.3f, fw * 0.3f),
         )
-        drawRoundRect(
-            Brush.linearGradient(listOf(EsColors.Primary, EsColors.Secondary), Offset(left, top), Offset(left + padW, top + padH)),
-            Offset(left, top), Size(padW, padH), r,
-            style = Stroke(width = padW * 0.035f),
-        )
-        val travel = padH / 2f - padW * 0.36f - padW * 0.08f
-        drawLine(
-            Color.White.copy(alpha = 0.15f),
-            Offset(cx, top + padW * 0.62f), Offset(cx, top + padH - padW * 0.62f),
-            strokeWidth = padW * 0.06f, cap = StrokeCap.Round,
-        )
-        if (up || down) {
-            drawLine(accent.copy(alpha = 0.7f), Offset(cx, cy), Offset(cx, cy + pos * travel), strokeWidth = padW * 0.06f, cap = StrokeCap.Round)
+        // fist
+        drawRoundRect(skin, Offset(cx - unit * 0.2f, cy - unit * 0.08f), Size(unit * 0.46f, unit * 0.44f), CornerRadius(unit * 0.12f, unit * 0.12f))
+        // folded finger lines
+        for (i in 1..2) {
+            val y = cy - unit * 0.08f + unit * 0.13f * i
+            drawLine(Color(0x55223355), Offset(cx + fw * 0.6f, y), Offset(cx + unit * 0.22f, y), strokeWidth = unit * 0.012f, cap = StrokeCap.Round)
         }
-        val cw = padW * 0.2f
-        val ch = cw * 0.6f
-        val chevronStroke = Stroke(width = padW * 0.05f, cap = StrokeCap.Round, join = StrokeJoin.Round)
-        val upY = top + padW * 0.42f
-        val downY = top + padH - padW * 0.42f
-        drawPath(
-            Path().apply { moveTo(cx - cw, upY + ch / 2); lineTo(cx, upY - ch / 2); lineTo(cx + cw, upY + ch / 2) },
-            if (up) EsColors.Primary else Color.White.copy(alpha = 0.55f),
-            style = chevronStroke,
-        )
-        drawPath(
-            Path().apply { moveTo(cx - cw, downY - ch / 2); lineTo(cx, downY + ch / 2); lineTo(cx + cw, downY - ch / 2) },
-            if (down) EsColors.Secondary else Color.White.copy(alpha = 0.55f),
-            style = chevronStroke,
-        )
+        // thumb
+        drawRoundRect(skin, Offset(cx - unit * 0.3f, cy - unit * 0.02f), Size(unit * 0.16f, unit * 0.3f), CornerRadius(unit * 0.08f, unit * 0.08f))
+        // wrist
+        drawRoundRect(skin, Offset(cx - unit * 0.14f, cy + unit * 0.3f), Size(unit * 0.32f, unit * 0.3f), CornerRadius(unit * 0.06f, unit * 0.06f), alpha = 0.85f)
 
-        val tr = padW * 0.3f
-        val ty = cy + pos * travel
-        drawCircle(
-            Brush.radialGradient(listOf(Color.White, accent), Offset(cx - tr * 0.3f, ty - tr * 0.3f), tr * 1.3f),
-            tr, Offset(cx, ty),
-        )
-        if (showFinger) {
-            // stylised fingertip pressing the thumb
-            val fw = padW * 0.62f
-            val fx = cx + padW * 0.14f
-            val fy = ty + tr * 0.2f
-            drawRoundRect(
-                Brush.verticalGradient(listOf(Color(0xFFF4F7FF), Color(0xFFB9C6E4)), fy, fy + padH * 0.6f),
-                Offset(fx - fw / 2, fy), Size(fw, padH * 0.6f), CornerRadius(fw / 2, fw / 2),
-                alpha = 0.95f,
-            )
-            drawRoundRect(
-                Color(0xFFE3EBFF),
-                Offset(fx - fw * 0.28f, fy + fw * 0.12f), Size(fw * 0.56f, fw * 0.5f), CornerRadius(fw * 0.25f, fw * 0.25f),
-            )
+        // motion arcs in the direction of travel
+        val moving = abs(velocity) > 0.004f
+        if (moving) {
+            val up = velocity < 0
+            val color = if (up) EsColors.Primary else EsColors.Secondary
+            for (i in 0..1) {
+                val r = unit * (0.22f + 0.1f * i)
+                val arcCy = if (up) cy - unit * 0.62f else cy + unit * 0.6f
+                drawArc(
+                    color.copy(alpha = 0.8f - 0.3f * i),
+                    startAngle = if (up) 205f else 25f,
+                    sweepAngle = 130f,
+                    useCenter = false,
+                    topLeft = Offset(cx - r, arcCy - r * (if (up) 1.2f else 0.8f)),
+                    size = Size(r * 2, r * 2),
+                    style = Stroke(width = unit * 0.03f, cap = StrokeCap.Round),
+                )
+            }
         }
     }
 }
@@ -331,7 +309,7 @@ fun PowerOrb(active: Boolean, enabled: Boolean, onClick: () -> Unit, modifier: M
                 r * 0.78f,
             )
         }
-        PadGlyph(Modifier.size(size * 0.56f), thumb = if (active) null else 0f, showFinger = active)
+        AirGestureGlyph(Modifier.size(size * 0.56f), offset = if (active) null else 0f, glow = active)
     }
 }
 

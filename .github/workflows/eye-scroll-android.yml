@@ -1,4 +1,4 @@
-name: FingerScroll Android build
+name: AirScroll Android build
 
 on:
   push:
@@ -53,26 +53,26 @@ jobs:
       - name: Collect outputs
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/release/app-release.apk "dist/FingerScroll-v1.0.${{ github.run_number }}.apk"
-          cp app/build/outputs/bundle/release/app-release.aab "dist/FingerScroll-v1.0.${{ github.run_number }}.aab"
+          cp app/build/outputs/apk/release/app-release.apk "dist/AirScroll-v1.0.${{ github.run_number }}.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "dist/AirScroll-v1.0.${{ github.run_number }}.aab"
           ls -la dist
           unzip -l dist/*.apk | grep '\.so$' || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: FingerScroll-v1.0.${{ github.run_number }}
+          name: AirScroll-v1.0.${{ github.run_number }}
           path: eye-scroll/dist/*
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: fingerscroll-v1.0.${{ github.run_number }}
-          name: FingerScroll v1.0.${{ github.run_number }}
+          tag_name: airscroll-v1.0.${{ github.run_number }}
+          name: AirScroll v1.0.${{ github.run_number }}
           target_commitish: ${{ github.sha }}
           prerelease: true
           body: |
-            FingerScroll – scroll any app with a tiny finger movement on a floating pad.
+            AirScroll – scroll any app by moving your finger in the air (no touch).
 
-            **Install:** download `FingerScroll-v1.0.${{ github.run_number }}.apk` on your Android phone and open it (allow "Install unknown apps" when asked).
+            **Install:** download `AirScroll-v1.0.${{ github.run_number }}.apk` on your Android phone and open it (allow "Install unknown apps" when asked).
             The `.aab` file is for uploading to Google Play Console.
           files: eye-scroll/dist/*
