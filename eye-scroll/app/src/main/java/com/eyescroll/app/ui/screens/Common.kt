@@ -26,25 +26,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eyescroll.app.Readiness
-import com.eyescroll.app.data.SettingsStore
+import com.eyescroll.app.scroll.PadBus
 import kotlinx.coroutines.delay
 
-data class SetupState(
-    val camera: Boolean,
-    val notifications: Boolean,
-    val accessibility: Boolean,
-    val calibrated: Boolean,
-) {
-    val requiredDone: Boolean get() = camera && accessibility && calibrated
-    val doneCount: Int get() = listOf(camera, notifications, accessibility, calibrated).count { it }
+data class SetupState(val accessibility: Boolean) {
+    val requiredDone: Boolean get() = accessibility
 
     companion object {
-        fun read(context: Context) = SetupState(
-            camera = Readiness.hasCamera(context),
-            notifications = Readiness.hasNotifications(context),
-            accessibility = Readiness.isAccessibilityEnabled(context),
-            calibrated = Readiness.isCalibrated(context),
-        )
+        fun read(context: Context) = SetupState(accessibility = Readiness.isAccessibilityEnabled(context))
     }
 }
 
@@ -65,10 +54,8 @@ fun rememberSetupState(): SetupStateHolder {
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
     }
-    val store = remember { SettingsStore.get(context) }
-    val calibration by store.calibration.collectAsStateWithLifecycle()
-    val settings by store.settings.collectAsStateWithLifecycle()
-    LaunchedEffect(calibration, settings.mode) { holder.refresh() }
+    val running by PadBus.status.collectAsStateWithLifecycle()
+    LaunchedEffect(running.serviceRunning) { holder.refresh() }
     return holder
 }
 

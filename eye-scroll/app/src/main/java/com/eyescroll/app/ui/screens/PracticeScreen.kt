@@ -40,10 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.eyescroll.app.Readiness
-import com.eyescroll.app.service.EyeTrackingService
-import com.eyescroll.app.tracking.TrackingBus
-import com.eyescroll.app.ui.components.GazeMeter
+import com.eyescroll.app.data.SettingsStore
+import com.eyescroll.app.scroll.PadBus
 import com.eyescroll.app.ui.components.GlassCard
 import com.eyescroll.app.ui.components.GradientButton
 import com.eyescroll.app.ui.components.StatusPill
@@ -73,18 +71,21 @@ private val samplePosts: List<Post> = run {
         Post(
             author = authors[i % authors.size],
             title = "${i + 1}. ${titles[i % titles.size]}",
-            body = "Keep your eyes on the text while you read. When you reach the end, glance at the bottom edge of the screen and hold for a moment — the feed scrolls for you. Glance at the top edge to go back up.",
+            body = "Read the text, then nudge the floating pad with your thumb to move on. A slight move scrolls a little, a longer move scrolls further, and holding keeps the feed moving.",
             colors = palettes[i % palettes.size],
         )
     }
 }
 
-/** A realistic feed to practise eye scrolling without leaving the app. */
+/** A realistic feed to practise with the floating pad without leaving the app. */
 @Composable
 fun PracticeScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val status by TrackingBus.status.collectAsStateWithLifecycle()
+    val store = remember { SettingsStore.get(context) }
+    val settings by store.settings.collectAsStateWithLifecycle()
+    val status by PadBus.status.collectAsStateWithLifecycle()
     val setup = rememberSetupState().state.value
+    val padOn = settings.padEnabled && setup.accessibility
 
     Box(Modifier.fillMaxSize().systemBarsPadding()) {
         Column(Modifier.fillMaxSize()) {
@@ -92,14 +93,14 @@ fun PracticeScreen(onBack: () -> Unit) {
                 IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, "Back", tint = EsColors.Text) }
                 Text("Practice feed", style = MaterialTheme.typography.titleLarge, color = EsColors.Text, modifier = Modifier.weight(1f))
                 StatusPill(
-                    if (status.isActive) "Eye scroll ON" else "Off",
-                    if (status.isActive) EsColors.Success else EsColors.TextMuted,
-                    pulsing = status.isActive,
+                    if (padOn) "Scrolls: ${status.scrollCount}" else "Pad off",
+                    if (padOn) EsColors.Success else EsColors.TextMuted,
+                    pulsing = status.holding,
                     modifier = Modifier.padding(end = 8.dp),
                 )
             }
             LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 40.dp, top = 4.dp, bottom = 120.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 120.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 modifier = Modifier.weight(1f),
             ) {
@@ -108,8 +109,11 @@ fun PracticeScreen(onBack: () -> Unit) {
                         Text("How to practise", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            if (!setup.accessibility) "Turn on the EyeScroll accessibility service first (Setup), otherwise scrolling can't happen."
-                            else "Tap Start below, then look at the bottom edge to scroll down and the top edge to scroll up.",
+                            when {
+                                !setup.accessibility -> "Turn on the FingerScroll accessibility service first (Setup)."
+                                !settings.padEnabled -> "Tap \"Show the pad\" below."
+                                else -> "Use the pad at the screen edge: move your thumb slightly up or down and release, or keep holding to keep scrolling."
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (!setup.accessibility) EsColors.Warning else EsColors.TextMuted,
                         )
@@ -119,24 +123,15 @@ fun PracticeScreen(onBack: () -> Unit) {
             }
         }
 
-        // live meter on the right edge
-        if (status.isActive) {
-            GazeMeter(
-                status.gaze,
-                Modifier.align(Alignment.CenterEnd).padding(end = 10.dp, top = 80.dp, bottom = 110.dp).width(12.dp).fillMaxHeight(),
+        if (!padOn) {
+            GradientButton(
+                text = if (setup.accessibility) "Show the pad" else "Accessibility service needed",
+                onClick = { store.update { it.copy(padEnabled = true) } },
+                enabled = setup.accessibility,
+                icon = Icons.Filled.PlayArrow,
+                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp),
             )
         }
-
-        GradientButton(
-            text = if (status.isActive) "Stop eye scrolling" else "Start eye scrolling",
-            onClick = {
-                if (status.isActive) EyeTrackingService.stop(context)
-                else if (Readiness.canStartTracking(context)) EyeTrackingService.start(context)
-            },
-            enabled = status.isActive || (setup.camera && setup.calibrated),
-            icon = Icons.Filled.PlayArrow,
-            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 20.dp, vertical = 18.dp),
-        )
     }
 }
 

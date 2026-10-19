@@ -1,8 +1,6 @@
 package com.eyescroll.app.ui.screens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,7 +10,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -30,17 +28,13 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,10 +48,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.eyescroll.app.ui.components.AnimatedEye
 import com.eyescroll.app.ui.components.BulletRow
 import com.eyescroll.app.ui.components.GlassCard
 import com.eyescroll.app.ui.components.GradientButton
+import com.eyescroll.app.ui.components.PadGlyph
 import com.eyescroll.app.ui.theme.EsColors
 import kotlinx.coroutines.launch
 
@@ -71,7 +65,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
             Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("EyeScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
+            Text("FingerScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
             Spacer(Modifier.weight(1f))
             if (pager.currentPage < 2) {
                 Text(
@@ -89,31 +83,25 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         HorizontalPager(state = pager, modifier = Modifier.weight(1f)) { page ->
             when (page) {
                 0 -> OnboardingPage(
-                    title = "Scroll any app\nwith your eyes",
-                    body = "Look at the top of the screen to scroll up, look at the bottom to scroll down. Works in Chrome, Instagram, YouTube, WhatsApp, news, e-books — everywhere.",
+                    title = "Scroll any app\nwith a tiny swipe",
+                    body = "A small floating pad sits at the edge of your screen. Move your thumb slightly up or down on it and the app scrolls for you — smooth and fast.",
                 ) { PhoneDemo() }
                 1 -> OnboardingPage(
-                    title = "Camera only\nwhen you want",
-                    body = "Tap the floating dot to turn eye scrolling on. Tap again and the camera is off instantly. It also switches off by itself when you stop using it.",
-                ) { BubbleDemo() }
-                else -> OnboardingPage(
-                    title = "Private by design",
-                    body = null,
-                ) {
+                    title = "Swipe, or hold\nto keep going",
+                    body = "Slight move and release = one smooth scroll. Move and keep holding = keeps scrolling until you let go. Long-press the pad to move it anywhere.",
+                ) { PadGlyph(Modifier.size(width = 160.dp, height = 260.dp)) }
+                else -> OnboardingPage(title = "Ready in 30 seconds", body = null) {
                     GlassCard(Modifier.fillMaxWidth().padding(horizontal = 24.dp)) {
-                        BulletRow(Icons.Filled.Lock, "100% on your phone", "Camera frames are analysed on-device and immediately discarded. Nothing is recorded or uploaded.", EsColors.Success)
-                        BulletRow(Icons.Filled.Face, "Only while it's ON", "Eyes are checked 15–30 times per second only while eye scrolling is turned on.")
-                        BulletRow(Icons.Filled.Notifications, "Always visible", "Android shows the camera dot and a notification whenever the camera is in use.", EsColors.Warning)
-                        BulletRow(Icons.Filled.Build, "1-minute setup", "Allow camera, enable the accessibility service, then a 10-second calibration.", EsColors.Secondary)
+                        BulletRow(Icons.Filled.ThumbUp, "One-handed comfort", "Scroll long pages, feeds and chats with a small thumb movement instead of big swipes.")
+                        BulletRow(Icons.Filled.KeyboardArrowDown, "Works everywhere", "Chrome, Instagram, YouTube, WhatsApp, news apps, PDFs and more.", EsColors.Secondary)
+                        BulletRow(Icons.Filled.Lock, "Private", "No camera, no internet, no data collected. Nothing on your screen is read or stored.", EsColors.Success)
+                        BulletRow(Icons.Filled.Build, "One permission", "Just turn on the FingerScroll accessibility service.", EsColors.Warning)
                     }
                 }
             }
         }
 
-        Row(
-            Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-        ) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalArrangement = Arrangement.Center) {
             repeat(3) { i ->
                 val w by animateDpAsState(if (pager.currentPage == i) 28.dp else 8.dp, tween(300), label = "dot")
                 Box(
@@ -166,7 +154,7 @@ private fun OnboardingPage(title: String, body: String?, illustration: @Composab
     }
 }
 
-/** A phone whose content scrolls in sync with the eye looking up/down. */
+/** A phone whose feed scrolls while a fingertip nudges the floating pad. */
 @Composable
 private fun PhoneDemo() {
     val t = rememberInfiniteTransition(label = "phone")
@@ -175,28 +163,28 @@ private fun PhoneDemo() {
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
             keyframes {
-                durationMillis = 5200
+                durationMillis = 3600
                 0f at 0
                 0f at 900
-                -0.35f at 1700 using FastOutSlowInEasing
-                -0.35f at 3300
-                0f at 4100 using FastOutSlowInEasing
+                -0.32f at 1500 using FastOutSlowInEasing
+                -0.32f at 2500
+                0f at 3100 using FastOutSlowInEasing
             },
         ),
         label = "scroll",
     )
-    Box(contentAlignment = Alignment.TopCenter) {
-        Canvas(Modifier.padding(top = 70.dp).size(width = 170.dp, height = 300.dp)) {
+    Box(Modifier.size(width = 230.dp, height = 320.dp), contentAlignment = Alignment.Center) {
+        Canvas(Modifier.size(width = 170.dp, height = 310.dp)) {
             val w = size.width
             val h = size.height
             val r = CornerRadius(w * 0.16f)
             drawRoundRect(Brush.verticalGradient(listOf(Color(0xFF141D33), Color(0xFF0B1122))), cornerRadius = r)
             drawRoundRect(Color.White.copy(alpha = 0.14f), cornerRadius = r, style = Stroke(width = 3f))
             val pad = w * 0.08f
-            clipRect(pad, h * 0.08f, w - pad, h * 0.94f) {
+            clipRect(pad, h * 0.06f, w - pad, h * 0.95f) {
                 val cardH = h * 0.22f
-                for (i in 0 until 9) {
-                    val top = h * 0.1f + i * (cardH + h * 0.03f) + scroll * h * 1.4f
+                for (i in 0 until 10) {
+                    val top = h * 0.08f + i * (cardH + h * 0.03f) + scroll * h * 1.5f
                     val colors = if (i % 2 == 0) listOf(EsColors.Primary.copy(alpha = 0.5f), Color(0xFF4F8CFF).copy(alpha = 0.35f))
                     else listOf(EsColors.Secondary.copy(alpha = 0.5f), Color(0xFFFF7AC6).copy(alpha = 0.3f))
                     drawRoundRect(
@@ -210,60 +198,6 @@ private fun PhoneDemo() {
                 }
             }
         }
-        AnimatedEye(Modifier.size(width = 150.dp, height = 96.dp))
-    }
-}
-
-@Composable
-private fun BubbleDemo() {
-    val t = rememberInfiniteTransition(label = "bubble")
-    val on by t.animateFloat(
-        initialValue = 0f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            keyframes {
-                durationMillis = 4000
-                0f at 0
-                0f at 1200
-                1f at 1300
-                1f at 3300
-                0f at 3400
-            },
-        ),
-        label = "on",
-    )
-    val pulse by t.animateFloat(0f, 1f, infiniteRepeatable(tween(1400, easing = LinearEasing), RepeatMode.Restart), label = "p")
-    val active = on > 0.5f
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(200.dp), contentAlignment = Alignment.Center) {
-            Canvas(Modifier.fillMaxSize()) {
-                val c = center
-                val base = size.minDimension * 0.22f
-                if (active) {
-                    drawCircle(EsColors.Primary.copy(alpha = 0.35f * (1f - pulse)), base * (1f + pulse * 1.3f), c)
-                }
-                drawCircle(Brush.radialGradient(listOf(Color(0xFF1C2640), Color(0xFF090D18)), c, base), base, c)
-                drawCircle(
-                    if (active) EsColors.Primary else EsColors.TextFaint,
-                    base,
-                    c,
-                    style = Stroke(width = 5f),
-                )
-            }
-            AnimatedEye(Modifier.size(width = 64.dp, height = 44.dp), lookY = 0f, glowColor = Color.Transparent)
-        }
-        Spacer(Modifier.height(4.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier.size(10.dp).clip(RoundedCornerShape(50))
-                    .background(if (active) EsColors.Success else EsColors.TextFaint),
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                if (active) "Camera ON · tracking your eyes" else "Camera OFF",
-                style = MaterialTheme.typography.labelLarge,
-                color = if (active) EsColors.Success else EsColors.TextMuted,
-            )
-        }
+        PadGlyph(Modifier.align(Alignment.CenterEnd).offset(x = (-4).dp).size(width = 48.dp, height = 120.dp))
     }
 }

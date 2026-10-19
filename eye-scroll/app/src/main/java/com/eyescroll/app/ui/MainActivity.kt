@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.eyescroll.app.data.SettingsStore
 import com.eyescroll.app.ui.components.AnimatedBackground
-import com.eyescroll.app.ui.screens.CalibrationScreen
 import com.eyescroll.app.ui.screens.HomeScreen
 import com.eyescroll.app.ui.screens.OnboardingScreen
 import com.eyescroll.app.ui.screens.PracticeScreen
@@ -50,7 +49,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-enum class Screen { Onboarding, Setup, Calibration, Home, Practice }
+enum class Screen { Onboarding, Setup, Home, Practice }
 
 @Composable
 private fun EyeScrollRoot() {
@@ -60,11 +59,8 @@ private fun EyeScrollRoot() {
     var screen by rememberSaveable {
         mutableStateOf(if (store.current.onboardingDone) Screen.Home else Screen.Onboarding)
     }
-    // Where calibration returns to.
-    var afterCalibration by rememberSaveable { mutableStateOf(Screen.Home) }
-
-    BackHandler(enabled = screen == Screen.Practice || screen == Screen.Calibration || (screen == Screen.Setup && settings.onboardingDone)) {
-        screen = if (screen == Screen.Calibration) afterCalibration else Screen.Home
+    BackHandler(enabled = screen == Screen.Practice || (screen == Screen.Setup && settings.onboardingDone)) {
+        screen = Screen.Home
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -84,22 +80,8 @@ private fun EyeScrollRoot() {
                     store.update { it.copy(onboardingDone = true) }
                     screen = Screen.Setup
                 })
-                Screen.Setup -> SetupScreen(
-                    onCalibrate = {
-                        afterCalibration = Screen.Setup
-                        screen = Screen.Calibration
-                    },
-                    onDone = { screen = Screen.Home },
-                )
-                Screen.Calibration -> CalibrationScreen(
-                    onFinished = { screen = Screen.Home },
-                    onCancel = { screen = afterCalibration },
-                )
+                Screen.Setup -> SetupScreen(onDone = { screen = Screen.Home })
                 Screen.Home -> HomeScreen(
-                    onCalibrate = {
-                        afterCalibration = Screen.Home
-                        screen = Screen.Calibration
-                    },
                     onSetup = { screen = Screen.Setup },
                     onPractice = { screen = Screen.Practice },
                 )

@@ -2,14 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.camera.front" android:required="true" />
-
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
     <application
         android:name=".EyeScrollApp"
         android:allowBackup="false"
@@ -24,7 +16,6 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.EyeScroll.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,23 +23,8 @@
             </intent-filter>
         </activity>
 
-        <!-- Invisible trampoline: brings the app to the foreground for a moment so the
-             camera foreground service is allowed to start from the bubble / tile. -->
-        <activity
-            android:name=".service.TrackingLauncherActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:noHistory="true"
-            android:taskAffinity=""
-            android:theme="@style/Theme.EyeScroll.Transparent" />
-
         <service
-            android:name=".service.EyeTrackingService"
-            android:exported="false"
-            android:foregroundServiceType="camera" />
-
-        <service
-            android:name=".service.EyeScrollAccessibilityService"
+            android:name=".service.ScrollAccessibilityService"
             android:exported="false"
             android:label="@string/accessibility_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -61,9 +37,9 @@
         </service>
 
         <service
-            android:name=".service.EyeScrollTileService"
+            android:name=".service.ScrollTileService"
             android:exported="true"
-            android:icon="@drawable/ic_stat_eye"
+            android:icon="@drawable/ic_tile"
             android:label="@string/tile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>

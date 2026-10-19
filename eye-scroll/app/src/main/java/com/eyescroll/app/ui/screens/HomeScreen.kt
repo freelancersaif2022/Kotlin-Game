@@ -1,7 +1,6 @@
 package com.eyescroll.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -30,15 +29,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -59,41 +56,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.eyescroll.app.data.ScrollDistance
+import com.eyescroll.app.data.PadSize
+import com.eyescroll.app.data.ScrollSpeed
+import com.eyescroll.app.data.ScrollStyle
 import com.eyescroll.app.data.SettingsStore
-import com.eyescroll.app.data.TrackingMode
-import com.eyescroll.app.service.EyeTrackingService
-import com.eyescroll.app.tracking.GazeZone
-import com.eyescroll.app.tracking.ScrollDirection
-import com.eyescroll.app.tracking.TrackingBus
-import com.eyescroll.app.tracking.TrackingPhase
-import com.eyescroll.app.tracking.TrackingStatus
-import com.eyescroll.app.ui.components.AnimatedEye
+import com.eyescroll.app.scroll.PadBus
+import com.eyescroll.app.scroll.ScrollDirection
 import com.eyescroll.app.ui.components.BulletRow
-import com.eyescroll.app.ui.components.GazeMeter
 import com.eyescroll.app.ui.components.GlassCard
-import com.eyescroll.app.ui.components.GradientButton
+import com.eyescroll.app.ui.components.PadGlyph
 import com.eyescroll.app.ui.components.PowerOrb
 import com.eyescroll.app.ui.components.SectionLabel
 import com.eyescroll.app.ui.components.StatusPill
 import com.eyescroll.app.ui.theme.EsColors
 
 @Composable
-fun HomeScreen(onCalibrate: () -> Unit, onSetup: () -> Unit, onPractice: () -> Unit) {
+fun HomeScreen(onSetup: () -> Unit, onPractice: () -> Unit) {
     val context = LocalContext.current
     val store = remember { SettingsStore.get(context) }
     val settings by store.settings.collectAsStateWithLifecycle()
-    val status by TrackingBus.status.collectAsStateWithLifecycle()
+    val status by PadBus.status.collectAsStateWithLifecycle()
     val setup = rememberSetupState().state.value
-    val ready = setup.camera && setup.calibrated
+    val padOn = settings.padEnabled && setup.accessibility
 
     val toggle: () -> Unit = {
-        when {
-            status.isActive -> EyeTrackingService.stop(context)
-            ready -> EyeTrackingService.start(context)
-            !setup.camera -> onSetup()
-            else -> onCalibrate()
-        }
+        if (!setup.accessibility) onSetup() else store.update { it.copy(padEnabled = !it.padEnabled) }
     }
 
     Column(
@@ -105,26 +92,29 @@ fun HomeScreen(onCalibrate: () -> Unit, onSetup: () -> Unit, onPractice: () -> U
     ) {
         // Header
         Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 8.dp).enterAnimation(0), verticalAlignment = Alignment.CenterVertically) {
-            AnimatedEye(Modifier.size(width = 44.dp, height = 30.dp), lookY = 0f, glowColor = Color.Transparent)
+            PadGlyph(Modifier.size(width = 26.dp, height = 44.dp), thumb = 0f, showFinger = false)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
-                Text("EyeScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
-                Text("Hands-free scrolling", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+                Text("FingerScroll", style = MaterialTheme.typography.titleLarge, color = EsColors.Text)
+                Text("One-finger scrolling", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
             }
-            val (label, color) = phaseLabel(status)
-            StatusPill(label, color, pulsing = status.isActive)
+            when {
+                !setup.accessibility -> StatusPill("Setup needed", EsColors.Warning)
+                padOn -> StatusPill("Pad on", EsColors.Success, pulsing = true)
+                else -> StatusPill("Pad off", EsColors.TextMuted)
+            }
         }
 
-        // Hero card with the power orb
-        GlassCard(Modifier.fillMaxWidth().padding(top = 10.dp).enterAnimation(1), highlighted = status.isActive, padding = 22.dp) {
+        // Hero
+        GlassCard(Modifier.fillMaxWidth().padding(top = 10.dp).enterAnimation(1), highlighted = padOn, padding = 22.dp) {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                PowerOrb(active = status.isActive, enabled = true, onClick = toggle)
+                PowerOrb(active = padOn, enabled = true, onClick = toggle)
                 Spacer(Modifier.height(14.dp))
                 Text(
                     when {
-                        status.isActive -> "Eye scrolling is ON"
-                        !ready -> "Finish setup to start"
-                        else -> "Tap to start eye scrolling"
+                        !setup.accessibility -> "Finish setup to start"
+                        padOn -> "Scroll pad is ON"
+                        else -> "Tap to show the scroll pad"
                     },
                     style = MaterialTheme.typography.headlineSmall,
                     color = EsColors.Text,
@@ -132,165 +122,130 @@ fun HomeScreen(onCalibrate: () -> Unit, onSetup: () -> Unit, onPractice: () -> U
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    subtitle(status, settings.autoOffSeconds),
+                    when {
+                        !setup.accessibility -> "Turn on the FingerScroll accessibility service (30 seconds)."
+                        padOn -> "Open any app and move your thumb slightly up or down on the pad."
+                        else -> "Also available from the \"Scroll pad\" quick-settings tile."
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = EsColors.TextMuted,
                     textAlign = TextAlign.Center,
                 )
-                val msg = status.message
-                AnimatedVisibility(msg != null, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-                    Row(
-                        Modifier.padding(top = 14.dp).clip(RoundedCornerShape(14.dp))
-                            .background(EsColors.Warning.copy(alpha = 0.10f)).padding(horizontal = 14.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(Icons.Filled.Info, null, tint = EsColors.Warning, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(10.dp))
-                        Text(msg ?: "", style = MaterialTheme.typography.bodySmall, color = EsColors.Text)
+                AnimatedVisibility(padOn && status.scrollCount > 0, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                    Row(Modifier.padding(top = 16.dp)) {
+                        Metric("Scrolls", "${status.scrollCount}", Modifier.weight(1f))
+                        Metric(
+                            "Last",
+                            when (status.lastScroll) {
+                                ScrollDirection.UP -> "↑ Up"
+                                ScrollDirection.DOWN -> "↓ Down"
+                                null -> "—"
+                            },
+                            Modifier.weight(1f),
+                        )
+                        Metric("Mode", if (status.holding) "Holding" else settings.style.label, Modifier.weight(1f))
                     }
                 }
             }
         }
 
-        // Live tracking panel
-        AnimatedVisibility(status.isActive, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-            LivePanel(status)
-        }
-
-        // Setup warning
-        AnimatedVisibility(!setup.requiredDone, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+        AnimatedVisibility(!setup.accessibility, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
             GlassCard(Modifier.fillMaxWidth().padding(top = 14.dp), onClick = onSetup, padding = 16.dp) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Filled.Warning, null, tint = EsColors.Warning)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Setup not finished", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-                        val missing = buildList {
-                            if (!setup.camera) add("camera")
-                            if (!setup.accessibility) add("accessibility")
-                            if (!setup.calibrated) add("calibration")
-                        }.joinToString(", ")
-                        Text("Still needed: $missing", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+                        Text("Accessibility service is off", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+                        Text("Needed to show the pad and scroll other apps", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
                     }
                     Text("Open", style = MaterialTheme.typography.labelLarge, color = EsColors.Primary)
                 }
             }
         }
 
-        // Quick actions
         Row(Modifier.fillMaxWidth().padding(top = 14.dp).enterAnimation(2), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             QuickAction(Icons.Filled.List, "Practice", Modifier.weight(1f), onPractice)
-            QuickAction(Icons.Filled.Refresh, "Recalibrate", Modifier.weight(1f)) { if (setup.camera) onCalibrate() else onSetup() }
+            QuickAction(Icons.Filled.Refresh, "Reset pad", Modifier.weight(1f)) {
+                store.update { it.copy(padX = -1, padY = -1, padEnabled = true) }
+            }
             QuickAction(Icons.Filled.Build, "Setup", Modifier.weight(1f), onSetup)
         }
 
-        // Settings
         Spacer(Modifier.height(22.dp))
-        SectionLabel("Tracking")
+        SectionLabel("Scrolling")
         GlassCard(Modifier.fillMaxWidth().enterAnimation(3)) {
-            Text("Mode", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
+            Text("Direction", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
             Spacer(Modifier.height(10.dp))
-            Segmented(
-                options = TrackingMode.entries.map { it.label },
-                selected = settings.mode.ordinal,
-            ) { i -> store.update { it.copy(mode = TrackingMode.entries[i]) } }
-            Text(
-                settings.mode.description,
-                style = MaterialTheme.typography.bodySmall,
-                color = EsColors.TextMuted,
-                modifier = Modifier.padding(top = 8.dp, bottom = 6.dp),
-            )
-            if (setup.calibrated.not() && store.calibration.value != null) {
-                Text(
-                    "This mode needs a new calibration.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EsColors.Warning,
-                )
+            Segmented(ScrollStyle.entries.map { it.label }, settings.style.ordinal) { i ->
+                store.update { it.copy(style = ScrollStyle.entries[i]) }
             }
+            Text(settings.style.description, style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted, modifier = Modifier.padding(top = 8.dp))
             Divider()
             LabeledSlider(
                 title = "Sensitivity",
-                valueText = when {
-                    settings.sensitivity < 0.34f -> "Calm"
-                    settings.sensitivity < 0.67f -> "Balanced"
-                    else -> "Quick"
-                },
-                hint = "Higher reacts to a smaller glance toward the edge",
-                value = settings.sensitivity,
-                range = 0f..1f,
-            ) { v -> store.update { it.copy(sensitivity = v) } }
+                valueText = "${settings.triggerDp} dp",
+                hint = "How slight a movement starts a scroll · lower = more sensitive",
+                value = settings.triggerDp.toFloat(),
+                range = 3f..24f,
+                steps = 20,
+            ) { v -> store.update { it.copy(triggerDp = v.toInt()) } }
             Divider()
             LabeledSlider(
-                title = "Look-and-hold time",
-                valueText = "${settings.dwellMs} ms",
-                hint = "How long to look at the edge before it scrolls",
-                value = settings.dwellMs.toFloat(),
-                range = 200f..1200f,
-                steps = 19,
-            ) { v -> store.update { it.copy(dwellMs = v.toInt()) } }
+                title = "Scroll distance",
+                valueText = "${(settings.maxDistance * 100).toInt()}% of screen",
+                hint = "How far a full swipe on the pad scrolls",
+                value = settings.maxDistance,
+                range = 0.3f..0.85f,
+            ) { v -> store.update { it.copy(maxDistance = v) } }
             Divider()
-            Text("Camera speed", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-            Text("Checks per second · higher feels more instant", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+            Text("Scroll speed", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
             Spacer(Modifier.height(10.dp))
-            val fpsOptions = listOf(15, 24, 30)
-            Segmented(
-                options = listOf("15 /s · saver", "24 /s", "30 /s · fast"),
-                selected = fpsOptions.indexOf(settings.targetFps).coerceAtLeast(0),
-            ) { i -> store.update { it.copy(targetFps = fpsOptions[i]) } }
-        }
-
-        Spacer(Modifier.height(18.dp))
-        SectionLabel("Scrolling")
-        GlassCard(Modifier.fillMaxWidth().enterAnimation(4)) {
-            Text("Scroll distance", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-            Spacer(Modifier.height(10.dp))
-            Segmented(
-                options = ScrollDistance.entries.map { it.label },
-                selected = settings.scrollDistance.ordinal,
-            ) { i -> store.update { it.copy(scrollDistance = ScrollDistance.entries[i]) } }
-            Spacer(Modifier.height(6.dp))
-            Divider()
-            LabeledSlider(
-                title = "Repeat speed",
-                valueText = String.format("%.1f s", settings.repeatMs / 1000f),
-                hint = "Keep looking at the edge to keep scrolling, once every…",
-                value = settings.repeatMs.toFloat(),
-                range = 400f..2000f,
-                steps = 15,
-            ) { v -> store.update { it.copy(repeatMs = v.toInt()) } }
-            Divider()
-            ToggleRow("Vibrate on scroll", "A tiny tick each time it scrolls", settings.vibrate) { v ->
-                store.update { it.copy(vibrate = v) }
+            Segmented(ScrollSpeed.entries.map { it.label }, settings.speed.ordinal) { i ->
+                store.update { it.copy(speed = ScrollSpeed.entries[i]) }
             }
+            Divider()
+            LabeledSlider(
+                title = "Hold-to-scroll speed",
+                valueText = when {
+                    settings.holdSpeed < 0.34f -> "Relaxed"
+                    settings.holdSpeed < 0.67f -> "Normal"
+                    else -> "Rapid"
+                },
+                hint = "How fast it keeps scrolling while you hold",
+                value = settings.holdSpeed,
+                range = 0f..1f,
+            ) { v -> store.update { it.copy(holdSpeed = v) } }
         }
 
         Spacer(Modifier.height(18.dp))
-        SectionLabel("Camera on demand")
-        GlassCard(Modifier.fillMaxWidth().enterAnimation(5)) {
-            Text("Auto-off when idle", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
-            Text("Camera turns off after this long without scrolling", style = MaterialTheme.typography.bodySmall, color = EsColors.TextMuted)
+        SectionLabel("Pad")
+        GlassCard(Modifier.fillMaxWidth().enterAnimation(4)) {
+            Text("Size", style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
             Spacer(Modifier.height(10.dp))
-            val autoOptions = listOf(30, 60, 120, 300, 0)
-            Segmented(
-                options = listOf("30s", "1m", "2m", "5m", "Never"),
-                selected = autoOptions.indexOf(settings.autoOffSeconds).coerceAtLeast(0),
-            ) { i -> store.update { it.copy(autoOffSeconds = autoOptions[i]) } }
-            Spacer(Modifier.height(6.dp))
+            Segmented(PadSize.entries.map { it.label }, settings.padSize.ordinal) { i ->
+                store.update { it.copy(padSize = PadSize.entries[i]) }
+            }
             Divider()
-            ToggleRow(
-                "Floating on/off dot",
-                if (setup.accessibility) "Tap to toggle · drag to move · long-press opens app" else "Needs the accessibility service",
-                settings.showBubble,
-            ) { v -> store.update { it.copy(showBubble = v) } }
+            LabeledSlider(
+                title = "Opacity when idle",
+                valueText = "${(settings.padOpacity * 100).toInt()}%",
+                hint = "The pad becomes fully visible while you touch it",
+                value = settings.padOpacity,
+                range = 0.3f..1f,
+            ) { v -> store.update { it.copy(padOpacity = v) } }
+            Divider()
+            ToggleRow("Haptic feedback", "A light tick when a scroll starts", settings.haptics) { v ->
+                store.update { it.copy(haptics = v) }
+            }
         }
 
         Spacer(Modifier.height(18.dp))
         SectionLabel("How to use")
-        GlassCard(Modifier.fillMaxWidth().enterAnimation(6)) {
-            BulletRow(Icons.Filled.Face, "Turn on", "Tap the floating dot, the \"Eye scroll\" quick-settings tile, or the big button above.")
-            BulletRow(Icons.Filled.KeyboardArrowDown, "Scroll down", "Look at the bottom edge of the screen for a moment.", EsColors.Secondary)
-            BulletRow(Icons.Filled.KeyboardArrowUp, "Scroll up", "Look at the top edge of the screen for a moment.")
-            BulletRow(Icons.Filled.Star, "Best results", "Good light, phone at reading distance, recalibrate if you change position (e.g. sitting → lying).", EsColors.Warning)
+        GlassCard(Modifier.fillMaxWidth().enterAnimation(5)) {
+            BulletRow(Icons.Filled.KeyboardArrowUp, "Swipe & release", "Move your thumb slightly up or down on the pad and let go — one smooth scroll. Move further for a longer scroll.")
+            BulletRow(Icons.Filled.KeyboardArrowDown, "Swipe & hold", "Keep holding after the move and it keeps scrolling. Pull further to go faster. Let go to stop.", EsColors.Secondary)
+            BulletRow(Icons.Filled.ThumbUp, "Move the pad", "Long-press the pad without moving, then drag it anywhere. It snaps to the screen edge.", EsColors.Success)
+            BulletRow(Icons.Filled.Star, "Quick toggle", "Add the \"Scroll pad\" tile to quick settings to show or hide the pad in one tap.", EsColors.Warning)
         }
 
         Spacer(Modifier.height(18.dp))
@@ -299,7 +254,7 @@ fun HomeScreen(onCalibrate: () -> Unit, onSetup: () -> Unit, onPractice: () -> U
                 Icon(Icons.Filled.Lock, null, tint = EsColors.Success, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(12.dp))
                 Text(
-                    "Private: camera frames are processed on-device and discarded instantly. Nothing is recorded or uploaded.",
+                    "Private: no camera, no internet, nothing on your screen is stored or sent anywhere.",
                     style = MaterialTheme.typography.bodySmall,
                     color = EsColors.TextMuted,
                 )
@@ -308,74 +263,9 @@ fun HomeScreen(onCalibrate: () -> Unit, onSetup: () -> Unit, onPractice: () -> U
     }
 }
 
-private fun phaseLabel(s: TrackingStatus): Pair<String, Color> = when (s.phase) {
-    TrackingPhase.OFF -> "Off" to EsColors.TextMuted
-    TrackingPhase.STARTING -> "Starting" to EsColors.Warning
-    TrackingPhase.TRACKING -> "Tracking" to EsColors.Success
-    TrackingPhase.NO_FACE -> "No face" to Color(0xFFFF8A3D)
-    TrackingPhase.ERROR -> "Error" to EsColors.Danger
-}
-
-private fun subtitle(s: TrackingStatus, autoOff: Int): String = when {
-    s.phase == TrackingPhase.STARTING -> "Starting the camera…"
-    s.isActive -> buildString {
-        append("${s.fps} checks/s")
-        if (s.autoOffIn >= 0) append(" · auto-off in ${s.autoOffIn}s")
-        append("\nGo to any app and look at the top or bottom edge")
-    }
-    autoOff > 0 -> "The camera turns on only now and switches off after ${if (autoOff >= 60) "${autoOff / 60} min" else "$autoOff s"} without scrolling."
-    else -> "The camera turns on only when you start it."
-}
-
-@Composable
-private fun LivePanel(status: TrackingStatus) {
-    GlassCard(Modifier.fillMaxWidth().padding(top = 14.dp), padding = 18.dp) {
-        Row(Modifier.height(150.dp), verticalAlignment = Alignment.CenterVertically) {
-            GazeMeter(status.gaze, Modifier.width(16.dp).fillMaxHeight())
-            Spacer(Modifier.width(18.dp))
-            Column(Modifier.weight(1f)) {
-                Text("Live", style = MaterialTheme.typography.labelSmall, color = EsColors.TextMuted)
-                val (zoneText, zoneColor) = when {
-                    !status.gaze.faceFound -> "Looking for your face" to Color(0xFFFF8A3D)
-                    status.gaze.blinking -> "Blink ignored" to EsColors.TextMuted
-                    status.gaze.zone == GazeZone.UP -> "Scroll-up zone" to EsColors.Primary
-                    status.gaze.zone == GazeZone.DOWN -> "Scroll-down zone" to EsColors.Secondary
-                    else -> "Reading" to EsColors.Success
-                }
-                val c by animateColorAsState(zoneColor, label = "zc")
-                Text(zoneText, style = MaterialTheme.typography.titleLarge, color = c)
-                Spacer(Modifier.height(10.dp))
-                ProgressLine(status.gaze.dwellProgress, c)
-                Spacer(Modifier.height(12.dp))
-                Row {
-                    Metric("Scrolls", "${status.scrollCount}", Modifier.weight(1f))
-                    Metric(
-                        "Last",
-                        when (status.lastScroll) {
-                            ScrollDirection.UP -> "↑ Up"
-                            ScrollDirection.DOWN -> "↓ Down"
-                            null -> "—"
-                        },
-                        Modifier.weight(1f),
-                    )
-                    Metric("Speed", "${status.fps}/s", Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProgressLine(value: Float, color: Color) {
-    BoxWithConstraints(Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(50)).background(Color.White.copy(alpha = 0.07f))) {
-        val w by animateDpAsState(maxWidth * value.coerceIn(0f, 1f), tween(90), label = "pl")
-        Box(Modifier.width(w).fillMaxHeight().clip(RoundedCornerShape(50)).background(color))
-    }
-}
-
 @Composable
 private fun Metric(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(modifier) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(value, style = MaterialTheme.typography.titleMedium, color = EsColors.Text)
         Text(label, style = MaterialTheme.typography.labelSmall, color = EsColors.TextMuted)
     }

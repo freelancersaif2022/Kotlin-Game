@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -63,8 +64,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.eyescroll.app.tracking.GazeSnapshot
-import com.eyescroll.app.tracking.GazeZone
 import com.eyescroll.app.ui.theme.EsColors
 import kotlin.math.cos
 import kotlin.math.sin
@@ -180,136 +179,113 @@ fun GhostButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
 }
 
 /**
- * Realistic animated eye. With [lookY] = null it plays a demo loop (look up, look down, blink);
- * otherwise the iris follows [lookY] (-1 = up, 1 = down).
+ * The floating scroll pad, drawn in Compose. With [thumb] = null it plays a demo loop where a
+ * fingertip slides slightly up and down; otherwise the thumb sits at [thumb] (-1 = up, 1 = down).
  */
 @Composable
-fun AnimatedEye(modifier: Modifier = Modifier, lookY: Float? = null, glowColor: Color = EsColors.Primary) {
-    val t = rememberInfiniteTransition(label = "eye")
-    val demoLook by t.animateFloat(
+fun PadGlyph(modifier: Modifier = Modifier, thumb: Float? = null, showFinger: Boolean = true) {
+    val t = rememberInfiniteTransition(label = "pad")
+    val demo by t.animateFloat(
         initialValue = 0f,
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
             keyframes {
-                durationMillis = 5200
+                durationMillis = 3600
                 0f at 0
-                -1f at 700 using FastOutSlowInEasing
-                -1f at 1700
-                0f at 2300 using FastOutSlowInEasing
-                1f at 3000 using FastOutSlowInEasing
-                1f at 4000
-                0f at 4600 using FastOutSlowInEasing
+                0f at 400
+                -1f at 900 using FastOutSlowInEasing
+                -1f at 1200
+                0f at 1450 using FastOutSlowInEasing
+                0f at 2000
+                1f at 2500 using FastOutSlowInEasing
+                1f at 2800
+                0f at 3050 using FastOutSlowInEasing
             },
         ),
-        label = "look",
+        label = "demo",
     )
-    val blink by t.animateFloat(
-        initialValue = 1f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            keyframes {
-                durationMillis = 5200
-                1f at 0
-                1f at 4720
-                0.06f at 4820
-                1f at 4960
-            },
-        ),
-        label = "blink",
-    )
-    val glow by t.animateFloat(0.25f, 0.45f, infiniteRepeatable(tween(1800), RepeatMode.Reverse), label = "glow")
-    val target = lookY ?: demoLook
-    val look by animateFloatAsState(target, spring(dampingRatio = 0.8f, stiffness = 300f), label = "follow")
-    val open = if (lookY == null) blink else 1f
+    val target = thumb ?: demo
+    val pos by animateFloatAsState(target, spring(dampingRatio = 0.6f, stiffness = 500f), label = "thumb")
 
     Canvas(modifier) {
         val w = size.width
         val h = size.height
+        val padW = minOf(w * 0.8f, h * 0.4f)
+        val padH = padW / 0.4f
+        val left = (w - padW) / 2f
+        val top = (h - padH) / 2f
         val cx = w / 2f
         val cy = h / 2f
-        val ew = w * 0.44f
-        val eh = h * 0.30f * open.coerceAtLeast(0.04f)
-
-        drawCircle(
-            Brush.radialGradient(listOf(glowColor.copy(alpha = glow), Color.Transparent), Offset(cx, cy), w * 0.62f),
-            w * 0.62f,
-            Offset(cx, cy),
-        )
-
-        val eye = Path().apply {
-            moveTo(cx - ew, cy)
-            quadraticTo(cx, cy - eh * 2f, cx + ew, cy)
-            quadraticTo(cx, cy + eh * 2f, cx - ew, cy)
-            close()
+        val r = CornerRadius(padW / 2, padW / 2)
+        val up = pos < -0.35f
+        val down = pos > 0.35f
+        val accent = when {
+            up -> EsColors.Primary
+            down -> EsColors.Secondary
+            else -> Color(0xFF96A5C3)
         }
-        drawPath(eye, Brush.verticalGradient(listOf(Color(0xFFF6F8FF), Color(0xFFC6D2EE)), cy - eh, cy + eh))
-
-        clipPath(eye) {
-            val ir = h * 0.21f
-            val ic = Offset(cx, cy + look * h * 0.13f)
+        if (up || down) {
             drawCircle(
-                Brush.radialGradient(
-                    listOf(Color(0xFF8FF0FF), EsColors.Primary, Color(0xFF2A6BFF), EsColors.Secondary),
-                    ic, ir,
-                ),
-                ir, ic,
-            )
-            // iris fibres
-            for (i in 0 until 24) {
-                val a = (i / 24f) * 2f * Math.PI.toFloat()
-                drawLine(
-                    Color.White.copy(alpha = 0.10f),
-                    Offset(ic.x + cos(a) * ir * 0.5f, ic.y + sin(a) * ir * 0.5f),
-                    Offset(ic.x + cos(a) * ir * 0.95f, ic.y + sin(a) * ir * 0.95f),
-                    strokeWidth = 1.2f,
-                )
-            }
-            drawCircle(Color(0xFF050912), ir * 0.44f, ic)
-            drawCircle(Color.White.copy(alpha = 0.9f), ir * 0.14f, Offset(ic.x - ir * 0.32f, ic.y - ir * 0.34f))
-            drawCircle(Color.White.copy(alpha = 0.5f), ir * 0.07f, Offset(ic.x + ir * 0.28f, ic.y + ir * 0.22f))
-            // upper-lid shadow
-            drawRect(
-                Brush.verticalGradient(listOf(Color(0x66000814), Color.Transparent), cy - eh * 1.2f, cy - eh * 0.2f),
+                Brush.radialGradient(listOf(accent.copy(alpha = 0.35f), Color.Transparent), Offset(cx, cy), padH * 0.6f),
+                padH * 0.6f,
+                Offset(cx, cy),
             )
         }
-        drawPath(eye, EsColors.Accent, style = Stroke(width = w * 0.016f))
-    }
-}
+        drawRoundRect(
+            Brush.verticalGradient(listOf(Color(0xFF1A243E), Color(0xFF0A0E1A)), top, top + padH),
+            Offset(left, top), Size(padW, padH), r,
+        )
+        drawRoundRect(
+            Brush.linearGradient(listOf(EsColors.Primary, EsColors.Secondary), Offset(left, top), Offset(left + padW, top + padH)),
+            Offset(left, top), Size(padW, padH), r,
+            style = Stroke(width = padW * 0.035f),
+        )
+        val travel = padH / 2f - padW * 0.36f - padW * 0.08f
+        drawLine(
+            Color.White.copy(alpha = 0.15f),
+            Offset(cx, top + padW * 0.62f), Offset(cx, top + padH - padW * 0.62f),
+            strokeWidth = padW * 0.06f, cap = StrokeCap.Round,
+        )
+        if (up || down) {
+            drawLine(accent.copy(alpha = 0.7f), Offset(cx, cy), Offset(cx, cy + pos * travel), strokeWidth = padW * 0.06f, cap = StrokeCap.Round)
+        }
+        val cw = padW * 0.2f
+        val ch = cw * 0.6f
+        val chevronStroke = Stroke(width = padW * 0.05f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        val upY = top + padW * 0.42f
+        val downY = top + padH - padW * 0.42f
+        drawPath(
+            Path().apply { moveTo(cx - cw, upY + ch / 2); lineTo(cx, upY - ch / 2); lineTo(cx + cw, upY + ch / 2) },
+            if (up) EsColors.Primary else Color.White.copy(alpha = 0.55f),
+            style = chevronStroke,
+        )
+        drawPath(
+            Path().apply { moveTo(cx - cw, downY - ch / 2); lineTo(cx, downY + ch / 2); lineTo(cx + cw, downY - ch / 2) },
+            if (down) EsColors.Secondary else Color.White.copy(alpha = 0.55f),
+            style = chevronStroke,
+        )
 
-/** Vertical meter: where the tracker thinks you look, with the up/down trigger zones. */
-@Composable
-fun GazeMeter(snapshot: GazeSnapshot, modifier: Modifier = Modifier) {
-    val y by animateFloatAsState(snapshot.gazeY, spring(stiffness = 900f), label = "gy")
-    val dotColor by animateColorAsState(
-        when {
-            !snapshot.faceFound -> EsColors.TextFaint
-            snapshot.zone == GazeZone.UP -> Color(0xFF8FF0FF)
-            snapshot.zone == GazeZone.DOWN -> Color(0xFFA48CFF)
-            else -> Color.White
-        },
-        label = "dot",
-    )
-    Canvas(modifier) {
-        val w = size.width
-        val h = size.height
-        val lo = -0.2f
-        val hi = 1.2f
-        fun map(v: Float) = ((v - lo) / (hi - lo)).coerceIn(0f, 1f) * h
-        val r = CornerRadius(w / 2, w / 2)
-        drawRoundRect(Color.White.copy(alpha = 0.06f), cornerRadius = r)
-        val up = map(snapshot.upThreshold)
-        val down = map(snapshot.downThreshold)
-        drawRoundRect(
-            Brush.verticalGradient(listOf(EsColors.Primary.copy(alpha = 0.55f), EsColors.Primary.copy(alpha = 0.12f)), 0f, up),
-            size = Size(w, up), cornerRadius = r,
+        val tr = padW * 0.3f
+        val ty = cy + pos * travel
+        drawCircle(
+            Brush.radialGradient(listOf(Color.White, accent), Offset(cx - tr * 0.3f, ty - tr * 0.3f), tr * 1.3f),
+            tr, Offset(cx, ty),
         )
-        drawRoundRect(
-            Brush.verticalGradient(listOf(EsColors.Secondary.copy(alpha = 0.12f), EsColors.Secondary.copy(alpha = 0.55f)), down, h),
-            topLeft = Offset(0f, down), size = Size(w, h - down), cornerRadius = r,
-        )
-        val dy = map(y)
-        drawCircle(dotColor.copy(alpha = 0.25f), w * 0.95f, Offset(w / 2, dy))
-        drawCircle(dotColor, w * 0.55f, Offset(w / 2, dy))
+        if (showFinger) {
+            // stylised fingertip pressing the thumb
+            val fw = padW * 0.62f
+            val fx = cx + padW * 0.14f
+            val fy = ty + tr * 0.2f
+            drawRoundRect(
+                Brush.verticalGradient(listOf(Color(0xFFF4F7FF), Color(0xFFB9C6E4)), fy, fy + padH * 0.6f),
+                Offset(fx - fw / 2, fy), Size(fw, padH * 0.6f), CornerRadius(fw / 2, fw / 2),
+                alpha = 0.95f,
+            )
+            drawRoundRect(
+                Color(0xFFE3EBFF),
+                Offset(fx - fw * 0.28f, fy + fw * 0.12f), Size(fw * 0.56f, fw * 0.5f), CornerRadius(fw * 0.25f, fw * 0.25f),
+            )
+        }
     }
 }
 
@@ -355,7 +331,7 @@ fun PowerOrb(active: Boolean, enabled: Boolean, onClick: () -> Unit, modifier: M
                 r * 0.78f,
             )
         }
-        AnimatedEye(Modifier.size(size * 0.5f), lookY = if (active) null else 0f, glowColor = if (active) EsColors.Primary else Color.Transparent)
+        PadGlyph(Modifier.size(size * 0.56f), thumb = if (active) null else 0f, showFinger = active)
     }
 }
 
