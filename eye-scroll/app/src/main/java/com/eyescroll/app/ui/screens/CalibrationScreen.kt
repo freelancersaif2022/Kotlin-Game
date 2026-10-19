@@ -320,7 +320,14 @@ private fun IntroContent(frame: FaceFrame?, error: String?, onCancel: () -> Unit
             GlassCard(Modifier.fillMaxWidth(), padding = 16.dp) {
                 CheckRow(face, if (face) "Face detected" else "Looking for your face…")
                 CheckRow(lightOk, if (lightOk) "Lighting OK" else "Too dark — turn on a light")
-                CheckRow(distanceOk && face, if (distanceOk) "Distance OK" else "Bring the phone a little closer")
+                CheckRow(
+                    distanceOk && face,
+                    when {
+                        !face -> "Distance: waiting for your face"
+                        distanceOk -> "Distance OK"
+                        else -> "Bring the phone a little closer"
+                    },
+                )
             }
             if (error != null) {
                 Text(error, style = MaterialTheme.typography.bodySmall, color = EsColors.Danger)

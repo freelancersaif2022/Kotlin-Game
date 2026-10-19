@@ -97,7 +97,8 @@ class FaceTracker(
                 .build()
             landmarker = FaceLandmarker.createFromOptions(context, options)
         } catch (e: Throwable) {
-            listener.onError("Could not load face model: ${e.message ?: e.javaClass.simpleName}")
+            val root = generateSequence(e) { it.cause }.last()
+            listener.onError("Could not load face model: ${root.javaClass.simpleName} ${root.message ?: ""}".trim())
         }
     }
 

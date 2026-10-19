@@ -39,8 +39,10 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // MediaPipe loads classes by reflection (Flogger, protobuf); shrinking broke the
+            // face model with ExceptionInInitializerError, so the release build is not minified.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = if (releaseKeystore != null) {
                 signingConfigs.getByName("release")
