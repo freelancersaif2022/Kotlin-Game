@@ -97,8 +97,12 @@ fun polygonArea(pts: List<Pt>): Float {
  */
 object QuadDetector {
 
-    /** [lum] holds 0..255 luminance values, row-major, [w] x [h]. Returns null when no confident document is found. */
-    fun detect(lum: IntArray, w: Int, h: Int): Quad? {
+    /**
+     * [lum] holds 0..255 luminance values, row-major, [w] x [h]. Returns null when no confident document is found.
+     * With [strict] (live auto-capture) the region must also look like a receipt: bright paper with
+     * printed text on it, clearly brighter than its surroundings, and a plausible shape.
+     */
+    fun detect(lum: IntArray, w: Int, h: Int, strict: Boolean = false): Quad? {
         if (w < 16 || h < 16) return null
         val blurred = boxBlur(lum, w, h, 2)
         val threshold = otsu(blurred)
@@ -125,7 +129,68 @@ object QuadDetector {
         }
         if (sides.min() < 0.08f) return null
         if (!isConvex(quad.points)) return null
+        if (strict && !looksLikeReceipt(lum, w, h, quad, threshold)) return null
         return quad
+    }
+
+    /** Paper + ink check used before auto-capturing. */
+    internal fun looksLikeReceipt(lum: IntArray, w: Int, h: Int, quad: Quad, threshold: Int): Boolean {
+        // Shape: not a sliver, not the whole frame.
+        val area = quad.area()
+        if (area > 0.92f) return false
+        val sides = quad.points.indices.map { i ->
+            val a = quad.points[i]
+            val b = quad.points[(i + 1) % 4]
+            hypot((a.x - b.x) * w, (a.y - b.y) * h)
+        }
+        val shortSide = minOf(sides[0], sides[2]).coerceAtMost(minOf(sides[1], sides[3]))
+        val longSide = maxOf(maxOf(sides[0], sides[2]), maxOf(sides[1], sides[3]))
+        if (shortSide / longSide < 0.18f) return false
+
+        val pts = quad.points.map { Pt(it.x * (w - 1), it.y * (h - 1)) }
+        var inside = 0
+        var paperSum = 0L
+        var paperCount = 0
+        var ink = 0
+        var outsideSum = 0L
+        var outsideCount = 0
+        // Ink is anything clearly darker than the paper around it.
+        val inkLevel = threshold - 10
+        for (y in 0 until h) {
+            for (x in 0 until w) {
+                val v = lum[y * w + x]
+                if (contains(pts, x + 0.5f, y + 0.5f)) {
+                    // Ignore a thin border so the table edge doesn't count as ink.
+                    if (!contains(pts, x + 0.5f, y + 0.5f, inset = 2.5f)) continue
+                    inside++
+                    if (v < inkLevel) ink++ else { paperSum += v; paperCount++ }
+                } else {
+                    outsideSum += v
+                    outsideCount++
+                }
+            }
+        }
+        if (inside < 200 || paperCount == 0) return false
+        val paper = paperSum / paperCount
+        val outside = if (outsideCount > 0) outsideSum / outsideCount else 0
+        val inkRatio = ink.toFloat() / inside
+        return paper >= 135 && paper - outside >= 45 && inkRatio in 0.012f..0.40f
+    }
+
+    /** Point-in-convex-quad test; with [inset] the point must be at least that far inside every edge. */
+    private fun contains(p: List<Pt>, x: Float, y: Float, inset: Float = 0f): Boolean {
+        var sign = 0
+        for (i in 0 until 4) {
+            val a = p[i]
+            val b = p[(i + 1) % 4]
+            val cross = (b.x - a.x) * (y - a.y) - (b.y - a.y) * (x - a.x)
+            val len = hypot(b.x - a.x, b.y - a.y).coerceAtLeast(1e-3f)
+            val dist = cross / len
+            val s = if (dist > inset) 1 else if (dist < -inset) -1 else 0
+            if (s == 0) return false
+            if (sign == 0) sign = s else if (s != sign) return false
+        }
+        return true
     }
 
     internal fun boxBlur(src: IntArray, w: Int, h: Int, r: Int): IntArray {

@@ -61,4 +61,35 @@ class QuadDetectorTest {
         assertTrue(near(r.tl, 0.1f, 0.1f, 0.01f))
         assertTrue(near(r.br, 0.8f, 0.6f, 0.01f))
     }
+
+    /** Bright rectangle with no text on it, e.g. a blank sheet, screen or window. */
+    private fun blank(cx: Float, cy: Float, rw: Float, rh: Float): IntArray {
+        val rnd = java.util.Random(5)
+        return IntArray(w * h) { i ->
+            val x = i % w - cx
+            val y = i / w - cy
+            if (kotlin.math.abs(x) < rw / 2 && kotlin.math.abs(y) < rh / 2) 240 + rnd.nextInt(8) else 55 + rnd.nextInt(25)
+        }
+    }
+
+    @Test fun strictModeAcceptsReceiptWithText() {
+        assertNotNull(QuadDetector.detect(scene(80f, 60f, 60f, 100f, 4f), w, h, strict = true))
+    }
+
+    @Test fun strictModeRejectsBlankBrightObjects() {
+        assertNull(QuadDetector.detect(blank(80f, 60f, 70f, 90f), w, h, strict = true))
+        // The relaxed mode used for photos still finds it, so manual crops get a starting shape.
+        assertNotNull(QuadDetector.detect(blank(80f, 60f, 70f, 90f), w, h))
+    }
+
+    @Test fun strictModeRejectsLowContrastScenes() {
+        val rnd = java.util.Random(9)
+        // Light-grey object on an almost equally light table.
+        val img = IntArray(w * h) { i ->
+            val x = i % w - 80f
+            val y = i / w - 60f
+            if (kotlin.math.abs(x) < 30 && kotlin.math.abs(y) < 45) 175 + rnd.nextInt(10) else 150 + rnd.nextInt(10)
+        }
+        assertNull(QuadDetector.detect(img, w, h, strict = true))
+    }
 }

@@ -36,6 +36,7 @@ class LiveDetector : ImageAnalysis.Analyzer {
     private var anchor: Quad? = null
     private var stable = 0
     private var misses = 0
+    private var hits = 0
 
     override fun analyze(image: ImageProxy) {
         try {
@@ -49,7 +50,8 @@ class LiveDetector : ImageAnalysis.Analyzer {
             }
             val found = detectLuma(image)?.rotated(rot)
             if (found == null) {
-                if (++misses > 5) {
+                hits = 0
+                if (++misses > 3) {
                     reset()
                     _state.value = LiveState(frameW = rw, frameH = rh)
                 } else {
@@ -58,7 +60,8 @@ class LiveDetector : ImageAnalysis.Analyzer {
                 return
             }
             misses = 0
-            val s = smooth?.lerp(found, 0.55f) ?: found
+            if (++hits < FRAMES_TO_SHOW) return
+            val s = smooth?.lerp(found, 0.6f) ?: found
             smooth = s
             val a = anchor
             if (a != null && s.distanceTo(a) < STILL_TOLERANCE) stable++ else { anchor = s; stable = 0 }
@@ -83,6 +86,7 @@ class LiveDetector : ImageAnalysis.Analyzer {
         anchor = null
         stable = 0
         misses = 0
+        hits = 0
     }
 
     private fun detectLuma(image: ImageProxy): Quad? {
@@ -101,11 +105,14 @@ class LiveDetector : ImageAnalysis.Analyzer {
                 lum[y * tw + x] = buf.get(row + (x * w / tw) * ps).toInt() and 0xFF
             }
         }
-        return QuadDetector.detect(lum, tw, th)
+        return QuadDetector.detect(lum, tw, th, strict = true)
     }
 
     companion object {
-        private const val FRAMES_TO_CAPTURE = 14
-        private const val STILL_TOLERANCE = 0.022f
+        // A receipt must be confirmed in consecutive frames before the box shows,
+        // then held still briefly before capture (about a third of a second).
+        private const val FRAMES_TO_CAPTURE = 8
+        private const val STILL_TOLERANCE = 0.025f
+        private const val FRAMES_TO_SHOW = 2
     }
 }

@@ -86,6 +86,7 @@ import com.vaultly.app.VaultlyApp
 import com.vaultly.app.ads.Consent
 import com.vaultly.app.billing.PlanKey
 import com.vaultly.app.reminders.ReminderWorker
+import com.vaultly.app.ui.components.AppIcon
 import com.vaultly.app.ui.components.CurrencySheet
 import com.vaultly.app.ui.components.ProBadge
 import com.vaultly.app.ui.components.SectionHeader
@@ -273,10 +274,14 @@ private fun ProCard(pro: Boolean, onUpgrade: () -> Unit) {
             }
         }
         Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(if (pro) SolidColor(Palette.Ink) else colors.goldBrush),
-                contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Outlined.WorkspacePremium, null, tint = if (pro) Palette.GoldLight else Palette.Ink) }
+            if (pro) {
+                AppIcon(54.dp)
+            } else {
+                Box(
+                    Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(colors.goldBrush),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Outlined.WorkspacePremium, null, tint = Palette.Ink) }
+            }
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(

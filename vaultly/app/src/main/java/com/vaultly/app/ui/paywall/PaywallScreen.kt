@@ -66,18 +66,19 @@ import com.vaultly.app.billing.PlanKey
 import com.vaultly.app.ui.components.ClaimScene
 import com.vaultly.app.ui.components.NoAdsScene
 import com.vaultly.app.ui.components.PrimaryButton
+import com.vaultly.app.ui.components.ScenePlay
 import com.vaultly.app.ui.components.UnlimitedScene
 import com.vaultly.app.ui.components.findActivity
 import com.vaultly.app.ui.theme.Palette
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private data class Showcase(val title: String, val body: String, val scene: @Composable () -> Unit)
+private data class Showcase(val title: String, val body: String, val scene: @Composable (ScenePlay) -> Unit)
 
 private val showcase = listOf(
-    Showcase("Unlimited vault", "Keep every receipt and warranty – no 15-item cap.") { UnlimitedScene() },
-    Showcase("Claim packs, any time", "Export PDF proof for returns and claims instantly.") { ClaimScene() },
-    Showcase("Calm and ad-free", "No interruptions. Just your vault.") { NoAdsScene() },
+    Showcase("Unlimited vault", "Keep every receipt and warranty – no 15-item cap.") { UnlimitedScene(play = it) },
+    Showcase("Claim packs, any time", "Export PDF proof for returns and claims instantly.") { ClaimScene(play = it) },
+    Showcase("Calm and ad-free", "No interruptions. Just your vault.") { NoAdsScene(play = it) },
 )
 
 @Composable
@@ -177,18 +178,6 @@ fun PaywallScreen(app: VaultlyApp, onClose: () -> Unit) {
                     .padding(horizontal = 14.dp, vertical = 10.dp),
             )
 
-            // 6. Benefits
-            Spacer(Modifier.height(14.dp))
-            Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(Color.White.copy(alpha = 0.05f))
-                    .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(22.dp)).padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Benefit(Icons.Outlined.AllInclusive, "Unlimited purchases", "No cap on receipts, warranties or photos")
-                Benefit(Icons.Outlined.PictureAsPdf, "Unlimited claim packs", "Export polished PDFs any time, no videos")
-                Benefit(Icons.Outlined.Block, "Completely ad-free", "A calm, private vault with zero ads")
-            }
-
             // 7. Terms
             Spacer(Modifier.height(18.dp))
             Text(
@@ -207,25 +196,33 @@ fun PaywallScreen(app: VaultlyApp, onClose: () -> Unit) {
     }
 }
 
+/**
+ * Each feature animation plays once, then the pager slides to the next one, forever.
+ * A large virtual page count lets it always slide forward.
+ */
 @Composable
 private fun ShowcasePager() {
-    val pager = rememberPagerState { showcase.size }
-    LaunchedEffect(pager) {
-        while (true) {
-            delay(3600)
-            pager.animateScrollToPage((pager.currentPage + 1) % showcase.size)
-        }
-    }
+    val count = showcase.size
+    val start = (Int.MAX_VALUE / 2).let { it - it % count }
+    val pager = rememberPagerState(initialPage = start) { Int.MAX_VALUE }
+    val scope = rememberCoroutineScope()
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Canvas(Modifier.size(300.dp)) {
-            listOf(70, 110, 150).forEachIndexed { i, r ->
-                drawCircle(Palette.GoldLight.copy(alpha = 0.14f - i * 0.04f), r.dp.toPx(), Offset(size.width / 2, size.height / 2), style = Stroke(1.dp.toPx()))
-            }
-        }
-        HorizontalPager(pager, Modifier.fillMaxWidth()) { i ->
-            val item = showcase[i]
+        HorizontalPager(pager, Modifier.fillMaxWidth(), userScrollEnabled = true) { page ->
+            val item = showcase[page % count]
+            val current = pager.settledPage == page && !pager.isScrollInProgress
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                item.scene()
+                item.scene(
+                    ScenePlay(
+                        loop = false,
+                        play = current,
+                        onFinished = {
+                            scope.launch {
+                                delay(900)
+                                if (pager.settledPage == page) pager.animateScrollToPage(page + 1, animationSpec = tween(650))
+                            }
+                        },
+                    ),
+                )
                 Text(item.title, style = MaterialTheme.typography.titleLarge, color = Color.White)
                 Spacer(Modifier.height(4.dp))
                 Text(item.body, style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), textAlign = TextAlign.Center)
@@ -234,9 +231,10 @@ private fun ShowcasePager() {
     }
     Spacer(Modifier.height(12.dp))
     Row(horizontalArrangement = Arrangement.Center) {
-        repeat(showcase.size) { i ->
-            val c by animateColorAsState(if (pager.currentPage == i) Palette.GoldLight else Color.White.copy(alpha = 0.22f), label = "dot")
-            Box(Modifier.padding(horizontal = 3.dp).size(if (pager.currentPage == i) 18.dp else 6.dp, 6.dp).clip(CircleShape).background(c))
+        repeat(count) { i ->
+            val selected = pager.currentPage % count == i
+            val c by animateColorAsState(if (selected) Palette.GoldLight else Color.White.copy(alpha = 0.22f), label = "dot")
+            Box(Modifier.padding(horizontal = 3.dp).size(if (selected) 18.dp else 6.dp, 6.dp).clip(CircleShape).background(c))
         }
     }
 }

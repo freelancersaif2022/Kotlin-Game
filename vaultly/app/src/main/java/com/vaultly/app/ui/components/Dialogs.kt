@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -63,6 +64,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.vaultly.app.ui.theme.Palette
 import com.vaultly.app.ui.theme.VaultlyTheme
+import com.vaultly.app.util.CurrencyFlags
 import java.util.Currency
 import java.util.Locale
 
@@ -85,6 +87,8 @@ fun VaultDialog(
     tone: DialogTone = DialogTone.BRAND,
     primaryLoading: Boolean = false,
     badge: (@Composable () -> Unit)? = null,
+    /** Replaces the icon badge, e.g. with an illustration. */
+    header: (@Composable () -> Unit)? = null,
     content: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -105,7 +109,7 @@ fun VaultDialog(
                     .padding(horizontal = 24.dp, vertical = 26.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                ToneBadge(icon, tone)
+                if (header != null) header() else ToneBadge(icon, tone)
                 Spacer(Modifier.height(18.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(title, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
@@ -241,11 +245,7 @@ private val POPULAR = listOf("USD", "EUR", "GBP", "INR", "BDT", "AED", "CAD", "A
 fun CurrencySheet(selected: String, onSelect: (String) -> Unit, onDismiss: () -> Unit) {
     val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var query by remember { mutableStateOf("") }
-    val all = remember {
-        Currency.getAvailableCurrencies()
-            .filter { it.defaultFractionDigits >= 0 && !it.currencyCode.startsWith("X") }
-            .sortedBy { it.currencyCode }
-    }
+    val all = remember { CurrencyFlags.all }
     val q = query.trim().lowercase()
     val matches = all.filter {
         q.isEmpty() || it.currencyCode.lowercase().contains(q) || it.getDisplayName(Locale.getDefault()).lowercase().contains(q)
@@ -337,25 +337,54 @@ private fun CurrencyRow(currency: Currency, selected: Boolean, onClick: () -> Un
             .padding(horizontal = 12.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val symbol = currency.getSymbol(Locale.getDefault())
-        Box(
-            Modifier.size(42.dp).clip(RoundedCornerShape(13.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                if (symbol.length <= 3) symbol else currency.currencyCode.take(1),
-                fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, maxLines = 1,
-            )
-        }
+        CurrencyFlag(currency.currencyCode, 42.dp)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(currency.currencyCode, style = MaterialTheme.typography.titleSmall)
             Text(currency.getDisplayName(Locale.getDefault()), style = MaterialTheme.typography.bodySmall, color = colors.muted, maxLines = 1)
         }
+        Text(
+            currency.getSymbol(Locale.getDefault()),
+            style = MaterialTheme.typography.titleSmall,
+            color = colors.muted,
+            modifier = Modifier.padding(horizontal = 10.dp),
+            maxLines = 1,
+        )
         if (selected) {
             Box(Modifier.size(26.dp).clip(CircleShape).background(colors.goldBrush), contentAlignment = Alignment.Center) {
                 Icon(Icons.Outlined.Check, null, Modifier.size(16.dp), tint = Palette.Ink)
             }
+        }
+    }
+}
+
+/** Round flag for a currency; falls back to its symbol when there's no flag. */
+@Composable
+fun CurrencyFlag(code: String, size: androidx.compose.ui.unit.Dp) {
+    val flag = remember(code) { CurrencyFlags.flag(code) }
+    Box(
+        Modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .border(1.dp, VaultlyTheme.colors.hairline, CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (flag != null) {
+            // Emoji flags are rectangles; draw them oversized so the circle is filled edge to edge.
+            Text(
+                flag,
+                fontSize = with(androidx.compose.ui.platform.LocalDensity.current) { (size * 1.18f).toSp() },
+                modifier = Modifier.wrapContentSize(unbounded = true),
+                style = androidx.compose.ui.text.TextStyle(
+                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false),
+                ),
+            )
+        } else {
+            Text(
+                runCatching { Currency.getInstance(code).getSymbol(Locale.getDefault()) }.getOrDefault(code).take(3),
+                fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

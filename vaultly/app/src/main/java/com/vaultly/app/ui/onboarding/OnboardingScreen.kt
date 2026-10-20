@@ -36,6 +36,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,35 +55,38 @@ import com.vaultly.app.ui.components.ClaimScene
 import com.vaultly.app.ui.components.PrimaryButton
 import com.vaultly.app.ui.components.RemindScene
 import com.vaultly.app.ui.components.ScanScene
+import com.vaultly.app.ui.components.ScenePlay
 import com.vaultly.app.ui.theme.Palette
 import kotlinx.coroutines.launch
 
-private data class Page(val icon: ImageVector, val kicker: String, val title: String, val body: String, val scene: @Composable () -> Unit)
+private data class Page(val icon: ImageVector, val kicker: String, val title: String, val body: String, val scene: @Composable (ScenePlay) -> Unit)
 
 private val pages = listOf(
     Page(
         Icons.Outlined.DocumentScanner, "SCAN IT",
         "Every receipt,\nsafely kept.",
         "Point your camera at a receipt. Vaultly finds the edges, captures it and reads the store, date and total — right on your phone.",
-        { ScanScene() },
+        { ScanScene(play = it) },
     ),
     Page(
         Icons.Outlined.NotificationsActive, "GET REMINDED",
         "Never miss a\nreturn again.",
         "Every return window and warranty counts down automatically, and Vaultly reminds you before each one ends.",
-        { RemindScene() },
+        { RemindScene(play = it) },
     ),
     Page(
         Icons.Outlined.PictureAsPdf, "CLAIM WITH PROOF",
         "Proof, ready\nin one tap.",
         "Need to return or claim? Export a polished PDF with your receipt, photos and dates, and share it in one tap.",
-        { ClaimScene() },
+        { ClaimScene(play = it) },
     ),
 )
 
 @Composable
 fun OnboardingScreen(onDone: () -> Unit) {
     val pager = rememberPagerState { pages.size }
+    // Each page's animation plays once; finished pages keep their final frame.
+    val finished = remember { mutableStateListOf<Int>() }
     val scope = rememberCoroutineScope()
     val notifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { onDone() }
     val finish = {
@@ -116,7 +121,16 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 val page = pages[index]
                 Column(Modifier.fillMaxSize().padding(horizontal = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(Modifier.weight(0.35f))
-                    page.scene()
+                    val current = pager.settledPage == index
+                    val done = index in finished
+                    page.scene(
+                        ScenePlay(
+                            loop = false,
+                            play = current && !done,
+                            startFinished = done,
+                            onFinished = { if (index !in finished) finished += index },
+                        ),
+                    )
                     Spacer(Modifier.weight(0.3f))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(

@@ -327,10 +327,19 @@ private fun CameraContent(
             }
         }
 
-        // Hint pill
+        // Hint pill – after a few seconds without a receipt, suggest how to help detection.
+        var showTip by remember { mutableStateOf(false) }
+        LaunchedEffect(live.quad == null, auto) {
+            showTip = false
+            if (auto && live.quad == null) {
+                kotlinx.coroutines.delay(4000)
+                showTip = true
+            }
+        }
         val hint = when {
             capturing -> "Capturing…"
             !auto -> "Line up the receipt, then tap the shutter"
+            live.quad == null && showTip -> "Tip: place the receipt on a darker surface"
             live.quad == null -> "Looking for a receipt…"
             live.progress < 1f -> "Hold steady…"
             else -> "Capturing…"

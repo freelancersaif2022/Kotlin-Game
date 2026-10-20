@@ -1,5 +1,6 @@
 package com.vaultly.app.ui.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -37,10 +38,15 @@ import androidx.compose.material.icons.outlined.Weekend
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -56,12 +62,49 @@ import androidx.compose.ui.unit.sp
 import com.vaultly.app.ui.theme.Manrope
 import com.vaultly.app.ui.theme.Palette
 
-/** Looping 0..1 clock for a scene. */
+/** How a scene plays. */
+data class ScenePlay(
+    /** Repeat forever (true) or play once and hold the final frame (false). */
+    val loop: Boolean = true,
+    /** For one-shot scenes: start (or restart) when this becomes true. */
+    val play: Boolean = true,
+    /** Show the final frame immediately, e.g. a page the user already watched. */
+    val startFinished: Boolean = false,
+    val onFinished: (() -> Unit)? = null,
+)
+
+/** End of the visible part of a scene; one-shot scenes stop here so nothing fades out. */
+private const val HOLD = 0.9f
+
+/** 0..1 clock for a scene, looping or one-shot according to [play]. */
 @Composable
-fun sceneClock(durationMs: Int = 4200): Float {
-    val t = rememberInfiniteTransition(label = "scene")
-    val v by t.animateFloat(0f, 1f, infiniteRepeatable(tween(durationMs, easing = LinearEasing), RepeatMode.Restart), label = "t")
-    return v
+fun sceneClock(durationMs: Int, play: ScenePlay): Float {
+    if (play.loop) {
+        val t = rememberInfiniteTransition(label = "scene")
+        val v by t.animateFloat(0f, 1f, infiniteRepeatable(tween(durationMs, easing = LinearEasing), RepeatMode.Restart), label = "t")
+        return v
+    }
+    val anim = remember { Animatable(if (play.startFinished) HOLD else 0f) }
+    val onFinished by rememberUpdatedState(play.onFinished)
+    LaunchedEffect(play.play) {
+        if (play.play && !play.startFinished) {
+            anim.snapTo(0f)
+            anim.animateTo(HOLD, tween((durationMs * HOLD).toInt(), easing = LinearEasing))
+            onFinished?.invoke()
+        }
+    }
+    return anim.value
+}
+
+/** Soft champagne light behind each scene. */
+private fun DrawScope.stageGlow() {
+    drawCircle(
+        Brush.radialGradient(
+            listOf(Palette.GoldLight.copy(alpha = 0.16f), Palette.GoldLight.copy(alpha = 0.04f), Color.Transparent),
+            center = center, radius = size.minDimension * 0.62f,
+        ),
+        radius = size.minDimension * 0.62f,
+    )
 }
 
 /** Progress of [t] through the window [a]..[b], eased. */
@@ -121,10 +164,10 @@ private fun FoundChip(label: String, value: String, progress: Float) {
 
 /** Step 1: a receipt gets scanned and its fields pop out. */
 @Composable
-fun ScanScene(modifier: Modifier = Modifier) {
-    val t = sceneClock()
+fun ScanScene(modifier: Modifier = Modifier, play: ScenePlay = ScenePlay()) {
+    val t = sceneClock(4200, play)
     val a = loopAlpha(t)
-    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }, contentAlignment = Alignment.Center) {
+    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }.drawBehind { stageGlow() }, contentAlignment = Alignment.Center) {
         Box(Modifier.offset(x = (-58).dp)) {
             ReceiptCard(124.dp, 190.dp)
             // Scanner beam
@@ -162,12 +205,12 @@ fun ScanScene(modifier: Modifier = Modifier) {
 
 /** Step 2: the countdown runs down and a reminder lands. */
 @Composable
-fun RemindScene(modifier: Modifier = Modifier) {
-    val t = sceneClock()
+fun RemindScene(modifier: Modifier = Modifier, play: ScenePlay = ScenePlay()) {
+    val t = sceneClock(4200, play)
     val a = loopAlpha(t)
     val run = seg(t, 0.05f, 0.5f)
     val days = (30 - (27 * run)).toInt()
-    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }, contentAlignment = Alignment.Center) {
+    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }.drawBehind { stageGlow() }, contentAlignment = Alignment.Center) {
         Box(Modifier.offset(y = 26.dp), contentAlignment = Alignment.Center) {
             Canvas(Modifier.size(150.dp)) {
                 val s = 11.dp.toPx()
@@ -207,10 +250,10 @@ fun RemindScene(modifier: Modifier = Modifier) {
 
 /** Step 3: a claim pack PDF assembles and is ready to share. */
 @Composable
-fun ClaimScene(modifier: Modifier = Modifier) {
-    val t = sceneClock()
+fun ClaimScene(modifier: Modifier = Modifier, play: ScenePlay = ScenePlay()) {
+    val t = sceneClock(4200, play)
     val a = loopAlpha(t)
-    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }, contentAlignment = Alignment.Center) {
+    Box(modifier.size(280.dp, 240.dp).graphicsLayer { alpha = a }.drawBehind { stageGlow() }, contentAlignment = Alignment.Center) {
         val doc = seg(t, 0f, 0.14f)
         Column(
             Modifier
@@ -258,15 +301,15 @@ fun ClaimScene(modifier: Modifier = Modifier) {
 
 /** Pro: purchases keep stacking with no limit. */
 @Composable
-fun UnlimitedScene(modifier: Modifier = Modifier) {
-    val t = sceneClock(3600)
+fun UnlimitedScene(modifier: Modifier = Modifier, play: ScenePlay = ScenePlay()) {
+    val t = sceneClock(3600, play)
     val a = loopAlpha(t)
     val items = listOf(
         Triple(Icons.Outlined.Devices, "Headphones", "$399"),
         Triple(Icons.Outlined.Kitchen, "Coffee machine", "$249"),
         Triple(Icons.Outlined.Weekend, "Sofa", "$1,190"),
     )
-    Box(modifier.size(280.dp, 210.dp).graphicsLayer { alpha = a }, contentAlignment = Alignment.Center) {
+    Box(modifier.size(280.dp, 210.dp).graphicsLayer { alpha = a }.drawBehind { stageGlow() }, contentAlignment = Alignment.Center) {
         Column(Modifier.offset(x = (-20).dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items.forEachIndexed { i, (icon, name, price) ->
                 val p = seg(t, 0.08f + i * 0.13f, 0.22f + i * 0.13f)
@@ -296,12 +339,12 @@ fun UnlimitedScene(modifier: Modifier = Modifier) {
 
 /** Pro: the ad slot gets crossed out and disappears. */
 @Composable
-fun NoAdsScene(modifier: Modifier = Modifier) {
-    val t = sceneClock(3600)
+fun NoAdsScene(modifier: Modifier = Modifier, play: ScenePlay = ScenePlay()) {
+    val t = sceneClock(3600, play)
     val a = loopAlpha(t)
     val strike = seg(t, 0.25f, 0.45f)
     val gone = seg(t, 0.5f, 0.62f)
-    Box(modifier.size(280.dp, 210.dp).graphicsLayer { alpha = a }, contentAlignment = Alignment.Center) {
+    Box(modifier.size(280.dp, 210.dp).graphicsLayer { alpha = a }.drawBehind { stageGlow() }, contentAlignment = Alignment.Center) {
         Box(
             Modifier.graphicsLayer { alpha = 1f - gone; scaleX = 1f - 0.2f * gone; scaleY = 1f - 0.2f * gone }
                 .width(220.dp).height(86.dp).clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = 0.08f))

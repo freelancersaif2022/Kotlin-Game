@@ -53,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,7 +69,9 @@ import com.vaultly.app.domain.DeadlineKind
 import com.vaultly.app.domain.Deadlines
 import com.vaultly.app.domain.Urgency
 import com.vaultly.app.ui.components.CategoryBadge
+import com.vaultly.app.ui.components.ClaimScene
 import com.vaultly.app.ui.components.CountdownRing
+import com.vaultly.app.ui.components.ScenePlay
 import com.vaultly.app.ui.components.DialogTone
 import com.vaultly.app.ui.components.VaultDialog
 import com.vaultly.app.ui.components.PrimaryButton
@@ -246,29 +249,31 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
             onDismiss = { exportGate = false },
             icon = Icons.Outlined.PictureAsPdf,
             tone = DialogTone.GOLD,
+            header = {
+                Box(
+                    Modifier.fillMaxWidth().height(196.dp).clip(RoundedCornerShape(22.dp)).background(VaultlyTheme.colors.inkBrush),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ClaimScene(Modifier.graphicsLayer { scaleX = 0.8f; scaleY = 0.8f }, play = ScenePlay(loop = false))
+                }
+            },
             title = "Claim pack",
             badge = { ProBadge() },
-            message = "A polished PDF with your receipt, photos, dates and deadlines – ready for a return desk or warranty claim.",
+            message = "A polished PDF with your receipt, photos and deadlines – ready for any return or warranty claim.",
             primaryText = "Unlock with Pro",
             onPrimary = { exportGate = false; nav.openPaywall() },
-            secondaryText = "Watch a video to export once",
+            secondaryText = "Watch an ad to export once",
             onSecondary = {
                 exportGate = false
                 if (activity != null) {
                     app.ads.showRewarded(
                         activity,
                         onReward = export,
-                        onUnavailable = { app.notifier.show("No video is available right now. Please try again shortly.") },
+                        onUnavailable = { app.notifier.show("No ad is available right now. Please try again shortly.") },
                     )
                 }
             },
-        ) {
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                PackLine(Icons.Outlined.Receipt, "Receipt & proof photos")
-                PackLine(Icons.Outlined.Event, "Purchase date, return & warranty deadlines")
-                PackLine(Icons.Outlined.Share, "Share by email, WhatsApp or save to Files")
-            }
-        }
+        )
     }
 }
 

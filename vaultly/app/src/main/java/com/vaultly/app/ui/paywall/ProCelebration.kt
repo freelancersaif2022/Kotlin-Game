@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vaultly.app.ui.components.AppIcon
 import com.vaultly.app.ui.components.PrimaryButton
 import com.vaultly.app.ui.theme.Palette
 import kotlinx.coroutines.delay
@@ -118,13 +119,15 @@ fun ProCelebration(onDone: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Box(
-                Modifier.graphicsLayer { scaleX = crown.value; scaleY = crown.value }
-                    .size(118.dp).clip(RoundedCornerShape(36.dp))
-                    .background(Brush.linearGradient(listOf(Palette.GoldLight, Palette.Gold, Palette.GoldDeep)))
-                    .border(2.dp, Color.White.copy(alpha = 0.4f), RoundedCornerShape(36.dp)),
-                contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Outlined.WorkspacePremium, null, Modifier.size(64.dp), tint = Palette.Ink) }
+            Box(Modifier.graphicsLayer { scaleX = crown.value; scaleY = crown.value }) {
+                AppIcon(124.dp)
+                Box(
+                    Modifier.align(Alignment.BottomEnd).padding(0.dp).size(38.dp).clip(CircleShape)
+                        .background(Brush.linearGradient(listOf(Palette.GoldLight, Palette.Gold)))
+                        .border(2.dp, Palette.Ink, CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Outlined.WorkspacePremium, null, Modifier.size(20.dp), tint = Palette.Ink) }
+            }
             Spacer(Modifier.height(28.dp))
             Text("WELCOME TO VAULTLY PRO", style = MaterialTheme.typography.labelSmall, color = Palette.GoldLight)
             Spacer(Modifier.height(10.dp))

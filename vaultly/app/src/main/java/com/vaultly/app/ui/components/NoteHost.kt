@@ -1,6 +1,7 @@
 package com.vaultly.app.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,6 +11,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,18 +37,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.vaultly.app.Note
 import com.vaultly.app.NoteKind
 import com.vaultly.app.Notifier
 import com.vaultly.app.ui.theme.Palette
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /** Shows [Notifier] messages as a floating ink snackbar with a status icon. Tap to dismiss. */
 @Composable
@@ -57,9 +67,13 @@ fun NoteHost(notifier: Notifier, modifier: Modifier = Modifier) {
             visible = true
         }
     }
-    LaunchedEffect(current?.id, visible) {
-        if (visible) { delay(3200); visible = false }
+    val drag = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    var dragging by remember { mutableStateOf(false) }
+    LaunchedEffect(current?.id, visible, dragging) {
+        if (visible && !dragging) { delay(3200); visible = false }
     }
+    LaunchedEffect(current?.id) { drag.snapTo(0f) }
     AnimatedVisibility(
         visible = visible && current != null,
         modifier = modifier,
@@ -77,6 +91,25 @@ fun NoteHost(notifier: Notifier, modifier: Modifier = Modifier) {
             Row(
                 Modifier
                     .fillMaxWidth()
+                    .offset { IntOffset(0, drag.value.roundToInt()) }
+                    .graphicsLayer { alpha = 1f - (drag.value / 300f).coerceIn(0f, 0.7f) }
+                    .draggable(
+                        orientation = Orientation.Vertical,
+                        state = rememberDraggableState { delta ->
+                            scope.launch { drag.snapTo((drag.value + delta).coerceAtLeast(-24f)) }
+                        },
+                        onDragStarted = { dragging = true },
+                        onDragStopped = { velocity ->
+                            dragging = false
+                            if (drag.value > 48f || velocity > 900f) {
+                                // Swiped down: slide away and hide.
+                                drag.animateTo(drag.value + 260f, tween(160))
+                                visible = false
+                            } else {
+                                drag.animateTo(0f, spring(dampingRatio = 0.7f))
+                            }
+                        },
+                    )
                     .shadow(18.dp, shape, ambientColor = Color.Black, spotColor = Color.Black)
                     .clip(shape)
                     .background(Color(0xFF111A2C))
