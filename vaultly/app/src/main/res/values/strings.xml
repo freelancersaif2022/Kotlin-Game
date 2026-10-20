@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vaultly</string>
+    <string name="channel_deadlines">Deadline reminders</string>
+    <string name="channel_deadlines_desc">Alerts before a return window or warranty ends</string>
+</resources>
