@@ -3,6 +3,8 @@ package com.smartisland.app.ui.screens
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -150,7 +152,7 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
             onDismiss = { unlockTarget = null },
             icon = Icons.Rounded.LockOpen,
             title = "Unlock ${kind.title}",
-            message = "Watch one short video to unlock this widget forever, free. Or go PRO for all 17 widgets and every premium feature.",
+            message = "Watch one short video to unlock this widget forever, free. Or go PRO for all 22 widgets and every premium feature.",
             confirmText = if (adReady) "Watch ad · Unlock free" else "Preparing ad…",
             confirmIcon = Icons.Rounded.PlayCircle,
             accent = Palette.Primary,
@@ -173,7 +175,7 @@ fun WidgetsScreen(nav: AppNavigator, highlight: String?, onHighlightShown: () ->
                     }
                 }
             },
-            dismissText = "Go PRO · All 17 widgets",
+            dismissText = "Go PRO · All 22 widgets",
             dismissIcon = Icons.Rounded.WorkspacePremium,
             dismissGold = true,
             onDismissClick = {
@@ -282,10 +284,31 @@ private fun WidgetPreview(kind: WidgetKind, modifier: Modifier = Modifier, cache
 
 /**
  * Inflated widget previews kept for the life of the process, so coming back to this screen (e.g. from
- * the PRO screen) re-uses them instead of inflating 17 widgets again.
+ * the PRO screen) re-uses them instead of inflating every widget again.
  */
-private object PreviewCache {
+internal object PreviewCache {
     private val views = HashMap<String, View>()
+    private var warming = false
+
+    /**
+     * Inflates the previews ahead of time, one widget per idle moment of the main thread, so the
+     * Widgets tab opens instantly and no single frame pays for all of them.
+     */
+    fun prewarm(context: Context) {
+        if (warming) return
+        warming = true
+        val app = context.applicationContext
+        Handler(Looper.getMainLooper()).postDelayed({
+            val pending = WidgetKind.entries.iterator()
+            Looper.myQueue().addIdleHandler {
+                val kind = pending.next()
+                if (kind.id !in views) inflate(app, kind)?.let { views[kind.id] = it }
+                pending.hasNext()
+            }
+        }, PREWARM_DELAY_MS)
+    }
+
+    private const val PREWARM_DELAY_MS = 1800L
 
     fun get(context: Context, kind: WidgetKind): View? =
         views[kind.id] ?: inflate(context, kind)?.also { views[kind.id] = it }

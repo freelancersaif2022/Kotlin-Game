@@ -20,6 +20,8 @@ class OverlayWindow(
     private val context: Context,
     private val gravity: Int,
     private val onOutsideTouch: () -> Unit = {},
+    /** Sees every touch first, in screen coordinates; returning true takes the gesture from the content. */
+    private val touchInterceptor: ((MotionEvent) -> Boolean)? = null,
     private val content: @Composable () -> Unit,
 ) {
     private val wm = context.systemService<WindowManager>()
@@ -53,7 +55,7 @@ class OverlayWindow(
     fun show() {
         if (root != null) return
         val owner = OverlayLifecycleOwner().also { it.start() }
-        val frame = OutsideTouchFrame(context, onOutsideTouch)
+        val frame = OutsideTouchFrame(context, onOutsideTouch, touchInterceptor)
         val compose = ComposeView(context).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
             setContent(content)
@@ -79,6 +81,20 @@ class OverlayWindow(
         root?.visibility = if (visible) android.view.View.VISIBLE else android.view.View.GONE
     }
 
+    /** An invisible window must not swallow taps meant for the app underneath. */
+    fun setTouchable(touchable: Boolean) {
+        val flags = if (touchable) {
+            params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+        } else {
+            params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        }
+        if (flags == params.flags) return
+        params.flags = flags
+        root?.let { runCatching { wm.updateViewLayout(it, params) } }
+    }
+
+    val y: Int get() = params.y
+
     fun move(x: Int, y: Int) {
         if (params.x == x && params.y == y) return
         params.x = x
@@ -87,13 +103,30 @@ class OverlayWindow(
     }
 
     @SuppressLint("ViewConstructor")
-    private class OutsideTouchFrame(context: Context, private val onOutside: () -> Unit) : FrameLayout(context) {
+    private class OutsideTouchFrame(
+        context: Context,
+        private val onOutside: () -> Unit,
+        private val interceptor: ((MotionEvent) -> Boolean)?,
+    ) : FrameLayout(context) {
+        private var stolen = false
+
         override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
             if (ev.actionMasked == MotionEvent.ACTION_OUTSIDE) {
                 onOutside()
                 return false
             }
-            return super.dispatchTouchEvent(ev)
+            if (ev.actionMasked == MotionEvent.ACTION_DOWN) stolen = false
+            if (interceptor?.invoke(ev) == true) {
+                if (!stolen) {
+                    // The content saw the start of this gesture; tell it the gesture is gone.
+                    stolen = true
+                    val cancel = MotionEvent.obtain(ev).apply { action = MotionEvent.ACTION_CANCEL }
+                    super.dispatchTouchEvent(cancel)
+                    cancel.recycle()
+                }
+                return true
+            }
+            return if (stolen) true else super.dispatchTouchEvent(ev)
         }
     }
 }

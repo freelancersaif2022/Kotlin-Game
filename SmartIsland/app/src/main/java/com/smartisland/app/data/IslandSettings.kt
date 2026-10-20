@@ -21,8 +21,15 @@ data class IslandSettings(
     val haptics: Boolean = true,
     val glow: Boolean = false,
     val accentColor: Int = DEFAULT_ACCENT,
+    /** Hides the idle pill; the island only appears while something is happening. */
+    val hideWhenIdle: Boolean = false,
+    /** [OUTLINE_OFF], [OUTLINE_RGB] or [OUTLINE_COLOR]. */
+    val outline: Int = OUTLINE_OFF,
+    val outlineColor: Int = DEFAULT_ACCENT,
     val edgePanelEnabled: Boolean = false,
     val edgePanelRight: Boolean = true,
+    /** Vertical offset of the edge handle from the screen center. */
+    val edgePanelOffsetDp: Float = 0f,
     val onboardingDone: Boolean = false,
     val darkMode: Boolean = false,
 ) {
@@ -33,7 +40,12 @@ data class IslandSettings(
         const val DEFAULT_EXPANDED_WIDTH = 372f
         const val DEFAULT_ACCENT = 0xFF7C5CFF.toInt()
 
-        val WIDTH_RANGE = 70f..220f
+        const val OUTLINE_OFF = 0
+        const val OUTLINE_RGB = 1
+        const val OUTLINE_COLOR = 2
+
+        // The low end lets the idle pill shrink to a circle (width is never drawn below the height).
+        val WIDTH_RANGE = 24f..220f
         val HEIGHT_RANGE = 24f..56f
         val TOP_RANGE = 0f..80f
         val X_RANGE = -160f..160f

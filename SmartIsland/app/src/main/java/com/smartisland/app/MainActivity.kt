@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.smartisland.app.ui.components.BrandSplash
 import com.smartisland.app.ui.navigation.AppRoot
 import com.smartisland.app.ui.navigation.RouteRequest
+import com.smartisland.app.ui.screens.PreviewCache
 import com.smartisland.app.ui.theme.SmartIslandTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        PreviewCache.prewarm(this)
     }
 
     override fun onStop() {

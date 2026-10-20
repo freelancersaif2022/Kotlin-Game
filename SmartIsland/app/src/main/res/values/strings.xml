@@ -39,4 +39,14 @@
     <string name="widget_desc_dual_clock">Your time and London time side by side</string>
     <string name="widget_title_smart_glance">Smart Glance</string>
     <string name="widget_desc_smart_glance">Greeting, date, battery, alarm and music</string>
+    <string name="widget_title_kitty">Kitty Clock</string>
+    <string name="widget_desc_kitty">A cute cat that blinks and wags its tail</string>
+    <string name="widget_title_puppy">Puppy Pal</string>
+    <string name="widget_desc_puppy">A happy puppy wagging its tail, with the date</string>
+    <string name="widget_title_campfire">Cozy Fire</string>
+    <string name="widget_desc_campfire">A flickering campfire with time and battery</string>
+    <string name="widget_title_orbit">Solar Orbit</string>
+    <string name="widget_desc_orbit">Planets circling the sun around a live clock</string>
+    <string name="widget_title_aquarium">Aquarium</string>
+    <string name="widget_desc_aquarium">Fish swimming in a glowing tank</string>
 </resources>

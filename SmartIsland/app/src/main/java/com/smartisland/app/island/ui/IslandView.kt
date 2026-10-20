@@ -5,9 +5,13 @@ import android.os.SystemClock
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -31,12 +35,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -45,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import com.smartisland.app.data.IslandSettings
 import com.smartisland.app.island.IslandActivity
 import com.smartisland.app.island.MediaCommands
+import kotlin.math.abs
 
 /** Callbacks the island needs from its host. The in-app previews use [None]. */
 interface IslandActions {
@@ -79,12 +88,14 @@ fun IslandView(
     glowAllowed: Boolean = true,
 ) {
     val mode = modeFor(activity, expanded)
-    val baseW = settings.widthDp.dp
     val baseH = settings.heightDp.dp
+    // At its narrowest the idle pill becomes a circle.
+    val baseW = settings.widthDp.dp.coerceAtLeast(baseH)
 
     val targetW = when (mode) {
         IslandMode.IDLE -> baseW
-        IslandMode.COMPACT -> baseW + compactExtra(activity)
+        // Activities still need room for their content when the idle pill is tiny.
+        IslandMode.COMPACT -> baseW.coerceAtLeast(MIN_COMPACT_BASE) + compactExtra(activity)
         IslandMode.EXPANDED -> settings.expandedWidthDp.dp
     }.coerceAtMost(maxWidth)
     val targetH = when (mode) {
@@ -115,17 +126,41 @@ fun IslandView(
     val currentActions by rememberUpdatedState(actions)
 
     val accent by animateColorAsState(Color(settings.accentColor), tween(300), label = "accent")
-    val glowOn = glowAllowed && settings.glow
+    // The outline replaces the glow; the settings screen only lets one of them be on.
+    val outlineMode = settings.outline
+    val glowOn = glowAllowed && settings.glow && outlineMode == IslandSettings.OUTLINE_OFF
     val glowAlpha by animateFloatAsState(if (glowOn) 1f else 0f, tween(300), label = "glow")
     val shape = RoundedCornerShape(radius)
+
+    // "Hide island": the idle pill shrinks away and comes back for every live activity.
+    val hiddenIdle = settings.hideWhenIdle && mode == IslandMode.IDLE
+    val appear by animateFloatAsState(
+        if (hiddenIdle) 0f else 1f,
+        if (hiddenIdle) tween(220) else spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow),
+        label = "appear",
+    )
+
+    // Runs for as long as the island is visible, so the colors never stop. Only the draw phase reads it.
+    val outlinePhase = if (outlineMode != IslandSettings.OUTLINE_OFF && (!hiddenIdle || appear > 0f)) {
+        rememberInfiniteTransition(label = "outline").animateFloat(
+            0f, 360f, infiniteRepeatable(tween(OUTLINE_CYCLE_MS, easing = LinearEasing)), label = "outlinePhase",
+        )
+    } else {
+        null
+    }
+    val outlineColor = Color(settings.outlineColor)
 
     Box(modifier.padding(IslandOuterPadding), contentAlignment = Alignment.TopCenter) {
         Box(
             Modifier
                 .size(width, height)
                 .graphicsLayer {
-                    scaleX = pressScale
-                    scaleY = pressScale
+                    val a = appear.coerceIn(0f, 1f)
+                    val scale = pressScale * (0.4f + 0.6f * appear)
+                    scaleX = scale
+                    scaleY = scale
+                    alpha = a
+                    transformOrigin = TransformOrigin(0.5f, 0.5f)
                 }
                 .drawBehind {
                     if (glowAlpha <= 0f) return@drawBehind
@@ -147,6 +182,24 @@ fun IslandView(
                 .clip(shape)
                 .background(Color.Black)
                 .then(if (glowOn) Modifier.border(1.2.dp, accent.copy(alpha = 0.9f * glowAlpha), shape) else Modifier)
+                .drawWithContent {
+                    drawContent()
+                    val phase = outlinePhase?.value ?: return@drawWithContent
+                    val w = OutlineWidth.toPx()
+                    val r = (radius.toPx() - w / 2).coerceAtLeast(0f)
+                    val brush = if (outlineMode == IslandSettings.OUTLINE_RGB) {
+                        Brush.sweepGradient(rainbow(phase))
+                    } else {
+                        Brush.sweepGradient(comet(outlineColor, phase))
+                    }
+                    drawRoundRect(
+                        brush = brush,
+                        topLeft = Offset(w / 2, w / 2),
+                        size = Size(size.width - w, size.height - w),
+                        cornerRadius = CornerRadius(r, r),
+                        style = Stroke(width = w),
+                    )
+                }
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = {
@@ -181,6 +234,27 @@ fun IslandView(
         }
     }
 }
+
+private val MIN_COMPACT_BASE = 70.dp
+private val OutlineWidth = 2.2.dp
+private const val OUTLINE_CYCLE_MS = 2600
+
+/** A full hue wheel turned by [phase] degrees: rotating it is the same as shifting every hue. */
+private fun rainbow(phase: Float): List<Color> = List(7) { i -> Color.hsv((i * 60f - phase).mod(360f), 0.85f, 1f) }
+
+/** The chosen color all around, with a bright head running around the island. */
+private fun comet(color: Color, phase: Float): List<Color> {
+    val head = phase / 360f
+    val bright = lerp(color, Color.White, 0.55f)
+    val dim = color.copy(alpha = 0.6f)
+    return List(COMET_STOPS + 1) { i ->
+        val d = abs(i.toFloat() / COMET_STOPS - head).let { minOf(it, 1f - it) }
+        val t = (1f - d / 0.22f).coerceIn(0f, 1f)
+        lerp(dim, bright, t * t)
+    }
+}
+
+private const val COMET_STOPS = 36
 
 private fun modeFor(activity: IslandActivity, expanded: Boolean): IslandMode = when (activity) {
     IslandActivity.Idle -> IslandMode.IDLE

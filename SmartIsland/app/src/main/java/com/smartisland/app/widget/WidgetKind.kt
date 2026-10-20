@@ -30,7 +30,12 @@ enum class WidgetKind(
     DAY_PROGRESS("day_progress", "Day Progress", "How much of today, this week, month and year has passed.", true, WidgetSize.LARGE, R.layout.widget_day_progress, DayProgressWidget::class.java),
     STORAGE_RING("storage_ring", "Storage Ring", "Used and free storage in a sleek gradient ring.", true, WidgetSize.SMALL, R.layout.widget_storage_ring, StorageRingWidget::class.java),
     DUAL_CLOCK("dual_clock", "Dual Time", "Your time and London time side by side, ticking live.", true, WidgetSize.WIDE, R.layout.widget_dual_clock, DualClockWidget::class.java),
-    SMART_GLANCE("smart_glance", "Smart Glance", "Greeting, date, battery, next alarm and music in one card.", true, WidgetSize.LARGE, R.layout.widget_smart_glance, SmartGlanceWidget::class.java);
+    SMART_GLANCE("smart_glance", "Smart Glance", "Greeting, date, battery, next alarm and music in one card.", true, WidgetSize.LARGE, R.layout.widget_smart_glance, SmartGlanceWidget::class.java),
+    KITTY("kitty", "Kitty Clock", "An animated cat that blinks and wags its tail, with the live time.", true, WidgetSize.SMALL, R.layout.widget_kitty, KittyWidget::class.java),
+    PUPPY("puppy", "Puppy Pal", "A happy animated puppy wagging its tail, with today's date.", true, WidgetSize.SMALL, R.layout.widget_puppy, PuppyWidget::class.java),
+    CAMPFIRE("campfire", "Cozy Fire", "A flickering campfire with rising embers, live time and battery.", true, WidgetSize.SMALL, R.layout.widget_campfire, CampfireWidget::class.java),
+    ORBIT("orbit", "Solar Orbit", "Planets circling a glowing sun under twinkling stars, with the time.", true, WidgetSize.SMALL, R.layout.widget_orbit, OrbitWidget::class.java),
+    AQUARIUM("aquarium", "Aquarium", "Fish swimming among swaying plants and rising bubbles.", true, WidgetSize.WIDE, R.layout.widget_aquarium, AquariumWidget::class.java);
 
     companion object {
         fun byId(id: String?): WidgetKind? = entries.firstOrNull { it.id == id }
@@ -54,3 +59,8 @@ class DayProgressWidget : BaseWidgetProvider(WidgetKind.DAY_PROGRESS)
 class StorageRingWidget : BaseWidgetProvider(WidgetKind.STORAGE_RING)
 class DualClockWidget : BaseWidgetProvider(WidgetKind.DUAL_CLOCK)
 class SmartGlanceWidget : BaseWidgetProvider(WidgetKind.SMART_GLANCE)
+class KittyWidget : BaseWidgetProvider(WidgetKind.KITTY)
+class PuppyWidget : BaseWidgetProvider(WidgetKind.PUPPY)
+class CampfireWidget : BaseWidgetProvider(WidgetKind.CAMPFIRE)
+class OrbitWidget : BaseWidgetProvider(WidgetKind.ORBIT)
+class AquariumWidget : BaseWidgetProvider(WidgetKind.AQUARIUM)

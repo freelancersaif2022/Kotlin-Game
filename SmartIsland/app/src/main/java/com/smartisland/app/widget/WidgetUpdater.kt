@@ -24,6 +24,7 @@ object WidgetUpdater {
         update(context, WidgetKind.SYSTEM_STATS)
         update(context, WidgetKind.ISLAND_GLANCE)
         update(context, WidgetKind.SMART_GLANCE)
+        update(context, WidgetKind.CAMPFIRE)
     }
 
     fun updateCharging(context: Context) = update(context, WidgetKind.CHARGING)

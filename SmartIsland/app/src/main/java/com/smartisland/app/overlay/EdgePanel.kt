@@ -2,6 +2,8 @@ package com.smartisland.app.overlay
 
 import android.content.Context
 import android.view.Gravity
+import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.snap
@@ -53,6 +55,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 
 enum class EdgeAction { VOLUME_UP, VOLUME_DOWN, LOCK, POWER, SCREENSHOT }
@@ -64,6 +68,7 @@ enum class EdgeAction { VOLUME_UP, VOLUME_DOWN, LOCK, POWER, SCREENSHOT }
 class EdgePanelOverlay(
     private val context: Context,
     private val volumePercent: () -> Int,
+    private val onMoved: (offsetDp: Float) -> Unit,
     private val onAction: (EdgeAction) -> Unit,
 ) {
     private val open = mutableStateOf(false)
@@ -72,18 +77,58 @@ class EdgePanelOverlay(
     val darkHandle = mutableStateOf(false)
     private var window: OverlayWindow? = null
     private var right = true
+    private val density = context.resources.displayMetrics.density
+    private val slop = ViewConfiguration.get(context).scaledTouchSlop
 
-    fun show(onRight: Boolean) {
-        if (window != null && onRight == right) return
-        hide()
-        right = onRight
-        val gravity = (if (onRight) Gravity.END else Gravity.START) or Gravity.CENTER_VERTICAL
-        window = OverlayWindow(context, gravity, onOutsideTouch = { open.value = false }) {
-            EdgePanel(onRight, open, darkHandle.value, volumePercent) { action ->
-                if (action == EdgeAction.SCREENSHOT) open.value = false
-                onAction(action)
+    fun show(onRight: Boolean, offsetDp: Float) {
+        if (window == null || onRight != right) {
+            hide()
+            right = onRight
+            val gravity = (if (onRight) Gravity.END else Gravity.START) or Gravity.CENTER_VERTICAL
+            window = OverlayWindow(context, gravity, onOutsideTouch = { open.value = false }, touchInterceptor = ::dragHandle) {
+                EdgePanel(onRight, open, darkHandle.value, volumePercent) { action ->
+                    if (action == EdgeAction.SCREENSHOT) open.value = false
+                    onAction(action)
+                }
+            }.also { it.show() }
+        }
+        if (!dragging) window?.move(0, clampY((offsetDp * density).roundToInt()))
+    }
+
+    // Dragging the closed handle up or down moves it along the edge -------------------------------
+
+    private var downX = 0f
+    private var downY = 0f
+    private var startY = 0
+    private var dragging = false
+
+    private fun dragHandle(ev: MotionEvent): Boolean {
+        val w = window ?: return false
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                downX = ev.rawX
+                downY = ev.rawY
+                startY = w.y
+                dragging = false
             }
-        }.also { it.show() }
+            MotionEvent.ACTION_MOVE -> {
+                val dy = ev.rawY - downY
+                if (!dragging && !open.value && abs(dy) > slop && abs(dy) > abs(ev.rawX - downX)) dragging = true
+                if (dragging) w.move(0, clampY(startY + dy.roundToInt()))
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> if (dragging) {
+                dragging = false
+                onMoved(w.y / density)
+                return true
+            }
+        }
+        return dragging
+    }
+
+    /** Keeps the handle, and the panel it opens around itself, fully on screen. */
+    private fun clampY(y: Int): Int {
+        val limit = (context.resources.displayMetrics.heightPixels / 2 - (190 * density).roundToInt()).coerceAtLeast(0)
+        return y.coerceIn(-limit, limit)
     }
 
     fun hide() {

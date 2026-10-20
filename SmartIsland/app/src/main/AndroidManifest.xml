@@ -302,5 +302,65 @@
                 android:resource="@xml/widget_info_smart_glance" />
         </receiver>
 
+        <receiver
+            android:name=".widget.KittyWidget"
+            android:exported="false"
+            android:label="@string/widget_title_kitty">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_kitty" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.PuppyWidget"
+            android:exported="false"
+            android:label="@string/widget_title_puppy">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_puppy" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.CampfireWidget"
+            android:exported="false"
+            android:label="@string/widget_title_campfire">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_campfire" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.OrbitWidget"
+            android:exported="false"
+            android:label="@string/widget_title_orbit">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_orbit" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.AquariumWidget"
+            android:exported="false"
+            android:label="@string/widget_title_aquarium">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_aquarium" />
+        </receiver>
+
     </application>
 </manifest>

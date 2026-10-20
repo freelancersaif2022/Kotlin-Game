@@ -66,7 +66,12 @@ class IslandAccessibilityService : AccessibilityService() {
         volume = VolumeController(this)
         landscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         island = IslandOverlay(this, settingsRepo.settings)
-        edge = EdgePanelOverlay(this, { volume.percent(VolumeStream.MEDIA) }, ::onEdgeAction)
+        edge = EdgePanelOverlay(
+            this,
+            volumePercent = { volume.percent(VolumeStream.MEDIA) },
+            onMoved = { dp -> settingsRepo.update { it.copy(edgePanelOffsetDp = dp) } },
+            onAction = ::onEdgeAction,
+        )
         IslandEngine.setServiceRunning(true)
 
         scope.launch {
@@ -143,7 +148,7 @@ class IslandAccessibilityService : AccessibilityService() {
         }
 
         if (s.edgePanelEnabled && p.isPremium) {
-            edge?.show(s.edgePanelRight)
+            edge?.show(s.edgePanelRight, s.edgePanelOffsetDp)
             updateEdgeHandle()
             edge?.setVisible(!hidden)
         } else {

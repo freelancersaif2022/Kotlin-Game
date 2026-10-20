@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.VerticalAlignTop
 import androidx.compose.material.icons.rounded.VerticalSplit
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -154,8 +155,8 @@ fun IslandScreen(nav: AppNavigator) {
 
             // Split into sections so a slider drag only recomposes the preview and size card.
             ActivitiesSection(repo, pro, paywall, s.showMedia, s.showCalls, s.showCharging, s.showRinger, s.showNotifications, s.replaceVolumePanel)
-            StyleSection(repo, pro, paywall, s.accentColor, s.glow, s.haptics)
-            BehaviorSection(repo, pro, paywall, s.hideInLandscape, s.edgePanelEnabled, s.edgePanelRight)
+            StyleSection(repo, snack, pro, paywall, s.accentColor, s.glow, s.outline, s.outlineColor, s.haptics)
+            BehaviorSection(repo, pro, paywall, s.hideWhenIdle, s.hideInLandscape, s.edgePanelEnabled, s.edgePanelRight)
         }
     }
 }
@@ -195,7 +196,17 @@ private fun ActivitiesSection(
 }
 
 @Composable
-private fun StyleSection(repo: SettingsRepository, pro: Boolean, paywall: () -> Unit, accent: Int, glow: Boolean, haptics: Boolean) {
+private fun StyleSection(
+    repo: SettingsRepository,
+    snack: SnackController,
+    pro: Boolean,
+    paywall: () -> Unit,
+    accent: Int,
+    glow: Boolean,
+    outline: Int,
+    outlineColor: Int,
+    haptics: Boolean,
+) {
     SectionHeader("Style") { if (!pro) ProBadge() }
     GlassCard {
         Text("Accent color", style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
@@ -209,19 +220,72 @@ private fun StyleSection(repo: SettingsRepository, pro: Boolean, paywall: () -> 
             }
         }
         Spacer(Modifier.height(10.dp))
-        SwitchRow(Icons.Rounded.AutoAwesome, Palette.Cyan, "Glow", "Soft halo in your accent color", glow, { v -> repo.update { it.copy(glow = v) } }, locked = !pro, onLockedClick = paywall)
+        SwitchRow(
+            Icons.Rounded.AutoAwesome, Palette.Cyan, "Glow", "Soft halo in your accent color", glow,
+            { v ->
+                if (v && outline != IslandSettings.OUTLINE_OFF) {
+                    snack.error("Turn off the outline first to use Glow")
+                } else {
+                    repo.update { it.copy(glow = v) }
+                }
+            },
+            locked = !pro, onLockedClick = paywall,
+        )
+        Spacer(Modifier.height(10.dp))
+        Text("Outline", style = MaterialTheme.typography.titleSmall, color = Palette.TextPrimary)
+        Text(
+            if (glow) "Turn off Glow to use a running outline" else "A running RGB or single-color ring around the island",
+            style = MaterialTheme.typography.bodySmall,
+            color = Palette.TextSecondary,
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(IslandSettings.OUTLINE_OFF to "Off", IslandSettings.OUTLINE_RGB to "RGB", IslandSettings.OUTLINE_COLOR to "Color").forEach { (mode, label) ->
+                Chip(label, outline == mode, Modifier.weight(1f)) {
+                    when {
+                        !pro -> paywall()
+                        mode != IslandSettings.OUTLINE_OFF && glow -> snack.error("Turn off Glow first to use the outline")
+                        else -> repo.update { it.copy(outline = mode) }
+                    }
+                }
+            }
+        }
+        if (outline == IslandSettings.OUTLINE_COLOR) {
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                IslandSettings.ACCENTS.forEach { c ->
+                    ColorDot(Color(c), selected = outlineColor == c) {
+                        if (pro) repo.update { it.copy(outlineColor = c) } else paywall()
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(6.dp))
         SwitchRow(Icons.Rounded.TouchApp, Palette.Primary, "Haptics", "Vibrate on tap and long-press", haptics, { v -> repo.update { it.copy(haptics = v) } })
     }
 }
 
 @Composable
-private fun BehaviorSection(repo: SettingsRepository, pro: Boolean, paywall: () -> Unit, hideLandscape: Boolean, edge: Boolean, edgeRight: Boolean) {
+private fun BehaviorSection(
+    repo: SettingsRepository,
+    pro: Boolean,
+    paywall: () -> Unit,
+    hideWhenIdle: Boolean,
+    hideLandscape: Boolean,
+    edge: Boolean,
+    edgeRight: Boolean,
+) {
     SectionHeader("Behavior")
     GlassCard(padding = 12.dp) {
+        SwitchRow(
+            Icons.Rounded.VisibilityOff, Palette.Primary, "Hide island", "Only appears for calls, music, alerts and more, then vanishes",
+            hideWhenIdle, { v -> repo.update { it.copy(hideWhenIdle = v) } },
+        )
+        Divider()
         SwitchRow(Icons.Rounded.ScreenRotation, Palette.Secondary, "Hide in landscape", "Stay out of the way in games and videos", hideLandscape, { v -> repo.update { it.copy(hideInLandscape = v) } })
         Divider()
         SwitchRow(
-            Icons.Rounded.VerticalSplit, Palette.Warning, "Edge panel", "Floating power & volume buttons on the screen edge",
+            Icons.Rounded.VerticalSplit, Palette.Warning, "Edge panel", "Floating power & volume buttons. Drag the handle up or down to move it",
             edge, { v -> repo.update { it.copy(edgePanelEnabled = v) } }, locked = !pro, onLockedClick = paywall,
         )
         if (pro && edge) {

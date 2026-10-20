@@ -107,7 +107,7 @@ fun SettingsScreen(nav: AppNavigator) {
                 detail = when {
                     !premium.isPremium && premium.unlockedWidgets.isNotEmpty() ->
                         "${premium.unlockedWidgets.size} widget(s) unlocked forever with rewarded ads."
-                    !premium.isPremium -> "Unlock all 17 widgets, alerts, volume HUD, edge panel and styles."
+                    !premium.isPremium -> "Unlock all 22 widgets, alerts, volume HUD, edge panel and styles."
                     premium.autoRenew -> "Renews on ${formatDate(premium.expiresAt)}"
                     else -> "Cancelled · PRO until ${formatDate(premium.expiresAt)}"
                 },

@@ -85,7 +85,7 @@ private val pages = listOf(
         ),
     ),
     Page(
-        "17 live widgets",
+        "22 live widgets",
         "Ultra-clean home screen widgets that update in real time: clocks, battery, media, stats and more.",
         listOf(
             Triple(Icons.Rounded.Widgets, Palette.Primary, "Clocks, calendar and world time"),

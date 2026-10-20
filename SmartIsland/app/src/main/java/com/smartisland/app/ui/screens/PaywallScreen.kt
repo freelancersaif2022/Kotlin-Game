@@ -73,7 +73,7 @@ private val paywallPreviewSettings = IslandSettings(glow = true)
 private data class Perk(val icon: ImageVector, val color: Color, val title: String, val detail: String)
 
 private val perks = listOf(
-    Perk(Icons.Rounded.Widgets, Palette.Primary, "All 17 widgets", "Charging Pulse, World Clock, Now Playing, Stopwatch and more"),
+    Perk(Icons.Rounded.Widgets, Palette.Primary, "All 22 widgets", "Animated Kitty, Aquarium, Now Playing, Charging Pulse and more"),
     Perk(Icons.Rounded.Notifications, Palette.Secondary, "Notification alerts", "Messages pop out of the island like on iPhone"),
     Perk(Icons.AutoMirrored.Rounded.VolumeUp, Palette.Primary, "Island volume HUD", "Volume keys show a sleek 0–100% bar"),
     Perk(Icons.Rounded.VerticalSplit, Palette.Warning, "Edge panel", "Floating power & volume buttons on any screen"),

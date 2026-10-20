@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated animation frame. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path android:pathData="M18.44,84.00 a41.56,32.11 0 1,0 83.11,0 a41.56,32.11 0 1,0 -83.11,0 Z"
+        android:fillColor="#1FFF7A1A" />
+    <path android:pathData="M31.67,86.00 a28.33,20.78 0 1,0 56.67,0 a28.33,20.78 0 1,0 -56.67,0 Z"
+        android:fillColor="#29FF9F2A" />
+    <group android:pivotX="60" android:pivotY="92" android:rotation="-2.00" android:translateX="0.00" android:translateY="0.00" android:scaleX="0.968" android:scaleY="0.949">
+        <path android:pathData="M60,92 C45,92 38,81 41,69 C43,61 50,57 53,45 C59,53 57,59 61,62 C65,52 63,41 70,33 C72,48 81,57 81,72 C81,84 73,92 60,92 Z"
+            android:fillColor="#FFFF5A1F" />
+    </group>
+    <group android:pivotX="60" android:pivotY="92" android:rotation="2.40" android:translateX="0.00" android:translateY="0.00" android:scaleX="0.778" android:scaleY="0.722">
+        <path android:pathData="M60,92 C45,92 38,81 41,69 C43,61 50,57 53,45 C59,53 57,59 61,62 C65,52 63,41 70,33 C72,48 81,57 81,72 C81,84 73,92 60,92 Z"
+            android:fillColor="#FFFF9F0A" />
+    </group>
+    <group android:pivotX="60" android:pivotY="92" android:rotation="-3.20" android:translateX="0.00" android:translateY="0.00" android:scaleX="0.500" android:scaleY="0.549">
+        <path android:pathData="M60,92 C45,92 38,81 41,69 C43,61 50,57 53,45 C59,53 57,59 61,62 C65,52 63,41 70,33 C72,48 81,57 81,72 C81,84 73,92 60,92 Z"
+            android:fillColor="#FFFFD84D" />
+    </group>
+    <group android:pivotX="60" android:pivotY="92" android:rotation="3.20" android:translateX="0.00" android:translateY="0.00" android:scaleX="0.260" android:scaleY="0.277">
+        <path android:pathData="M60,92 C45,92 38,81 41,69 C43,61 50,57 53,45 C59,53 57,59 61,62 C65,52 63,41 70,33 C72,48 81,57 81,72 C81,84 73,92 60,92 Z"
+            android:fillColor="#FFFFF6C9" />
+    </group>
+    <path android:pathData="M49.02,43.00 a1.40,1.40 0 1,0 2.80,0 a1.40,1.40 0 1,0 -2.80,0 Z"
+        android:fillColor="#8FFFC34D" />
+    <path android:pathData="M62.33,17.90 a1.40,1.40 0 1,0 2.80,0 a1.40,1.40 0 1,0 -2.80,0 Z"
+        android:fillColor="#26FFC34D" />
+    <path android:pathData="M53.72,69.40 a1.40,1.40 0 1,0 2.80,0 a1.40,1.40 0 1,0 -2.80,0 Z"
+        android:fillColor="#FFFFC34D" />
+    <path android:pathData="M69.76,44.30 a1.40,1.40 0 1,0 2.80,0 a1.40,1.40 0 1,0 -2.80,0 Z"
+        android:fillColor="#95FFC34D" />
+    <group android:pivotX="0" android:pivotY="0" android:rotation="0.00" android:translateX="0.00" android:translateY="0.00" android:scaleX="1.000" android:scaleY="1.000">
+        <path android:pathData="M30,104 L90,92"
+            android:strokeColor="#FF7A4A2B"
+            android:strokeWidth="9"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path android:pathData="M88,93 L89,93"
+            android:strokeColor="#FFC08A5A"
+            android:strokeWidth="7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+    <group android:pivotX="0" android:pivotY="0" android:rotation="0.00" android:translateX="0.00" android:translateY="0.00" android:scaleX="1.000" android:scaleY="1.000">
+        <path android:pathData="M30,92 L90,104"
+            android:strokeColor="#FF8E5733"
+            android:strokeWidth="9"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path android:pathData="M31,92.2 L32,92.2"
+            android:strokeColor="#FFD29A66"
+            android:strokeWidth="7"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
+    <path android:pathData="M54.00,98.00 a6.00,3.00 0 1,0 12.00,0 a6.00,3.00 0 1,0 -12.00,0 Z"
+        android:fillColor="#B2FF7A1A" />
+</vector>

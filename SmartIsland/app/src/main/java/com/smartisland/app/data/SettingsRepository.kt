@@ -69,7 +69,11 @@ class SettingsRepository(context: Context) {
             haptics = prefs.getBoolean(K_HAPTICS, d.haptics),
             glow = prefs.getBoolean(K_GLOW, d.glow),
             accentColor = prefs.getInt(K_ACCENT, d.accentColor),
+            hideWhenIdle = prefs.getBoolean(K_HIDE_IDLE, d.hideWhenIdle),
+            outline = prefs.getInt(K_OUTLINE, d.outline),
+            outlineColor = prefs.getInt(K_OUTLINE_COLOR, d.outlineColor),
             edgePanelEnabled = prefs.getBoolean(K_EDGE, d.edgePanelEnabled),
+            edgePanelOffsetDp = prefs.getFloat(K_EDGE_OFFSET, d.edgePanelOffsetDp),
             edgePanelRight = prefs.getBoolean(K_EDGE_RIGHT, d.edgePanelRight),
             onboardingDone = prefs.getBoolean(K_ONBOARDED, d.onboardingDone),
             darkMode = prefs.getBoolean(K_DARK, d.darkMode),
@@ -95,7 +99,11 @@ class SettingsRepository(context: Context) {
             .putBoolean(K_HAPTICS, s.haptics)
             .putBoolean(K_GLOW, s.glow)
             .putInt(K_ACCENT, s.accentColor)
+            .putBoolean(K_HIDE_IDLE, s.hideWhenIdle)
+            .putInt(K_OUTLINE, s.outline)
+            .putInt(K_OUTLINE_COLOR, s.outlineColor)
             .putBoolean(K_EDGE, s.edgePanelEnabled)
+            .putFloat(K_EDGE_OFFSET, s.edgePanelOffsetDp)
             .putBoolean(K_EDGE_RIGHT, s.edgePanelRight)
             .putBoolean(K_ONBOARDED, s.onboardingDone)
             .putBoolean(K_DARK, s.darkMode)
@@ -120,7 +128,11 @@ class SettingsRepository(context: Context) {
         const val K_HAPTICS = "haptics"
         const val K_GLOW = "glow"
         const val K_ACCENT = "accent"
+        const val K_HIDE_IDLE = "hide_when_idle"
+        const val K_OUTLINE = "outline"
+        const val K_OUTLINE_COLOR = "outline_color"
         const val K_EDGE = "edge_panel"
+        const val K_EDGE_OFFSET = "edge_offset"
         const val K_EDGE_RIGHT = "edge_right"
         const val K_ONBOARDED = "onboarding_done"
         const val K_DARK = "dark_mode"

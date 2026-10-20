@@ -56,6 +56,10 @@ object WidgetRenderer {
             WidgetKind.STORAGE_RING -> storageRing(context, views)
             WidgetKind.DUAL_CLOCK -> views.setOnClickPendingIntent(R.id.root, openClockApp(context))
             WidgetKind.SMART_GLANCE -> smartGlance(context, views)
+            WidgetKind.KITTY, WidgetKind.ORBIT -> views.setOnClickPendingIntent(R.id.root, openClockApp(context))
+            WidgetKind.PUPPY -> views.setOnClickPendingIntent(R.id.root, openCalendar(context))
+            WidgetKind.CAMPFIRE -> campfire(context, views)
+            WidgetKind.AQUARIUM -> views.setOnClickPendingIntent(R.id.root, openApp(context, "home"))
         }
         return views
     }
@@ -228,6 +232,12 @@ object WidgetRenderer {
         v.setInt(R.id.t_island_icon, "setBackgroundResource", if (islandOn) R.drawable.circle_btn_active else R.drawable.circle_btn)
         v.setTextViewText(R.id.t_island_label, if (islandOn) "Island on" else "Island off")
         v.setOnClickPendingIntent(R.id.t_island, WidgetActionReceiver.pending(context, WidgetActionReceiver.ISLAND))
+    }
+
+    private fun campfire(context: Context, v: RemoteViews) {
+        val b = BatterySnapshot.from(context)
+        v.setTextViewText(R.id.fire_battery, if (b.isCharging) "⚡ ${b.level}%" else "${b.level}%")
+        v.setOnClickPendingIntent(R.id.root, openApp(context, "home"))
     }
 
     private fun islandGlance(context: Context, v: RemoteViews) {

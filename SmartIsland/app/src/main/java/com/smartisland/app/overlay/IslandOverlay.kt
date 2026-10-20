@@ -62,6 +62,8 @@ class IslandOverlay(
             active = isActive
             reposition()
         }
+        val touchable = isActive || !s.hideWhenIdle
+        LaunchedEffect(touchable) { window.setTouchable(touchable) }
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         IslandView(
             activity = activity,
