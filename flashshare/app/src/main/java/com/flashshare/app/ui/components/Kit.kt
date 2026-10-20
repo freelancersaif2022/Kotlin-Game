@@ -37,11 +37,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
+import com.flashshare.app.R
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.flashshare.app.ui.theme.Brand
 import com.flashshare.app.ui.theme.LocalExtra
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -75,18 +82,20 @@ fun SnackHost(modifier: Modifier = Modifier) {
     var current by remember { mutableStateOf<SnackMsg?>(null) }
     val queue = remember { ArrayDeque<SnackMsg>() }
     var visible by remember { mutableStateOf(false) }
+    var dismissed by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { Snack.flow.collect { queue.addLast(it); if (current == null) current = queue.removeFirst() } }
     LaunchedEffect(current) {
         if (current == null) return@LaunchedEffect
+        dismissed = false
         visible = true
-        delay(2800)
+        withTimeoutOrNull(2800) { snapshotFlow { dismissed }.first { it } }
         visible = false
-        delay(260)
+        delay(220)
         current = queue.removeFirstOrNull()
     }
     Box(modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(16.dp), contentAlignment = Alignment.BottomCenter) {
         AnimatedVisibility(visible && current != null, enter = slideInVertically { it } + fadeIn(), exit = slideOutVertically { it } + fadeOut()) {
-            current?.let { SnackCard(it) { visible = false } }
+            current?.let { SnackCard(it) { dismissed = true } }
         }
     }
 }
@@ -100,8 +109,26 @@ private fun SnackCard(m: SnackMsg, onDismiss: () -> Unit) {
         SnackKind.INFO -> Brand.main to Icons.Rounded.Info
     }
     val dark = LocalExtra.current.isDark
+    val drag = remember(m.id) { Animatable(0f) }
+    val scope = rememberCoroutineScope()
     Row(
         Modifier.widthIn(max = 520.dp).fillMaxWidth()
+            .graphicsLayer { translationY = drag.value; alpha = (1f - drag.value / 400f).coerceIn(0f, 1f) }
+            // Swipe down to dismiss.
+            .pointerInput(m.id) {
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        scope.launch {
+                            if (drag.value > 60.dp.toPx()) { drag.animateTo(500f, tween(150)); onDismiss() }
+                            else drag.animateTo(0f, spring())
+                        }
+                    },
+                    onVerticalDrag = { change, dy ->
+                        change.consume()
+                        scope.launch { drag.snapTo((drag.value + dy).coerceAtLeast(0f)) }
+                    },
+                )
+            }
             .shadow(18.dp, RoundedCornerShape(22.dp), ambientColor = Color.Black.copy(alpha = 0.3f))
             .clip(RoundedCornerShape(22.dp))
             .background(if (dark) Color(0xFF1E2638) else Color(0xFF111827))
@@ -144,6 +171,7 @@ fun AppDialog(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+          CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
             val brush = if (destructive) Brush.linearGradient(listOf(Color(0xFFFF6B6B), Color(0xFFFF2D55))) else iconBrush
             Box(contentAlignment = Alignment.Center) {
                 Box(Modifier.size(84.dp).clip(CircleShape).background(brush).graphicsLayer { alpha = 0.18f })
@@ -165,6 +193,7 @@ fun AppDialog(
                 Spacer(Modifier.height(6.dp))
                 TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) { Text(dismissText, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
+          }
         }
     }
 }
@@ -216,8 +245,8 @@ fun ProBadge(modifier: Modifier = Modifier) {
         modifier.clip(RoundedCornerShape(8.dp)).background(Brand.premium).shine(1600).padding(horizontal = 6.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(11.dp))
-        Spacer(Modifier.width(2.dp))
+        Icon(painterResource(R.drawable.ic_crown), null, tint = Color.White, modifier = Modifier.size(11.dp))
+        Spacer(Modifier.width(3.dp))
         Text("PRO", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Black, letterSpacing = 0.6.sp)
     }
 }
@@ -229,7 +258,28 @@ fun CrownBadge(size: Dp, modifier: Modifier = Modifier) {
         modifier.size(size).shadow(4.dp, CircleShape).clip(CircleShape).background(Brand.premium)
             .border(2.dp, Color.White, CircleShape),
         contentAlignment = Alignment.Center,
-    ) { Icon(Icons.Rounded.WorkspacePremium, "Premium", tint = Color.White, modifier = Modifier.size(size * 0.62f)) }
+    ) { Icon(painterResource(R.drawable.ic_crown), "Premium", tint = Color.White, modifier = Modifier.size(size * 0.6f)) }
+}
+
+/** Gold medallion with a crown – the Premium mark used on cards and the Premium screen. */
+@Composable
+fun PremiumEmblem(size: Dp, modifier: Modifier = Modifier) {
+    val t = rememberInfiniteTransition(label = "emblem")
+    val glow by t.animateFloat(0.85f, 1.1f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "g")
+    Box(modifier.size(size), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().graphicsLayer { scaleX = glow; scaleY = glow }.clip(CircleShape)
+            .background(Brush.radialGradient(listOf(Color(0xFFFFD36B).copy(alpha = 0.55f), Color.Transparent))))
+        Box(
+            Modifier.fillMaxSize(0.82f).shadow(size * 0.12f, CircleShape, spotColor = Color(0xFFFF8A00))
+                .clip(CircleShape)
+                .background(Brush.linearGradient(listOf(Color(0xFFFFE08A), Color(0xFFFFB200), Color(0xFFFF7A00))))
+                .border(size * 0.04f, Brush.linearGradient(listOf(Color.White.copy(alpha = 0.9f), Color(0xFFFFC94D))), CircleShape)
+                .shine(2600, 0.4f),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(painterResource(R.drawable.ic_crown), "Premium", tint = Color.White, modifier = Modifier.size(size * 0.44f))
+        }
+    }
 }
 
 /** A diagonal light sweep that passes over the content every [periodMs]. */
@@ -253,10 +303,10 @@ fun Modifier.shine(periodMs: Int = 2400, alpha: Float = 0.35f): Modifier = compo
 fun Modifier.staggerIn(index: Int, key: Any = Unit): Modifier = composed {
     val a = remember(key) { Animatable(0f) }
     LaunchedEffect(key) {
-        delay((index.coerceAtMost(12) * 45).toLong())
-        a.animateTo(1f, tween(380, easing = FastOutSlowInEasing))
+        delay((index.coerceAtMost(10) * 28).toLong())
+        a.animateTo(1f, tween(260, easing = FastOutSlowInEasing))
     }
-    graphicsLayer { alpha = a.value; translationY = (1f - a.value) * 40f }
+    graphicsLayer { alpha = a.value; translationY = (1f - a.value) * 28f }
 }
 // endregion
 

@@ -308,7 +308,7 @@ fun PhonesLink(
 // region cleaner scenes
 /** Rocket flying through a star field – used while the cleaner scans. */
 @Composable
-fun RocketScene(progress: Float, modifier: Modifier = Modifier, launching: Boolean = false) {
+fun RocketScene(progress: Float, modifier: Modifier = Modifier, launching: Boolean = false, done: Boolean = false) {
     val t = rememberInfiniteTransition(label = "rocket")
     val time by t.animateFloat(0f, 1f, infiniteRepeatable(tween(1200, easing = LinearEasing)), label = "time")
     val shake by t.animateFloat(-1f, 1f, infiniteRepeatable(tween(90, easing = LinearEasing), RepeatMode.Reverse), label = "shake")
@@ -327,9 +327,25 @@ fun RocketScene(progress: Float, modifier: Modifier = Modifier, launching: Boole
             val c = Offset(size.width / 2, size.height * 0.5f)
             val r = size.minDimension * 0.36f
             drawCircle(Color.White.copy(alpha = 0.06f), r, c, style = Stroke(10.dp.toPx()))
-            drawArc(Brush.sweepGradient(listOf(Color(0xFF3DEBB0), Color(0xFF19C3FF), Color(0xFF3DEBB0)), c), -90f, 360f * progress, false,
+            drawArc(
+                if (done) Brush.sweepGradient(listOf(Color(0xFF2EE6A6), Color(0xFF00C48C), Color(0xFF2EE6A6)), c)
+                else Brush.sweepGradient(listOf(Color(0xFF3DEBB0), Color(0xFF19C3FF), Color(0xFF3DEBB0)), c), -90f, 360f * progress, false,
                 Offset(c.x - r, c.y - r), Size(r * 2, r * 2), style = Stroke(10.dp.toPx(), cap = StrokeCap.Round))
             translate(shake.dp.toPx() * 0.6f, -lift.value * size.height * 0.9f) { drawRocket(c, size.minDimension * 0.18f, flame) }
+        }
+        // Finished: green tick medal on the ring.
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val r = minOf(maxWidth, maxHeight) * 0.36f
+            androidx.compose.animation.AnimatedVisibility(
+                done, Modifier.align(Alignment.Center).offset(x = r * 0.72f, y = r * 0.72f),
+                enter = scaleIn(spring(dampingRatio = 0.4f, stiffness = 300f)) + fadeIn(),
+            ) {
+                Box(
+                    Modifier.size(56.dp).shadow(12.dp, CircleShape, spotColor = Color(0xFF00C48C)).clip(CircleShape)
+                        .background(Brush.linearGradient(listOf(Color(0xFF2EE6A6), Color(0xFF00A877)))).border(3.dp, Color.White, CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Rounded.Check, null, tint = Color.White, modifier = Modifier.size(34.dp)) }
+            }
         }
     }
 }

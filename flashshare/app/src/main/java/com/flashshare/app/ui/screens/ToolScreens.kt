@@ -84,6 +84,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
 import java.io.File
 
 // region delete helper
@@ -650,13 +651,17 @@ fun CleanerScreen(nav: NavController) {
     var scanKey by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
 
+    // What the user sees: eases toward the real progress so the % counts smoothly 1 → 100.
+    val shownAnim = remember { Animatable(0f) }
+    val shown = shownAnim.value
+    LaunchedEffect(progress) { if (progress == 0f) shownAnim.snapTo(0f) else shownAnim.animateTo(progress, tween(260, easing = LinearEasing)) }
     LaunchedEffect(scanKey) {
         stage = CleanStage.SCANNING; result = null; freed = 0; progress = 0f
-        val started = System.currentTimeMillis()
-        val r = c.cleaner.scan { p, s -> progress = p; stageText = s }
-        // Let the rocket fly a moment even on fast phones.
-        val left = 2200 - (System.currentTimeMillis() - started)
-        if (left > 0) delay(left)
+        val r = c.cleaner.scan { p, s -> if (p > progress) progress = p; stageText = s }
+        progress = 1f
+        // Wait until the counter has visibly reached 100%.
+        snapshotFlow { shownAnim.value }.first { it >= 0.995f }
+        delay(150)
         selected = (r.duplicates + r.apks + r.screenshots).map { it.uri.toString() }.toSet()
         result = r
         stage = CleanStage.RESULTS
@@ -669,34 +674,34 @@ fun CleanerScreen(nav: NavController) {
         val bytes = all.filter { it.uri in gone }.sumOf { it.size }
         scope.launch {
             freed = cacheFreed + bytes
-            delay(1600) // let the vortex animation finish
+            delay(900) // let the vortex animation finish
             stage = CleanStage.DONE
         }
     }
 
     AppScaffold("Cleaner", onBack = { nav.popBackStack() }) { pad ->
         val r = result
-        AnimatedContent(stage, Modifier.padding(pad), transitionSpec = { fadeIn(tween(400)) togetherWith fadeOut(tween(300)) }, label = "clean") { st ->
+        AnimatedContent(stage, Modifier.padding(pad), transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(150)) }, label = "clean") { st ->
             when (st) {
                 CleanStage.SCANNING -> Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    RocketScene(progress, Modifier.fillMaxWidth().height(360.dp))
+                    RocketScene(shown, Modifier.fillMaxWidth().height(360.dp))
                     Spacer(Modifier.height(22.dp))
-                    Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Black)
+                    Text("${(shown * 100).toInt().coerceIn(1, 100)}%", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Black)
                     Text(stageText, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(Modifier.height(18.dp))
                     StepList(listOf("Scanning photos & videos", "Finding duplicates", "Checking installers & cache"),
-                        when { progress < 0.3f -> 0; progress < 0.85f -> 1; progress < 1f -> 2; else -> 3 })
+                        when { shown < 0.3f -> 0; shown < 0.85f -> 1; shown < 0.995f -> 2; else -> 3 })
                 }
                 CleanStage.CLEANING -> Column(Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     CleanVortex(Modifier.size(300.dp))
                     Spacer(Modifier.height(20.dp))
                     Text("Cleaning junk…", style = MaterialTheme.typography.headlineSmall)
                     Spacer(Modifier.height(6.dp))
-                    CountUpText(selBytes, { formatSize(it) }, MaterialTheme.typography.titleLarge, Brand.Mint, durationMs = 1800)
+                    CountUpText(selBytes, { formatSize(it) }, MaterialTheme.typography.titleLarge, Brand.Mint, durationMs = 1000)
                 }
                 CleanStage.DONE -> Box(Modifier.fillMaxSize()) {
                     Column(Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                        RocketScene(1f, Modifier.fillMaxWidth().height(260.dp), launching = true)
+                        RocketScene(1f, Modifier.fillMaxWidth().height(280.dp), done = true)
                         Spacer(Modifier.height(24.dp))
                         CountUpText(freed, { "${formatSize(it)} freed" }, MaterialTheme.typography.headlineLarge, LocalExtra.current.success)
                         Spacer(Modifier.height(6.dp))
@@ -761,7 +766,7 @@ fun CleanerScreen(nav: NavController) {
                                     cacheFreed = if (includeCache) withContext(Dispatchers.IO) { c.cleaner.clearCache() } else 0L
                                     if (uris.isEmpty()) {
                                         freed = cacheFreed
-                                        delay(1800)
+                                        delay(1000)
                                         stage = CleanStage.DONE
                                     } else deleter(uris)
                                 }

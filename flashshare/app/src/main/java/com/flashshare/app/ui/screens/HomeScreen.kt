@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.CallMade
@@ -72,7 +74,7 @@ import kotlinx.coroutines.withContext
 
 /** The local user's avatar (custom photo or illustration), with a crown for Premium. */
 @Composable
-fun MeAvatar(size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, showCrown: Boolean = true) {
+fun MeAvatar(size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, showCrown: Boolean = true, goldRing: Boolean = false) {
     val ctx = LocalContext.current
     val prefs = ctx.container.prefs
     val s by prefs.state.collectAsStateWithLifecycle()
@@ -82,7 +84,7 @@ fun MeAvatar(size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, sho
             runCatching { BitmapFactory.decodeFile(prefs.avatarFile.path)?.asImageBitmap() }.getOrNull()
         } else null
     }
-    AvatarImpl(st.avatarId, bmp, size, modifier, ring, crown = showCrown && st.premium)
+    AvatarImpl(st.avatarId, bmp, size, modifier, ring && !(goldRing && st.premium), crown = showCrown && st.premium, goldRing = goldRing && st.premium)
 }
 
 fun playLink(pkg: String) = "https://play.google.com/store/apps/details?id=$pkg"
@@ -119,14 +121,11 @@ fun HomeScreen(nav: NavController) {
         ) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    MeAvatar(50.dp, Modifier.clip(CircleShape).clickable { nav.navigate(Routes.profile(true)) }, ring = true)
+                    MeAvatar(52.dp, Modifier.clip(CircleShape).clickable { nav.navigate(Routes.profile(true)) }, ring = true, showCrown = false, goldRing = true)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text(greeting(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(settings.name, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-                            if (settings.premium) { Spacer(Modifier.width(6.dp)); ProBadge() }
-                        }
+                        Text(settings.name, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Box(
                         Modifier.size(46.dp).shadow(6.dp, CircleShape).clip(CircleShape).background(MaterialTheme.colorScheme.surface)
@@ -259,12 +258,12 @@ private fun HeroCard(premium: Boolean, onUpgrade: () -> Unit) {
                 Spacer(Modifier.height(16.dp))
                 if (premium) {
                     Row(
-                        Modifier.clip(RoundedCornerShape(50)).background(Color.White.copy(alpha = 0.14f)).padding(horizontal = 12.dp, vertical = 8.dp),
+                        Modifier.clip(RoundedCornerShape(50)).background(Brand.premium).shine(2400, 0.25f).padding(horizontal = 10.dp, vertical = 7.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.Bolt, null, tint = Brand.Gold, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Text("Max speed unlocked", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Icon(Icons.Rounded.Bolt, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Max speed unlocked", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, maxLines = 1, softWrap = false)
                     }
                 } else {
                     val src = remember { MutableInteractionSource() }
@@ -279,13 +278,13 @@ private fun HeroCard(premium: Boolean, onUpgrade: () -> Unit) {
                             Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(16.dp))
                         }
                         Spacer(Modifier.width(8.dp))
-                        Text("Unlock Max Speed", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
+                        Text("Unlock Max Speed", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 13.sp, maxLines = 1, softWrap = false)
                     }
                 }
             }
             Spacer(Modifier.width(8.dp))
             Box(contentAlignment = Alignment.Center) {
-                SpeedGauge(gauge, if (premium) "MAX" else "25 MB/s", Modifier.size(104.dp))
+                SpeedGauge(gauge, if (premium) "MAX" else "25 MB/s", Modifier.size(96.dp))
             }
         }
     }
@@ -309,6 +308,10 @@ private fun ActionCard(title: String, subtitle: String, icon: ImageVector, brush
             drawCircle(Color.White.copy(alpha = (1f - ring) * 0.25f), size.width * (0.2f + 0.7f * ring), c, style = Stroke(2.dp.toPx()))
             drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.18f), Color.Transparent), endY = size.height * 0.5f))
         }
+        Box(
+            Modifier.align(Alignment.TopEnd).padding(16.dp).size(32.dp).clip(CircleShape).background(Color.White),
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Color(0xFF2F3A8F), modifier = Modifier.size(18.dp)) }
         Column(Modifier.fillMaxSize().padding(18.dp)) {
             Box(
                 Modifier.size(58.dp).graphicsLayer { translationY = float }.shadow(10.dp, RoundedCornerShape(20.dp))
@@ -317,15 +320,8 @@ private fun ActionCard(title: String, subtitle: String, icon: ImageVector, brush
                 contentAlignment = Alignment.Center,
             ) { Icon(icon, null, tint = Color.White, modifier = Modifier.size(32.dp)) }
             Spacer(Modifier.weight(1f))
-            Row(verticalAlignment = Alignment.Bottom) {
-                Column(Modifier.weight(1f)) {
-                    Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall)
-                    Text(subtitle, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall)
-                }
-                Box(Modifier.size(32.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Color(0xFF2F3A8F), modifier = Modifier.size(18.dp))
-                }
-            }
+            Text(title, color = Color.White, style = MaterialTheme.typography.headlineSmall, maxLines = 1, softWrap = false)
+            Text(subtitle, color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -412,8 +408,9 @@ fun HistoryRow(e: HistoryEntry, modifier: Modifier = Modifier, onClick: () -> Un
 private fun InviteSheet(onDismiss: () -> Unit) {
     val ctx = LocalContext.current
     val link = playLink(ctx.packageName)
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).navigationBarsPadding().padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
+        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).navigationBarsPadding().padding(bottom = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             GlossyIcon(Icons.Rounded.CardGiftcard, IconBrushes.pink, 72.dp)
             Spacer(Modifier.height(14.dp))
             Text("Invite friends to FlashShare", style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)

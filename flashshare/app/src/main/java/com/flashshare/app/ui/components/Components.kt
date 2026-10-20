@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -76,16 +77,20 @@ val AvatarCount: Int get() = AvatarRes.size
 
 /** Shows a custom photo when available, otherwise the selected illustrated avatar. */
 @Composable
-fun Avatar(avatarId: Int, image: ByteArray?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false) {
+fun Avatar(avatarId: Int, image: ByteArray?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false, goldRing: Boolean = false) {
     val bmp = remember(image) { image?.let { runCatching { BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap() }.getOrNull() } }
-    AvatarImpl(avatarId, bmp, size, modifier, ring, crown)
+    AvatarImpl(avatarId, bmp, size, modifier, ring, crown, goldRing)
 }
 
 @Composable
-fun AvatarImpl(avatarId: Int, bmp: ImageBitmap?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false) {
+fun AvatarImpl(avatarId: Int, bmp: ImageBitmap?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false, goldRing: Boolean = false) {
     Box(modifier.size(size)) {
+        if (goldRing) {
+            // Premium: glowing gold outline around the picture.
+            Box(Modifier.fillMaxSize().shadow(size * 0.12f, CircleShape, spotColor = Brand.Orange, ambientColor = Brand.Gold).clip(CircleShape).background(Brand.premium))
+        }
         Box(
-            Modifier.fillMaxSize().clip(CircleShape)
+            Modifier.fillMaxSize().then(if (goldRing) Modifier.padding(size * 0.06f).border(size * 0.025f, Color.White, CircleShape) else Modifier).clip(CircleShape)
                 .background(Brush.linearGradient(listOf(Color(0xFFDDE6FF), Color(0xFFEDE3FF)))),
             contentAlignment = Alignment.Center,
         ) {
@@ -178,8 +183,9 @@ fun AppCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, conten
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, extra.cardBorder, MaterialTheme.shapes.large)
             .then(if (onClick != null) Modifier.clickable(interactionSource = src, indication = androidx.compose.material3.ripple(), onClick = onClick) else Modifier),
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) { content() }
+    }
 }
 // endregion
 

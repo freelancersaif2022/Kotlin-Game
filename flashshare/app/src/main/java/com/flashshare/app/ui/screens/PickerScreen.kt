@@ -116,11 +116,18 @@ fun PickerScreen(mode: String, nav: NavController) {
     }
 
     val title = when (mode) { "group" -> "Pick files for group"; "more" -> "Send more files"; else -> "Select files" }
+    // Leaving the picker with Back discards the selection (everything gets unticked).
+    val leave = {
+        c.selection.clear()
+        nav.popBackStack()
+        Unit
+    }
+    BackHandler(!showSelected, onBack = leave)
 
     Box(Modifier.fillMaxSize()) {
         AppScaffold(
             title = title,
-            onBack = { nav.popBackStack() },
+            onBack = leave,
             actions = { if (selection.isNotEmpty()) TextButton(onClick = { c.selection.clear() }) { Text("Clear") } },
             bottomBar = {
                 AnimatedVisibility(selection.isNotEmpty(), enter = slideInVertically { it } + fadeIn(), exit = slideOutVertically { it } + fadeOut()) {
@@ -520,7 +527,8 @@ fun SelectionBar(count: Int, size: Long, preview: List<ShareItem>, action: Strin
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun SelectedSheet(items: List<ShareItem>, onRemove: (ShareItem) -> Unit, onClear: () -> Unit, onDismiss: () -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.padding(horizontal = 20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GlossyIcon(Icons.Rounded.Inventory2, Brand.main, 46.dp)

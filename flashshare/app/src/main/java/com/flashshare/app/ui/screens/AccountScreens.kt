@@ -279,13 +279,15 @@ fun SettingsScreen(nav: NavController) {
             // Premium
             Box(
                 Modifier.fillMaxWidth().shadow(14.dp, RoundedCornerShape(26.dp), spotColor = Brand.Orange).clip(RoundedCornerShape(26.dp))
-                    .background(Brand.premium).shine(2800, 0.25f).clickable { nav.navigate(Routes.PREMIUM) }.padding(18.dp)
+                    .background(Brush.linearGradient(listOf(Color(0xFF1A1433), Color(0xFF3B2A12), Color(0xFF6B4300))))
+                    .border(1.dp, Brush.linearGradient(listOf(Color(0xFFFFD36B), Color(0xFFFF8A00))), RoundedCornerShape(26.dp))
+                    .shine(3200, 0.12f).clickable { nav.navigate(Routes.PREMIUM) }.padding(16.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    GlossyIcon(Icons.Rounded.WorkspacePremium, Brush.linearGradient(listOf(Color.White.copy(alpha = 0.4f), Color.White.copy(alpha = 0.15f))), 48.dp)
-                    Spacer(Modifier.width(14.dp))
+                    PremiumEmblem(54.dp)
+                    Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(if (settings.premium) "Premium • Active" else "Upgrade to Premium", color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
+                        Text(if (settings.premium) "Premium • Active" else "Upgrade to Premium", color = Color(0xFFFFD36B), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
                         Text(
                             if (settings.premium) (Plan.entries.firstOrNull { it.productId == settings.premiumPlan }?.title ?: "Premium") + " plan • all features unlocked"
                             else "Max speed, no ads, every PRO tool",
@@ -587,7 +589,7 @@ private fun PremiumHero(premium: Boolean) {
                 }, label = "perk") { i ->
                     GlossyIcon(perks[i].icon, perks[i].brush, 96.dp, Modifier.rotate(rot), iconScale = 0.52f)
                 }
-                CrownBadge(40.dp, Modifier.align(Alignment.TopEnd))
+                PremiumEmblem(46.dp, Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-6).dp))
             }
             Spacer(Modifier.height(14.dp))
             Text("FlashShare Premium", color = Color.White, style = MaterialTheme.typography.headlineMedium)

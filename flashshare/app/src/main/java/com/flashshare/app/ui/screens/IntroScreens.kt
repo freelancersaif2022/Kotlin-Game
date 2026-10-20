@@ -56,28 +56,19 @@ import kotlin.math.sin
 // region splash
 @Composable
 fun SplashScreen(onDone: () -> Unit) {
-    val logo = remember { Animatable(0f) }
+    // Static logo (no icon animation); only the name fades in, then we move on quickly.
     val text = remember { Animatable(0f) }
-    val t = rememberInfiniteTransition(label = "splash")
-    val halo by t.animateFloat(0.85f, 1.15f, infiniteRepeatable(tween(1100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "halo")
     LaunchedEffect(Unit) {
-        launch { logo.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 200f)) }
-        delay(280)
-        text.animateTo(1f, tween(520, easing = FastOutSlowInEasing))
-        delay(520)
+        text.animateTo(1f, tween(260, easing = FastOutSlowInEasing))
+        delay(260)
         onDone()
     }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
-        AmbientBlobs(Modifier.fillMaxSize())
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(contentAlignment = Alignment.Center) {
-                Box(Modifier.size(170.dp).scale(halo * logo.value).clip(CircleShape)
-                    .background(Brush.radialGradient(listOf(Brand.Violet.copy(alpha = 0.28f), Color.Transparent))))
-                LogoTile(Modifier.scale(0.5f + 0.5f * logo.value).graphicsLayer { alpha = logo.value.coerceIn(0f, 1f); rotationZ = -20f * (1f - logo.value) }, 112.dp)
-            }
+            LogoTile(size = 112.dp)
             Spacer(Modifier.height(22.dp))
             Column(
-                Modifier.graphicsLayer { alpha = text.value; translationY = (1f - text.value) * 40f },
+                Modifier.graphicsLayer { alpha = text.value; translationY = (1f - text.value) * 24f },
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text("FlashShare", style = MaterialTheme.typography.headlineLarge)
@@ -182,7 +173,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     if (isLast) {
                         GradientButton("Get started", onClick = onFinish, icon = Icons.Rounded.RocketLaunch, modifier = Modifier.widthIn(min = 170.dp))
                     } else {
-                        NextRingButton((state.currentPage + 1f) / pages.size) { scope.launch { state.animateScrollToPage(state.currentPage + 1) } }
+                        NextRingButton((state.currentPage + 1f) / pages.size) { scope.launch { state.animateScrollToPage(state.currentPage + 1, animationSpec = tween(320, easing = FastOutSlowInEasing)) } }
                     }
                 }
             }
@@ -192,7 +183,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
 @Composable
 private fun NextRingButton(progress: Float, onClick: () -> Unit) {
-    val p by animateFloatAsState(progress, tween(500, easing = FastOutSlowInEasing), label = "ring")
+    val p by animateFloatAsState(progress, tween(300, easing = FastOutSlowInEasing), label = "ring")
     val track = MaterialTheme.colorScheme.outlineVariant
     val primary = MaterialTheme.colorScheme.primary
     Box(Modifier.size(64.dp).clip(CircleShape).clickable(onClick = onClick), contentAlignment = Alignment.Center) {

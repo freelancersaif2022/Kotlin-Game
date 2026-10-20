@@ -106,7 +106,7 @@ class FeatureGate(val request: (feature: String, onUnlocked: () -> Unit) -> Unit
 
 val LocalFeatureGate = staticCompositionLocalOf<FeatureGate> { error("no gate") }
 
-private const val ANIM = 320
+private const val ANIM = 220
 
 @Composable
 fun AppNav(settings: AppSettings) {
@@ -151,7 +151,7 @@ fun AppNav(settings: AppSettings) {
             popEnterTransition = { fadeIn(tween(ANIM)) },
             popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(ANIM, easing = FastOutSlowInEasing), targetOffset = { it / 4 }) + fadeOut(tween(ANIM)) },
         ) {
-            composable(Routes.SPLASH, enterTransition = { fadeIn() }, exitTransition = { fadeOut(tween(400)) }) {
+            composable(Routes.SPLASH, enterTransition = { fadeIn(tween(0)) }, exitTransition = { fadeOut(tween(180)) }) {
                 SplashScreen {
                     val next = when {
                         !settings.onboarded -> Routes.ONBOARDING

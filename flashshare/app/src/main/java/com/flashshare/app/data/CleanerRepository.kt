@@ -47,8 +47,8 @@ class CleanerRepository(private val context: Context) {
     }.getOrDefault(StorageInfo(0, 0))
 
     suspend fun scan(onProgress: (Float, String) -> Unit): CleanResult = withContext(Dispatchers.IO) {
-        onProgress(0.05f, "Scanning media…")
-        val files = allFiles()
+        onProgress(0.01f, "Scanning media…")
+        val files = allFiles { p -> onProgress(0.01f + p * 0.29f, "Scanning media…") }
         coroutineContext.ensureActive()
 
         onProgress(0.3f, "Finding large files…")
@@ -67,7 +67,7 @@ class CleanerRepository(private val context: Context) {
         CleanResult(large, duplicates, apks, shots, cache)
     }
 
-    private fun allFiles(): List<CleanItem> {
+    private fun allFiles(progress: (Float) -> Unit = {}): List<CleanItem> {
         val base = MediaStore.Files.getContentUri("external")
         val cols = arrayOf(
             MediaStore.Files.FileColumns._ID, MediaStore.Files.FileColumns.DISPLAY_NAME, MediaStore.Files.FileColumns.SIZE,
@@ -76,7 +76,9 @@ class CleanerRepository(private val context: Context) {
         val out = ArrayList<CleanItem>()
         runCatching {
             context.contentResolver.query(base, cols, "${MediaStore.Files.FileColumns.SIZE} > 0", null, null)?.use { c ->
+                val total = c.count.coerceAtLeast(1)
                 while (c.moveToNext()) {
+                    if (c.position % 400 == 0) progress(c.position.toFloat() / total)
                     val id = c.getLong(0)
                     val name = c.getString(1) ?: continue
                     val mediaType = c.getInt(5)
@@ -99,7 +101,7 @@ class CleanerRepository(private val context: Context) {
         var group = 0
         candidates.forEachIndexed { i, sameSize ->
             coroutineContext.ensureActive()
-            if (i % 20 == 0) progress(i.toFloat() / candidates.size.coerceAtLeast(1))
+            if (i % 5 == 0) progress(i.toFloat() / candidates.size.coerceAtLeast(1))
             sameSize.groupBy { fingerprint(it) }.forEach { (fp, copies) ->
                 if (fp != null && copies.size > 1) {
                     group++

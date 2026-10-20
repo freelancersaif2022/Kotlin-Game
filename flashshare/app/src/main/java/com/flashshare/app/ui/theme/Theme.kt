@@ -137,7 +137,11 @@ fun FlashShareTheme(mode: ThemeMode, content: @Composable () -> Unit) {
     } else {
         Extra(Color(0xFFE3E8F4), Color(0xFF6B7487), Brand.Mint, Color.White, false)
     }
+    val scheme = if (dark) Dark else Light
     CompositionLocalProvider(LocalExtra provides extra) {
-        MaterialTheme(colorScheme = if (dark) Dark else Light, typography = AppTypography, shapes = AppShapes, content = content)
+        MaterialTheme(colorScheme = scheme, typography = AppTypography, shapes = AppShapes) {
+            // Text/icons without an explicit color follow the theme (white in dark mode) even outside a Surface.
+            CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides scheme.onBackground, content = content)
+        }
     }
 }
