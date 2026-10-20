@@ -42,7 +42,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 val left = d.daysLeft(today)
                 val steps = if (d.kind == DeadlineKind.RETURN) RETURN_STEPS else WARRANTY_STEPS
                 // Fire the closest step we've reached but not yet announced (covers days the worker didn't run).
-                val step = steps.filter { left in 0..it }.minOrNull() ?: return@forEach
+                val step = steps.filter { left in 0L..it.toLong() }.minOrNull() ?: return@forEach
                 val key = "${item.id}:${d.kind}:${d.end}:$step"
                 if (!prefs.wasNotified(key)) {
                     notify(applicationContext, item, d, left)
