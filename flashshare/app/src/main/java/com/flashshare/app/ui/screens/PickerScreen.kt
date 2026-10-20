@@ -92,7 +92,7 @@ private class FlightBoard {
 }
 
 /** mode: "send" → scan next, "group" → host a group, "more" → add to the current connection. */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PickerScreen(mode: String, nav: NavController) {
     val ctx = LocalContext.current
