@@ -32,7 +32,7 @@ class ReceiptParserTest {
         assertEquals(454.63, r.total!!, 0.001)
         assertEquals(15, r.returnDays)
         assertEquals(Category.ELECTRONICS, r.category)
-        assertEquals("SONY WH-1000XM5 HEADPHONES".lowercase(), r.suggestedTitle!!.lowercase())
+        assertEquals("Sony WH-1000XM5 Headphones", r.suggestedTitle)
         assertEquals(2, r.items.size)
     }
 
@@ -92,5 +92,26 @@ class ReceiptParserTest {
         assertEquals(listOf(1234.56), parser.amounts("TOTAL 1,234.56"))
         assertEquals(listOf(12.5), parser.amounts("x 12,50"))
         assertTrue(parser.amounts("Phone 555-201-3311").isEmpty())
+    }
+
+    @Test fun joinsColumnsSplitIntoSeparateBlocks() {
+        // Labels block, then a separate prices block, as ML Kit often returns them.
+        val fragments = listOf(
+            TextFragment("NORTHGATE ELECTRONICS", 100, 10, 50),
+            TextFragment("SONY WH-1000XM5 HEADPHONES", 20, 200, 236),
+            TextFragment("SUBTOTAL", 20, 260, 296),
+            TextFragment("TOTAL", 20, 320, 358),
+            TextFragment("399.99", 700, 204, 238),
+            TextFragment("399.99", 700, 262, 297),
+            TextFragment("${'$'}434.49", 690, 330, 366),
+        )
+        val rows = joinRows(fragments)
+        assertEquals(
+            listOf("NORTHGATE ELECTRONICS", "SONY WH-1000XM5 HEADPHONES  399.99", "SUBTOTAL  399.99", "TOTAL  ${'$'}434.49"),
+            rows,
+        )
+        val r = parser.parse(rows.joinToString("\n"), today)
+        assertEquals(434.49, r.total!!, 0.001)
+        assertEquals("Sony WH-1000XM5 Headphones", r.suggestedTitle)
     }
 }

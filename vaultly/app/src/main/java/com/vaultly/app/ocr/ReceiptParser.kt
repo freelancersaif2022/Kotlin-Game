@@ -20,6 +20,31 @@ data class ParsedReceipt(
 
 data class LineItem(val name: String, val price: Double)
 
+/** A piece of recognised text and where it sits on the image. */
+data class TextFragment(val text: String, val left: Int, val top: Int, val bottom: Int) {
+    val centerY: Float get() = (top + bottom) / 2f
+    val height: Int get() = bottom - top
+}
+
+/**
+ * OCR engines often return a receipt's left column (labels) and right column (prices) as
+ * separate blocks. This puts fragments that share a baseline back on one line, left to right.
+ */
+fun joinRows(fragments: List<TextFragment>): List<String> {
+    if (fragments.isEmpty()) return emptyList()
+    val medianHeight = fragments.map { it.height }.sorted()[fragments.size / 2].coerceAtLeast(1)
+    val rows = mutableListOf<MutableList<TextFragment>>()
+    fragments.sortedBy { it.centerY }.forEach { f ->
+        val row = rows.lastOrNull()
+        if (row != null && kotlin.math.abs(row.map { it.centerY }.average() - f.centerY) < medianHeight * 0.65) {
+            row += f
+        } else {
+            rows += mutableListOf(f)
+        }
+    }
+    return rows.map { row -> row.sortedBy { it.left }.joinToString("  ") { it.text.trim() } }
+}
+
 /**
  * Turns raw OCR text into receipt fields with plain rules (no network, no model).
  * [dayFirst] decides ambiguous dates like 03/04/2025 (true = 3 April).
@@ -170,7 +195,10 @@ class ReceiptParser(private val dayFirst: Boolean = true) {
 
     private fun titleCase(s: String): String =
         if (s.any { it.isLowerCase() }) s
-        else s.lowercase().split(' ').joinToString(" ") { w -> w.replaceFirstChar { it.titlecase() } }
+        // Model numbers like WH-1000XM5 keep their capitals.
+        else s.split(' ').joinToString(" ") { w ->
+            if (w.any { it.isDigit() }) w else w.lowercase().replaceFirstChar { it.titlecase() }
+        }
 
     companion object {
         private val ISO_DATE = Regex("""\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})\b""")

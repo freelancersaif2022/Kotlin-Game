@@ -16,8 +16,12 @@ class ReceiptReader(private val context: Context) {
     suspend fun read(imagePath: String): ParsedReceipt? = runCatching {
         val image = InputImage.fromFilePath(context, Uri.fromFile(File(imagePath)))
         val text = recognizer.process(image).await()
-        // Lines in reading order: ML Kit returns blocks top-to-bottom already.
-        val raw = text.textBlocks.flatMap { block -> block.lines.map { it.text } }.joinToString("\n")
+        val fragments = text.textBlocks.flatMap { block -> block.lines }.mapNotNull { line ->
+            line.boundingBox?.let { TextFragment(line.text, it.left, it.top, it.bottom) }
+        }
+        // Rebuild rows by position; fall back to ML Kit's own order if boxes are missing.
+        val raw = if (fragments.isNotEmpty()) joinRows(fragments).joinToString("\n")
+        else text.textBlocks.flatMap { block -> block.lines.map { it.text } }.joinToString("\n")
         val dayFirst = Locale.getDefault().country !in MONTH_FIRST_COUNTRIES
         ReceiptParser(dayFirst).parse(raw)
     }.getOrNull()
