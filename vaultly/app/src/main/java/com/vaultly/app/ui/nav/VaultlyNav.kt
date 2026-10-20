@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -29,7 +30,12 @@ import com.vaultly.app.ui.onboarding.OnboardingScreen
 import com.vaultly.app.ui.paywall.PaywallScreen
 import com.vaultly.app.ui.settings.PrivacyScreen
 import com.vaultly.app.ui.settings.SettingsScreen
+import com.vaultly.app.scan.Quad
+import com.vaultly.app.ui.components.NoteHost
+import com.vaultly.app.ui.scan.ReviewScreen
+import com.vaultly.app.ui.scan.ScannerScreen
 import com.vaultly.app.ui.viewer.ImageViewerScreen
+import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object Routes {
@@ -41,11 +47,15 @@ object Routes {
     const val PAYWALL = "paywall"
     const val VIEWER = "viewer?path={path}"
     const val PRIVACY = "privacy"
+    const val SCANNER = "scanner"
+    const val REVIEW = "review?src={src}&quad={quad}&camera={camera}"
 
     fun edit(id: Long? = null, image: Uri? = null): String =
         "edit?id=${id ?: -1}&image=${Uri.encode(image?.toString() ?: "")}"
     fun detail(id: Long) = "detail/$id"
     fun viewer(path: String) = "viewer?path=${Uri.encode(path)}"
+    fun review(src: String, quad: Quad? = null, camera: Boolean = false) =
+        "review?src=${Uri.encode(src)}&quad=${Uri.encode(quad?.encode() ?: "")}&camera=$camera"
 }
 
 @Composable
@@ -103,6 +113,37 @@ fun VaultlyNav(app: VaultlyApp, pendingItem: MutableStateFlow<Long?>) {
             ) { entry ->
                 DetailScreen(app, entry.arguments!!.getLong("id"), nav)
             }
+            composable(Routes.SCANNER) {
+                ScannerScreen(
+                    app,
+                    onClose = { nav.popBackStack() },
+                    onCaptured = { path, quad -> nav.navigate(Routes.review(path, quad, camera = true)) },
+                    onPicked = { uri ->
+                        nav.navigate(Routes.review(uri.toString())) { popUpTo(Routes.SCANNER) { inclusive = true } }
+                    },
+                )
+            }
+            composable(
+                Routes.REVIEW,
+                arguments = listOf(
+                    navArgument("src") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("quad") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("camera") { type = NavType.BoolType; defaultValue = false },
+                ),
+            ) { entry ->
+                val camera = entry.arguments?.getBoolean("camera") ?: false
+                ReviewScreen(
+                    app,
+                    src = entry.arguments?.getString("src").orEmpty(),
+                    hint = Quad.decode(entry.arguments?.getString("quad")),
+                    fromCamera = camera,
+                    onRetake = { nav.popBackStack() },
+                    onDone = { path ->
+                        nav.navigate(Routes.edit(image = Uri.fromFile(File(path)))) { popUpTo(Routes.HOME) }
+                    },
+                    onExit = { nav.popBackStack(Routes.HOME, inclusive = false) },
+                )
+            }
             composable(Routes.SETTINGS) { SettingsScreen(app, nav) }
             composable(Routes.PAYWALL) { PaywallScreen(app, onClose = { nav.popBackStack() }) }
             composable(Routes.PRIVACY) { PrivacyScreen(onBack = { nav.popBackStack() }) }
@@ -113,6 +154,7 @@ fun VaultlyNav(app: VaultlyApp, pendingItem: MutableStateFlow<Long?>) {
                 ImageViewerScreen(entry.arguments?.getString("path").orEmpty(), onClose = { nav.popBackStack() })
             }
         }
+        NoteHost(app.notifier, Modifier.align(Alignment.BottomCenter))
     }
 }
 

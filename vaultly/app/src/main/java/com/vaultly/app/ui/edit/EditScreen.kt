@@ -40,7 +40,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddAPhoto
+import androidx.compose.material.icons.outlined.AssignmentReturned
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close
@@ -48,14 +50,13 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material.icons.outlined.Sync
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -85,6 +86,8 @@ import com.vaultly.app.VaultlyApp
 import com.vaultly.app.data.Category
 import com.vaultly.app.domain.Deadlines
 import com.vaultly.app.ui.components.ChoiceChip
+import com.vaultly.app.ui.components.CurrencySheet
+import com.vaultly.app.ui.components.NumberDialog
 import com.vaultly.app.ui.components.PickerField
 import com.vaultly.app.ui.components.PrimaryButton
 import com.vaultly.app.ui.components.SectionHeader
@@ -287,49 +290,53 @@ fun EditScreen(
                         vm.setDate(Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate())
                     }
                     showDate = false
-                }) { Text("Done") }
+                }) { Text("Done", color = colors.gold, style = MaterialTheme.typography.labelLarge) }
             },
-            dismissButton = { TextButton(onClick = { showDate = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { showDate = false }) { Text("Cancel", color = colors.muted) } },
+            shape = RoundedCornerShape(28.dp),
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         ) {
-            DatePicker(state = state, showModeToggle = false)
+            DatePicker(
+                state = state,
+                showModeToggle = false,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    selectedDayContainerColor = colors.gold,
+                    selectedDayContentColor = Color.White,
+                    todayDateBorderColor = colors.gold,
+                    todayContentColor = colors.gold,
+                    selectedYearContainerColor = colors.gold,
+                    selectedYearContentColor = Color.White,
+                ),
+            )
         }
     }
 
     if (showCurrency) {
-        AlertDialog(
-            onDismissRequest = { showCurrency = false },
-            title = { Text("Currency") },
-            text = {
-                LazyColumn(Modifier.height(360.dp)) {
-                    items(Format.currencies) { code ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { vm.setCurrency(code); showCurrency = false }
-                                .padding(horizontal = 12.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(code, style = MaterialTheme.typography.titleMedium, modifier = Modifier.width(64.dp))
-                            Text(Format.symbol(code), style = MaterialTheme.typography.bodyMedium, color = colors.muted, modifier = Modifier.weight(1f))
-                            if (code == s.currency) Icon(Icons.Outlined.Check, null, tint = colors.gold)
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { showCurrency = false }) { Text("Close") } },
-        )
+        CurrencySheet(s.currency, onSelect = { vm.setCurrency(it); showCurrency = false }, onDismiss = { showCurrency = false })
     }
 
     if (customReturn) {
-        NumberDialog("Return window", "Days", s.returnDays ?: 30, 1..730, onDismiss = { customReturn = false }) {
-            vm.setReturnDays(it); customReturn = false
-        }
+        NumberDialog(
+            icon = Icons.Outlined.AssignmentReturned,
+            title = "Return window",
+            unit = "Days",
+            initial = s.returnDays ?: 30,
+            range = 1..730,
+            presets = listOf(21, 45, 120, 365),
+            onDismiss = { customReturn = false },
+        ) { vm.setReturnDays(it); customReturn = false }
     }
     if (customWarranty) {
-        NumberDialog("Warranty length", "Months", s.warrantyMonths ?: 12, 1..240, onDismiss = { customWarranty = false }) {
-            vm.setWarranty(it); customWarranty = false
-        }
+        NumberDialog(
+            icon = Icons.Outlined.VerifiedUser,
+            title = "Warranty length",
+            unit = "Months",
+            initial = s.warrantyMonths ?: 12,
+            range = 1..240,
+            presets = listOf(18, 48, 60, 120),
+            onDismiss = { customWarranty = false },
+        ) { vm.setWarranty(it); customWarranty = false }
     }
 }
 
@@ -517,35 +524,4 @@ private fun PhotoStrip(photos: List<String>, onAdd: () -> Unit, onRemove: (Strin
             modifier = Modifier.alpha(0.9f),
         )
     }
-}
-
-@Composable
-private fun NumberDialog(
-    title: String,
-    unit: String,
-    initial: Int,
-    range: IntRange,
-    onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit,
-) {
-    var text by remember { mutableStateOf(initial.toString()) }
-    val value = text.toIntOrNull()
-    val valid = value != null && value in range
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it.filter(Char::isDigit).take(3) },
-                label = { Text(unit) },
-                singleLine = true,
-                isError = !valid,
-                supportingText = { Text("${range.first}–${range.last} ${unit.lowercase()}") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-        },
-        confirmButton = { TextButton(enabled = valid, onClick = { onConfirm(value!!) }) { Text("Set") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
 }

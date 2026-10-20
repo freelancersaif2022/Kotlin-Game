@@ -33,6 +33,9 @@ android {
         manifestPlaceholders["admobAppId"] = admobAppId
         buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"$admobInterstitialId\"")
         buildConfigField("String", "ADMOB_REWARDED_ID", "\"$admobRewardedId\"")
+        // Test-key builds get a mock store so purchases can be tried without Play Console setup.
+        buildConfigField("boolean", "MOCK_BILLING", (releaseKeystore == null).toString())
+        buildConfigField("String", "SUPPORT_EMAIL", "\"${System.getenv("VAULTLY_SUPPORT_EMAIL").orEmpty()}\"")
 
         resourceConfigurations += listOf("en")
     }
@@ -121,12 +124,18 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation("io.coil-kt:coil-compose:2.7.0")
 
-    // On-device OCR and document scanner, delivered through Google Play services (keeps the APK small).
+    // On-device OCR delivered through Google Play services (keeps the APK small).
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
-    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
 
     implementation("com.google.android.gms:play-services-ads:24.2.0")
     implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.google.android.ump:user-messaging-platform:3.1.0")
+
+    val cameraX = "1.4.2"
+    implementation("androidx.camera:camera-core:$cameraX")
+    implementation("androidx.camera:camera-camera2:$cameraX")
+    implementation("androidx.camera:camera-lifecycle:$cameraX")
+    implementation("androidx.camera:camera-view:$cameraX")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")

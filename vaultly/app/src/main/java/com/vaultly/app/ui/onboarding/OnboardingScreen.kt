@@ -49,27 +49,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vaultly.app.R
+import com.vaultly.app.ui.components.ClaimScene
 import com.vaultly.app.ui.components.PrimaryButton
+import com.vaultly.app.ui.components.RemindScene
+import com.vaultly.app.ui.components.ScanScene
 import com.vaultly.app.ui.theme.Palette
 import kotlinx.coroutines.launch
 
-private data class Page(val icon: ImageVector, val kicker: String, val title: String, val body: String)
+private data class Page(val icon: ImageVector, val kicker: String, val title: String, val body: String, val scene: @Composable () -> Unit)
 
 private val pages = listOf(
     Page(
-        Icons.Outlined.DocumentScanner, "SCAN",
+        Icons.Outlined.DocumentScanner, "SCAN IT",
         "Every receipt,\nsafely kept.",
-        "Snap a paper receipt or import an e-receipt. Vaultly reads the store, date and total on your device — nothing leaves your phone.",
+        "Point your camera at a receipt. Vaultly finds the edges, captures it and reads the store, date and total — right on your phone.",
+        { ScanScene() },
     ),
     Page(
-        Icons.Outlined.NotificationsActive, "REMIND",
+        Icons.Outlined.NotificationsActive, "GET REMINDED",
         "Never miss a\nreturn again.",
-        "Return windows and warranties are tracked automatically, with gentle reminders before each one ends.",
+        "Every return window and warranty counts down automatically, and Vaultly reminds you before each one ends.",
+        { RemindScene() },
     ),
     Page(
-        Icons.Outlined.PictureAsPdf, "CLAIM",
+        Icons.Outlined.PictureAsPdf, "CLAIM WITH PROOF",
         "Proof, ready\nin one tap.",
-        "Export a polished claim pack with your receipt, photos and dates — perfect for a return desk or warranty claim.",
+        "Need to return or claim? Export a polished PDF with your receipt, photos and dates, and share it in one tap.",
+        { ClaimScene() },
     ),
 )
 
@@ -109,10 +115,17 @@ fun OnboardingScreen(onDone: () -> Unit) {
             HorizontalPager(pager, Modifier.weight(1f)) { index ->
                 val page = pages[index]
                 Column(Modifier.fillMaxSize().padding(horizontal = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(Modifier.weight(0.6f))
-                    Emblem(page.icon, index == 0)
-                    Spacer(Modifier.weight(0.5f))
-                    Text(page.kicker, style = MaterialTheme.typography.labelSmall, color = Palette.Gold)
+                    Spacer(Modifier.weight(0.35f))
+                    page.scene()
+                    Spacer(Modifier.weight(0.3f))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            Modifier.size(22.dp).clip(CircleShape).background(Palette.GoldLight.copy(alpha = 0.16f)),
+                            contentAlignment = Alignment.Center,
+                        ) { Text("${index + 1}", style = MaterialTheme.typography.labelMedium, color = Palette.GoldLight) }
+                        Spacer(Modifier.width(8.dp))
+                        Text(page.kicker, style = MaterialTheme.typography.labelSmall, color = Palette.Gold)
+                    }
                     Spacer(Modifier.height(12.dp))
                     Text(
                         page.title,

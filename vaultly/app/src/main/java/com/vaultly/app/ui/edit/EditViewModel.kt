@@ -77,7 +77,8 @@ class EditViewModel(private val app: VaultlyApp, private val itemId: Long?, imag
 
     fun importReceipt(uri: Uri) = viewModelScope.launch {
         _state.update { it.copy(scanning = true, scanFailed = false, autoFilled = emptyList()) }
-        val path = app.images.import(uri)
+        // Scans from Vaultly's own scanner are already cropped and saved in the vault.
+        val path = app.images.storedPath(uri) ?: app.images.import(uri)
         if (path == null) {
             _state.update { it.copy(scanning = false, scanFailed = true) }
             return@launch
@@ -168,6 +169,7 @@ class EditViewModel(private val app: VaultlyApp, private val itemId: Long?, imag
             photos = s.photos.joinToString("|"),
         )
         val id = app.repository.save(item)
+        com.vaultly.app.reminders.ReminderWorker.runNow(app)
         // Keep the saved images when the screen closes.
         original = item.copy(id = id)
         _state.update { it.copy(saving = false) }

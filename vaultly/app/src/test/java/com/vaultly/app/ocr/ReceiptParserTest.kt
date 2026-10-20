@@ -114,4 +114,33 @@ class ReceiptParserTest {
         assertEquals(434.49, r.total!!, 0.001)
         assertEquals("Sony WH-1000XM5 Headphones", r.suggestedTitle)
     }
+
+    @Test fun fixesOcrLookAlikes() {
+        assertEquals("TOTAL 390.95", parser.normalizeOcr("TOTAL 39O.9S"))
+        assertEquals("Oct 14, 2026", parser.normalizeOcr("0ct 14, 2026"))
+        assertEquals("Latte 4.50", parser.normalizeOcr("Latte 4 .50"))
+        assertEquals("10/14/2026", parser.normalizeOcr("1O/14/2026"))
+        // Words are left alone.
+        assertEquals("SONY BOSE SOLO", parser.normalizeOcr("SONY BOSE SOLO"))
+    }
+
+    @Test fun deskewsTiltedPhotoIntoRows() {
+        // Lines tilted by ~6°: the price on the right sits lower than its label on the left.
+        val tilt = Math.toRadians(6.0)
+        fun line(text: String, x: Float, y: Float, w: Float): OcrLine {
+            val c = kotlin.math.cos(tilt).toFloat()
+            val s = kotlin.math.sin(tilt).toFloat()
+            fun p(dx: Float, dy: Float) = (x + dx * c - dy * s) to (y + dx * s + dy * c)
+            return OcrLine(text, listOf(p(0f, 0f), p(w, 0f), p(w, 30f), p(0f, 30f)))
+        }
+        val rows = joinRows(
+            deskew(
+                listOf(
+                    line("SUBTOTAL", 20f, 200f, 200f), line("399.99", 600f, 200f + 580f * 0.105f, 120f),
+                    line("TOTAL", 20f, 260f, 120f), line("434.49", 600f, 260f + 580f * 0.105f, 120f),
+                ),
+            ),
+        )
+        assertEquals(listOf("SUBTOTAL  399.99", "TOTAL  434.49"), rows)
+    }
 }

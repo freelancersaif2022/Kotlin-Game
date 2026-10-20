@@ -34,6 +34,22 @@ class ImageStore(private val context: Context) {
         }.getOrNull()
     }
 
+    /** Saves a processed scan into the vault as a high-quality JPEG. */
+    suspend fun save(bitmap: Bitmap): String? = withContext(Dispatchers.IO) {
+        runCatching {
+            val file = File(dir, "${UUID.randomUUID()}.jpg")
+            file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 92, it) }
+            file.absolutePath
+        }.getOrNull()
+    }
+
+    /** The file path when [uri] already points at an image inside the vault, else null. */
+    fun storedPath(uri: Uri): String? {
+        if (uri.scheme != "file") return null
+        val file = File(uri.path ?: return null)
+        return file.absolutePath.takeIf { file.parentFile == dir && file.exists() }
+    }
+
     fun delete(path: String) {
         runCatching { File(path).takeIf { it.parentFile == dir }?.delete() }
     }

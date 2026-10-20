@@ -18,7 +18,8 @@ class VaultlyApp : Application() {
     val reader by lazy { ReceiptReader(this) }
     val exporter by lazy { ClaimPackExporter(this) }
     val ads by lazy { AdsManager(this, prefs) }
-    val billing by lazy { BillingManager(this, prefs) }
+    val notifier = Notifier()
+    val billing by lazy { BillingManager(this, prefs, notifier) }
 
     override fun onCreate() {
         super.onCreate()

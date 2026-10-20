@@ -1,11 +1,7 @@
 package com.vaultly.app.ui.home
 
-import android.app.Activity
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -46,14 +42,12 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,12 +70,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.vaultly.app.VaultlyApp
 import com.vaultly.app.data.Prefs
+import com.vaultly.app.ui.components.DialogTone
 import com.vaultly.app.ui.components.ItemCard
+import com.vaultly.app.ui.components.VaultDialog
 import com.vaultly.app.ui.components.PrimaryButton
 import com.vaultly.app.ui.components.ProBadge
 import com.vaultly.app.ui.components.SectionHeader
@@ -113,34 +106,12 @@ fun HomeScreen(app: VaultlyApp, nav: NavHostController) {
     val openEditor: (Uri?) -> Unit = { uri -> nav.navigate(Routes.edit(image = uri)) }
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) openEditor(uri)
-    }
-    val scanLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val page = GmsDocumentScanningResult.fromActivityResultIntent(result.data)?.pages?.firstOrNull()
-            if (page != null) openEditor(page.imageUri)
-        }
+        if (uri != null) nav.navigate(Routes.review(uri.toString()))
     }
     val pickGallery = {
         galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
-    val startScan: () -> Unit = {
-        val activity = context.findActivity()
-        if (activity != null) {
-            val options = GmsDocumentScannerOptions.Builder()
-                .setGalleryImportAllowed(true)
-                .setPageLimit(1)
-                .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
-                .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
-                .build()
-            GmsDocumentScanning.getClient(options).getStartScanIntent(activity)
-                .addOnSuccessListener { scanLauncher.launch(IntentSenderRequest.Builder(it).build()) }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Scanner is getting ready. Pick a photo instead.", Toast.LENGTH_SHORT).show()
-                    pickGallery()
-                }
-        }
-    }
+    val startScan: () -> Unit = { nav.navigate(Routes.SCANNER) }
     val requestAdd = {
         scope.launch {
             val count = app.repository.activeCount()
@@ -249,36 +220,28 @@ fun HomeScreen(app: VaultlyApp, nav: NavHostController) {
 
     if (showLimit) {
         val activity = context.findActivity()
-        AlertDialog(
-            onDismissRequest = { showLimit = false },
-            icon = { Icon(Icons.Outlined.Shield, null, tint = VaultlyTheme.colors.gold) },
-            title = { Text("Your free vault is full") },
-            text = {
-                Text(
-                    "Free vaults hold ${app.prefs.freeLimit} active items. Watch a short video to add ${Prefs.REWARD_SLOTS} more slots, or go Pro for unlimited items.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showLimit = false; nav.openPaywall() }) { Text("Go Pro") }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showLimit = false
-                    if (activity != null) {
-                        app.ads.showRewarded(
-                            activity,
-                            onReward = {
-                                app.prefs.addBonusSlots(Prefs.REWARD_SLOTS)
-                                Toast.makeText(context, "+${Prefs.REWARD_SLOTS} slots unlocked", Toast.LENGTH_SHORT).show()
-                                showAdd = true
-                            },
-                            onUnavailable = {
-                                Toast.makeText(context, "No video available right now. Try again shortly.", Toast.LENGTH_SHORT).show()
-                            },
-                        )
-                    }
-                }) { Text("Watch video (+${Prefs.REWARD_SLOTS})") }
+        VaultDialog(
+            onDismiss = { showLimit = false },
+            icon = Icons.Outlined.Shield,
+            tone = DialogTone.GOLD,
+            title = "Your free vault is full",
+            message = "Free vaults keep ${app.prefs.freeLimit} active purchases. Watch a short video to add ${Prefs.REWARD_SLOTS} more slots, or go Pro for an unlimited vault.",
+            primaryText = "Go Pro – unlimited",
+            onPrimary = { showLimit = false; nav.openPaywall() },
+            secondaryText = "Watch video for +${Prefs.REWARD_SLOTS} slots",
+            onSecondary = {
+                showLimit = false
+                if (activity != null) {
+                    app.ads.showRewarded(
+                        activity,
+                        onReward = {
+                            app.prefs.addBonusSlots(Prefs.REWARD_SLOTS)
+                            app.notifier.success("${Prefs.REWARD_SLOTS} extra slots unlocked")
+                            showAdd = true
+                        },
+                        onUnavailable = { app.notifier.show("No video is available right now. Please try again shortly.") },
+                    )
+                }
             },
         )
     }

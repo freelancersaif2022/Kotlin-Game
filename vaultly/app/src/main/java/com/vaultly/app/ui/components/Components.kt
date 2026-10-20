@@ -219,13 +219,15 @@ fun PrimaryButton(
     enabled: Boolean = true,
     loading: Boolean = false,
     gold: Boolean = false,
+    danger: Boolean = false,
 ) {
     val colors = VaultlyTheme.colors
     val brush: Brush = when {
+        danger -> Brush.linearGradient(listOf(Color(0xFFE5484D), Color(0xFFC62F35)))
         gold || colors.dark -> colors.goldBrush
         else -> colors.inkBrush
     }
-    val content = if (gold || colors.dark) Palette.Ink else Color.White
+    val content = if (danger) Color.White else if (gold || colors.dark) Palette.Ink else Color.White
     val shape = RoundedCornerShape(18.dp)
     Box(
         modifier

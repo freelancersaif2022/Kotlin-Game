@@ -7,9 +7,14 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,15 +50,14 @@ import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.StarRate
 import androidx.compose.material.icons.outlined.VerifiedUser
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.WorkspacePremium
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,7 +68,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -76,7 +83,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import com.vaultly.app.BuildConfig
 import com.vaultly.app.VaultlyApp
+import com.vaultly.app.ads.Consent
 import com.vaultly.app.billing.PlanKey
+import com.vaultly.app.reminders.ReminderWorker
+import com.vaultly.app.ui.components.CurrencySheet
 import com.vaultly.app.ui.components.ProBadge
 import com.vaultly.app.ui.components.SectionHeader
 import com.vaultly.app.ui.components.findActivity
@@ -97,6 +107,7 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
     val remindReturn by prefs.remindReturn.collectAsStateWithLifecycle()
     val remindWarranty by prefs.remindWarranty.collectAsStateWithLifecycle()
     val plans by app.billing.plans.collectAsStateWithLifecycle()
+    val mockPro by prefs.mockPro.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -115,9 +126,6 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
                 Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName),
             )
         }
-    }
-    LaunchedEffect(Unit) {
-        app.billing.events.collect { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
     }
 
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -151,6 +159,14 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
                 SwitchRow(Icons.Outlined.VerifiedUser, "Warranties", "30 and 7 days before, and on the last day", remindWarranty) {
                     prefs.setRemindWarranty(it)
                 }
+                Divider()
+                LinkRow(Icons.Outlined.NotificationsActive, "Send a test reminder", "Checks run every morning at 9:00") {
+                    if (ReminderWorker.sendTest(context)) {
+                        app.notifier.success("Test reminder sent. Check your notifications.")
+                    } else {
+                        app.notifier.error("Notifications are off for Vaultly. Allow them first.")
+                    }
+                }
             }
 
             Spacer(Modifier.height(8.dp))
@@ -165,13 +181,20 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
                 LinkRow(Icons.Outlined.Restore, "Restore purchases", "Bring back Pro or ad-free on this device") {
                     scope.launch { app.billing.restore(silent = false) }
                 }
+                if (mockPro && app.billing.mockEnabled) {
+                    Divider()
+                    LinkRow(Icons.Outlined.Restore, "Reset test purchase", "Test build only – turns Pro off again") {
+                        prefs.setMockPro(false)
+                        app.notifier.show("Test purchase reset")
+                    }
+                }
                 if (!pro && !removeAds) {
                     Divider()
                     val plan = plans.firstOrNull { it.key == PlanKey.REMOVE_ADS }
                     LinkRow(Icons.Outlined.Block, "Remove ads", plan?.let { "One-time purchase · ${it.price}" } ?: "One-time purchase") {
                         val activity = context.findActivity()
                         if (plan != null && activity != null) app.billing.buy(activity, plan)
-                        else Toast.makeText(context, "Google Play isn't available right now.", Toast.LENGTH_SHORT).show()
+                        else app.notifier.error("Google Play isn't available right now. Try again in a moment.")
                     }
                 }
             }
@@ -201,7 +224,13 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
                     context.startActivity(Intent.createChooser(send, "Share Vaultly"))
                 }
                 Divider()
-                LinkRow(Icons.Outlined.Lock, "Privacy", "Your receipts stay on your device") { nav.navigate(Routes.PRIVACY) }
+                LinkRow(Icons.Outlined.Lock, "Privacy policy", "How Vaultly handles your data") { nav.navigate(Routes.PRIVACY) }
+                if (Consent.privacyOptionsRequired(context)) {
+                    Divider()
+                    LinkRow(Icons.Outlined.Tune, "Ad privacy choices", "Review or change your consent") {
+                        context.findActivity()?.let { Consent.showPrivacyOptions(it) {} }
+                    }
+                }
             }
             Text(
                 "Vaultly ${BuildConfig.VERSION_NAME}",
@@ -214,27 +243,7 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
     }
 
     if (showCurrency) {
-        AlertDialog(
-            onDismissRequest = { showCurrency = false },
-            title = { Text("Default currency") },
-            text = {
-                LazyColumn(Modifier.height(360.dp)) {
-                    items(Format.currencies) { code ->
-                        Row(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-                                .clickable { prefs.setCurrency(code); showCurrency = false }
-                                .padding(horizontal = 12.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(code, style = MaterialTheme.typography.titleMedium, modifier = Modifier.width(64.dp))
-                            Text(Format.symbol(code), color = VaultlyTheme.colors.muted, modifier = Modifier.weight(1f))
-                            if (code == currency) Icon(Icons.Outlined.Check, null, tint = VaultlyTheme.colors.gold)
-                        }
-                    }
-                }
-            },
-            confirmButton = { TextButton(onClick = { showCurrency = false }) { Text("Close") } },
-        )
+        CurrencySheet(currency, onSelect = { prefs.setCurrency(it); showCurrency = false }, onDismiss = { showCurrency = false })
     }
 }
 
@@ -242,33 +251,47 @@ fun SettingsScreen(app: VaultlyApp, nav: NavHostController) {
 private fun ProCard(pro: Boolean, onUpgrade: () -> Unit) {
     val colors = VaultlyTheme.colors
     val shape = RoundedCornerShape(24.dp)
-    Row(
+    val shimmer = rememberInfiniteTransition(label = "pro")
+    val sweep by shimmer.animateFloat(-0.4f, 1.4f, infiniteRepeatable(tween(2600), RepeatMode.Restart), label = "sweep")
+    Box(
         Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(colors.inkBrush)
+            .background(if (pro) colors.goldBrush else colors.inkBrush)
             .border(1.dp, Palette.Gold.copy(alpha = 0.3f), shape)
-            .clickable(enabled = !pro, onClick = onUpgrade)
-            .padding(20.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .clickable(enabled = !pro, onClick = onUpgrade),
     ) {
-        Box(
-            Modifier.size(50.dp).clip(RoundedCornerShape(16.dp)).background(colors.goldBrush),
-            contentAlignment = Alignment.Center,
-        ) { Icon(Icons.Outlined.WorkspacePremium, null, tint = Palette.Ink) }
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (pro) "Vaultly Pro" else "Upgrade to Pro", style = MaterialTheme.typography.titleLarge, color = Color.White)
-                if (pro) { Spacer(Modifier.width(8.dp)); ProBadge() }
+        if (pro) {
+            Canvas(Modifier.matchParentSize()) {
+                val x = size.width * sweep
+                drawRect(
+                    Brush.linearGradient(
+                        listOf(Color.Transparent, Color.White.copy(alpha = 0.35f), Color.Transparent),
+                        start = Offset(x - 120f, 0f), end = Offset(x + 120f, size.height),
+                    ),
+                )
             }
-            Text(
-                if (pro) "Unlimited vault · No ads · Unlimited claim packs" else "Unlimited items, claim packs and no ads",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.65f),
-            )
         }
-        if (!pro) Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null, tint = Palette.GoldLight)
+        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(if (pro) SolidColor(Palette.Ink) else colors.goldBrush),
+                contentAlignment = Alignment.Center,
+            ) { Icon(Icons.Outlined.WorkspacePremium, null, tint = if (pro) Palette.GoldLight else Palette.Ink) }
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text(
+                    if (pro) "You're Pro ✦" else "Upgrade to Pro",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = if (pro) Palette.Ink else Color.White,
+                )
+                Text(
+                    if (pro) "Every Pro feature is unlocked. Thank you for supporting Vaultly." else "Unlimited items, claim packs and no ads",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (pro) Palette.Ink.copy(alpha = 0.75f) else Color.White.copy(alpha = 0.65f),
+                )
+            }
+            if (!pro) Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null, tint = Palette.GoldLight)
+        }
     }
 }
 
@@ -332,56 +355,5 @@ private fun SwitchRow(icon: ImageVector, title: String, subtitle: String, checke
                 checkedBorderColor = Color.Transparent,
             ),
         )
-    }
-}
-
-@Composable
-fun PrivacyScreen(onBack: () -> Unit) {
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        Row(
-            Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            RoundIcon(Icons.AutoMirrored.Outlined.ArrowBack, "Back", onBack)
-            Spacer(Modifier.width(14.dp))
-            Text("Privacy", style = MaterialTheme.typography.headlineSmall)
-        }
-        Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            PrivacyBlock(
-                Icons.Outlined.Lock, "Your vault stays on your phone",
-                "Receipts, photos and purchase details are stored only in Vaultly's private storage on this device. " +
-                    "They are included in your phone's own Android backup if you have it turned on.",
-            )
-            PrivacyBlock(
-                Icons.Outlined.NotificationsActive, "On-device reading",
-                "Text on receipts is read with Google ML Kit running on your device. Images are not uploaded for scanning.",
-            )
-            PrivacyBlock(
-                Icons.Outlined.Payments, "Ads and purchases",
-                "The free version shows ads from Google AdMob, which may use your device's advertising ID. " +
-                    "Purchases are handled by Google Play; Vaultly never sees your payment details. Going Pro or removing ads turns ads off.",
-            )
-            PrivacyBlock(
-                Icons.Outlined.Share, "You decide what to share",
-                "A claim pack PDF is only created when you ask for it, and only goes where you send it.",
-            )
-            Spacer(Modifier.navigationBarsPadding().height(24.dp))
-        }
-    }
-}
-
-@Composable
-private fun PrivacyBlock(icon: ImageVector, title: String, body: String) {
-    Row {
-        RowIcon(icon, accent = true)
-        Spacer(Modifier.width(14.dp))
-        Column {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Text(body, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
     }
 }

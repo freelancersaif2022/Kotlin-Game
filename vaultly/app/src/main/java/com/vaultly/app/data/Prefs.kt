@@ -12,8 +12,15 @@ class Prefs(context: Context) {
     private val _onboarded = MutableStateFlow(sp.getBoolean(K_ONBOARDED, false))
     val onboarded: StateFlow<Boolean> = _onboarded.asStateFlow()
 
-    private val _pro = MutableStateFlow(sp.getBoolean(K_PRO, false))
+    private val _pro = MutableStateFlow(sp.getBoolean(K_PRO, false) || sp.getBoolean(K_MOCK_PRO, false))
+    /** True when the user owns Pro (a real Play purchase, or a test purchase in test builds). */
     val pro: StateFlow<Boolean> = _pro.asStateFlow()
+
+    private val _mockPro = MutableStateFlow(sp.getBoolean(K_MOCK_PRO, false))
+    val mockPro: StateFlow<Boolean> = _mockPro.asStateFlow()
+
+    private val _autoCapture = MutableStateFlow(sp.getBoolean(K_AUTO_CAPTURE, true))
+    val autoCapture: StateFlow<Boolean> = _autoCapture.asStateFlow()
 
     private val _removeAds = MutableStateFlow(sp.getBoolean(K_REMOVE_ADS, false))
     val removeAds: StateFlow<Boolean> = _removeAds.asStateFlow()
@@ -34,7 +41,20 @@ class Prefs(context: Context) {
     val adsEnabled: Boolean get() = !_pro.value && !_removeAds.value
 
     fun setOnboarded() = put(K_ONBOARDED, true).also { _onboarded.value = true }
-    fun setPro(value: Boolean) = put(K_PRO, value).also { _pro.value = value }
+    /** Entitlement confirmed by Google Play. */
+    fun setPro(value: Boolean) {
+        put(K_PRO, value)
+        _pro.value = value || _mockPro.value
+    }
+
+    /** Test purchase made through the mock store (only available in test-signed builds). */
+    fun setMockPro(value: Boolean) {
+        put(K_MOCK_PRO, value)
+        _mockPro.value = value
+        _pro.value = value || sp.getBoolean(K_PRO, false)
+    }
+
+    fun setAutoCapture(value: Boolean) = put(K_AUTO_CAPTURE, value).also { _autoCapture.value = value }
     fun setRemoveAds(value: Boolean) = put(K_REMOVE_ADS, value).also { _removeAds.value = value }
     fun setCurrency(code: String) { sp.edit().putString(K_CURRENCY, code).apply(); _currency.value = code }
     fun setRemindReturn(value: Boolean) = put(K_REMIND_RETURN, value).also { _remindReturn.value = value }
@@ -78,6 +98,8 @@ class Prefs(context: Context) {
         const val REWARD_SLOTS = 5
         private const val K_ONBOARDED = "onboarded"
         private const val K_PRO = "pro"
+        private const val K_MOCK_PRO = "mock_pro"
+        private const val K_AUTO_CAPTURE = "auto_capture"
         private const val K_REMOVE_ADS = "remove_ads"
         private const val K_BONUS_SLOTS = "bonus_slots"
         private const val K_CURRENCY = "currency"

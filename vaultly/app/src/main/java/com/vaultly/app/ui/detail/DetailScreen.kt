@@ -1,6 +1,5 @@
 package com.vaultly.app.ui.detail
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,18 +28,19 @@ import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.automirrored.outlined.AssignmentReturn
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Event
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PictureAsPdf
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material.icons.outlined.ZoomOutMap
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,6 +69,8 @@ import com.vaultly.app.domain.Deadlines
 import com.vaultly.app.domain.Urgency
 import com.vaultly.app.ui.components.CategoryBadge
 import com.vaultly.app.ui.components.CountdownRing
+import com.vaultly.app.ui.components.DialogTone
+import com.vaultly.app.ui.components.VaultDialog
 import com.vaultly.app.ui.components.PrimaryButton
 import com.vaultly.app.ui.components.ProBadge
 import com.vaultly.app.ui.components.SecondaryButton
@@ -110,7 +112,7 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
         scope.launch {
             runCatching { app.exporter.export(current) }
                 .onSuccess { context.startActivity(app.exporter.shareIntent(it, current)) }
-                .onFailure { Toast.makeText(context, "Couldn't create the PDF. Please try again.", Toast.LENGTH_SHORT).show() }
+                .onFailure { app.notifier.error("Couldn't create the PDF. Please try again.") }
             exporting = false
         }
     }
@@ -163,7 +165,7 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
                 if (current.statusEnum == ItemStatus.ACTIVE && Deadlines.returnDeadline(current)?.isOver() == false) {
                     SecondaryButton(
                         "Mark as returned",
-                        { scope.launch { app.repository.setStatus(current, ItemStatus.RETURNED) } },
+                        { scope.launch { app.repository.setStatus(current, ItemStatus.RETURNED); app.notifier.success("Marked as returned") } },
                         Modifier.fillMaxWidth(),
                         icon = Icons.AutoMirrored.Outlined.AssignmentReturn,
                     )
@@ -190,7 +192,12 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
             Spacer(Modifier.width(10.dp))
             Box {
                 GlassButton(Icons.Outlined.MoreVert, "More") { menu = true }
-                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                DropdownMenu(
+                    expanded = menu,
+                    onDismissRequest = { menu = false },
+                    shape = RoundedCornerShape(18.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                ) {
                     val archived = current.statusEnum == ItemStatus.ARCHIVED
                     DropdownMenuItem(
                         text = { Text(if (archived) "Unarchive" else "Archive") },
@@ -199,6 +206,7 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
                             menu = false
                             scope.launch {
                                 app.repository.setStatus(current, if (archived) ItemStatus.ACTIVE else ItemStatus.ARCHIVED)
+                                app.notifier.show(if (archived) "Moved back to your vault" else "Archived")
                             }
                         },
                     )
@@ -213,51 +221,67 @@ fun DetailScreen(app: VaultlyApp, id: Long, nav: NavHostController) {
     }
 
     if (confirmDelete) {
-        AlertDialog(
-            onDismissRequest = { confirmDelete = false },
-            title = { Text("Delete this purchase?") },
-            text = { Text("The receipt, photos and reminders for “${current.title}” will be removed. This can't be undone.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmDelete = false
-                    scope.launch {
-                        app.repository.delete(current)
-                        nav.popBackStack()
-                    }
-                }) { Text("Delete", color = VaultlyTheme.colors.danger) }
+        VaultDialog(
+            onDismiss = { confirmDelete = false },
+            icon = Icons.Outlined.DeleteOutline,
+            tone = DialogTone.DANGER,
+            title = "Delete this purchase?",
+            message = "“${current.title}” will be removed with its receipt, photos and reminders. This can't be undone.",
+            primaryText = "Delete purchase",
+            onPrimary = {
+                confirmDelete = false
+                scope.launch {
+                    app.repository.delete(current)
+                    app.notifier.show("Purchase deleted")
+                    nav.popBackStack()
+                }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
+            secondaryText = "Cancel",
         )
     }
 
     if (exportGate) {
         val activity = context.findActivity()
-        AlertDialog(
-            onDismissRequest = { exportGate = false },
-            icon = { Icon(Icons.Outlined.PictureAsPdf, null, tint = VaultlyTheme.colors.gold) },
-            title = { Row(verticalAlignment = Alignment.CenterVertically) { Text("Claim pack"); Spacer(Modifier.width(8.dp)); ProBadge() } },
-            text = {
-                Text(
-                    "A clean PDF with the receipt, photos, dates and deadlines — ready for a return desk or warranty claim. " +
-                        "Watch a short video to export this one free, or go Pro for unlimited exports.",
-                )
+        VaultDialog(
+            onDismiss = { exportGate = false },
+            icon = Icons.Outlined.PictureAsPdf,
+            tone = DialogTone.GOLD,
+            title = "Claim pack",
+            badge = { ProBadge() },
+            message = "A polished PDF with your receipt, photos, dates and deadlines – ready for a return desk or warranty claim.",
+            primaryText = "Unlock with Pro",
+            onPrimary = { exportGate = false; nav.openPaywall() },
+            secondaryText = "Watch a video to export once",
+            onSecondary = {
+                exportGate = false
+                if (activity != null) {
+                    app.ads.showRewarded(
+                        activity,
+                        onReward = export,
+                        onUnavailable = { app.notifier.show("No video is available right now. Please try again shortly.") },
+                    )
+                }
             },
-            confirmButton = { TextButton(onClick = { exportGate = false; nav.openPaywall() }) { Text("Go Pro") } },
-            dismissButton = {
-                TextButton(onClick = {
-                    exportGate = false
-                    if (activity != null) {
-                        app.ads.showRewarded(
-                            activity,
-                            onReward = export,
-                            onUnavailable = {
-                                Toast.makeText(context, "No video available right now. Try again shortly.", Toast.LENGTH_SHORT).show()
-                            },
-                        )
-                    }
-                }) { Text("Watch video") }
-            },
-        )
+        ) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                PackLine(Icons.Outlined.Receipt, "Receipt & proof photos")
+                PackLine(Icons.Outlined.Event, "Purchase date, return & warranty deadlines")
+                PackLine(Icons.Outlined.Share, "Share by email, WhatsApp or save to Files")
+            }
+        }
+    }
+}
+
+@Composable
+private fun PackLine(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+            .padding(horizontal = 14.dp, vertical = 11.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(icon, null, Modifier.size(18.dp), tint = VaultlyTheme.colors.gold)
+        Spacer(Modifier.width(12.dp))
+        Text(text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 

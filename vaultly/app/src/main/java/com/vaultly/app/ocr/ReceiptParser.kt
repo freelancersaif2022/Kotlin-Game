@@ -26,6 +26,35 @@ data class TextFragment(val text: String, val left: Int, val top: Int, val botto
     val height: Int get() = bottom - top
 }
 
+/** One OCR line with its corner points (clockwise from top-left), in pixels. */
+data class OcrLine(val text: String, val corners: List<Pair<Float, Float>>)
+
+/**
+ * Turns OCR lines into [TextFragment]s in a de-rotated frame, so a tilted photo still yields
+ * horizontal rows. The tilt is the median angle of the lines' top edges.
+ */
+fun deskew(lines: List<OcrLine>): List<TextFragment> {
+    val usable = lines.filter { it.corners.size >= 4 }
+    if (usable.isEmpty()) return emptyList()
+    val angles = usable.map { l ->
+        val (x0, y0) = l.corners[0]
+        val (x1, y1) = l.corners[1]
+        kotlin.math.atan2((y1 - y0).toDouble(), (x1 - x0).toDouble())
+    }.sorted()
+    val angle = angles[angles.size / 2]
+    val c = kotlin.math.cos(-angle)
+    val sn = kotlin.math.sin(-angle)
+    return usable.map { l ->
+        val pts = l.corners.map { (x, y) -> (x * c - y * sn) to (x * sn + y * c) }
+        TextFragment(
+            l.text,
+            pts.minOf { it.first }.toInt(),
+            pts.minOf { it.second }.toInt(),
+            pts.maxOf { it.second }.toInt(),
+        )
+    }
+}
+
 /**
  * OCR engines often return a receipt's left column (labels) and right column (prices) as
  * separate blocks. This puts fragments that share a baseline back on one line, left to right.
@@ -52,7 +81,7 @@ fun joinRows(fragments: List<TextFragment>): List<String> {
 class ReceiptParser(private val dayFirst: Boolean = true) {
 
     fun parse(text: String, today: LocalDate = LocalDate.now()): ParsedReceipt {
-        val lines = text.lines().map { it.trim() }.filter { it.isNotEmpty() }
+        val lines = text.lines().map { normalizeOcr(it.trim()) }.filter { it.isNotEmpty() }
         val store = findStore(lines)
         val items = findItems(lines)
         val category = guessCategory(lines, store)
@@ -65,6 +94,27 @@ class ReceiptParser(private val dayFirst: Boolean = true) {
             category = category,
             returnDays = store?.let { returnPolicyFor(it) },
         )
+    }
+
+    /** Fixes typical OCR slips inside numbers and dates (O→0, l→1, "399 .99" → "399.99", "0ct" → "Oct"). */
+    internal fun normalizeOcr(line: String): String {
+        var out = NUMERIC_TOKEN.replace(line) { m ->
+            val token = m.value
+            if (token.any { it.isDigit() }) {
+                token.map { ch ->
+                    when (ch) {
+                        'O', 'o', 'D' -> '0'
+                        'l', 'I', '|' -> '1'
+                        'S' -> '5'
+                        'B' -> '8'
+                        else -> ch
+                    }
+                }.joinToString("")
+            } else token
+        }
+        out = SPACED_DECIMAL.replace(out) { m -> m.groupValues[1] + m.groupValues[2] + m.groupValues[3] }
+        out = ZERO_MONTH.replace(out) { m -> "O" + m.value.drop(1) }
+        return out
     }
 
     // ---- Store ----
@@ -201,6 +251,10 @@ class ReceiptParser(private val dayFirst: Boolean = true) {
         }
 
     companion object {
+        /** Amount/date-like tokens that may contain look-alike letters, e.g. "39O.9S" or "1O/14/2026". */
+        private val NUMERIC_TOKEN = Regex("""(?<![A-Za-z])[\dOoDlI|SB]{1,6}(?:[.,/:-][\dOoDlI|SB]{1,4}){1,2}(?![A-Za-z])""")
+        private val SPACED_DECIMAL = Regex("""(\d)\s+([.,])\s*(\d{2})\b""")
+        private val ZERO_MONTH = Regex("""\b0(?=ct\b|ct[a-z])""", RegexOption.IGNORE_CASE)
         private val ISO_DATE = Regex("""\b(20\d{2})[-/.](\d{1,2})[-/.](\d{1,2})\b""")
         private val NUM_DATE = Regex("""\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4}|\d{2})\b""")
         private const val MONTHS = "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*"

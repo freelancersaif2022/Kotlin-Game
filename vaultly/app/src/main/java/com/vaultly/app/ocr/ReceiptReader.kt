@@ -16,9 +16,12 @@ class ReceiptReader(private val context: Context) {
     suspend fun read(imagePath: String): ParsedReceipt? = runCatching {
         val image = InputImage.fromFilePath(context, Uri.fromFile(File(imagePath)))
         val text = recognizer.process(image).await()
-        val fragments = text.textBlocks.flatMap { block -> block.lines }.mapNotNull { line ->
-            line.boundingBox?.let { TextFragment(line.text, it.left, it.top, it.bottom) }
+        val ocrLines = text.textBlocks.flatMap { block -> block.lines }.mapNotNull { line ->
+            line.cornerPoints?.takeIf { it.size >= 4 }?.let { pts ->
+                OcrLine(line.text, pts.map { it.x.toFloat() to it.y.toFloat() })
+            }
         }
+        val fragments = deskew(ocrLines)
         // Rebuild rows by position; fall back to ML Kit's own order if boxes are missing.
         val raw = if (fragments.isNotEmpty()) joinRows(fragments).joinToString("\n")
         else text.textBlocks.flatMap { block -> block.lines.map { it.text } }.joinToString("\n")

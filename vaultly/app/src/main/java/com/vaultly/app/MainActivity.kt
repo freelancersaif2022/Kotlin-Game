@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.vaultly.app.ads.Consent
 import com.vaultly.app.ui.nav.VaultlyNav
 import com.vaultly.app.ui.theme.VaultlyTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val app = application as VaultlyApp
-        app.ads.init()
+        Consent.gather(this) { app.ads.init() }
         readIntent(intent)
         setContent {
             VaultlyTheme {
