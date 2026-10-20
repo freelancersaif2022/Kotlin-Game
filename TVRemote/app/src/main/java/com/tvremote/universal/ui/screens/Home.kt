@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Diamond
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.WorkspacePremium
@@ -56,7 +57,6 @@ import com.tvremote.universal.data.TvPlatform
 import com.tvremote.universal.tv.TvDiscovery
 import com.tvremote.universal.ui.components.AppCard
 import com.tvremote.universal.ui.components.PlatformBadge
-import com.tvremote.universal.ui.components.PremiumChip
 import com.tvremote.universal.ui.components.PrimaryButton
 import com.tvremote.universal.ui.components.SectionTitle
 import com.tvremote.universal.ui.components.SignalIllustration
@@ -120,13 +120,19 @@ fun HomeScreen(
                     color = scheme.onSurfaceVariant,
                 )
             }
-            if (premium) {
-                PremiumChip(Modifier.clickable(onClick = onPremium))
-                Spacer(Modifier.width(4.dp))
-            } else {
-                IconButton(onClick = onPremium) {
-                    Icon(Icons.Rounded.WorkspacePremium, contentDescription = "Premium", tint = AppTheme.extra.gold)
+            if (!premium) {
+                Box(
+                    Modifier
+                        .size(38.dp)
+                        .shadow(8.dp, CircleShape, ambientColor = AppTheme.extra.gold, spotColor = AppTheme.extra.gold)
+                        .clip(CircleShape)
+                        .background(goldBrush)
+                        .clickable(onClick = onPremium),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Rounded.Diamond, contentDescription = "Go Premium", tint = Color.White, modifier = Modifier.size(20.dp))
                 }
+                Spacer(Modifier.width(4.dp))
             }
             IconButton(onClick = onSettings) { Icon(Icons.Rounded.Settings, contentDescription = "Settings", tint = scheme.onBackground) }
         }

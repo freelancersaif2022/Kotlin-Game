@@ -6,7 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -110,6 +113,8 @@ import com.tvremote.universal.ui.components.AppSnackbarHost
 import com.tvremote.universal.ui.components.IconTile
 import com.tvremote.universal.ui.components.NumberedStep
 import com.tvremote.universal.ui.components.PairingAnimation
+import com.tvremote.universal.ui.components.PowerOnAnimation
+import com.tvremote.universal.ui.components.FixIssuesAnimation
 import com.tvremote.universal.ui.components.PlatformBadge
 import com.tvremote.universal.ui.components.PrimaryButton
 import com.tvremote.universal.ui.components.SecondaryButton
@@ -448,7 +453,19 @@ private fun PlatformGuideCard(platform: TvPlatform, expanded: Boolean, onToggle:
                             .background(scheme.primary.copy(alpha = 0.06f))
                             .padding(vertical = 18.dp),
                         contentAlignment = Alignment.Center,
-                    ) { PairingAnimation(platform, tvWidth = 200.dp) }
+                    ) {
+                        AnimatedContent(
+                            targetState = tab,
+                            transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(150)) },
+                            label = "helpAnim",
+                        ) { t ->
+                            when (t) {
+                                0 -> PairingAnimation(platform, tvWidth = 200.dp)
+                                1 -> PowerOnAnimation(platform, tvWidth = 190.dp)
+                                else -> FixIssuesAnimation(platform, Modifier.padding(horizontal = 10.dp))
+                            }
+                        }
+                    }
                     Spacer(Modifier.height(14.dp))
                     Row(
                         Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(scheme.surfaceVariant).padding(4.dp),

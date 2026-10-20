@@ -399,7 +399,7 @@ fun ManualAddScreen(onBack: () -> Unit, onContinue: (DiscoveredTv) -> Unit) {
                         TipCard(
                             icon = Icons.Rounded.WifiOff,
                             tint = scheme.error,
-                            title = "Couldn't reach a ${p.short} TV at $ip",
+                            title = "Couldn't reach ${p.short} at $ip",
                             text = "The TV didn't answer. Check these and try again:",
                         ) {
                             Spacer(Modifier.height(8.dp))
@@ -407,10 +407,20 @@ fun ManualAddScreen(onBack: () -> Unit, onContinue: (DiscoveredTv) -> Unit) {
                             NumberedStep(2, "The IP address matches the one in the TV's network settings.")
                             NumberedStep(3, "Phone and TV are on the same Wi-Fi network.")
                             Spacer(Modifier.height(8.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                SecondaryButton("Try again", onClick = { check() }, icon = Icons.Rounded.Refresh, modifier = Modifier.weight(1f))
-                                SecondaryButton("Continue anyway", onClick = { proceed() }, modifier = Modifier.weight(1f))
-                            }
+                            PrimaryButton(
+                                "Try again",
+                                icon = Icons.Rounded.Refresh,
+                                loading = checking,
+                                onClick = { check() },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            Spacer(Modifier.height(10.dp))
+                            SecondaryButton(
+                                "Continue anyway",
+                                icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                                onClick = { proceed() },
+                                modifier = Modifier.fillMaxWidth(),
+                            )
                         }
                     }
                 }

@@ -5,7 +5,16 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
@@ -47,7 +56,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Surface
@@ -554,7 +563,7 @@ fun PlatformBadge(platform: TvPlatform, modifier: Modifier = Modifier) {
             .background(platform.color.copy(alpha = if (AppTheme.extra.isDark) 0.22f else 0.12f))
             .padding(horizontal = 8.dp, vertical = 3.dp),
     ) {
-        Text(platform.short, style = MaterialTheme.typography.labelSmall, color = platformTextColor(platform), maxLines = 1)
+        Text(platform.short, style = MaterialTheme.typography.labelSmall, color = platformTextColor(platform), maxLines = 1, softWrap = false)
     }
 }
 
@@ -707,44 +716,80 @@ suspend fun SnackbarHostState.show(message: String, kind: SnackKind = SnackKind.
 
 @Composable
 fun AppSnackbarHost(state: SnackbarHostState, modifier: Modifier = Modifier) {
-    SnackbarHost(state, modifier) { data ->
-        val visuals = data.visuals
-        val kind = (visuals as? AppSnack)?.kind ?: SnackKind.INFO
-        val extra = AppTheme.extra
-        val (icon, color) = when (kind) {
-            SnackKind.SUCCESS -> Icons.Rounded.CheckCircle to extra.success
-            SnackKind.ERROR -> Icons.Rounded.ErrorOutline to MaterialTheme.colorScheme.error
-            SnackKind.PREMIUM -> Icons.Rounded.WorkspacePremium to extra.gold
-            SnackKind.INFO -> Icons.Rounded.Info to MaterialTheme.colorScheme.primary
+    val current = state.currentSnackbarData
+    var last by remember { mutableStateOf<SnackbarData?>(null) }
+    LaunchedEffect(current) {
+        if (current != null) {
+            last = current
+            val ms = when (current.visuals.duration) {
+                SnackbarDuration.Short -> 3200L
+                SnackbarDuration.Long -> 6000L
+                SnackbarDuration.Indefinite -> Long.MAX_VALUE
+            }
+            delay(ms)
+            current.dismiss()
         }
-        val shape = RoundedCornerShape(18.dp)
-        Row(
-            Modifier
-                .padding(horizontal = 16.dp, vertical = 10.dp)
-                .widthIn(max = 560.dp)
-                .fillMaxWidth()
-                .shadow(16.dp, shape)
-                .clip(shape)
-                .background(extra.snackbar)
-                .padding(start = 14.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+    }
+    val data = current ?: last
+    AnimatedVisibility(
+        visible = current != null,
+        modifier = modifier,
+        enter = slideInVertically(tween(280)) { it } + fadeIn(tween(220)),
+        exit = slideOutVertically(tween(320)) { it } + fadeOut(tween(260)),
+    ) {
+        if (data != null) SnackCard(data)
+    }
+}
+
+@Composable
+private fun SnackCard(data: SnackbarData) {
+    val visuals = data.visuals
+    val kind = (visuals as? AppSnack)?.kind ?: SnackKind.INFO
+    val extra = AppTheme.extra
+    val (icon, color) = when (kind) {
+        SnackKind.SUCCESS -> Icons.Rounded.CheckCircle to extra.success
+        SnackKind.ERROR -> Icons.Rounded.ErrorOutline to MaterialTheme.colorScheme.error
+        SnackKind.PREMIUM -> Icons.Rounded.WorkspacePremium to extra.gold
+        SnackKind.INFO -> Icons.Rounded.Info to MaterialTheme.colorScheme.primary
+    }
+    val shape = RoundedCornerShape(18.dp)
+    var drag by remember { mutableFloatStateOf(0f) }
+    Row(
+        Modifier
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .widthIn(max = 560.dp)
+            .fillMaxWidth()
+            .graphicsLayer {
+                translationY = drag.coerceAtLeast(0f)
+                alpha = 1f - (drag / 300f).coerceIn(0f, 0.7f)
+            }
+            .pointerInput(data) {
+                detectVerticalDragGestures(
+                    onDragEnd = { if (drag > 60.dp.toPx()) data.dismiss() else drag = 0f },
+                    onDragCancel = { drag = 0f },
+                ) { _, delta -> drag = (drag + delta).coerceAtLeast(0f) }
+            }
+            .shadow(16.dp, shape)
+            .clip(shape)
+            .background(extra.snackbar)
+            .padding(start = 14.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(32.dp).clip(CircleShape).background(color.copy(alpha = 0.18f)),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                Modifier.size(32.dp).clip(CircleShape).background(color.copy(alpha = 0.18f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
-            }
-            Spacer(Modifier.width(12.dp))
-            Text(
-                visuals.message,
-                style = MaterialTheme.typography.bodyMedium,
-                color = extra.onSnackbar,
-                modifier = Modifier.weight(1f),
-            )
-            visuals.actionLabel?.let { label ->
-                TextButton(onClick = { data.performAction() }) { Text(label, color = color) }
-            }
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(
+            visuals.message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = extra.onSnackbar,
+            modifier = Modifier.weight(1f).padding(end = 6.dp),
+        )
+        visuals.actionLabel?.let { label ->
+            TextButton(onClick = { data.performAction() }) { Text(label, color = color) }
         }
     }
 }
@@ -819,7 +864,7 @@ fun StatusPill(text: String, color: Color, modifier: Modifier = Modifier) {
     ) {
         Box(Modifier.size(6.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(5.dp))
-        Text(text, style = MaterialTheme.typography.labelSmall, color = color)
+        Text(text, style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1, softWrap = false)
     }
 }
 

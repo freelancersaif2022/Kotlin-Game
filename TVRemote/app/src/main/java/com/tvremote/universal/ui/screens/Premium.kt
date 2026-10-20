@@ -8,7 +8,9 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,6 +67,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tvremote.universal.App
+import com.tvremote.universal.R
 import com.tvremote.universal.billing.Plan
 import com.tvremote.universal.billing.PremiumManager
 import com.tvremote.universal.ui.components.AppCard
@@ -216,9 +220,9 @@ fun PremiumScreen(onBack: () -> Unit) {
                     }
                 }
 
-                if (!purchased) {
+                if (!isPremium) {
                     // -------------------------------------------------------- 24 h pass
-                    if (!passActive) {
+                    run {
                         AppCard(
                             Modifier.fillMaxWidth(),
                             border = androidx.compose.foundation.BorderStroke(1.5.dp, extra.gold.copy(alpha = 0.6f)),
@@ -404,40 +408,45 @@ private fun FeatureChip(text: String) {
     }
 }
 
-/** Gold premium badge with the premium features orbiting around it. */
+/** The app icon in a glowing gold ring with a crown medallion. */
 @Composable
 private fun BadgeOrbit() {
-    val t = rememberInfiniteTransition(label = "orbit")
-    val angle by t.animateFloat(0f, 360f, infiniteRepeatable(tween(24_000, easing = LinearEasing)), label = "angle")
-    Box(Modifier.size(210.dp), contentAlignment = Alignment.Center) {
-        Box(Modifier.size(200.dp).clip(CircleShape).border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape))
-        Box(Modifier.size(150.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.05f)))
-        orbitIcons.forEachIndexed { i, icon ->
-            val a = Math.toRadians((angle + i * 60f).toDouble())
-            val r = 92f
-            Box(
-                Modifier
-                    .offset(x = (r * cos(a)).dp, y = (r * sin(a)).dp)
-                    .size(38.dp)
-                    .shadow(8.dp, CircleShape)
-                    .clip(CircleShape)
-                    .background(Color(0xFF15276E))
-                    .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                OrbitIcon(icon)
-            }
-        }
+    val t = rememberInfiniteTransition(label = "badge")
+    val spin by t.animateFloat(0f, 360f, infiniteRepeatable(tween(6000, easing = LinearEasing)), label = "spin")
+    Box(Modifier.size(170.dp), contentAlignment = Alignment.Center) {
         Box(
             Modifier
-                .size(96.dp)
-                .shadow(28.dp, CircleShape, ambientColor = Color(0xFFFFC53D), spotColor = Color(0xFFFFC53D))
+                .size(160.dp)
+                .background(Brush.radialGradient(listOf(Color(0xFFFFC53D).copy(alpha = 0.45f), Color.Transparent))),
+        )
+        Box(
+            Modifier
+                .size(132.dp)
+                .rotate(spin)
+                .clip(CircleShape)
+                .background(Brush.sweepGradient(listOf(Color(0xFFFFE08A), Color(0xFFF5B400), Color(0xFFB86E00), Color(0xFFF5B400), Color(0xFFFFE08A)))),
+        )
+        Image(
+            painter = painterResource(R.drawable.app_art),
+            contentDescription = "Universal Remote",
+            modifier = Modifier
+                .size(118.dp)
+                .shadow(16.dp, CircleShape)
+                .clip(CircleShape)
+                .border(3.dp, Color.White.copy(alpha = 0.85f), CircleShape),
+        )
+        Box(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-4).dp)
+                .size(40.dp)
+                .shadow(10.dp, CircleShape, ambientColor = Color(0xFFF5B400), spotColor = Color(0xFFF5B400))
                 .clip(CircleShape)
                 .background(goldBrush)
-                .border(3.dp, Color.White.copy(alpha = 0.55f), CircleShape),
+                .border(2.dp, Color.White, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Rounded.WorkspacePremium, contentDescription = "Premium", tint = Color.White, modifier = Modifier.size(54.dp).rotate(0f))
+            Icon(Icons.Rounded.WorkspacePremium, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
         }
     }
 }
@@ -496,12 +505,15 @@ private fun PlanCard(
         Row(
             Modifier
                 .fillMaxWidth()
-                .shadow(if (selected) 10.dp else 2.dp, shape, ambientColor = extra.glow, spotColor = extra.glow)
                 .clip(shape)
-                .background(if (selected) scheme.primary.copy(alpha = if (extra.isDark) 0.18f else 0.07f) else extra.panel)
-                .background(extra.panel.copy(alpha = if (selected) 0.6f else 0f))
+                .background(extra.panel)
+                .background(if (selected) scheme.primary.copy(alpha = if (extra.isDark) 0.18f else 0.08f) else Color.Transparent)
                 .border(if (selected) 2.dp else 1.dp, if (selected) scheme.primary else extra.panelBorder, shape)
-                .clickable(onClick = onClick)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                )
                 .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

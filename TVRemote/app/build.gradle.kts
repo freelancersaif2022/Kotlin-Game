@@ -19,8 +19,8 @@ android {
         applicationId = "com.tvremote.universal"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
 
         manifestPlaceholders["admobAppId"] = prop("admob.appId", "ADMOB_APP_ID")
         buildConfigField("String", "INTERSTITIAL_ID", "\"${prop("admob.interstitialId", "ADMOB_INTERSTITIAL_ID")}\"")

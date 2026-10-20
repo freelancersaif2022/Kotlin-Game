@@ -453,10 +453,9 @@ private fun ModeTabs(modes: List<RemoteMode>, selected: RemoteMode, premium: Boo
         Modifier
             .fillMaxWidth()
             .height(52.dp)
-            .shadow(5.dp, shape, ambientColor = extra.keyShadow, spotColor = extra.keyShadow)
             .clip(shape)
-            .background(Brush.verticalGradient(listOf(extra.keyBottom, extra.keyTop)))
-            .border(1.dp, extra.keyBorder, shape)
+            .background(scheme.surfaceVariant)
+            .border(1.dp, extra.keyBorder.copy(alpha = 0.6f), shape)
             .padding(4.dp),
     ) {
         val tabWidth = maxWidth / modes.size
@@ -467,11 +466,23 @@ private fun ModeTabs(modes: List<RemoteMode>, selected: RemoteMode, premium: Boo
                 .offset(x = offset)
                 .width(tabWidth)
                 .fillMaxSize()
-                .shadow(8.dp, RoundedCornerShape(16.dp), ambientColor = extra.glow, spotColor = extra.glow)
+                .shadow(6.dp, RoundedCornerShape(16.dp), ambientColor = extra.keyShadow, spotColor = extra.keyShadow)
                 .clip(RoundedCornerShape(16.dp))
-                .background(brandBrush())
-                .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.2f), 0.5f to Color.Transparent)),
-        )
+                .background(Brush.verticalGradient(listOf(extra.keyTop, extra.keyBottom)))
+                .background(Brush.verticalGradient(0f to extra.keyHighlight, 0.5f to Color.Transparent))
+                .border(1.dp, extra.keyBorder, RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            Box(
+                Modifier
+                    .padding(bottom = 4.dp)
+                    .width(22.dp)
+                    .height(3.dp)
+                    .shadow(6.dp, CircleShape, ambientColor = extra.glow, spotColor = extra.glow)
+                    .clip(CircleShape)
+                    .background(brandBrush()),
+            )
+        }
         Row(Modifier.fillMaxSize()) {
             modes.forEach { m ->
                 val isSelected = m == selected
@@ -491,14 +502,14 @@ private fun ModeTabs(modes: List<RemoteMode>, selected: RemoteMode, premium: Boo
                         m.icon,
                         contentDescription = null,
                         modifier = Modifier.size(17.dp),
-                        tint = if (isSelected) Color.White else scheme.onSurfaceVariant,
+                        tint = if (isSelected) scheme.primary else scheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(
                         m.label,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) Color.White else scheme.onSurfaceVariant,
+                        color = if (isSelected) scheme.onSurface else scheme.onSurfaceVariant,
                         maxLines = 1,
                     )
                     if (m.premium && !premium) {

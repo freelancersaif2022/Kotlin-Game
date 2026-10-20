@@ -47,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -135,12 +134,7 @@ fun SignalIllustration(modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
     Box(modifier.size(280.dp, 260.dp)) {
         MiniTv(200.dp, Modifier.align(Alignment.TopEnd), glow = glow) {
-            Icon(
-                Icons.Rounded.PowerSettingsNew,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.35f + 0.65f * glow),
-                modifier = Modifier.size(34.dp),
-            )
+            TvControlScreen()
         }
         Canvas(Modifier.fillMaxSize()) {
             val origin = Offset(size.width * 0.2f, size.height * 0.62f)
@@ -186,10 +180,21 @@ fun PairingLessonIllustration(modifier: Modifier = Modifier) {
     val typed = step.coerceAtMost(code.length)
     val done = step > code.length
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        MiniTv(210.dp) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Pairing code", color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
-                Text(code, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold, letterSpacing = 3.sp)
+        MiniTv(210.dp, glow = if (done) 1f else 0f) {
+            if (done) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(
+                        Modifier.size(40.dp).clip(CircleShape).background(AppTheme.extra.success),
+                        contentAlignment = Alignment.Center,
+                    ) { Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp)) }
+                    Spacer(Modifier.height(4.dp))
+                    Text("Paired", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+            } else {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Pairing code", color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
+                    Text(code, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold, letterSpacing = 3.sp)
+                }
             }
         }
         Spacer(Modifier.height(26.dp))
@@ -528,5 +533,191 @@ fun SuccessCheck(modifier: Modifier = Modifier, size: Dp = 170.dp) {
     }
 }
 
-@Suppress("unused")
-private fun CornerRadius.unused() = this
+
+// ============================================================== TV home screen being controlled
+
+private val tileColors = listOf(Color(0xFFFF0033), Color(0xFF141414), Color(0xFF00A8E1), Color(0xFF0B1C5A))
+
+/** A tiny TV home screen: the focus moves across app tiles and the volume bar reacts. */
+@Composable
+fun TvControlScreen() {
+    var focus by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(900)
+            focus = (focus + 1) % 8
+        }
+    }
+    val tile = focus % 4
+    val volume = 0.3f + 0.15f * (focus % 5)
+    Column(Modifier.fillMaxSize().padding(10.dp), verticalArrangement = Arrangement.SpaceBetween) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(6.dp).clip(CircleShape).background(Color(0xFF32D583)))
+            Spacer(Modifier.width(4.dp))
+            Text("Home", color = Color.White.copy(alpha = 0.85f), fontSize = 8.sp, fontWeight = FontWeight.Bold)
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+            tileColors.forEachIndexed { i, c ->
+                val focused = i == tile
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .height(26.dp)
+                        .scale(if (focused) 1.12f else 1f)
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(c)
+                        .border(if (focused) 2.dp else 0.dp, if (focused) Color.White else Color.Transparent, RoundedCornerShape(5.dp)),
+                )
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("VOL", color = Color.White.copy(alpha = 0.7f), fontSize = 7.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.width(4.dp))
+            Box(Modifier.weight(1f).height(4.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f))) {
+                Box(Modifier.fillMaxWidth(volume).height(4.dp).clip(CircleShape).background(Color(0xFF00C2FF)))
+            }
+        }
+    }
+}
+
+// ============================================================== help: power on
+
+private fun powerSetting(platform: TvPlatform): String = when (platform) {
+    TvPlatform.ANDROID_TV -> "Turn on \"Network standby\" or \"Remote start\""
+    TvPlatform.SAMSUNG -> "Turn on \"Power On with Mobile\""
+    TvPlatform.LG -> "Turn on \"Turn on via Wi-Fi\""
+    TvPlatform.ROKU -> "Turn on \"Fast TV start\""
+    TvPlatform.VIZIO -> "Set Power Mode to \"Quick Start\""
+    TvPlatform.FIRE_TV -> "Enable HDMI-CEC on your TV"
+}
+
+/** Phone sends a wake signal, the sleeping TV powers on. */
+@Composable
+fun PowerOnAnimation(platform: TvPlatform, modifier: Modifier = Modifier, tvWidth: Dp = 200.dp) {
+    val t = rememberInfiniteTransition(label = "power")
+    val p by t.animateFloat(0f, 1f, infiniteRepeatable(tween(3200, easing = LinearEasing)), label = "p")
+    val on = p > 0.55f
+    val scheme = MaterialTheme.colorScheme
+    val extra = AppTheme.extra
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(Modifier.size(tvWidth + 70.dp, tvWidth * 0.6f + 40.dp)) {
+            MiniTv(tvWidth, Modifier.align(Alignment.TopEnd), glow = if (on) 1f else 0f) {
+                if (on) {
+                    TvControlScreen()
+                } else {
+                    Box(Modifier.fillMaxSize().background(Color(0xFF05070D)))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Rounded.PowerSettingsNew, contentDescription = null, tint = Color.White.copy(alpha = 0.25f), modifier = Modifier.size(26.dp))
+                        Text("Standby", color = Color.White.copy(alpha = 0.35f), fontSize = 9.sp)
+                    }
+                }
+            }
+            Canvas(Modifier.fillMaxSize()) {
+                if (p in 0.08f..0.6f) {
+                    val origin = Offset(28.dp.toPx(), size.height - 30.dp.toPx())
+                    for (i in 0 until 3) {
+                        val local = ((p - 0.08f) / 0.52f * 1.5f + i / 3f) % 1f
+                        val r = 16.dp.toPx() + local * size.width * 0.45f
+                        drawArc(
+                            color = scheme.primary.copy(alpha = (1f - local) * 0.9f),
+                            startAngle = -75f,
+                            sweepAngle = 60f,
+                            useCenter = false,
+                            topLeft = Offset(origin.x - r, origin.y - r),
+                            size = Size(r * 2, r * 2),
+                            style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round),
+                        )
+                    }
+                }
+            }
+            MiniPhone(36.dp, Modifier.align(Alignment.BottomStart).offset(x = 10.dp)) {
+                Box(
+                    Modifier.size(20.dp).clip(CircleShape).background(extra.power),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Rounded.PowerSettingsNew, contentDescription = null, tint = Color.White, modifier = Modifier.size(13.dp)) }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(
+            Modifier.clip(RoundedCornerShape(12.dp)).background(scheme.primary.copy(alpha = 0.1f)).padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.PowerSettingsNew, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(powerSetting(platform), style = MaterialTheme.typography.labelMedium, color = scheme.primary)
+        }
+    }
+}
+
+// ============================================================== help: fix issues
+
+private fun fixChecks(platform: TvPlatform): List<String> = listOf("Phone and TV on the same Wi-Fi") + when (platform) {
+    TvPlatform.ANDROID_TV -> listOf("Update Android TV Remote Service", "Restart the TV and pair again")
+    TvPlatform.SAMSUNG -> listOf("Allow in Device Connection Manager", "Turn on IP Remote")
+    TvPlatform.LG -> listOf("Turn on LG Connect Apps", "Restart the TV and pair again")
+    TvPlatform.ROKU -> listOf("Control by mobile apps: Default", "Restart the Roku")
+    TvPlatform.VIZIO -> listOf("TV fully on, not in standby", "Update SmartCast")
+    TvPlatform.FIRE_TV -> listOf("ADB debugging turned on", "Select OK on the TV popup")
+}
+
+/** A checklist that ticks itself off, then shows "Connected". */
+@Composable
+fun FixIssuesAnimation(platform: TvPlatform, modifier: Modifier = Modifier) {
+    val checks = remember(platform) { fixChecks(platform) }
+    var step by remember { mutableIntStateOf(0) }
+    LaunchedEffect(platform) {
+        while (true) {
+            for (i in 0..checks.size + 2) {
+                step = i
+                delay(if (i == 0) 600 else 750)
+            }
+        }
+    }
+    val scheme = MaterialTheme.colorScheme
+    val extra = AppTheme.extra
+    val t = rememberInfiniteTransition(label = "fix")
+    val pulse by t.animateFloat(0.5f, 1f, infiniteRepeatable(tween(500), RepeatMode.Reverse), label = "pulse")
+    Column(modifier.padding(horizontal = 6.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        checks.forEachIndexed { i, label ->
+            val done = i < step
+            val active = i == step
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(extra.panel)
+                    .border(1.dp, if (done) extra.success.copy(alpha = 0.5f) else extra.panelBorder, RoundedCornerShape(14.dp))
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (done) extra.success else Color.Transparent)
+                        .border(2.dp, if (done) extra.success else scheme.primary.copy(alpha = if (active) pulse else 0.3f), CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (done) Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                }
+                Spacer(Modifier.width(12.dp))
+                Text(label, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurface)
+            }
+        }
+        val solved = step > checks.size
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .graphicsLayer { alpha = if (solved) 1f else 0f }
+                .clip(RoundedCornerShape(14.dp))
+                .background(extra.success.copy(alpha = 0.14f))
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Check, contentDescription = null, tint = extra.success, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("Fixed — your TV connects again", style = MaterialTheme.typography.labelLarge, color = extra.success)
+        }
+    }
+}

@@ -63,8 +63,6 @@ import com.tvremote.universal.ui.components.PlatformBadge
 import com.tvremote.universal.ui.components.PrimaryButton
 import com.tvremote.universal.ui.components.RemoteLessonIllustration
 import com.tvremote.universal.ui.components.SignalIllustration
-import com.tvremote.universal.ui.theme.Navy
-import com.tvremote.universal.ui.theme.NavyDeep
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -88,14 +86,14 @@ fun SplashScreen(onDone: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Navy, NavyDeep))),
+            .background(Color.White),
         contentAlignment = Alignment.Center,
     ) {
         Box(
             Modifier
                 .size(420.dp)
                 .graphicsLayer { this.alpha = glow * 0.9f }
-                .background(Brush.radialGradient(listOf(Color(0xFF1F5BFF).copy(alpha = 0.45f), Color.Transparent))),
+                .background(Brush.radialGradient(listOf(Color(0xFF1F5BFF).copy(alpha = 0.16f), Color.Transparent))),
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -114,9 +112,9 @@ fun SplashScreen(onDone: () -> Unit) {
                     .clip(RoundedCornerShape(46.dp)),
             )
             Spacer(Modifier.height(30.dp))
-            Text("Universal Remote", color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
+            Text("Universal Remote", color = Color(0xFF0E1525), fontSize = 30.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
             Spacer(Modifier.height(6.dp))
-            Text("Control every smart TV from your phone", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+            Text("Control every smart TV from your phone", color = Color(0xFF586379), fontSize = 14.sp)
         }
         Box(
             Modifier
@@ -126,7 +124,7 @@ fun SplashScreen(onDone: () -> Unit) {
                 .width(120.dp)
                 .height(4.dp)
                 .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.12f)),
+                .background(Color(0xFF0E1525).copy(alpha = 0.08f)),
         ) {
             Box(
                 Modifier
@@ -183,12 +181,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    "Universal Remote",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = scheme.onBackground,
-                    modifier = Modifier.padding(start = 10.dp).weight(1f),
-                )
+                Spacer(Modifier.weight(1f))
                 if (!last) TextButton(onClick = onFinish) { Text("Skip", color = scheme.primary) }
                 else Spacer(Modifier.height(48.dp))
             }
