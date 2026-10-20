@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
@@ -41,9 +43,21 @@ class TvDiscovery(private val context: Context, private val http: OkHttpClient) 
 
     fun discover(durationMs: Long = 9000): Flow<DiscoveredTv> = channelFlow {
         val lock = LocalNetwork.acquireMulticastLock(context)
-        val seen = ConcurrentHashMap<String, Boolean>()
+        val seen = HashMap<String, String>()
+        val seenLock = Mutex()
+        // Emits a TV once, or again when a better (non-generic) name arrives later.
         val emit: suspend (DiscoveredTv) -> Unit = { tv ->
-            if (seen.putIfAbsent("${tv.platform}|${tv.host}", true) == null) send(tv)
+            val key = "${tv.platform}|${tv.host}"
+            val fresh = seenLock.withLock {
+                val prev = seen[key]
+                if (prev == null || (prev in GENERIC_NAMES && tv.name !in GENERIC_NAMES)) {
+                    seen[key] = tv.name
+                    true
+                } else {
+                    false
+                }
+            }
+            if (fresh) send(tv)
         }
         try {
             withTimeoutOrNull(durationMs) {
@@ -51,6 +65,10 @@ class TvDiscovery(private val context: Context, private val http: OkHttpClient) 
                     launch { nsd("_androidtvremote2._tcp", TvPlatform.ANDROID_TV, emit) }
                     launch { nsd("_amzn-wplay._tcp", TvPlatform.FIRE_TV, emit) }
                     launch { ssdp(emit) }
+                    launch {
+                        delay(700)
+                        sweep(emit)
+                    }
                 }
             }
         } finally {
@@ -221,7 +239,37 @@ class TvDiscovery(private val context: Context, private val http: OkHttpClient) 
         }.getOrNull()
     }
 
+    // ---------------------------------------------------------------- subnet sweep
+
+    /**
+     * Probes every address of the local /24 on the TV control ports. Finds TVs even when the
+     * router blocks multicast (mDNS / SSDP).
+     */
+    private suspend fun sweep(emit: suspend (DiscoveredTv) -> Unit) = withContext(Dispatchers.IO) {
+        val own = LocalNetwork.ownIpv4(context) ?: return@withContext
+        val base = own.substringBeforeLast('.')
+        val gate = Semaphore(40)
+        coroutineScope {
+            for (i in 1..254) {
+                val host = "$base.$i"
+                if (host == own) continue
+                launch { gate.withPermit { probeHost(host)?.let { emit(it) } } }
+            }
+        }
+    }
+
+    private suspend fun probeHost(host: String): DiscoveredTv? {
+        if (LocalNetwork.isPortOpen(host, 8060, 280)) return roku(host)
+        if (LocalNetwork.isPortOpen(host, AndroidTvProtocol.PAIRING_PORT, 280)) return DiscoveredTv(TvPlatform.ANDROID_TV, host, GENERIC_ANDROID)
+        if (LocalNetwork.isPortOpen(host, 8001, 280)) return samsung(host)
+        if (LocalNetwork.isPortOpen(host, 7345, 280)) return DiscoveredTv(TvPlatform.VIZIO, host, "Vizio TV")
+        return null
+    }
+
     companion object {
+        const val GENERIC_ANDROID = "Android TV"
+        private val GENERIC_NAMES = setOf(GENERIC_ANDROID, "Fire TV", "Roku", "LG TV", "Vizio TV", "Samsung TV")
+
         /** Quick check used after manual entry: is anything listening where this platform should be? */
         suspend fun probe(platform: TvPlatform, host: String): Boolean = when (platform) {
             TvPlatform.ANDROID_TV -> LocalNetwork.isPortOpen(host, AndroidTvProtocol.PAIRING_PORT)
@@ -231,8 +279,5 @@ class TvDiscovery(private val context: Context, private val http: OkHttpClient) 
             TvPlatform.VIZIO -> LocalNetwork.isPortOpen(host, 7345) || LocalNetwork.isPortOpen(host, 9000)
             TvPlatform.FIRE_TV -> LocalNetwork.isPortOpen(host, 5555)
         }
-
-        @Suppress("unused")
-        private suspend fun pause() = delay(1)
     }
 }

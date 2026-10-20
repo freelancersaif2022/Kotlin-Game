@@ -23,6 +23,15 @@ object LocalNetwork {
             caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
     }
 
+    /** This phone's IPv4 address on the active (Wi-Fi) network. */
+    fun ownIpv4(context: Context): String? {
+        val cm = context.getSystemService(ConnectivityManager::class.java) ?: return null
+        val lp = cm.getLinkProperties(cm.activeNetwork) ?: return null
+        return lp.linkAddresses.map { it.address }
+            .firstOrNull { it is Inet4Address && !it.isLoopbackAddress }
+            ?.hostAddress
+    }
+
     fun <T> withMulticastLock(context: Context, block: () -> T): T {
         val wifi = context.applicationContext.getSystemService(WifiManager::class.java)
         val lock = wifi?.createMulticastLock("tvremote-discovery")?.apply {
@@ -98,16 +107,16 @@ object WakeOnLan {
         runCatching {
             DatagramSocket().use { socket ->
                 socket.broadcast = true
-                repeat(3) {
+                repeat(5) {
                     for (address in targets) {
-                        for (port in intArrayOf(9, 7)) {
+                        for (port in intArrayOf(9, 7, 40000)) {
                             runCatching {
                                 socket.send(DatagramPacket(packet, packet.size, address, port))
                                 sent = true
                             }
                         }
                     }
-                    delay(120)
+                    delay(90)
                 }
             }
         }

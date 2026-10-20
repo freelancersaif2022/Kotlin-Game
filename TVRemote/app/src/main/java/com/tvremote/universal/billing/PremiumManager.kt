@@ -23,14 +23,30 @@ class PremiumManager(
     val purchased: StateFlow<Boolean> get() = settings.purchasedCache
     val rewardProgress: StateFlow<Int> get() = settings.rewardProgress
     val rewardUntil: StateFlow<Long> get() = settings.rewardUntil
+    val plan: StateFlow<Plan?> get() = billing.ownedPlan
+
+    /** True while the free 24 h pass is running (and no purchase). */
+    private val _passActive = MutableStateFlow(false)
+    val passActive: StateFlow<Boolean> = _passActive.asStateFlow()
 
     init {
         scope.launch {
-            billing.owned.collect { owned -> if (owned != null) settings.setPurchased(owned) }
+            billing.owned.collect { owned ->
+                if (owned != null) {
+                    settings.setPurchased(owned)
+                    // A real purchase supersedes the ad pass: start the ad counter fresh.
+                    if (owned) settings.setReward(0, 0L)
+                }
+            }
         }
         scope.launch {
-            combine(settings.purchasedCache, settings.rewardUntil, now) { p, until, t -> p || until > t }
-                .collect { _isPremium.value = it }
+            combine(settings.purchasedCache, settings.rewardUntil, now) { p, until, t -> Triple(p, until, t) }
+                .collect { (p, until, t) ->
+                    _isPremium.value = p || until > t
+                    _passActive.value = !p && until > t
+                    // When the 24 h pass ends, the ad counter resets for the next pass.
+                    if (until in 1..t) settings.setReward(0, 0L)
+                }
         }
         scope.launch {
             while (true) {
@@ -46,8 +62,7 @@ class PremiumManager(
     fun onRewardEarned(): Boolean {
         val progress = settings.rewardProgress.value + 1
         return if (progress >= REQUIRED_ADS) {
-            val base = maxOf(System.currentTimeMillis(), settings.rewardUntil.value)
-            settings.setReward(0, base + PASS_DURATION_MS)
+            settings.setReward(0, System.currentTimeMillis() + PASS_DURATION_MS)
             now.value = System.currentTimeMillis()
             true
         } else {

@@ -19,12 +19,13 @@ android {
         applicationId = "com.tvremote.universal"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         manifestPlaceholders["admobAppId"] = prop("admob.appId", "ADMOB_APP_ID")
         buildConfigField("String", "INTERSTITIAL_ID", "\"${prop("admob.interstitialId", "ADMOB_INTERSTITIAL_ID")}\"")
         buildConfigField("String", "REWARDED_ID", "\"${prop("admob.rewardedId", "ADMOB_REWARDED_ID")}\"")
+        buildConfigField("boolean", "MOCK_BILLING", prop("billing.mock", "BILLING_MOCK"))
 
         @Suppress("UnstableApiUsage")
         resourceConfigurations += listOf("en")

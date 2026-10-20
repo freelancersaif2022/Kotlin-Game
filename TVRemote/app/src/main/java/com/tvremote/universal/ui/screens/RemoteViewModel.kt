@@ -14,6 +14,8 @@ import com.tvremote.universal.tv.ConnectionState
 import com.tvremote.universal.tv.ControllerFactory
 import com.tvremote.universal.tv.FailReason
 import com.tvremote.universal.tv.TvController
+import com.tvremote.universal.tv.TvDiscovery
+import com.tvremote.universal.ui.components.SnackKind
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -47,8 +49,8 @@ class RemoteViewModel(private val deviceId: String) : ViewModel() {
     private val _waking = MutableStateFlow(false)
     val waking: StateFlow<Boolean> = _waking.asStateFlow()
 
-    private val _events = MutableSharedFlow<String>(extraBufferCapacity = 4)
-    val events: SharedFlow<String> = _events.asSharedFlow()
+    private val _events = MutableSharedFlow<Pair<String, SnackKind>>(extraBufferCapacity = 4)
+    val events: SharedFlow<Pair<String, SnackKind>> = _events.asSharedFlow()
 
     private var controller: TvController? = null
     private var stateJob: Job? = null
@@ -135,7 +137,7 @@ class RemoteViewModel(private val deviceId: String) : ViewModel() {
 
     private fun enqueue(action: suspend (TvController) -> Unit) {
         if (_state.value !is ConnectionState.Connected) {
-            _events.tryEmit("Not connected to your TV yet")
+            _events.tryEmit("Not connected to your TV yet — reconnecting…" to SnackKind.INFO)
             if (_state.value is ConnectionState.Failed || _state.value is ConnectionState.Idle) connect()
             return
         }
@@ -171,29 +173,33 @@ class RemoteViewModel(private val deviceId: String) : ViewModel() {
         val d = device.value ?: return
         if (_waking.value) return
         if (!canWake) {
-            _events.tryEmit("Add your TV's MAC address in TV settings so the app can turn it on.")
+            _events.tryEmit("Add your TV's MAC address in TV settings so the app can turn it on." to SnackKind.INFO)
             return
         }
         viewModelScope.launch {
             _waking.value = true
             connectJob?.cancel()
-            val deadline = System.currentTimeMillis() + 30_000
-            var attempt = 0
+            _events.tryEmit("Waking up ${d.name}…" to SnackKind.INFO)
+            val deadline = System.currentTimeMillis() + 40_000
             while (System.currentTimeMillis() < deadline) {
                 withContext(Dispatchers.IO) {
                     if (d.mac.isNotBlank()) WakeOnLan.send(c.app, d.mac, d.host)
                     runCatching { ctrl.wake() }
                 }
-                delay(if (attempt == 0) 3000 else 2500)
-                attempt++
-                ctrl.connect()
-                if (ctrl.state.value is ConnectionState.Connected) break
+                delay(1500)
+                // Only try a full connection once the TV's control port answers again.
+                if (TvDiscovery.probe(d.platform, d.host)) {
+                    ctrl.connect()
+                    if (ctrl.state.value is ConnectionState.Connected) break
+                }
             }
             val s = ctrl.state.value
             if (s is ConnectionState.Connected && !s.tvOn) runCatching { ctrl.sendKey(RemoteKey.POWER) }
             _waking.value = false
-            if (s !is ConnectionState.Connected) {
-                _events.tryEmit("Your TV didn't wake up. Check the power-on setting for your TV in Help.")
+            if (s is ConnectionState.Connected) {
+                _events.tryEmit("${d.name} is on" to SnackKind.SUCCESS)
+            } else {
+                _events.tryEmit("Your TV didn't wake up. Check the power-on setting for your TV in Help." to SnackKind.ERROR)
             }
         }
     }

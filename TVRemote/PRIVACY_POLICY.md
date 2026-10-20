@@ -1,8 +1,8 @@
-# Privacy Policy — TV Remote
+# Privacy Policy — Universal Remote
 
 _Last updated: October 2026_
 
-TV Remote ("the app") lets you control your smart TV from your Android phone over your local Wi-Fi network.
+Universal Remote ("the app") lets you control your smart TV from your Android phone over your local Wi-Fi network.
 
 ## Information the app uses
 
@@ -21,4 +21,4 @@ The app is not directed at children under 13.
 
 ## Contact
 
-Questions? Email developersaifgemini@gmail.com.
+Questions? Contact us through the Google Play listing.

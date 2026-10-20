@@ -57,7 +57,7 @@ jobs:
         id: apk
         run: |
           VERSION=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
-          NAME="TVRemote-v${VERSION}-build${{ github.run_number }}.apk"
+          NAME="UniversalRemote-v${VERSION}-build${{ github.run_number }}.apk"
           cp app/build/outputs/apk/release/app-release.apk "$NAME"
           SIZE=$(du -h "$NAME" | cut -f1)
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
@@ -66,18 +66,18 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: TVRemote-apk
+          name: UniversalRemote-apk
           path: TVRemote/${{ steps.apk.outputs.name }}
           if-no-files-found: error
 
       - name: Publish downloadable release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: tvremote-build-${{ github.run_number }}
-          name: TV Remote build ${{ github.run_number }}
+          tag_name: universal-remote-build-${{ github.run_number }}
+          name: Universal Remote build ${{ github.run_number }}
           target_commitish: ${{ github.sha }}
           prerelease: true
           body: |
-            Universal TV Remote — release APK built from `${{ github.ref_name }}` (${{ github.sha }}).
+            Universal Remote — release APK built from `${{ github.ref_name }}` (${{ github.sha }}).
             Download the APK below and install it on your Android phone (Android 8.0+).
           files: TVRemote/${{ steps.apk.outputs.name }}

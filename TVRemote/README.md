@@ -1,4 +1,4 @@
-# TV Remote — Universal Smart TV Remote (Kotlin)
+# Universal Remote — Smart TV Remote (Kotlin)
 
 A complete, Play-Store-ready Android app (Kotlin + Jetpack Compose) that turns a phone into a remote
 for most smart TVs from 2016 onward, over Wi-Fi.
@@ -32,6 +32,9 @@ The APK is built by GitHub Actions (`.github/workflows/tvremote-apk.yml`) on eve
 Locally: open `TVRemote/` in Android Studio, or run `./gradlew assembleRelease`.
 
 ### Before publishing on Google Play
+
+0. **Billing test mode**: `billing.mock=true` in `gradle.properties` simulates purchases so Premium can be tested.
+   **Set `billing.mock=false` before publishing**, otherwise purchases are free.
 
 1. **AdMob**: create an app and ad units at https://admob.google.com and put the ids in
    `gradle.properties` (or the GitHub secrets `ADMOB_APP_ID`, `ADMOB_INTERSTITIAL_ID`, `ADMOB_REWARDED_ID`).

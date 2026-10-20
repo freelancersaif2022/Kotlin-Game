@@ -36,7 +36,7 @@ object Guides {
             pairing = listOf(
                 SAME_WIFI,
                 "Select your Samsung TV in the list.",
-                "A popup appears on the TV asking to allow \"TV Remote\".",
+                "A popup appears on the TV asking to allow \"Universal Remote\".",
                 "Select \"Allow\" with your TV remote within 30 seconds. Done!",
             ),
             powerOn = listOf(
@@ -45,7 +45,7 @@ object Guides {
                 "The app saves your TV's MAC address automatically while it's on — then Power works even when the TV is off.",
             ),
             troubleshooting = listOf(
-                "Pressed \"Deny\" by mistake? Settings › General › External Device Manager › Device Connection Manager › Device List — allow \"TV Remote\".",
+                "Pressed \"Deny\" by mistake? Settings › General › External Device Manager › Device Connection Manager › Device List — allow \"Universal Remote\".",
                 "Set \"Access Notification\" to \"First Time Only\" in Device Connection Manager.",
                 "Make sure \"IP Remote\" is on (Settings › General › Network › Expert Settings).",
             ),

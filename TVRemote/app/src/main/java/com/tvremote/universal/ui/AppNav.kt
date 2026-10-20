@@ -11,11 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -34,10 +29,14 @@ import com.tvremote.universal.ui.screens.ManualAddScreen
 import com.tvremote.universal.ui.screens.OnboardingScreen
 import com.tvremote.universal.ui.screens.PairScreen
 import com.tvremote.universal.ui.screens.PremiumScreen
+import com.tvremote.universal.ui.screens.PrivacyPolicyScreen
+import com.tvremote.universal.ui.screens.SplashScreen
 import com.tvremote.universal.ui.screens.RemoteScreen
 import com.tvremote.universal.ui.screens.SettingsScreen
 
 object Routes {
+    const val SPLASH = "splash"
+    const val PRIVACY = "privacy"
     const val ONBOARDING = "onboarding"
     const val HOME = "home"
     const val DISCOVER = "discover"
@@ -66,27 +65,25 @@ fun AppNavHost() {
     val nav = rememberNavController()
     val container = App.container
     val activity = LocalActivity.current
-    val start = if (container.settings.onboardingDone.value) Routes.HOME else Routes.ONBOARDING
-    var restored by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        // Jump straight back to the last used remote for a fast start.
-        if (!restored && start == Routes.HOME) {
-            restored = true
-            val last = container.settings.lastDeviceId.value
-            if (last != null && container.tvStore.get(last) != null) nav.navigate(Routes.remote(last))
-        }
-    }
 
     NavHost(
         navController = nav,
-        startDestination = start,
+        startDestination = Routes.SPLASH,
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
         enterTransition = { fadeIn(tween(220)) + slideInHorizontally(tween(260)) { it / 10 } },
         exitTransition = { fadeOut(tween(160)) },
         popEnterTransition = { fadeIn(tween(220)) },
         popExitTransition = { fadeOut(tween(160)) + slideOutHorizontally(tween(240)) { it / 10 } },
     ) {
+        composable(Routes.SPLASH) {
+            SplashScreen(onDone = {
+                val next = if (container.settings.onboardingDone.value) Routes.HOME else Routes.ONBOARDING
+                nav.navigate(next) { popUpTo(Routes.SPLASH) { inclusive = true } }
+            })
+        }
+        composable(Routes.PRIVACY) {
+            PrivacyPolicyScreen(onBack = { nav.popBackStack() })
+        }
         composable(Routes.ONBOARDING) {
             OnboardingScreen(onFinish = {
                 container.settings.setOnboardingDone()
@@ -177,6 +174,7 @@ fun AppNavHost() {
                 onPremium = { nav.navigate(Routes.PREMIUM) },
                 onHelp = { nav.navigate(Routes.help()) },
                 onManageTvs = { nav.popBackStack(Routes.HOME, inclusive = false) },
+                onPrivacy = { nav.navigate(Routes.PRIVACY) },
             )
         }
         composable(

@@ -1,8 +1,6 @@
 <resources>
-    <color name="brand">#2F54EB</color>
-    <color name="brand_dark">#1D39C4</color>
-    <color name="splash_bg">#2F54EB</color>
-    <color name="window_light">#F3F5FA</color>
-    <color name="window_dark">#0B0E14</color>
-    <color name="ic_launcher_background">#2F54EB</color>
+    <color name="splash_bg">#020A28</color>
+    <color name="window_light">#F4F6FB</color>
+    <color name="window_dark">#060B18</color>
+    <color name="ic_launcher_background">#020A28</color>
 </resources>

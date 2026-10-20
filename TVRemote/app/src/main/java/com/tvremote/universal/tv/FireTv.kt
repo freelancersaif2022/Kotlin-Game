@@ -62,7 +62,7 @@ class AdbClient(private val host: String, private val identity: ClientIdentity) 
                 write(AUTH, AUTH_SIGNATURE, 0, sign(p.data))
                 signed = true
             } else {
-                val key = Base64.encodeToString(androidPublicKey(identity.publicKey), Base64.NO_WRAP) + " tvremote@android\u0000"
+                val key = Base64.encodeToString(androidPublicKey(identity.publicKey), Base64.NO_WRAP) + " universalremote@android\u0000"
                 write(AUTH, AUTH_RSAPUBLICKEY, 0, key.toByteArray())
                 onApprovalNeeded()
                 s.soTimeout = approvalTimeoutMs

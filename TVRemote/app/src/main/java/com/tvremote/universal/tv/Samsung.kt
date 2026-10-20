@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /** Samsung Tizen (2016+) WebSocket remote API on ports 8001 (ws) / 8002 (wss + token). */
 object SamsungApi {
-    const val APP_NAME = "TV Remote"
+    const val APP_NAME = "Universal Remote"
 
     data class Info(
         val name: String,

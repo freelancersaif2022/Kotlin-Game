@@ -107,7 +107,7 @@ class VizioPairing(private val http: OkHttpClient, private val host: String, pri
         val client = VizioApi.client(http, host, port, pins)
         val resp = VizioApi.call(
             client, "https://$host:$port/pairing/start",
-            JSONObject().put("DEVICE_ID", deviceId).put("DEVICE_NAME", "TV Remote"),
+            JSONObject().put("DEVICE_ID", deviceId).put("DEVICE_NAME", "Universal Remote"),
         )
         val item = with(VizioApi) { resp.body.ci("ITEM") } as? JSONObject ?: return false
         with(VizioApi) {
