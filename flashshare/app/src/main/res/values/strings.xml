@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FlashShare</string>
+    <string name="notif_channel">File transfers</string>
+</resources>

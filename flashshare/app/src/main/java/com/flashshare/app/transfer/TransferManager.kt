@@ -1,0 +1,416 @@
+package com.flashshare.app.transfer
+
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+import com.flashshare.app.data.Category
+import com.flashshare.app.data.HistoryEntry
+import com.flashshare.app.data.HistoryFile
+import com.flashshare.app.data.HistoryStore
+import com.flashshare.app.data.Prefs
+import com.flashshare.app.data.ShareItem
+import com.flashshare.app.net.AuthException
+import com.flashshare.app.net.Batch
+import com.flashshare.app.net.BatchStatus
+import com.flashshare.app.net.CryptoBox
+import com.flashshare.app.net.EngineCallbacks
+import com.flashshare.app.net.FileSaver
+import com.flashshare.app.net.PeerInfo
+import com.flashshare.app.net.PeerSession
+import com.flashshare.app.net.Proto
+import com.flashshare.app.net.QrPayload
+import com.flashshare.app.net.SinkFactory
+import com.flashshare.app.net.Source
+import com.flashshare.app.net.TransferEngine
+import com.flashshare.app.net.WifiDirectController
+import com.flashshare.app.net.bandLabel
+import com.flashshare.app.net.openSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.util.Base64
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+
+enum class Mode { RECEIVE, SEND, GROUP_HOST, GROUP_JOIN }
+
+sealed interface Phase {
+    data object Idle : Phase
+    data class Preparing(val text: String) : Phase
+    data class Hosting(val qr: String, val payload: QrPayload, val band: String, val pin: String?) : Phase
+    data class Joining(val text: String, val peerName: String, val peerAvatarId: Int) : Phase
+    data object Connected : Phase
+    data class Error(val message: String, val needPin: Boolean = false, val payload: QrPayload? = null) : Phase
+}
+
+data class PeerUi(val key: String, val name: String, val avatarId: Int, val avatar: ByteArray?, val model: String) {
+    override fun equals(other: Any?) = other is PeerUi && other.key == key && other.name == name
+    override fun hashCode() = key.hashCode()
+}
+
+data class FileUi(
+    val name: String,
+    val size: Long,
+    val mime: String,
+    val category: Category,
+    val transferred: Long,
+    val done: Boolean,
+    val uri: String?,
+    val sourceUri: String?,
+)
+
+data class BatchUi(
+    val key: String,
+    val peer: PeerUi,
+    val outgoing: Boolean,
+    val files: List<FileUi>,
+    val total: Long,
+    val transferred: Long,
+    val filesDone: Int,
+    val speed: Double,
+    val etaSec: Long,
+    val status: BatchStatus,
+    val error: String?,
+    val durationMs: Long,
+) {
+    val progress: Float get() = if (total <= 0) (if (status == BatchStatus.COMPLETED) 1f else 0f) else (transferred.toDouble() / total).toFloat().coerceIn(0f, 1f)
+}
+
+sealed interface TransferEvent {
+    data class BatchDone(val batch: BatchUi) : TransferEvent
+    data class Disconnected(val peerName: String, val reason: String?) : TransferEvent
+}
+
+/**
+ * App-wide owner of the connection: Wi-Fi Direct group, transfer engine, live progress snapshots and history.
+ * It lives in the Application so transfers survive screen changes and run in the background with [TransferService].
+ */
+class TransferManager(
+    private val context: Context,
+    private val prefs: Prefs,
+    private val history: HistoryStore,
+    private val wifi: WifiDirectController,
+    private val scope: CoroutineScope,
+) : EngineCallbacks {
+
+    private val _phase = MutableStateFlow<Phase>(Phase.Idle)
+    val phase: StateFlow<Phase> = _phase.asStateFlow()
+
+    private val _peers = MutableStateFlow<List<PeerUi>>(emptyList())
+    val peers: StateFlow<List<PeerUi>> = _peers.asStateFlow()
+
+    private val _batches = MutableStateFlow<List<BatchUi>>(emptyList())
+    val batches: StateFlow<List<BatchUi>> = _batches.asStateFlow()
+
+    private val _band = MutableStateFlow("")
+    val band: StateFlow<String> = _band.asStateFlow()
+
+    private val _encrypted = MutableStateFlow(false)
+    val encrypted: StateFlow<Boolean> = _encrypted.asStateFlow()
+
+    private val _events = MutableSharedFlow<TransferEvent>(extraBufferCapacity = 16)
+    val events: SharedFlow<TransferEvent> = _events.asSharedFlow()
+
+    var mode: Mode = Mode.RECEIVE
+        private set
+
+    private var engine: TransferEngine? = null
+    private val allBatches = CopyOnWriteArrayList<Batch>()
+    private val speedState = ConcurrentHashMap<String, DoubleArray>() // [lastBytes, lastTimeMs, ema]
+    private var groupItems: List<ShareItem> = emptyList()
+    private var pendingSend: List<ShareItem> = emptyList()
+    private var job: Job? = null
+    private var ticker: Job? = null
+    @Volatile private var saver: FileSaver? = null
+
+    val isBusy: Boolean get() = _phase.value !is Phase.Idle && _phase.value !is Phase.Error
+    val hasActiveTransfer: Boolean get() = allBatches.any { it.isActive }
+
+    // region public API
+    /** Receive mode or group-send mode: create a fast Wi-Fi Direct group and show a QR code. */
+    fun startHosting(mode: Mode, items: List<ShareItem> = emptyList()) {
+        stopInternal()
+        this.mode = mode
+        groupItems = items
+        _phase.value = Phase.Preparing("Creating ultra-fast connection…")
+        TransferService.start(context)
+        job = scope.launch(Dispatchers.IO) {
+            try {
+                val s = prefs.current
+                val group = wifi.createGroup(s.band)
+                val eng = newEngine()
+                val port = eng.listen(Proto.PORT)
+                var pin: String? = null
+                var salt = ""
+                if (s.encryption && s.premium) {
+                    pin = CryptoBox.newPin()
+                    val saltBytes = CryptoBox.newSalt()
+                    salt = Base64.getEncoder().encodeToString(saltBytes)
+                    eng.hostCrypto = CryptoBox.derive(pin, saltBytes)
+                }
+                val payload = QrPayload(
+                    ssid = group.ssid, pass = group.passphrase, freq = group.frequency, host = group.ownerIp, port = port,
+                    name = s.name, avatarId = if (s.customAvatar) -1 else s.avatarId, deviceId = s.deviceId,
+                    mode = if (mode == Mode.GROUP_HOST) "g" else "r", encrypted = pin != null, salt = salt,
+                )
+                _band.value = group.bandLabel
+                _encrypted.value = pin != null
+                _phase.value = Phase.Hosting(payload.encode(), payload, group.bandLabel, pin)
+                startTicker()
+            } catch (e: Exception) {
+                fail(e.message ?: "Couldn't start Wi-Fi Direct")
+            }
+        }
+    }
+
+    /** Sender (or group member) side: join the group from the scanned QR code. */
+    private var lastJoin: Triple<QrPayload, Mode, List<ShareItem>>? = null
+
+    /** Retries the last failed connection (optionally with a corrected PIN). Returns false if there is nothing to retry. */
+    fun retry(pin: String?): Boolean {
+        val (p, m, items) = lastJoin ?: return false
+        join(p, pin, m, items)
+        return true
+    }
+
+    fun join(payload: QrPayload, pin: String?, mode: Mode, items: List<ShareItem>) {
+        lastJoin = Triple(payload, mode, items)
+        stopInternal()
+        this.mode = mode
+        pendingSend = items
+        _phase.value = Phase.Joining("Connecting at high speed…", payload.name, payload.avatarId)
+        TransferService.start(context)
+        job = scope.launch(Dispatchers.IO) {
+            try {
+                val host = wifi.joinGroup(payload)
+                _phase.value = Phase.Joining("Securing link…", payload.name, payload.avatarId)
+                val eng = newEngine()
+                val crypto = if (payload.encrypted && pin != null) {
+                    CryptoBox.derive(pin, Base64.getDecoder().decode(payload.salt))
+                } else null
+                val session = eng.connect(host, payload.port, crypto, payload.encrypted)
+                val freq = wifi.currentFrequency().takeIf { it > 0 } ?: payload.freq
+                _band.value = bandLabel(freq)
+                _encrypted.value = session.encrypted
+                startTicker()
+                if (pendingSend.isNotEmpty()) {
+                    val toSend = pendingSend
+                    pendingSend = emptyList()
+                    session.send(toSend)
+                }
+            } catch (e: AuthException) {
+                fail(e.message ?: "PIN required", needPin = true, payload = payload)
+            } catch (e: Exception) {
+                fail(e.message ?: "Connection failed", payload = payload)
+            }
+        }
+    }
+
+    /** Send more files to every connected phone. */
+    fun send(items: List<ShareItem>) {
+        if (items.isEmpty()) return
+        val eng = engine ?: return
+        scope.launch(Dispatchers.IO) { eng.sessions.forEach { it.send(items) } }
+    }
+
+    fun cancel(batchKey: String) {
+        val b = allBatches.firstOrNull { it.key == batchKey } ?: return
+        scope.launch(Dispatchers.IO) { b.session.cancel(b) }
+    }
+
+    fun cancelAll() {
+        scope.launch(Dispatchers.IO) { allBatches.filter { it.isActive }.forEach { it.session.cancel(it) } }
+    }
+
+    fun disconnect() {
+        stopInternal()
+        _phase.value = Phase.Idle
+        TransferService.stop(context)
+    }
+
+    fun clearError() {
+        if (_phase.value is Phase.Error) _phase.value = Phase.Idle
+    }
+    // endregion
+
+    private fun newEngine(): TransferEngine {
+        saver = FileSaver(context, prefs.current.saveTreeUri)
+        return TransferEngine(this).also { engine = it }
+    }
+
+    private fun stopInternal() {
+        job?.cancel(); job = null
+        ticker?.cancel(); ticker = null
+        val eng = engine
+        engine = null
+        allBatches.clear()
+        speedState.clear()
+        _peers.value = emptyList()
+        _batches.value = emptyList()
+        _band.value = ""
+        _encrypted.value = false
+        scope.launch(Dispatchers.IO) {
+            eng?.shutdown()
+            runCatching { wifi.reset() }
+        }
+    }
+
+    private fun fail(message: String, needPin: Boolean = false, payload: QrPayload? = null) {
+        val eng = engine
+        engine = null
+        ticker?.cancel()
+        scope.launch(Dispatchers.IO) {
+            eng?.shutdown()
+            runCatching { wifi.reset() }
+        }
+        _phase.value = Phase.Error(message, needPin, payload)
+        TransferService.stop(context)
+    }
+
+    // region progress ticker
+    private fun startTicker() {
+        ticker?.cancel()
+        ticker = scope.launch {
+            while (isActive) {
+                publish()
+                delay(250)
+            }
+        }
+    }
+
+    private fun publish() {
+        val now = System.currentTimeMillis()
+        _batches.value = allBatches.map { b -> snapshot(b, now) }
+    }
+
+    private fun peerUi(s: PeerSession) = PeerUi(s.key, s.peer.name, s.peer.avatarId, s.peer.avatar, s.peer.model)
+
+    private fun snapshot(b: Batch, now: Long): BatchUi {
+        val transferred = b.transferred.get()
+        val st = speedState.getOrPut(b.key) { doubleArrayOf(transferred.toDouble(), now.toDouble(), 0.0) }
+        val dt = (now - st[1]) / 1000.0
+        if (b.isActive && dt >= 0.2) {
+            val inst = (transferred - st[0]) / dt
+            st[2] = if (st[2] == 0.0) inst else st[2] * 0.6 + inst * 0.4
+            st[0] = transferred.toDouble(); st[1] = now.toDouble()
+        }
+        val duration = (if (b.endedAt > 0) b.endedAt else now) - b.startedAt
+        val speed = if (b.isActive) st[2] else if (duration > 0) b.total * 1000.0 / duration else 0.0
+        val eta = if (speed > 1) ((b.total - transferred) / speed).toLong() else -1
+        val files = b.files.map { f ->
+            val got = b.fileProgress.get(f.index)
+            FileUi(
+                name = f.name, size = f.size, mime = f.mime, category = f.category,
+                transferred = got, done = got >= f.size && (b.outgoing || b.savedUris[f.index] != null || f.size == 0L),
+                uri = b.savedUris[f.index], sourceUri = b.items?.getOrNull(f.index)?.uri?.toString(),
+            )
+        }
+        return BatchUi(
+            key = b.key, peer = peerUi(b.session), outgoing = b.outgoing, files = files, total = b.total,
+            transferred = if (b.status == BatchStatus.COMPLETED) b.total else transferred, filesDone = b.filesDone.get(),
+            speed = speed, etaSec = eta, status = b.status, error = b.error, durationMs = duration,
+        )
+    }
+    // endregion
+
+    // region EngineCallbacks
+    override fun localHello(): JSONObject {
+        val s = prefs.current
+        return JSONObject().apply {
+            put("v", Proto.VERSION); put("id", s.deviceId); put("name", s.name); put("av", s.avatarId)
+            put("model", Build.MANUFACTURER.replaceFirstChar { it.uppercase() } + " " + Build.MODEL)
+            put("premium", s.premium)
+            prefs.avatarBytes()?.let { put("img", Base64.getEncoder().encodeToString(it)) }
+        }
+    }
+
+    override fun acceptNewPeer(): Boolean {
+        val eng = engine ?: return false
+        return mode == Mode.GROUP_HOST && eng.sessions.size < 8 || eng.sessions.isEmpty()
+    }
+
+    override fun isPremium(): Boolean = prefs.current.premium
+
+    override fun saver(): SinkFactory = saver ?: FileSaver(context, prefs.current.saveTreeUri).also { saver = it }
+
+    override fun openSource(item: ShareItem): Source = openSource(context, item.uri)
+
+    override fun onSessionReady(session: PeerSession) {
+        _peers.value = (engine?.sessions ?: emptyList<PeerSession>()).map { peerUi(it) }
+        if (mode != Mode.GROUP_HOST) _phase.value = Phase.Connected
+        if (mode == Mode.GROUP_HOST && groupItems.isNotEmpty()) {
+            val items = groupItems
+            scope.launch(Dispatchers.IO) { session.send(items) }
+        }
+        vibrate(30)
+    }
+
+    override fun onSessionClosed(session: PeerSession, error: String?) {
+        val eng = engine
+        _peers.value = (eng?.sessions ?: emptyList<PeerSession>()).filter { it !== session }.map { peerUi(it) }
+        _events.tryEmit(TransferEvent.Disconnected(session.peer.name, error))
+        if (mode != Mode.GROUP_HOST && eng != null && eng.sessions.none { it !== session }) {
+            // One-to-one session ended: keep results on screen but mark disconnected.
+            scope.launch {
+                publish()
+                ticker?.cancel()
+            }
+        }
+    }
+
+    override fun onBatchAdded(batch: Batch) {
+        allBatches += batch
+        scope.launch { publish() }
+    }
+
+    override fun onBatchFinished(batch: Batch) {
+        scope.launch {
+            publish()
+            val ui = snapshot(batch, System.currentTimeMillis())
+            if (batch.status == BatchStatus.COMPLETED) vibrate(longArrayOf(0, 40, 60, 40))
+            _events.tryEmit(TransferEvent.BatchDone(ui))
+            history.add(
+                HistoryEntry(
+                    id = UUID.randomUUID().toString(),
+                    time = System.currentTimeMillis(),
+                    sent = batch.outgoing,
+                    peerName = batch.session.peer.name,
+                    peerAvatarId = batch.session.peer.avatarId,
+                    files = ui.files.map { HistoryFile(it.name, it.size, it.mime, if (batch.outgoing) it.sourceUri else it.uri) },
+                    totalBytes = if (batch.status == BatchStatus.COMPLETED) batch.total else batch.transferred.get(),
+                    durationMs = ui.durationMs,
+                    status = batch.status.name.lowercase(),
+                )
+            )
+        }
+    }
+    // endregion
+
+    private fun vibrate(ms: Long) = vibrate(longArrayOf(0, ms))
+
+    private fun vibrate(pattern: LongArray) {
+        if (!prefs.current.vibrate) return
+        runCatching {
+            val v: Vibrator = if (Build.VERSION.SDK_INT >= 31) {
+                context.getSystemService(VibratorManager::class.java).defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Vibrator::class.java)
+            }
+            v.vibrate(VibrationEffect.createWaveform(pattern, -1))
+        }
+    }
+}

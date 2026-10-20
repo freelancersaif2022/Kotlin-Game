@@ -1,0 +1,83 @@
+name: FlashShare Android build
+
+on:
+  push:
+    paths:
+      - "flashshare/**"
+      - ".github/workflows/flashshare-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flashshare-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flashshare
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Optional: sign with your own Play upload key. Add these repository secrets:
+      # FLASHSHARE_KEYSTORE_BASE64, FLASHSHARE_KEYSTORE_PASSWORD, FLASHSHARE_KEY_ALIAS, FLASHSHARE_KEY_PASSWORD
+      - name: Decode release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.FLASHSHARE_KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "FLASHSHARE_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      # Real TCP transfers over loopback: integrity (SHA-256), PIN encryption, group, cancel, free-plan cap.
+      - name: Transfer engine tests
+        run: ./gradlew --no-daemon -p engine-test test
+
+      # Real AdMob IDs come from secrets; without them the build uses Google's test ad IDs.
+      - name: Build APK and App Bundle
+        env:
+          FLASHSHARE_KEYSTORE_PASSWORD: ${{ secrets.FLASHSHARE_KEYSTORE_PASSWORD }}
+          FLASHSHARE_KEY_ALIAS: ${{ secrets.FLASHSHARE_KEY_ALIAS }}
+          FLASHSHARE_KEY_PASSWORD: ${{ secrets.FLASHSHARE_KEY_PASSWORD }}
+          FLASHSHARE_ADMOB_APP_ID: ${{ secrets.FLASHSHARE_ADMOB_APP_ID }}
+          FLASHSHARE_ADMOB_INTERSTITIAL_ID: ${{ secrets.FLASHSHARE_ADMOB_INTERSTITIAL_ID }}
+          FLASHSHARE_ADMOB_REWARDED_ID: ${{ secrets.FLASHSHARE_ADMOB_REWARDED_ID }}
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
+
+      - name: Collect outputs
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk "dist/FlashShare-v1.0.${{ github.run_number }}.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "dist/FlashShare-v1.0.${{ github.run_number }}.aab"
+          ls -la dist
+          echo "APK size: $(du -h dist/*.apk | cut -f1)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FlashShare-v1.0.${{ github.run_number }}
+          path: flashshare/dist/*
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: flashshare-v1.0.${{ github.run_number }}
+          name: FlashShare v1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          body: |
+            FlashShare – ultra-fast offline file transfer over 5 GHz / 6 GHz Wi-Fi Direct.
+
+            **Install:** download `FlashShare-v1.0.${{ github.run_number }}.apk` on your Android phone and open it (allow "Install unknown apps" when asked).
+            The `.aab` file is for uploading to Google Play Console.
+          files: flashshare/dist/*
