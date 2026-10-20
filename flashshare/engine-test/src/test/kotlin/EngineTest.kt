@@ -35,6 +35,7 @@ class Peer(val name: String, val premium: Boolean = true, val maxPeers: Int = 1)
         override fun freeSpace() = Long.MAX_VALUE
     }
     override fun openSource(item: ShareItem) = Source(FileInputStream(File(item.uri.path!!)))
+    override fun thumbnail(item: ShareItem): ByteArray? = ("thumb:" + item.name).toByteArray()
     override fun onSessionReady(session: PeerSession) { ready += session }
     override fun onSessionClosed(session: PeerSession, error: String?) {}
     override fun onBatchAdded(batch: Batch) {}
@@ -144,6 +145,21 @@ class EngineTest {
         assertEquals(BatchStatus.CANCELLED, rb.status)
         assertTrue("partial file removed", host.dir.walk().none { it.isFile })
         println("cancel propagates to receiver and partial file is deleted")
+        host.engine.close(); client.engine.close()
+    }
+
+    @Test fun thumbnailsReachReceiver() {
+        val host = Peer("R"); val client = Peer("S")
+        val port = host.engine.listen(0)
+        val cs = client.engine.connect("127.0.0.1", port, null, false)
+        host.ready.poll(5, TimeUnit.SECONDS)
+        val items = makeFiles(srcDir, listOf(1000, 2000, 3000))
+        cs.send(items)
+        val rb = host.finished.poll(10, TimeUnit.SECONDS)!!
+        val deadline = System.currentTimeMillis() + 5000
+        while (rb.thumbs.size < 3 && System.currentTimeMillis() < deadline) Thread.sleep(20)
+        items.forEachIndexed { i, it -> assertEquals("thumb:" + it.name, String(rb.thumbs[i]!!)) }
+        println("thumbnails delivered for all ${items.size} files")
         host.engine.close(); client.engine.close()
     }
 

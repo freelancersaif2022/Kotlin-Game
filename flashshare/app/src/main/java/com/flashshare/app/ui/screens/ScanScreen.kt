@@ -54,7 +54,8 @@ import com.flashshare.app.container
 import com.flashshare.app.net.QrPayload
 import com.flashshare.app.transfer.Mode
 import com.flashshare.app.ui.Routes
-import com.flashshare.app.ui.components.AvatarImpl
+import com.flashshare.app.ui.components.AppDialog
+import com.flashshare.app.ui.theme.Brand
 import com.flashshare.app.ui.components.GradientButton
 import com.flashshare.app.util.toast
 import com.google.zxing.BarcodeFormat
@@ -77,7 +78,6 @@ fun ScanScreen(mode: String, nav: NavController) {
     val ctx = LocalContext.current
     val c = ctx.container
     val scope = rememberCoroutineScope()
-    var torch by remember { mutableStateOf(false) }
     var camera by remember { mutableStateOf<Camera?>(null) }
     var pinFor by remember { mutableStateOf<QrPayload?>(null) }
     val handled = remember { AtomicBoolean(false) }
@@ -100,13 +100,6 @@ fun ScanScreen(mode: String, nav: NavController) {
         }
     }
 
-    val galleryPicker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) scope.launch {
-            val text = withContext(Dispatchers.IO) { decodeFromImage(ctx, uri) }
-            if (text == null) ctx.toast("No QR code found in that picture") else onCode(text)
-        }
-    }
-
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         CameraPreview(onCamera = { camera = it }) { text ->
             if (handled.compareAndSet(false, true)) scope.launch { onCode(text) }
@@ -115,12 +108,6 @@ fun ScanScreen(mode: String, nav: NavController) {
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { nav.popBackStack() }) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back", tint = Color.White) }
             Text(if (mode == "join") "Join a group" else "Scan to send", color = Color.White, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-            IconButton(onClick = { galleryPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
-                Icon(Icons.Rounded.Image, "Scan from photo", tint = Color.White)
-            }
-            IconButton(onClick = { torch = !torch; camera?.cameraControl?.enableTorch(torch) }) {
-                Icon(if (torch) Icons.Rounded.FlashlightOn else Icons.Rounded.FlashlightOff, "Torch", tint = Color.White)
-            }
         }
         Column(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth().navigationBarsPadding().padding(20.dp)
@@ -163,32 +150,29 @@ fun ScanScreen(mode: String, nav: NavController) {
 @Composable
 fun PinDialog(peerName: String, avatarId: Int, error: String? = null, onDismiss: () -> Unit, onPin: (String) -> Unit) {
     var pin by remember { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        icon = { AvatarImpl(avatarId, null, 52.dp) },
-        title = { Text("Enter pairing PIN") },
-        text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("$peerName uses encrypted sharing. Enter the 6-digit PIN shown on their screen.", textAlign = TextAlign.Center)
-                if (error != null) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-                }
-                Spacer(Modifier.height(14.dp))
-                OutlinedTextField(
-                    value = pin,
-                    onValueChange = { v -> if (v.length <= 6 && v.all { it.isDigit() }) pin = v },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                    textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center, letterSpacing = 8.sp, fontWeight = FontWeight.Bold),
-                    leadingIcon = { Icon(Icons.Rounded.Lock, null) },
-                    shape = RoundedCornerShape(16.dp),
-                )
-            }
-        },
-        confirmButton = { GradientButton("Connect", onClick = { onPin(pin) }, enabled = pin.length == 6, height = 46.dp) },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
+    AppDialog(
+        onDismiss = onDismiss, icon = Icons.Rounded.Lock, title = "Enter pairing PIN",
+        message = "$peerName uses encrypted sharing. Enter the 6-digit PIN shown on their screen.",
+        confirmText = "Connect", confirmEnabled = pin.length == 6, onConfirm = { onPin(pin) }, iconBrush = Brand.mint,
+    ) {
+        if (error != null) {
+            Text(error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(10.dp))
+        }
+        // Six PIN boxes backed by one hidden text field.
+        Box(contentAlignment = Alignment.Center) {
+            OutlinedTextField(
+                value = pin,
+                onValueChange = { v -> if (v.length <= 6 && v.all { it.isDigit() }) pin = v },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center, letterSpacing = 14.sp, fontWeight = FontWeight.Black),
+                shape = RoundedCornerShape(18.dp),
+                placeholder = { Text("• • • • • •", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
 }
 
 @Composable

@@ -186,6 +186,32 @@ class MediaRepository(private val context: Context) {
         out
     }
 
+    /** Real filesystem path of a MediaStore item (null if unknown or unreadable). */
+    @Suppress("DEPRECATION")
+    fun pathOf(uri: Uri): String? = runCatching {
+        if (uri.scheme == "file") return uri.path
+        cr.query(uri, arrayOf(MediaStore.MediaColumns.DATA), null, null, null)?.use { c ->
+            if (c.moveToFirst()) c.getString(0) else null
+        }
+    }.getOrNull()
+
+    /** With "All files access", MediaStore items are swapped for direct file:// URIs (exact APK icons, silent delete). */
+    private fun preferFile(item: ShareItem): ShareItem {
+        if (!FileBrowser.canBrowse(context) || item.uri.scheme != "content") return item
+        val path = pathOf(item.uri) ?: return item
+        val f = File(path)
+        return if (f.canRead()) item.copy(uri = Uri.fromFile(f)) else item
+    }
+
+    /** Installer (.apk) files anywhere on the phone. */
+    suspend fun apkFiles(): List<ShareItem> = withContext(Dispatchers.IO) {
+        if (FileBrowser.canBrowse(context)) {
+            FileBrowser.root.walkTopDown().onEnter { !it.name.startsWith(".") && it.name != "Android" }.maxDepth(6)
+                .filter { it.isFile && it.name.endsWith(".apk", true) }
+                .map { FileBrowser.toItem(it) }.sortedByDescending { it.dateAdded }.toList()
+        } else documents().filter { it.category == Category.APP }
+    }
+
     /** Files FlashShare received, from the configured save location. */
     suspend fun received(treeUri: String?): List<ShareItem> = withContext(Dispatchers.IO) {
         if (treeUri != null) {
@@ -223,7 +249,7 @@ class MediaRepository(private val context: Context) {
                     }
                 }
             }
-            return@withContext out
+            return@withContext out.map { preferFile(it) }
         }
         @Suppress("DEPRECATION")
         val dir = File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), "FlashShare")

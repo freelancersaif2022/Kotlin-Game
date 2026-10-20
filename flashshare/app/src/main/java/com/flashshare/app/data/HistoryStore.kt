@@ -13,7 +13,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
-data class HistoryFile(val name: String, val size: Long, val mime: String, val uri: String?)
+data class HistoryFile(val name: String, val size: Long, val mime: String, val uri: String?, val thumb: String? = null)
 
 data class HistoryEntry(
     val id: String,
@@ -29,7 +29,7 @@ data class HistoryEntry(
     val avgSpeed: Double get() = if (durationMs > 0) totalBytes * 1000.0 / durationMs else 0.0
 }
 
-class HistoryStore(context: Context, private val scope: CoroutineScope) {
+class HistoryStore(private val context: Context, private val scope: CoroutineScope) {
     private val file = File(context.filesDir, "history.json")
     private val mutex = Mutex()
     private val _entries = MutableStateFlow<List<HistoryEntry>>(emptyList())
@@ -50,9 +50,12 @@ class HistoryStore(context: Context, private val scope: CoroutineScope) {
         }
     }
 
+    val thumbDir = File(context.filesDir, "thumbs")
+
     fun clear() {
         scope.launch(Dispatchers.IO) {
             mutex.withLock {
+                thumbDir.deleteRecursively()
                 _entries.value = emptyList()
                 persist()
             }
@@ -69,7 +72,7 @@ class HistoryStore(context: Context, private val scope: CoroutineScope) {
                 put("files", JSONArray().apply {
                     e.files.take(500).forEach { f ->
                         put(JSONObject().apply {
-                            put("n", f.name); put("s", f.size); put("m", f.mime); f.uri?.let { put("u", it) }
+                            put("n", f.name); put("s", f.size); put("m", f.mime); f.uri?.let { put("u", it) }; f.thumb?.let { put("t", it) }
                         })
                     }
                 })
@@ -93,7 +96,7 @@ class HistoryStore(context: Context, private val scope: CoroutineScope) {
                 peerAvatarId = o.optInt("av"),
                 files = (0 until fa.length()).map { j ->
                     val f = fa.getJSONObject(j)
-                    HistoryFile(f.optString("n"), f.optLong("s"), f.optString("m"), if (f.has("u")) f.getString("u") else null)
+                    HistoryFile(f.optString("n"), f.optLong("s"), f.optString("m"), if (f.has("u")) f.getString("u") else null, if (f.has("t")) f.getString("t") else null)
                 },
                 totalBytes = o.optLong("total"),
                 durationMs = o.optLong("dur"),

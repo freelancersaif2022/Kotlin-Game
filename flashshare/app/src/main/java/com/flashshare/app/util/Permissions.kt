@@ -17,12 +17,15 @@ enum class Need(val title: String, val why: String) {
     LOCATION("Location access", "Android 12 and older need it to use Wi-Fi Direct. We never track you."),
     CAMERA("Camera", "Scan the QR code on the other phone to connect instantly."),
     MEDIA("Photos, videos & music", "Pick what to send and save what you receive."),
+    ALL_FILES("All files access", "Browse every folder on your phone, manage files and clean junk without extra pop-ups."),
     CONTACTS("Contacts", "Copy your contacts to your new phone with Phone Clone."),
     NOTIFICATIONS("Notifications", "Shows live transfer progress when the app is in the background."),
     WIFI_ON("Wi-Fi turned on", "Wi-Fi must be on for the ultra-fast direct link (you don't need a network)."),
     LOCATION_ON("Location turned on", "Android 12 and older need Location on to find nearby phones.");
 
     val optional: Boolean get() = this == NOTIFICATIONS
+    /** Granted from a system settings screen rather than a runtime dialog. */
+    val special: Boolean get() = this == WIFI_ON || this == LOCATION_ON || this == ALL_FILES
 }
 
 object Perms {
@@ -38,7 +41,7 @@ object Perms {
         }
         Need.CONTACTS -> arrayOf(Manifest.permission.READ_CONTACTS)
         Need.NOTIFICATIONS -> if (Build.VERSION.SDK_INT >= 33) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else emptyArray()
-        Need.WIFI_ON, Need.LOCATION_ON -> emptyArray()
+        Need.WIFI_ON, Need.LOCATION_ON, Need.ALL_FILES -> emptyArray()
     }
 
     fun needsFor(flow: PermFlow): List<Need> {
@@ -52,9 +55,9 @@ object Perms {
             PermFlow.RECEIVE -> base + listOfNotNull(if (Build.VERSION.SDK_INT <= 28) Need.MEDIA else null, Need.NOTIFICATIONS)
             PermFlow.JOIN -> base + listOfNotNull(Need.CAMERA, if (Build.VERSION.SDK_INT <= 28) Need.MEDIA else null, Need.NOTIFICATIONS)
             PermFlow.CLONE_SEND -> base + listOf(Need.CAMERA, Need.MEDIA, Need.CONTACTS, Need.NOTIFICATIONS)
-            PermFlow.FILES -> listOf(Need.MEDIA)
-            PermFlow.ALL -> base + listOf(Need.CAMERA, Need.MEDIA, Need.CONTACTS, Need.NOTIFICATIONS)
-        }.filter { it == Need.WIFI_ON || it == Need.LOCATION_ON || permissionsFor(it).isNotEmpty() }
+            PermFlow.FILES -> listOfNotNull(Need.MEDIA, if (Build.VERSION.SDK_INT >= 30) Need.ALL_FILES else null)
+            PermFlow.ALL -> base + listOfNotNull(Need.CAMERA, Need.MEDIA, if (Build.VERSION.SDK_INT >= 30) Need.ALL_FILES else null, Need.CONTACTS, Need.NOTIFICATIONS)
+        }.filter { it.special || permissionsFor(it).isNotEmpty() }
     }
 
     fun isGranted(ctx: Context, need: Need): Boolean = when (need) {
@@ -62,6 +65,7 @@ object Perms {
         Need.LOCATION_ON -> Build.VERSION.SDK_INT >= 33 ||
             LocationManagerCompat.isLocationEnabled(ctx.getSystemService(LocationManager::class.java))
         Need.MEDIA -> mediaGranted(ctx)
+        Need.ALL_FILES -> Build.VERSION.SDK_INT < 30 || android.os.Environment.isExternalStorageManager()
         Need.LOCATION -> granted(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
         else -> permissionsFor(need).all { granted(ctx, it) }
     }

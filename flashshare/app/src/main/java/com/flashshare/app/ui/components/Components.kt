@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.flashshare.app.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -63,49 +65,43 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 // region avatars
-data class AvatarStyle(val emoji: String, val c1: Color, val c2: Color)
-
-val Avatars = listOf(
-    AvatarStyle("🦊", Color(0xFFFF9A44), Color(0xFFFF5E62)),
-    AvatarStyle("🐼", Color(0xFF6A85FF), Color(0xFF9B6BFF)),
-    AvatarStyle("🦁", Color(0xFFFFC233), Color(0xFFFF8A00)),
-    AvatarStyle("🐯", Color(0xFFFF7A59), Color(0xFFFFB347)),
-    AvatarStyle("🐨", Color(0xFF7FC8FF), Color(0xFF4F7BFF)),
-    AvatarStyle("🐸", Color(0xFF4CD99A), Color(0xFF15A87A)),
-    AvatarStyle("🦄", Color(0xFFFF8AD8), Color(0xFFA36BFF)),
-    AvatarStyle("🐙", Color(0xFFFF6B9A), Color(0xFFFF4D6D)),
-    AvatarStyle("🐧", Color(0xFF5BC0FF), Color(0xFF2F6BFF)),
-    AvatarStyle("🐶", Color(0xFFFFB86B), Color(0xFFE8833A)),
-    AvatarStyle("🐱", Color(0xFFB28BFF), Color(0xFF6D5BFF)),
-    AvatarStyle("🚀", Color(0xFF3D7BFF), Color(0xFF00C2FF)),
+/** Illustrated avatars (Avataaars by Pablo Stanley – free for personal and commercial use). */
+val AvatarRes = intArrayOf(
+    R.drawable.avatar_00, R.drawable.avatar_01, R.drawable.avatar_02, R.drawable.avatar_03,
+    R.drawable.avatar_04, R.drawable.avatar_05, R.drawable.avatar_06, R.drawable.avatar_07,
+    R.drawable.avatar_08, R.drawable.avatar_09, R.drawable.avatar_10, R.drawable.avatar_11,
+    R.drawable.avatar_12, R.drawable.avatar_13, R.drawable.avatar_14, R.drawable.avatar_15,
 )
+val AvatarCount: Int get() = AvatarRes.size
 
-/** Shows a custom photo when available, otherwise the selected emoji avatar on its gradient. */
+/** Shows a custom photo when available, otherwise the selected illustrated avatar. */
 @Composable
-fun Avatar(avatarId: Int, image: ByteArray?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false) {
+fun Avatar(avatarId: Int, image: ByteArray?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false) {
     val bmp = remember(image) { image?.let { runCatching { BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap() }.getOrNull() } }
-    AvatarImpl(avatarId, bmp, size, modifier, ring)
+    AvatarImpl(avatarId, bmp, size, modifier, ring, crown)
 }
 
 @Composable
-fun AvatarImpl(avatarId: Int, bmp: ImageBitmap?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false) {
-    val style = Avatars[Math.floorMod(avatarId, Avatars.size)]
-    val ringMod = if (ring) Modifier.border(3.dp, Color.White.copy(alpha = 0.9f), CircleShape) else Modifier
-    Box(
-        modifier
-            .size(size)
-            .clip(CircleShape)
-            .then(ringMod)
-            .background(Brush.linearGradient(listOf(style.c1, style.c2))),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (bmp != null) {
-            Image(bmp, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-        } else if (avatarId < 0) {
-            Icon(Icons.Rounded.Person, null, tint = Color.White, modifier = Modifier.size(size * 0.55f))
-        } else {
-            Text(style.emoji, fontSize = (size.value * 0.5f).sp)
+fun AvatarImpl(avatarId: Int, bmp: ImageBitmap?, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, crown: Boolean = false) {
+    Box(modifier.size(size)) {
+        Box(
+            Modifier.fillMaxSize().clip(CircleShape)
+                .background(Brush.linearGradient(listOf(Color(0xFFDDE6FF), Color(0xFFEDE3FF)))),
+            contentAlignment = Alignment.Center,
+        ) {
+            when {
+                bmp != null -> Image(bmp, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                avatarId < 0 -> Box(Modifier.fillMaxSize().background(Brand.main), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.Person, null, tint = Color.White, modifier = Modifier.size(size * 0.55f))
+                }
+                else -> Image(
+                    painterResource(AvatarRes[Math.floorMod(avatarId, AvatarRes.size)]), null,
+                    Modifier.fillMaxSize(), contentScale = ContentScale.Crop,
+                )
+            }
+            if (ring) Box(Modifier.fillMaxSize().border(size * 0.045f, Color.White, CircleShape))
         }
+        if (crown) CrownBadge(size * 0.38f, Modifier.align(Alignment.BottomEnd).offset(x = size * 0.04f, y = size * 0.04f))
     }
 }
 // endregion
@@ -145,18 +141,6 @@ fun GradientButton(
             }
             Text(text, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         }
-    }
-}
-
-@Composable
-fun ProBadge(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(Brand.premium)
-            .padding(horizontal = 6.dp, vertical = 2.dp)
-    ) {
-        Text("PRO", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = 0.5.sp)
     }
 }
 
@@ -246,19 +230,56 @@ fun categoryColor(c: Category): Color = when (c) {
     Category.FILE -> Color(0xFF7B4DFF)
 }
 
-/** Thumbnail for photos/videos (Coil), real icon for apps, colored category icon for everything else. */
+fun categoryBrush(c: Category): Brush = when (c) {
+    Category.APP -> IconBrushes.mint
+    Category.PHOTO -> IconBrushes.cyan
+    Category.VIDEO -> IconBrushes.pink
+    Category.MUSIC -> IconBrushes.orange
+    Category.CONTACT -> IconBrushes.blue
+    Category.FILE -> IconBrushes.violet
+}
+
+private val thumbCache = android.util.LruCache<Int, ImageBitmap>(300)
+
+/**
+ * The real look of a file: sender-provided preview > saved preview > installed app / APK icon >
+ * photo/video frame > a colored tile with the file type.
+ */
 @Composable
-fun FileThumb(uri: String?, category: Category, size: Dp, modifier: Modifier = Modifier, packageName: String? = null, corner: Dp = 12.dp) {
-    val color = categoryColor(category)
+fun FileThumb(
+    uri: String?,
+    category: Category,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    packageName: String? = null,
+    corner: Dp = 12.dp,
+    thumb: ByteArray? = null,
+    thumbPath: String? = null,
+    name: String? = null,
+) {
+    val isAppLike = category == Category.APP
     Box(
-        modifier.size(size).clip(RoundedCornerShape(corner)).background(color.copy(alpha = 0.12f)),
+        modifier.size(size).clip(RoundedCornerShape(corner))
+            .background(if (isAppLike && (thumb != null || packageName != null)) Color.Transparent else MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(categoryIcon(category), null, tint = color, modifier = Modifier.size(size * 0.48f))
+        val bmp = remember(thumb) {
+            thumb?.let { b ->
+                val key = java.util.Arrays.hashCode(b)
+                thumbCache.get(key) ?: runCatching { BitmapFactory.decodeByteArray(b, 0, b.size)?.asImageBitmap() }.getOrNull()?.also { thumbCache.put(key, it) }
+            }
+        }
+        val ctx = LocalContext.current
         when {
-            packageName != null -> AppIcon(packageName, size * 0.82f)
+            bmp != null -> Image(bmp, null, Modifier.fillMaxSize(), contentScale = if (isAppLike) ContentScale.Fit else ContentScale.Crop)
+            thumbPath != null -> AsyncImage(
+                model = ImageRequest.Builder(ctx).data(java.io.File(thumbPath)).crossfade(true).build(), contentDescription = null,
+                contentScale = if (isAppLike) ContentScale.Fit else ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+            )
+            packageName != null -> AppIcon(packageName, size)
+            isAppLike && uri != null && uri.startsWith("file:") && uri.endsWith(".apk", true) -> ApkIcon(uri, size)
             uri != null && (category == Category.PHOTO || category == Category.VIDEO) -> {
-                val ctx = LocalContext.current
+                TypeTile(category, name, size)
                 AsyncImage(
                     model = ImageRequest.Builder(ctx).data(Uri.parse(uri)).videoFrameMillis(1000).size(256).crossfade(true).build(),
                     contentDescription = null,
@@ -266,8 +287,43 @@ fun FileThumb(uri: String?, category: Category, size: Dp, modifier: Modifier = M
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+            else -> TypeTile(category, name, size)
+        }
+        if (category == Category.VIDEO && (bmp != null || thumbPath != null || uri != null) && size >= 40.dp) {
+            Box(Modifier.size(size * 0.36f).clip(CircleShape).background(Color.Black.copy(alpha = 0.45f)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Rounded.PlayArrow, null, tint = Color.White, modifier = Modifier.size(size * 0.26f))
+            }
         }
     }
+}
+
+/** Colored tile with the category icon and, for documents, the file extension. */
+@Composable
+private fun TypeTile(category: Category, name: String?, size: Dp) {
+    val ext = name?.substringAfterLast('.', "")?.uppercase()?.take(4).orEmpty()
+    Box(Modifier.fillMaxSize().background(categoryBrush(category)), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.25f), Color.Transparent))))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(categoryIcon(category), null, tint = Color.White, modifier = Modifier.size(size * if (category == Category.FILE && ext.isNotEmpty() && size >= 40.dp) 0.38f else 0.5f))
+            if (category == Category.FILE && ext.isNotEmpty() && size >= 40.dp) {
+                Text(ext, color = Color.White, fontSize = (size.value * 0.17f).sp, fontWeight = FontWeight.Black, maxLines = 1)
+            }
+        }
+    }
+}
+
+private val apkCache = android.util.LruCache<String, ImageBitmap>(100)
+
+@Composable
+fun ApkIcon(uri: String, size: Dp, modifier: Modifier = Modifier) {
+    val ctx = LocalContext.current
+    val icon by produceState(apkCache.get(uri), uri) {
+        if (value == null) value = withContext(Dispatchers.IO) {
+            runCatching { com.flashshare.app.transfer.Thumbnailer.appIcon(ctx, null, Uri.parse(uri))?.asImageBitmap()?.also { apkCache.put(uri, it) } }.getOrNull()
+        }
+    }
+    val i = icon
+    if (i != null) Image(i, null, modifier.size(size)) else TypeTile(Category.APP, null, size)
 }
 
 private val iconCache = android.util.LruCache<String, ImageBitmap>(200)
@@ -374,8 +430,11 @@ fun Shimmer(modifier: Modifier = Modifier) {
 @Composable
 fun EmptyState(icon: ImageVector, title: String, text: String, modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null) {
     Column(modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(84.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
+        val t = rememberInfiniteTransition(label = "empty")
+        val y by t.animateFloat(-6f, 6f, infiniteRepeatable(tween(1500, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "y")
+        Box(contentAlignment = Alignment.Center) {
+            Box(Modifier.size(120.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)))
+            GlossyIcon(icon, Brand.main, 72.dp, Modifier.graphicsLayer { translationY = y })
         }
         Spacer(Modifier.height(16.dp))
         Text(title, style = MaterialTheme.typography.titleMedium)
@@ -392,7 +451,7 @@ fun LoadingDialog(text: String) {
             Modifier.clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surface).padding(24.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp)
+            CircularProgressIndicator(Modifier.size(28.dp), strokeWidth = 3.dp, strokeCap = StrokeCap.Round)
             Spacer(Modifier.width(16.dp))
             Text(text, style = MaterialTheme.typography.bodyLarge)
         }

@@ -36,6 +36,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.flashshare.app.ui.components.AppCard
 import com.flashshare.app.ui.components.AppScaffold
 import com.flashshare.app.ui.components.GradientButton
+import com.flashshare.app.ui.components.GlossyIcon
+import com.flashshare.app.ui.components.IconBrushes
 import com.flashshare.app.ui.theme.Brand
 import com.flashshare.app.ui.theme.LocalExtra
 import com.flashshare.app.util.Need
@@ -48,6 +50,7 @@ private fun needIcon(n: Need): ImageVector = when (n) {
     Need.LOCATION -> Icons.Rounded.LocationOn
     Need.CAMERA -> Icons.Rounded.QrCodeScanner
     Need.MEDIA -> Icons.Rounded.PhotoLibrary
+    Need.ALL_FILES -> Icons.Rounded.FolderOpen
     Need.CONTACTS -> Icons.Rounded.Contacts
     Need.NOTIFICATIONS -> Icons.Rounded.NotificationsActive
     Need.WIFI_ON -> Icons.Rounded.Wifi
@@ -82,6 +85,7 @@ fun PermissionsScreen(flow: PermFlow, onBack: () -> Unit, onGranted: () -> Unit)
                 tick++
             }
             Need.LOCATION_ON -> ctx.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            Need.ALL_FILES -> requestAllFiles(ctx)
             else -> {
                 val perms = Perms.permissionsFor(need)
                 val activity = ctx.findActivity()
@@ -114,9 +118,7 @@ fun PermissionsScreen(flow: PermFlow, onBack: () -> Unit, onGranted: () -> Unit)
                     Column(Modifier.fillMaxWidth().padding(bottom = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         val t = rememberInfiniteTransition(label = "shield")
                         val s by t.animateFloat(0.94f, 1.04f, infiniteRepeatable(tween(1100), RepeatMode.Reverse), label = "s")
-                        Box(Modifier.scale(s).size(84.dp).clip(RoundedCornerShape(26.dp)).background(Brand.main), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Rounded.Shield, null, tint = Color.White, modifier = Modifier.size(44.dp))
-                        }
+                        GlossyIcon(Icons.Rounded.Shield, Brand.main, 88.dp, Modifier.scale(s))
                         Spacer(Modifier.height(16.dp))
                         Text("Quick setup", style = MaterialTheme.typography.headlineSmall)
                         Spacer(Modifier.height(6.dp))
@@ -127,7 +129,7 @@ fun PermissionsScreen(flow: PermFlow, onBack: () -> Unit, onGranted: () -> Unit)
                     }
                 }
                 items(needs, key = { it.name }) { n ->
-                    PermRow(n, status[n] == true, blocked = n.name in asked && status[n] != true && n != Need.WIFI_ON && n != Need.LOCATION_ON) { request(n) }
+                    PermRow(n, status[n] == true, blocked = n.name in asked && status[n] != true && !n.special) { request(n) }
                 }
                 if (Perms.mediaPartial(ctx) && Need.MEDIA in needs) {
                     item {
@@ -144,6 +146,7 @@ fun PermissionsScreen(flow: PermFlow, onBack: () -> Unit, onGranted: () -> Unit)
                     allRequired -> "Continue"
                     firstMissing == Need.WIFI_ON -> "Turn on Wi-Fi"
                     firstMissing == Need.LOCATION_ON -> "Turn on Location"
+                    firstMissing == Need.ALL_FILES -> "Allow all files access"
                     else -> "Allow access"
                 },
                 icon = if (allRequired) Icons.Rounded.Check else Icons.Rounded.LockOpen,
@@ -173,9 +176,7 @@ private fun PermRow(need: Need, granted: Boolean, blocked: Boolean, onClick: () 
     val iconBg by animateColorAsState(if (granted) extra.success.copy(alpha = 0.14f) else MaterialTheme.colorScheme.primaryContainer, label = "bg")
     AppCard(Modifier.fillMaxWidth(), onClick = if (granted) null else onClick) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(46.dp).clip(RoundedCornerShape(14.dp)).background(iconBg), contentAlignment = Alignment.Center) {
-                Icon(needIcon(need), null, tint = if (granted) extra.success else MaterialTheme.colorScheme.primary)
-            }
+            GlossyIcon(needIcon(need), if (granted) IconBrushes.mint else Brand.main, 46.dp)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

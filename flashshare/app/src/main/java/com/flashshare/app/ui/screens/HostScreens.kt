@@ -10,19 +10,20 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +50,6 @@ fun ReceiveScreen(nav: NavController) {
     val ctx = LocalContext.current
     val c = ctx.container
     val phase by c.transfers.phase.collectAsStateWithLifecycle()
-    val settings by c.prefs.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         val p = c.transfers.phase.value
@@ -71,37 +71,21 @@ fun ReceiveScreen(nav: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            AnimatedContent(phase, transitionSpec = { (fadeIn() + scaleIn(initialScale = 0.92f)) togetherWith fadeOut() },
+            AnimatedContent(phase, transitionSpec = { (fadeIn(tween(400)) + scaleIn(initialScale = 0.9f)) togetherWith fadeOut(tween(200)) },
                 contentKey = { it::class }, label = "phase") { p ->
                 when (p) {
                     is Phase.Hosting -> HostCard(p.qr, p.band, p.pin, "Scan with FlashShare on the sending phone")
                     is Phase.Error -> ErrorCard(p.message) { c.transfers.startHosting(Mode.RECEIVE) }
-                    else -> PreparingCard((p as? Phase.Preparing)?.text ?: "Starting…")
+                    else -> HostingAnimation(Modifier.fillMaxWidth().padding(top = 12.dp))
                 }
             }
-            Spacer(Modifier.height(20.dp))
-            Text(settings?.name.orEmpty(), style = MaterialTheme.typography.titleLarge)
-            Text(
-                if (phase is Phase.Hosting) "Ready to receive" else "Getting ready…",
-                color = LocalExtra.current.success, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold,
-            )
-            Spacer(Modifier.height(20.dp))
-            HowTo(
-                listOf(
-                    "Open FlashShare on the other phone",
-                    "Tap Send and pick your files",
-                    "Scan this QR code – transfer starts instantly",
-                )
-            )
-            Spacer(Modifier.height(16.dp))
-            TextButton(onClick = {
-                c.transfers.disconnect()
-                nav.popBackStack()
-                nav.withPerms(ctx, PermFlow.JOIN, Routes.scan("join"))
-            }) {
-                Icon(Icons.Rounded.Groups, null)
-                Spacer(Modifier.width(8.dp))
-                Text("Join a group share instead")
+            Spacer(Modifier.height(22.dp))
+            if (phase is Phase.Hosting) {
+                JoinGroupButton {
+                    c.transfers.disconnect()
+                    nav.popBackStack()
+                    nav.withPerms(ctx, PermFlow.JOIN, Routes.scan("join"))
+                }
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -109,19 +93,39 @@ fun ReceiveScreen(nav: NavController) {
 }
 
 @Composable
-fun HostCard(qr: String, band: String, pin: String?, hint: String) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        RadarPulse(MaterialTheme.colorScheme.primary, Modifier.size(360.dp))
-        Column(
-            Modifier.shadow(24.dp, RoundedCornerShape(32.dp), ambientColor = Brand.Blue, spotColor = Brand.Blue)
-                .clip(RoundedCornerShape(32.dp)).background(Color.White).padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(Modifier.size(232.dp), contentAlignment = Alignment.Center) {
-                QrCode(qr, Modifier.fillMaxSize())
-                Box(Modifier.size(56.dp).clip(CircleShape).background(Color.White).padding(4.dp)) { MeAvatar(48.dp) }
+private fun JoinGroupButton(onClick: () -> Unit) {
+    AppCard(Modifier.fillMaxWidth(), onClick = onClick) {
+        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+            GlossyIcon(Icons.Rounded.Groups, IconBrushes.violet, 46.dp)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Join a group share", style = MaterialTheme.typography.titleSmall)
+                Text("Someone is sending to many phones? Scan their code", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Spacer(Modifier.height(12.dp))
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+/** QR card + device identity + band/security chips + PIN. Shared by Receive, Group Share, Phone Clone and the transfer screen. */
+@Composable
+fun HostCard(qr: String, band: String, pin: String?, hint: String) = Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    val ctx = LocalContext.current
+    val settings by ctx.container.prefs.state.collectAsStateWithLifecycle()
+    val t = rememberInfiniteTransition(label = "dot")
+    val dot by t.animateFloat(0.6f, 1.2f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "d")
+    QrCard(
+        qr,
+        center = { MeAvatar(54.dp, showCrown = false) },
+        footer = {
+            Spacer(Modifier.height(14.dp))
+            Text(settings?.name.orEmpty(), style = MaterialTheme.typography.titleMedium, color = Color(0xFF111827))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(8.dp).scale(dot).clip(CircleShape).background(Color(0xFF00C48C)))
+                Spacer(Modifier.width(6.dp))
+                Text("Ready to receive", color = Color(0xFF00A877), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+            }
+            Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 InfoChip(band.ifEmpty { "Wi-Fi Direct" }, Icons.Rounded.Wifi, if (band == "2.4 GHz") Brand.Orange else Brand.Blue)
                 if (pin != null) InfoChip("Encrypted", Icons.Rounded.Lock, Brand.Mint)
@@ -129,32 +133,20 @@ fun HostCard(qr: String, band: String, pin: String?, hint: String) = Column(hori
             }
             Spacer(Modifier.height(8.dp))
             Text(hint, color = Color(0xFF5B6478), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 240.dp))
-        }
-    }
+        },
+    )
     if (pin != null) {
         Spacer(Modifier.height(16.dp))
-        Column(
-            Modifier.clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 24.dp, vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Row(
+            Modifier.clip(RoundedCornerShape(22.dp)).background(Brand.main).padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("PAIRING PIN", style = MaterialTheme.typography.labelSmall, letterSpacing = 1.5.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-            Text(pin.chunked(3).joinToString(" "), style = MaterialTheme.typography.headlineMedium, letterSpacing = 4.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        }
-    }
-}
-
-@Composable
-fun PreparingCard(text: String) {
-    Box(Modifier.fillMaxWidth().height(380.dp), contentAlignment = Alignment.Center) {
-        RadarPulse(MaterialTheme.colorScheme.primary, Modifier.size(320.dp))
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(Modifier.size(96.dp).clip(CircleShape).background(Brand.main), contentAlignment = Alignment.Center) {
-                Icon(Icons.Rounded.WifiTethering, null, tint = Color.White, modifier = Modifier.size(48.dp))
+            Icon(Icons.Rounded.Lock, null, tint = Color.White)
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text("PAIRING PIN", style = MaterialTheme.typography.labelSmall, letterSpacing = 1.5.sp, color = Color.White.copy(alpha = 0.8f))
+                Text(pin.chunked(3).joinToString("  "), style = MaterialTheme.typography.headlineSmall, letterSpacing = 4.sp, color = Color.White, fontWeight = FontWeight.Black)
             }
-            Spacer(Modifier.height(16.dp))
-            Text(text, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(4.dp))
-            Text("Locking to the fastest Wi-Fi band", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -163,32 +155,13 @@ fun PreparingCard(text: String) {
 fun ErrorCard(message: String, onRetry: () -> Unit) {
     AppCard(Modifier.fillMaxWidth().padding(vertical = 24.dp)) {
         Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(Modifier.size(72.dp).clip(CircleShape).background(MaterialTheme.colorScheme.error.copy(alpha = 0.12f)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Rounded.WifiOff, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(36.dp))
-            }
-            Spacer(Modifier.height(14.dp))
+            GlossyIcon(Icons.Rounded.WifiOff, IconBrushes.red, 72.dp)
+            Spacer(Modifier.height(16.dp))
             Text("Connection problem", style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(6.dp))
             Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(16.dp))
-            GradientButton("Try again", onClick = onRetry, icon = Icons.Rounded.Refresh, height = 48.dp)
-        }
-    }
-}
-
-@Composable
-fun HowTo(steps: List<String>) {
-    AppCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            steps.forEachIndexed { i, s ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-                        Text("${i + 1}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Text(s, style = MaterialTheme.typography.bodyMedium)
-                }
-            }
+            Spacer(Modifier.height(18.dp))
+            GradientButton("Try again", onClick = onRetry, icon = Icons.Rounded.Refresh, height = 50.dp)
         }
     }
 }
@@ -217,10 +190,13 @@ fun GroupHostScreen(nav: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
-                when (val p = phase) {
-                    is Phase.Hosting -> HostCard(p.qr, p.band, p.pin, "On each receiving phone: Receive › Join a group share, then scan")
-                    is Phase.Error -> ErrorCard(p.message) { nav.popBackStack() }
-                    else -> PreparingCard((p as? Phase.Preparing)?.text ?: "Starting…")
+                AnimatedContent(phase, transitionSpec = { (fadeIn(tween(400)) + scaleIn(initialScale = 0.9f)) togetherWith fadeOut(tween(200)) },
+                    contentKey = { it::class }, label = "gphase") { p ->
+                    when (p) {
+                        is Phase.Hosting -> HostCard(p.qr, p.band, p.pin, "On each phone: Receive › Join a group share, then scan")
+                        is Phase.Error -> ErrorCard(p.message) { nav.popBackStack() }
+                        else -> HostingAnimation(Modifier.fillMaxWidth())
+                    }
                 }
             }
             item {
@@ -232,11 +208,11 @@ fun GroupHostScreen(nav: NavController) {
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
                 }
             }
-            items(peers, key = { it.key }) { peer ->
+            itemsIndexed(peers, key = { _, p -> p.key }) { i, peer ->
                 val b = batches.lastOrNull { it.peer.key == peer.key }
-                AppCard(Modifier.fillMaxWidth()) {
+                AppCard(Modifier.fillMaxWidth().staggerIn(i)) {
                     Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Avatar(peer.avatarId, peer.avatar, 44.dp)
+                        Avatar(peer.avatarId, peer.avatar, 46.dp)
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text(peer.name, style = MaterialTheme.typography.titleSmall)
@@ -257,6 +233,10 @@ fun GroupHostScreen(nav: NavController) {
                                 drawStopIndicator = {},
                             )
                         }
+                        if (b?.status == BatchStatus.COMPLETED) {
+                            Spacer(Modifier.width(10.dp))
+                            Icon(Icons.Rounded.CheckCircle, null, tint = LocalExtra.current.success)
+                        }
                     }
                 }
             }
@@ -269,12 +249,11 @@ fun GroupHostScreen(nav: NavController) {
     }
 
     if (confirmExit) {
-        AlertDialog(
-            onDismissRequest = { confirmExit = false },
-            title = { Text("Stop group share?") },
-            text = { Text("Transfers still in progress will be cancelled.") },
-            confirmButton = { TextButton(onClick = { confirmExit = false; c.transfers.disconnect(); nav.popBackStack(Routes.HOME, false) }) { Text("Stop") } },
-            dismissButton = { TextButton(onClick = { confirmExit = false }) { Text("Keep sharing") } },
+        AppDialog(
+            onDismiss = { confirmExit = false }, icon = Icons.Rounded.Groups, title = "Stop group share?",
+            message = "Transfers still in progress will be cancelled.", confirmText = "Stop sharing", destructive = true,
+            dismissText = "Keep sharing",
+            onConfirm = { confirmExit = false; c.transfers.disconnect(); nav.popBackStack(Routes.HOME, false) },
         )
     }
 }

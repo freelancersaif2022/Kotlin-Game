@@ -112,17 +112,24 @@ class WifiDirectController(private val context: Context) {
         if (Build.VERSION.SDK_INT >= 29) {
             val ssid = "DIRECT-" + randomString(2) + "-FlashShare"
             val pass = randomString(12)
-            for (band in bandOrder(pref)) {
+            // If this phone is also on a 5/6 GHz router, host on the same channel: the radio then never has to
+            // time-share between two channels (multi-channel concurrency roughly halves throughput).
+            val sta = staFrequency()
+            val attempts = buildList<Pair<Int, Int>> {
+                if (sta >= 4900 && pref != BandPref.AUTO) add(sta to -1)
+                bandOrder(pref).forEach { add(0 to it) }
+            }
+            for ((freq, band) in attempts) {
                 val cfg = runCatching {
-                    WifiP2pConfig.Builder()
+                    val b = WifiP2pConfig.Builder()
                         .setNetworkName(ssid)
                         .setPassphrase(pass)
-                        .setGroupOperatingBand(band)
                         .enablePersistentMode(false)
-                        .build()
+                    if (freq > 0) b.setGroupOperatingFrequency(freq) else b.setGroupOperatingBand(band)
+                    b.build()
                 }.getOrNull() ?: continue
                 lastReason = action { manager!!.createGroup(ch(), cfg, it) }
-                Log.d(TAG, "createGroup band=$band -> $lastReason")
+                Log.d(TAG, "createGroup freq=$freq band=$band -> $lastReason")
                 if (lastReason == OK) { created = true; break }
                 action { manager!!.removeGroup(ch(), it) }
                 delay(400)
@@ -200,6 +207,13 @@ class WifiDirectController(private val context: Context) {
         }
         @Suppress("UNREACHABLE_CODE") null
     }
+
+    /** Frequency of the normal Wi-Fi (router) connection, or 0 when not connected. */
+    fun staFrequency(): Int = runCatching {
+        @Suppress("DEPRECATION")
+        val info = wifiManager.connectionInfo
+        if (info != null && info.networkId != -1 && info.frequency > 0) info.frequency else 0
+    }.getOrDefault(0)
 
     /** Frequency of the group we are currently a member of (for the band badge on the client side). */
     suspend fun currentFrequency(): Int {

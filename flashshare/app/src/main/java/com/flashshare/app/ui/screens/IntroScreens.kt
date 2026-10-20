@@ -1,15 +1,23 @@
 package com.flashshare.app.ui.screens
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,25 +26,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flashshare.app.R
 import com.flashshare.app.data.Category
-import com.flashshare.app.ui.components.GradientButton
-import com.flashshare.app.ui.components.categoryColor
-import com.flashshare.app.ui.components.categoryIcon
+import com.flashshare.app.ui.components.*
 import com.flashshare.app.ui.theme.Brand
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -46,20 +58,24 @@ import kotlin.math.sin
 fun SplashScreen(onDone: () -> Unit) {
     val logo = remember { Animatable(0f) }
     val text = remember { Animatable(0f) }
+    val t = rememberInfiniteTransition(label = "splash")
+    val halo by t.animateFloat(0.85f, 1.15f, infiniteRepeatable(tween(1100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "halo")
     LaunchedEffect(Unit) {
-        launch { logo.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 220f)) }
-        delay(250)
-        text.animateTo(1f, tween(500, easing = FastOutSlowInEasing))
-        delay(450)
+        launch { logo.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = 200f)) }
+        delay(280)
+        text.animateTo(1f, tween(520, easing = FastOutSlowInEasing))
+        delay(520)
         onDone()
     }
-    Box(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
+        AmbientBlobs(Modifier.fillMaxSize())
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            LogoTile(Modifier.scale(0.4f + 0.6f * logo.value).rotate(-25f * (1f - logo.value)).graphicsLayer { alpha = logo.value.coerceIn(0f, 1f) }, 104.dp)
-            Spacer(Modifier.height(24.dp))
+            Box(contentAlignment = Alignment.Center) {
+                Box(Modifier.size(170.dp).scale(halo * logo.value).clip(CircleShape)
+                    .background(Brush.radialGradient(listOf(Brand.Violet.copy(alpha = 0.28f), Color.Transparent))))
+                LogoTile(Modifier.scale(0.5f + 0.5f * logo.value).graphicsLayer { alpha = logo.value.coerceIn(0f, 1f); rotationZ = -20f * (1f - logo.value) }, 112.dp)
+            }
+            Spacer(Modifier.height(22.dp))
             Column(
                 Modifier.graphicsLayer { alpha = text.value; translationY = (1f - text.value) * 40f },
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,22 +85,34 @@ fun SplashScreen(onDone: () -> Unit) {
                 Text("Ultra-fast offline file transfer", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        Text(
-            "5 GHz • 6 GHz Wi-Fi Direct",
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-            style = MaterialTheme.typography.labelMedium,
-            modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 32.dp).graphicsLayer { alpha = text.value },
-        )
     }
 }
 
 @Composable
 fun LogoTile(modifier: Modifier = Modifier, size: Dp) {
     Box(
-        modifier.size(size).clip(RoundedCornerShape(size * 0.28f)).background(Brand.main),
+        modifier.size(size).shadow(size * 0.16f, RoundedCornerShape(size * 0.3f), spotColor = Brand.Violet)
+            .clip(RoundedCornerShape(size * 0.3f)).background(Brand.main),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Rounded.Bolt, null, tint = Color.White, modifier = Modifier.size(size * 0.62f))
+        Image(painterResource(R.drawable.ic_logo_mark), null, Modifier.fillMaxSize())
+    }
+}
+
+/** Soft drifting color blobs used behind intro screens. */
+@Composable
+fun AmbientBlobs(modifier: Modifier = Modifier) {
+    val t = rememberInfiniteTransition(label = "blobs")
+    val a by t.animateFloat(0f, (2 * PI).toFloat(), infiniteRepeatable(tween(14000, easing = LinearEasing)), label = "a")
+    val c1 = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+    val c2 = MaterialTheme.colorScheme.secondary.copy(alpha = 0.14f)
+    val c3 = Color(0xFF19C3FF).copy(alpha = 0.10f)
+    Canvas(modifier) {
+        val w = size.width; val h = size.height
+        fun blob(cx: Float, cy: Float, r: Float, c: Color) = drawCircle(Brush.radialGradient(listOf(c, Color.Transparent), Offset(cx, cy), r), r, Offset(cx, cy))
+        blob(w * (0.2f + 0.1f * cos(a)), h * (0.18f + 0.05f * sin(a)), w * 0.7f, c1)
+        blob(w * (0.85f + 0.08f * sin(a)), h * (0.45f + 0.06f * cos(a)), w * 0.6f, c2)
+        blob(w * (0.3f + 0.1f * sin(a * 2)), h * (0.85f + 0.04f * cos(a)), w * 0.6f, c3)
     }
 }
 // endregion
@@ -96,177 +124,167 @@ private data class Page(val title: String, val text: String, val art: @Composabl
 fun OnboardingScreen(onFinish: () -> Unit) {
     val pages = remember {
         listOf(
-            Page("Share at lightning speed", "Send photos, videos, apps and huge files phone-to-phone up to 200× faster than Bluetooth.") { ArtPhones() },
-            Page("Scan once, connect instantly", "The receiver shows a QR code. Scan it from the sending phone – connected in seconds, no pairing.") { ArtScan() },
-            Page("Forced 5 GHz & 6 GHz", "FlashShare locks the direct link to the fastest Wi-Fi band. No internet and no mobile data used.") { ArtWaves() },
-            Page("Send anything, any size", "Multiple files, whole folders, apps, contacts – even clone your old phone to a new one.") { ArtOrbit() },
+            Page("Share at lightning speed", "Send photos, videos, apps and huge files phone-to-phone – up to 200× faster than Bluetooth.") { ArtTransfer() },
+            Page("Scan once. Connected.", "The receiver shows a QR code. Scan it from the sending phone – no pairing, no waiting.") { ArtScan() },
+            Page("Forced 5 GHz & 6 GHz", "FlashShare locks the direct link to the fastest Wi-Fi band. No internet and no mobile data used.") { ArtSpeed() },
+            Page("Send anything, any size", "Multiple files, whole folders, apps and contacts – even clone your old phone to a new one.") { ArtOrbit() },
         )
     }
     val state = rememberPagerState { pages.size }
     val scope = rememberCoroutineScope()
     val last = state.currentPage == pages.lastIndex
 
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).systemBarsPadding()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Row(Modifier.padding(start = 12.dp).weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                LogoTile(size = 28.dp)
-                Spacer(Modifier.width(8.dp))
-                Text("FlashShare", style = MaterialTheme.typography.titleMedium)
+    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        AmbientBlobs(Modifier.fillMaxSize())
+        Column(Modifier.fillMaxSize().systemBarsPadding()) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.padding(start = 8.dp).weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                    LogoTile(size = 30.dp)
+                    Spacer(Modifier.width(10.dp))
+                    Text("FlashShare", style = MaterialTheme.typography.titleMedium)
+                }
+                TextButton(onClick = onFinish, modifier = Modifier.graphicsLayer { alpha = if (last) 0f else 1f }, enabled = !last) {
+                    Text("Skip", fontWeight = FontWeight.SemiBold)
+                }
             }
-            TextButton(onClick = onFinish, modifier = Modifier.graphicsLayer { alpha = if (last) 0f else 1f }, enabled = !last) {
-                Text("Skip")
-            }
-        }
-        HorizontalPager(state, Modifier.weight(1f)) { i ->
-            val p = pages[i]
-            val offset = ((state.currentPage - i) + state.currentPageOffsetFraction)
-            Column(
-                Modifier.fillMaxSize().padding(horizontal = 28.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Box(
-                    Modifier.fillMaxWidth().aspectRatio(1f).graphicsLayer {
-                        val o = kotlin.math.abs(offset).coerceIn(0f, 1f)
-                        alpha = 1f - o * 0.6f; scaleX = 1f - o * 0.15f; scaleY = scaleX
-                    },
-                    contentAlignment = Alignment.Center,
-                ) { p.art() }
-                Spacer(Modifier.height(24.dp))
-                Text(p.title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,
-                    modifier = Modifier.graphicsLayer { translationX = offset * 120f })
-                Spacer(Modifier.height(12.dp))
-                Text(p.text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
-                    modifier = Modifier.graphicsLayer { translationX = offset * 200f })
-            }
-        }
-        Row(Modifier.fillMaxWidth().padding(24.dp), verticalAlignment = Alignment.CenterVertically) {
-            Row(Modifier.weight(1f)) {
-                repeat(pages.size) { i ->
-                    val selected = state.currentPage == i
-                    val w by animateDpAsState(if (selected) 26.dp else 8.dp, spring(stiffness = 400f), label = "dot")
+            HorizontalPager(state, Modifier.weight(1f)) { i ->
+                val p = pages[i]
+                val offset = (state.currentPage - i) + state.currentPageOffsetFraction
+                Column(Modifier.fillMaxSize().padding(horizontal = 28.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     Box(
-                        Modifier.padding(end = 6.dp).height(8.dp).width(w).clip(CircleShape)
-                            .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
-                    )
+                        Modifier.fillMaxWidth().aspectRatio(1f).graphicsLayer {
+                            val o = kotlin.math.abs(offset).coerceIn(0f, 1f)
+                            alpha = 1f - o * 0.7f; scaleX = 1f - o * 0.2f; scaleY = scaleX; rotationY = offset * -18f
+                            cameraDistance = 12f * density
+                        },
+                        contentAlignment = Alignment.Center,
+                    ) { p.art() }
+                    Spacer(Modifier.height(20.dp))
+                    Text(p.title, style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,
+                        modifier = Modifier.graphicsLayer { translationX = offset * 140f; alpha = 1f - kotlin.math.abs(offset) })
+                    Spacer(Modifier.height(12.dp))
+                    Text(p.text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+                        modifier = Modifier.graphicsLayer { translationX = offset * 240f; alpha = 1f - kotlin.math.abs(offset) })
                 }
             }
-            GradientButton(
-                text = if (last) "Get started" else "Next",
-                onClick = { if (last) onFinish() else scope.launch { state.animateScrollToPage(state.currentPage + 1) } },
-                icon = if (last) Icons.Rounded.RocketLaunch else Icons.Rounded.ArrowForward,
-                modifier = Modifier.widthIn(min = 140.dp),
-            )
+            Row(Modifier.fillMaxWidth().padding(24.dp).height(64.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.weight(1f)) {
+                    repeat(pages.size) { i ->
+                        val selected = state.currentPage == i
+                        val w by animateDpAsState(if (selected) 28.dp else 8.dp, spring(stiffness = 400f), label = "dot")
+                        Box(
+                            Modifier.padding(end = 6.dp).height(8.dp).width(w).clip(CircleShape)
+                                .background(if (selected) Brand.main else Brush.linearGradient(listOf(MaterialTheme.colorScheme.outline, MaterialTheme.colorScheme.outline)))
+                        )
+                    }
+                }
+                AnimatedContent(last, transitionSpec = { (fadeIn() + scaleIn(initialScale = 0.8f)) togetherWith (fadeOut() + scaleOut(targetScale = 0.8f)) }, label = "next") { isLast ->
+                    if (isLast) {
+                        GradientButton("Get started", onClick = onFinish, icon = Icons.Rounded.RocketLaunch, modifier = Modifier.widthIn(min = 170.dp))
+                    } else {
+                        NextRingButton((state.currentPage + 1f) / pages.size) { scope.launch { state.animateScrollToPage(state.currentPage + 1) } }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun PhoneShape(modifier: Modifier, brush: Brush, content: @Composable BoxScope.() -> Unit = {}) {
-    Box(
-        modifier.size(96.dp, 180.dp).clip(RoundedCornerShape(22.dp)).background(brush)
-            .border(4.dp, Color.White.copy(alpha = 0.5f), RoundedCornerShape(22.dp)),
-        contentAlignment = Alignment.Center, content = content,
+private fun NextRingButton(progress: Float, onClick: () -> Unit) {
+    val p by animateFloatAsState(progress, tween(500, easing = FastOutSlowInEasing), label = "ring")
+    val track = MaterialTheme.colorScheme.outlineVariant
+    val primary = MaterialTheme.colorScheme.primary
+    Box(Modifier.size(64.dp).clip(CircleShape).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+        Canvas(Modifier.fillMaxSize()) {
+            drawCircle(track, size.minDimension / 2 - 2.dp.toPx(), style = Stroke(3.dp.toPx()))
+            drawArc(primary, -90f, 360f * p, false, Offset(2.dp.toPx(), 2.dp.toPx()), Size(size.width - 4.dp.toPx(), size.height - 4.dp.toPx()),
+                style = Stroke(3.dp.toPx(), cap = StrokeCap.Round))
+        }
+        Box(Modifier.size(50.dp).clip(CircleShape).background(Brand.main), contentAlignment = Alignment.Center) {
+            Icon(Icons.AutoMirrored.Rounded.ArrowForward, "Next", tint = Color.White)
+        }
+    }
+}
+
+@Composable
+private fun Stage(content: @Composable BoxScope.() -> Unit) {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize(0.94f).clip(CircleShape).background(Brush.radialGradient(listOf(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f)))))
+        content()
+    }
+}
+
+@Composable
+private fun ArtTransfer() = Stage {
+    val t = rememberInfiniteTransition(label = "t")
+    val p by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2200, easing = LinearEasing)), label = "p")
+    val bob by t.animateFloat(-5f, 5f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "bob")
+    PhonesLink(
+        left = { AvatarImpl(0, null, 46.dp, ring = true) },
+        right = { AvatarImpl(3, null, 46.dp, ring = true) },
+        active = true, modifier = Modifier.fillMaxWidth(0.95f), phoneWidth = 88.dp,
     )
-}
-
-@Composable
-private fun ArtPhones() {
-    val t = rememberInfiniteTransition(label = "phones")
-    val p by t.animateFloat(0f, 1f, infiniteRepeatable(tween(1800, easing = LinearEasing)), label = "p")
-    val bob by t.animateFloat(-6f, 6f, infiniteRepeatable(tween(1600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "bob")
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(Modifier.fillMaxSize(0.92f).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)))
-        Row(Modifier.fillMaxWidth(0.86f), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            PhoneShape(Modifier.offset { IntOffset(0, bob.roundToInt()) }.rotate(-8f), Brand.send) {
-                Icon(Icons.Rounded.Upload, null, tint = Color.White, modifier = Modifier.size(36.dp))
-            }
-            PhoneShape(Modifier.offset { IntOffset(0, -bob.roundToInt()) }.rotate(8f), Brand.receive) {
-                Icon(Icons.Rounded.Download, null, tint = Color.White, modifier = Modifier.size(36.dp))
+    val cats = listOf(Category.PHOTO to "IMG_2041.jpg", Category.VIDEO to "Trip.mp4", Category.APP to "Game.apk")
+    BoxWithConstraints(Modifier.fillMaxWidth(0.5f).height(210.dp)) {
+        val w = constraints.maxWidth.toFloat()
+        val h = constraints.maxHeight.toFloat()
+        cats.forEachIndexed { i, (c, name) ->
+            val f = (p + i / cats.size.toFloat()) % 1f
+            val arc = sin(f * PI).toFloat()
+            Row(
+                Modifier.offset { IntOffset((f * w - 50.dp.toPx()).roundToInt(), (h * 0.2f - arc * h * 0.22f).roundToInt()) }
+                    .graphicsLayer { alpha = arc.coerceIn(0f, 1f); scaleX = 0.7f + 0.3f * arc; scaleY = scaleX }
+                    .shadow(8.dp, RoundedCornerShape(12.dp)).clip(RoundedCornerShape(12.dp)).background(Color.White).padding(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FileThumb(null, c, 22.dp, corner = 6.dp)
+                Spacer(Modifier.width(5.dp))
+                Text(name, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF111827), maxLines = 1)
             }
         }
-        val cats = listOf(Category.PHOTO, Category.VIDEO, Category.MUSIC, Category.APP)
-        BoxWithConstraints(Modifier.fillMaxWidth(0.5f).height(140.dp)) {
-            val w = constraints.maxWidth.toFloat()
-            val h = constraints.maxHeight.toFloat()
-            cats.forEachIndexed { i, c ->
-                val f = (p + i / cats.size.toFloat()) % 1f
-                val x = f * w - 18.dp.value * 2
-                val y = h / 2 - sin(f * Math.PI).toFloat() * h * 0.45f - 18.dp.value
-                Box(
-                    Modifier.offset { IntOffset(x.roundToInt(), y.roundToInt()) }.size(36.dp)
-                        .graphicsLayer { alpha = sin(f * Math.PI).toFloat().coerceIn(0f, 1f); val s = 0.7f + 0.3f * sin(f * Math.PI).toFloat(); scaleX = s; scaleY = s }
-                        .clip(RoundedCornerShape(10.dp)).background(Color.White),
-                    contentAlignment = Alignment.Center,
-                ) { Icon(categoryIcon(c), null, tint = categoryColor(c), modifier = Modifier.size(20.dp)) }
-            }
+    }
+    Box(
+        Modifier.align(Alignment.BottomCenter).padding(bottom = 18.dp).offset { IntOffset(0, bob.roundToInt()) }
+            .shadow(10.dp, RoundedCornerShape(50)).clip(RoundedCornerShape(50)).background(Brand.mint).padding(horizontal = 14.dp, vertical = 7.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.Speed, null, tint = Color.White, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(6.dp))
+            Text("62 MB/s", color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-private fun ArtScan() {
-    val t = rememberInfiniteTransition(label = "scan")
-    val line by t.animateFloat(0.08f, 0.92f, infiniteRepeatable(tween(1500, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "line")
+private fun ArtScan() = Stage {
+    val t = rememberInfiniteTransition(label = "s")
+    val line by t.animateFloat(0.1f, 0.9f, infiniteRepeatable(tween(1300, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "line")
+    var connected by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { while (true) { connected = false; delay(2600); connected = true; delay(1400) } }
     val primary = MaterialTheme.colorScheme.primary
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(Modifier.fillMaxSize(0.92f).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)))
-        Box(Modifier.size(200.dp).clip(RoundedCornerShape(28.dp)).background(Color.White).padding(24.dp)) {
-            Canvas(Modifier.fillMaxSize()) {
-                val cells = 9
-                val cs = size.width / cells
-                for (y in 0 until cells) for (x in 0 until cells) {
-                    val corner = (x < 3 && y < 3) || (x > 5 && y < 3) || (x < 3 && y > 5)
-                    val on = if (corner) (x % 2 == 0 && y % 2 == 0) || (x == 1 || y == 1).not() else ((x * 7 + y * 3) % 5 < 2)
-                    if (on) drawRoundRect(Color(0xFF0E1426), Offset(x * cs + 1, y * cs + 1), androidx.compose.ui.geometry.Size(cs - 2, cs - 2),
-                        androidx.compose.ui.geometry.CornerRadius(4f))
-                }
-                drawLine(Brush.horizontalGradient(listOf(Color.Transparent, primary, Color.Transparent)), Offset(-20f, size.height * line),
-                    Offset(size.width + 20f, size.height * line), strokeWidth = 6f)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        PhoneMockup(Modifier.rotate(-8f), width = 100.dp, screen = Brush.linearGradient(listOf(Color.White, Color(0xFFEFF2FA)))) {
+            Box(Modifier.size(70.dp).clip(RoundedCornerShape(10.dp)).background(Color.White).padding(5.dp)) {
+                StyledQr("FLASHSHARE1:demo-qr-code-onboarding", Modifier.fillMaxSize())
             }
         }
-        Canvas(Modifier.size(244.dp)) {
-            val l = 40.dp.toPx(); val sw = 6.dp.toPx()
-            val c = primary
-            listOf(Offset(0f, 0f) to Offset(1f, 1f), Offset(size.width, 0f) to Offset(-1f, 1f), Offset(0f, size.height) to Offset(1f, -1f), Offset(size.width, size.height) to Offset(-1f, -1f))
-                .forEach { (o, d) ->
-                    drawLine(c, o, Offset(o.x + l * d.x, o.y), sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
-                    drawLine(c, o, Offset(o.x, o.y + l * d.y), sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+        Spacer(Modifier.width(18.dp))
+        PhoneMockup(Modifier.rotate(8f), width = 100.dp, screen = Brush.linearGradient(listOf(Color(0xFF1B2140), Color(0xFF0B0F1E)))) {
+            Box(Modifier.size(70.dp), contentAlignment = Alignment.Center) {
+                Canvas(Modifier.fillMaxSize()) {
+                    val l = 14.dp.toPx(); val sw = 3.dp.toPx()
+                    listOf(Offset.Zero to Offset(1f, 1f), Offset(size.width, 0f) to Offset(-1f, 1f), Offset(0f, size.height) to Offset(1f, -1f), Offset(size.width, size.height) to Offset(-1f, -1f))
+                        .forEach { (o, d) ->
+                            drawLine(primary, o, Offset(o.x + l * d.x, o.y), sw, cap = StrokeCap.Round)
+                            drawLine(primary, o, Offset(o.x, o.y + l * d.y), sw, cap = StrokeCap.Round)
+                        }
+                    if (!connected) drawLine(Brush.horizontalGradient(listOf(Color.Transparent, primary, Color.Transparent)), Offset(0f, size.height * line), Offset(size.width, size.height * line), 3.dp.toPx())
                 }
-        }
-    }
-}
-
-@Composable
-private fun ArtWaves() {
-    val t = rememberInfiniteTransition(label = "waves")
-    val p by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2000, easing = LinearEasing)), label = "p")
-    val needle by t.animateFloat(0.15f, 0.92f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "needle")
-    val primary = MaterialTheme.colorScheme.primary
-    val secondary = MaterialTheme.colorScheme.secondary
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(Modifier.fillMaxSize(0.92f).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)))
-        Canvas(Modifier.fillMaxSize(0.8f)) {
-            val c = Offset(size.width / 2, size.height * 0.62f)
-            for (i in 0 until 4) {
-                val f = (p + i / 4f) % 1f
-                val r = size.width * (0.18f + 0.34f * f)
-                drawArc(Brush.sweepGradient(listOf(primary, secondary, primary), c), 205f, 130f, false,
-                    Offset(c.x - r, c.y - r), androidx.compose.ui.geometry.Size(r * 2, r * 2), alpha = 1f - f,
-                    style = Stroke(10.dp.toPx() * (1f - f * 0.5f), cap = androidx.compose.ui.graphics.StrokeCap.Round))
-            }
-            // speed gauge
-            val gr = size.width * 0.16f
-            drawArc(Color.White, 180f, 180f, false, Offset(c.x - gr, c.y - gr), androidx.compose.ui.geometry.Size(gr * 2, gr * 2), style = Stroke(8.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
-            drawArc(Brand.mint, 180f, 180f * needle, false, Offset(c.x - gr, c.y - gr), androidx.compose.ui.geometry.Size(gr * 2, gr * 2), style = Stroke(8.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
-            val a = Math.toRadians(180.0 + 180.0 * needle)
-            drawLine(Color(0xFF0E1426), c, Offset(c.x + (gr * 0.8f * cos(a)).toFloat(), c.y + (gr * 0.8f * sin(a)).toFloat()), 4.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round)
-            drawCircle(Color(0xFF0E1426), 6.dp.toPx(), c)
-        }
-        Row(Modifier.align(Alignment.BottomCenter).padding(bottom = 48.dp)) {
-            listOf("5 GHz", "6 GHz").forEachIndexed { i, s ->
-                Box(Modifier.padding(4.dp).clip(RoundedCornerShape(50)).background(if (i == 0) Brand.send else Brand.receive).padding(horizontal = 14.dp, vertical = 6.dp)) {
-                    Text(s, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                androidx.compose.animation.AnimatedVisibility(connected, enter = scaleIn(spring(dampingRatio = 0.4f)) + fadeIn(), exit = fadeOut()) {
+                    Box(Modifier.size(40.dp).clip(CircleShape).background(Brand.mint), contentAlignment = Alignment.Center) {
+                        Icon(Icons.Rounded.Check, null, tint = Color.White)
+                    }
                 }
             }
         }
@@ -274,25 +292,52 @@ private fun ArtWaves() {
 }
 
 @Composable
-private fun ArtOrbit() {
+private fun ArtSpeed() = Stage {
+    val t = rememberInfiniteTransition(label = "sp")
+    val v by t.animateFloat(0.2f, 0.92f, infiniteRepeatable(tween(1800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "v")
+    val w by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2000, easing = LinearEasing)), label = "w")
+    Box(Modifier.fillMaxSize(0.82f).shadow(24.dp, CircleShape, spotColor = Brand.Violet).clip(CircleShape)
+        .background(Brush.linearGradient(listOf(Color(0xFF141A3A), Color(0xFF2A1F6B))))) {
+        Canvas(Modifier.fillMaxSize()) {
+            val c = Offset(size.width / 2, size.height * 0.52f)
+            for (i in 0 until 3) {
+                val f = (w + i / 3f) % 1f
+                drawCircle(Color(0xFF19C3FF).copy(alpha = (1 - f) * 0.35f), size.minDimension * (0.25f + 0.25f * f), c, style = Stroke(2.dp.toPx()))
+            }
+        }
+        SpeedGauge(v, "${(v * 120).roundToInt()} MB/s", Modifier.fillMaxSize(0.72f).align(Alignment.Center))
+    }
+    Row(Modifier.align(Alignment.BottomCenter).padding(bottom = 6.dp)) {
+        listOf("5 GHz" to Brand.send, "6 GHz" to Brand.receive).forEach { (s, b) ->
+            Box(Modifier.padding(5.dp).shadow(6.dp, RoundedCornerShape(50)).clip(RoundedCornerShape(50)).background(b).padding(horizontal = 16.dp, vertical = 7.dp)) {
+                Text(s, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArtOrbit() = Stage {
     val t = rememberInfiniteTransition(label = "orbit")
-    val a by t.animateFloat(0f, 360f, infiniteRepeatable(tween(9000, easing = LinearEasing)), label = "a")
-    val pulse by t.animateFloat(0.92f, 1.06f, infiniteRepeatable(tween(900), RepeatMode.Reverse), label = "pulse")
-    val items: List<Pair<ImageVector, Color>> = Category.entries.map { categoryIcon(it) to categoryColor(it) } + (Icons.Rounded.Folder to Color(0xFF00B0FF))
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Box(Modifier.fillMaxSize(0.92f).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f)))
-        BoxWithConstraints(Modifier.fillMaxSize(0.8f), contentAlignment = Alignment.Center) {
-            val r = constraints.maxWidth / 2f * 0.78f
-            items.forEachIndexed { i, (icon, color) ->
-                val ang = Math.toRadians((a + i * 360f / items.size).toDouble())
-                Box(
-                    Modifier.offset { IntOffset((r * cos(ang)).roundToInt(), (r * sin(ang)).roundToInt()) }
-                        .size(52.dp).clip(RoundedCornerShape(16.dp)).background(Color.White),
-                    contentAlignment = Alignment.Center,
-                ) { Icon(icon, null, tint = color, modifier = Modifier.size(28.dp)) }
-            }
-            LogoTile(Modifier.scale(pulse), 96.dp)
+    val a by t.animateFloat(0f, 360f, infiniteRepeatable(tween(12000, easing = LinearEasing)), label = "a")
+    val pulse by t.animateFloat(0.94f, 1.05f, infiniteRepeatable(tween(1000), RepeatMode.Reverse), label = "pulse")
+    val items: List<Pair<ImageVector, Brush>> = listOf(
+        Icons.Rounded.Image to IconBrushes.cyan, Icons.Rounded.Movie to IconBrushes.pink, Icons.Rounded.MusicNote to IconBrushes.orange,
+        Icons.Rounded.Android to IconBrushes.mint, Icons.Rounded.Contacts to IconBrushes.blue, Icons.Rounded.Folder to IconBrushes.violet,
+        Icons.Rounded.Description to IconBrushes.red,
+    )
+    BoxWithConstraints(Modifier.fillMaxSize(0.86f), contentAlignment = Alignment.Center) {
+        val r = constraints.maxWidth / 2f * 0.8f
+        Canvas(Modifier.fillMaxSize()) {
+            drawCircle(Color.White.copy(alpha = 0.5f), r, style = Stroke(1.5.dp.toPx(), pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(8f, 10f))))
         }
+        items.forEachIndexed { i, (icon, brush) ->
+            val ang = Math.toRadians((a + i * 360f / items.size).toDouble())
+            val depth = (sin(ang).toFloat() + 1f) / 2f
+            GlossyIcon(icon, brush, 50.dp, Modifier.offset { IntOffset((r * cos(ang)).roundToInt(), (r * sin(ang) * 0.55).roundToInt()) }
+                .graphicsLayer { val s = 0.75f + 0.35f * depth; scaleX = s; scaleY = s; alpha = 0.6f + 0.4f * depth })
+        }
+        LogoTile(Modifier.scale(pulse), 96.dp)
     }
 }
 // endregion

@@ -7,6 +7,27 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import com.flashshare.app.ui.components.AppDialog
+import com.flashshare.app.ui.components.IconBrushes
+import com.flashshare.app.ui.components.Snack
+import com.flashshare.app.ui.components.SnackHost
+import com.flashshare.app.ui.components.SnackKind
+import com.flashshare.app.ui.components.shine
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -109,6 +130,9 @@ fun AppNav(settings: AppSettings) {
         }
     }
 
+    // Purchase / restore results from Google Play appear as snackbars wherever the user is.
+    LaunchedEffect(Unit) { c.billing.messages.collect { Snack.show(it) } }
+
     var gateFeature by remember { mutableStateOf<String?>(null) }
     var gateAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var loadingAd by remember { mutableStateOf(false) }
@@ -181,39 +205,50 @@ fun AppNav(settings: AppSettings) {
     }
 
     gateFeature?.let { feature ->
-        AlertDialog(
-            onDismissRequest = { gateFeature = null },
-            icon = { Icon(Icons.Rounded.PlayCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp)) },
-            title = { Text("Unlock $feature") },
-            text = { Text("Watch a short video to use $feature this time – or go Premium for unlimited use with no ads and uncapped speed.") },
-            confirmButton = {
-                GradientButton("Watch ad", onClick = {
-                    val action = gateAction
-                    gateFeature = null
-                    val activity = ctx.findActivity() ?: return@GradientButton
+        AppDialog(
+            onDismiss = { gateFeature = null },
+            icon = Icons.Rounded.PlayCircle,
+            title = "Unlock $feature",
+            message = "Watch a short video to use $feature this time – or go Premium for unlimited use, no ads and uncapped speed.",
+            confirmText = "Watch video",
+            iconBrush = IconBrushes.violet,
+            onConfirm = {
+                val action = gateAction
+                gateFeature = null
+                val activity = ctx.findActivity()
+                if (activity != null) {
                     loadingAd = true
                     scope.launch {
                         val r = c.ads.showRewarded(activity)
                         loadingAd = false
                         when (r) {
                             RewardResult.REWARDED -> action?.invoke()
-                            RewardResult.SKIPPED -> ctx.toast("Watch the full video to unlock $feature")
+                            RewardResult.SKIPPED -> ctx.toast("Watch the full video to unlock $feature", SnackKind.INFO)
                             RewardResult.UNAVAILABLE -> {
-                                ctx.toast("No ad available right now – unlocked for you this time")
+                                ctx.toast("No video available right now – unlocked for you this time", SnackKind.SUCCESS)
                                 action?.invoke()
                             }
                         }
                     }
-                }, icon = Icons.Rounded.PlayCircle, height = 46.dp)
-            },
-            dismissButton = {
-                TextButton(onClick = { gateFeature = null; nav.navigate(Routes.PREMIUM) }) {
-                    Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.Orange)
-                    Spacer(Modifier.size(6.dp))
-                    Text("Go Premium", color = Brand.Orange)
                 }
             },
-        )
+            dismissText = null,
+        ) {
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Brand.premium).shine(2200)
+                    .clickable { gateFeature = null; nav.navigate(Routes.PREMIUM) }.padding(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White)
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("Go Premium", color = Color.White, fontWeight = FontWeight.ExtraBold)
+                    Text("No ads • every tool unlocked", color = Color.White.copy(alpha = 0.9f), style = MaterialTheme.typography.bodySmall)
+                }
+                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = Color.White)
+            }
+        }
     }
     if (loadingAd) LoadingDialog("Loading video…")
+    SnackHost(Modifier.fillMaxSize().wrapContentHeight(Alignment.Bottom))
 }
