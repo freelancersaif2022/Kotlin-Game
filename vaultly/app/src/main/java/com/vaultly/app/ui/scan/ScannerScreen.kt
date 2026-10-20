@@ -312,7 +312,7 @@ private fun CameraContent(
             Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.65f), Color.Transparent)))
                 .statusBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp),
         ) {
-            GlassCircle(Icons.Outlined.Close, "Close", Modifier.align(Alignment.CenterStart), onClose)
+            GlassCircle(Icons.Outlined.Close, "Close", Modifier.align(Alignment.CenterStart), onClick = onClose)
             Text("Scan receipt", style = MaterialTheme.typography.titleMedium, color = Color.White, modifier = Modifier.align(Alignment.Center))
             if (camera?.cameraInfo?.hasFlashUnit() == true) {
                 GlassCircle(
