@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Smart TVs expose their control APIs over plain HTTP / WS on the local network
+     (Roku ECP :8060, Samsung :8001, LG :3000), so cleartext must be allowed. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
