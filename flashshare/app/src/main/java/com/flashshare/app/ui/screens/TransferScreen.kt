@@ -240,7 +240,7 @@ private fun SummaryRing(batches: List<BatchUi>, disconnected: Boolean, onUpgrade
         Column(Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.size(200.dp), contentAlignment = Alignment.Center) {
                 ProgressRing(progress, Modifier.fillMaxSize(), stroke = 16.dp, brush = if (completed) Brand.mint else Brand.main)
-                AnimatedVisibility(completed, enter = scaleIn(spring(dampingRatio = 0.45f)) + fadeIn(), exit = fadeOut()) {
+                androidx.compose.animation.AnimatedVisibility(completed, enter = scaleIn(spring(dampingRatio = 0.45f)) + fadeIn(), exit = fadeOut()) {
                     val t = rememberInfiniteTransition(label = "ok")
                     val s by t.animateFloat(1f, 1.06f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "s")
                     Box(Modifier.size(120.dp).scale(s).clip(CircleShape).background(extra.success), contentAlignment = Alignment.Center) {
