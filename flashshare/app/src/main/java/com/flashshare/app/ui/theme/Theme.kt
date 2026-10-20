@@ -32,6 +32,8 @@ object Brand {
     val Red = Color(0xFFFF4D5E)
 
     val main = Brush.linearGradient(listOf(Color(0xFF3D7BFF), Color(0xFF8A3DFF)))
+    /** Same gradient as the app icon. */
+    val logo = Brush.linearGradient(listOf(Color(0xFF4F7BFF), Color(0xFF6D3DFF), Color(0xFFE0479E)))
     val send = Brush.linearGradient(listOf(Color(0xFF2F6BFF), Color(0xFF19B8FF)))
     val receive = Brush.linearGradient(listOf(Color(0xFF7B3DFF), Color(0xFFD94DFF)))
     val premium = Brush.linearGradient(listOf(Color(0xFFFFC233), Color(0xFFFF7A00)))

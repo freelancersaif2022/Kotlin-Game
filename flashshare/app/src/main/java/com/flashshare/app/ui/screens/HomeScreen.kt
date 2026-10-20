@@ -308,10 +308,6 @@ private fun ActionCard(title: String, subtitle: String, icon: ImageVector, brush
             drawCircle(Color.White.copy(alpha = (1f - ring) * 0.25f), size.width * (0.2f + 0.7f * ring), c, style = Stroke(2.dp.toPx()))
             drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.18f), Color.Transparent), endY = size.height * 0.5f))
         }
-        Box(
-            Modifier.align(Alignment.TopEnd).padding(16.dp).size(32.dp).clip(CircleShape).background(Color.White),
-            contentAlignment = Alignment.Center,
-        ) { Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = Color(0xFF2F3A8F), modifier = Modifier.size(18.dp)) }
         Column(Modifier.fillMaxSize().padding(18.dp)) {
             Box(
                 Modifier.size(58.dp).graphicsLayer { translationY = float }.shadow(10.dp, RoundedCornerShape(20.dp))

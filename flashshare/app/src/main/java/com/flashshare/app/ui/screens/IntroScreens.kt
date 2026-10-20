@@ -83,7 +83,7 @@ fun SplashScreen(onDone: () -> Unit) {
 fun LogoTile(modifier: Modifier = Modifier, size: Dp) {
     Box(
         modifier.size(size).shadow(size * 0.16f, RoundedCornerShape(size * 0.3f), spotColor = Brand.Violet)
-            .clip(RoundedCornerShape(size * 0.3f)).background(Brand.main),
+            .clip(RoundedCornerShape(size * 0.3f)).background(Brand.logo),
         contentAlignment = Alignment.Center,
     ) {
         Image(painterResource(R.drawable.ic_logo_mark), null, Modifier.fillMaxSize())
