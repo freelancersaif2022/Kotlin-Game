@@ -11,7 +11,8 @@ import kotlin.math.sin
 /** The rigged dragon head (faces left in its source art). */
 class DragonHead : Rig() {
     val root = bone(null, 0f, 0f)
-    private val neck = bone(Assets.r("dragon_neck_piece"), 40f, 52f, root, 6f, 4f)
+    // neck tube: its axis runs ~20° down-right in the art, rotated to point straight back
+    private val neck = bone(Assets.r("dragon_neck_piece"), 40f, 60f, root, 4f, -6f)
     private val head = bone(Assets.r("dragon_upper_head"), 226f, 118f, root, 0f, 0f)
     private val mouth = bone(Assets.r("circle"), 48f, 48f, head, 132f, 160f)
     private val jaw = bone(Assets.r("dragon_lower_jaw"), 178f, 22f, head, 222f, 156f)
@@ -36,7 +37,8 @@ class DragonHead : Rig() {
     init {
         mouth.tint.set(0.36f, 0.05f, 0.09f, 1f)
         tongue.regionScale = 0.62f
-        order(frill, hornBack, neck, mouth, tongue, jaw, head, eye, eyeAngry, eyeLid, hornFront, stars)
+        // the neck is drawn separately (under the body balls) by Snake, see drawNeck()
+        order(frill, hornBack, mouth, tongue, jaw, head, eye, eyeAngry, eyeLid, hornFront, stars)
     }
 
     fun hit() {
@@ -65,7 +67,7 @@ class DragonHead : Rig() {
         flinch.update(dt)
         head.rot = flinch.value * 0.04f + sin(time * 2.2f) * 2.5f
         head.dx = flinch.value * 0.06f
-        neck.rot = sin(time * 2.2f + 0.5f) * 3f
+        neck.rot = 20f + sin(time * 2.2f + 0.5f) * 3f
         hornFront.rot = sin(time * 2.6f) * 3f
         hornBack.rot = sin(time * 2.6f + 0.6f) * 3f
         frill.rot = sin(time * 3.1f) * 6f
@@ -77,6 +79,12 @@ class DragonHead : Rig() {
         eyeLid.visible = closed
         stars.visible = hurt
         stars.rot = time * 120f
+    }
+
+    /** Draws only the neck tube; called before the body so the first ball covers its cut end. */
+    fun drawNeck(batch: Batch) {
+        updateTransforms()
+        neck.draw(batch, alpha, null)
     }
 
     /** Mouth tip in world space (for bite effects). */
@@ -110,7 +118,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
 
     val segSize = 56f
     private val spacing = 40f
-    private val headGap = 60f
+    private val headGap = 50f
     private val tailParts = listOf(
         Triple("tail_piece_1", 10f, 70f),
         Triple("tail_piece_2", 10f, 50f),
@@ -210,6 +218,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
             if (seg.pos.x > viewRight + segSize) continue
             batch.drawCentered(shadow, seg.pos.x + 4f, seg.pos.y - segSize * 0.36f, segSize * 1.2f)
         }
+        if (!dead) head.drawNeck(batch)
         // body segments, back to front so the front overlaps
         for (i in segments.indices.reversed()) {
             val seg = segments[i]

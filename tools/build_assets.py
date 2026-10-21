@@ -330,6 +330,80 @@ def gen_check(size=80, on=True):
     return im
 
 
+
+def compose_limb(upper, upper_pivot, attach, lower, lower_pivot, lower_scale, pad=12):
+    """Bakes an upper + lower limb into one seamless sprite.
+
+    The lower part is drawn behind the upper part at the joint, then the dark
+    outline strokes left inside the merged silhouette around the joint are
+    painted over with the surrounding skin colour so no 'doll joint' shows.
+    Returns (image, pivot) where pivot is the shoulder/hip in image pixels.
+    """
+    SS = 4  # work at 4x so the reshaped joint outline is anti-aliased after downscaling
+    upper_pivot = (upper_pivot[0] * SS, upper_pivot[1] * SS)
+    attach = (attach[0] * SS, attach[1] * SS)
+    pad *= SS
+    upper = upper.resize((upper.width * SS, upper.height * SS), Image.LANCZOS)
+    lw = scale(lower, lower_scale * SS)
+    lpx, lpy = lower_pivot[0] * lower_scale * SS, lower_pivot[1] * lower_scale * SS
+    lx, ly = attach[0] - lpx, attach[1] - lpy          # lower top-left in upper coords
+    minx, miny = min(0, lx), min(0, ly)
+    maxx, maxy = max(upper.width, lx + lw.width), max(upper.height, ly + lw.height)
+    W, H = int(maxx - minx) + pad * 2, int(maxy - miny) + pad * 2
+    ox, oy = pad - minx, pad - miny
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    canvas.alpha_composite(lw, (int(round(ox + lx)), int(round(oy + ly))))
+    canvas.alpha_composite(upper, (int(round(ox)), int(round(oy))))
+
+    a = np.asarray(canvas, dtype=np.float32)
+    alpha = a[..., 3]
+    solid = alpha > 128
+    jx, jy = ox + attach[0], oy + attach[1]
+    yy, xx = np.mgrid[0:H, 0:W]
+    reach = lw.width * 0.7
+    near = (xx - jx) ** 2 + (yy - jy) ** 2 < reach ** 2
+
+    def morph(mask, f, size):
+        im = Image.fromarray((mask * 255).astype(np.uint8))
+        for _ in range(size * SS // 2):
+            im = im.filter(f(3))
+        return np.asarray(im) > 0
+
+    # 1) smooth the silhouette around the joint: close the pinch, open away the knob bulges
+    closed = morph(morph(solid, ImageFilter.MaxFilter, 15), ImageFilter.MinFilter, 15)
+    smooth = morph(morph(closed, ImageFilter.MinFilter, 11), ImageFilter.MaxFilter, 11)
+    new_solid = np.where(near, smooth, solid)
+
+    edge_old = solid & ~morph(solid, ImageFilter.MinFilter, 5)
+    lum = a[..., :3].mean(axis=2)
+    outline_col = np.median(a[..., :3][edge_old & (lum < 110)], axis=0) if (edge_old & (lum < 110)).any() else np.array([90, 40, 25])
+    inner = morph(new_solid, ImageFilter.MinFilter, 9)
+    skin_px = inner & near & (lum > 150)
+    skin_col = np.median(a[..., :3][skin_px], axis=0) if skin_px.any() else np.array([240, 180, 140])
+
+    # 2) everything inside the new silhouette near the joint becomes skin (keeps light shading)
+    region = near & new_solid
+    fill = region & (inner | ~solid)
+    dark = fill & (lum <= 160)
+    a[..., :3][dark | (fill & ~solid)] = skin_col
+    # 3) fresh outline along the new silhouette edge near the joint
+    edge_new = new_solid & ~morph(new_solid, ImageFilter.MinFilter, 2)
+    a[..., :3][edge_new & near] = outline_col
+    a[..., 3] = np.where(near, new_solid * 255.0, alpha)
+    out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
+    # 4) gentle blur of the joint area for a painted look, then re-apply the alpha mask softly
+    blurred = np.asarray(out.filter(ImageFilter.GaussianBlur(1.2 * SS)), dtype=np.float32)
+    soft = np.asarray(Image.fromarray(near.astype(np.uint8) * 255).filter(ImageFilter.GaussianBlur(6 * SS)), dtype=np.float32)[..., None] / 255.0
+    keep_alpha = a[..., 3].copy()
+    a = a * (1 - soft * 0.7) + blurred * soft * 0.7
+    a[..., 3] = keep_alpha
+    # re-stamp the crisp outline after blurring the fill
+    a[..., :3][edge_new & near] = outline_col
+    out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")
+    out = out.resize((W // SS, H // SS), Image.LANCZOS)
+    return out, ((ox + upper_pivot[0]) / SS, (oy + upper_pivot[1]) / SS)
+
+
 # ------------------------------------------------------------------ packing
 
 class Packer:
@@ -495,7 +569,9 @@ def main():
     # source art the game does not use (kept in art/ for future features)
     unused = {"button_pressed_glow", "coin_glow", "dust_cloud", "fire_trail", "girl_head", "hand_fist_left",
               "hand_fist_right", "hand_wave_left", "hand_wave_right", "segment_crack_overlay", "undo_arrow",
-              "heart_life", "coin_spin_1", "coin_spin_2", "coin_spin_3", "coin_spin_4", "coin_spin_5", "coin_spin_6"}
+              "heart_life", "girl_upperarm_left", "girl_upperarm_right", "girl_lowerarm_left",
+              "girl_lowerarm_right", "girl_upperleg_left", "girl_upperleg_right", "girl_lowerleg_left",
+              "girl_lowerleg_right", "coin_spin_1", "coin_spin_2", "coin_spin_3", "coin_spin_4", "coin_spin_5", "coin_spin_6"}
     anim = os.path.join(ART, "anim")
     factors = {"girl": 0.62, "girl_faces": 0.62, "dragon": 0.85, "tail": 0.6,
                "effects": 0.8, "ui": 0.5}
@@ -508,6 +584,20 @@ def main():
                 if folder == "effects" and fn.startswith("sunburst"):
                     ff = 1.0
                 add(fn[:-4], load(f"anim/{folder}/{fn}"), factor=ff)
+
+    # seamless one-piece girl limbs (rest pose), pivots printed for Girl.kt
+    def part(name):
+        return scale(trim(load(f"anim/girl/{name}.png")), factors["girl"])
+    limbs = {
+        "girl_arm_left": (part("girl_upperarm_left"), (32, 18), (18, 120), part("girl_lowerarm_left"), (16, 10), 0.8),
+        "girl_arm_right": (part("girl_upperarm_right"), (26, 18), (38, 118), part("girl_lowerarm_right"), (38, 10), 0.8),
+        "girl_leg_left": (part("girl_upperleg_right"), (32, 14), (22, 130), part("girl_lowerleg_right"), (54, 12), 1.0),
+        "girl_leg_right": (part("girl_upperleg_left"), (32, 14), (38, 132), part("girl_lowerleg_left"), (20, 12), 1.0),
+    }
+    for name, args in limbs.items():
+        im, piv = compose_limb(*args)
+        print(f"limb {name}: size {im.size} pivot ({piv[0]:.1f}, {piv[1]:.1f})")
+        items.append((name, bleed(im)))
 
     gen = {
         "white": gen_white(), "glow": gen_glow(), "circle": gen_circle(96),

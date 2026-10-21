@@ -87,6 +87,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         b.fillRect(-10f, -10f, W + 20f, H + 20f, 0f, 0.08f, 0f, 0.25f)
         // a coiled body trailing off-screen behind the head
         val colors = GemColor.entries
+        dragon.drawNeck(b)
         for (i in 8 downTo 0) {
             val sx = dragon.x + 40f + i * 46f
             val sy = dragon.y - 70f - i * 26f + sin(time * 3f - i * 0.6f) * 12f
