@@ -18,7 +18,10 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.wifi" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
 
     <!-- Lets the data usage screen show names and icons of launcher apps. -->
     <queries>

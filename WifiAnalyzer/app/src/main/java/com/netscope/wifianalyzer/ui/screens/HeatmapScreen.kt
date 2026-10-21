@@ -34,6 +34,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.netscope.wifianalyzer.ui.components.SegmentedTabs
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,7 +101,7 @@ fun HeatmapScreen(nav: NavHostController) {
     val premiumGate: @Composable (@Composable () -> Unit) -> Unit = { body ->
         PremiumGate(
             feature = "Signal heatmap",
-            description = "Map your home room by room to see exactly where Wi-Fi is strong or weak, and where to place your router or extender.",
+            description = "Scan rooms with your live camera to see where Wi-Fi is strong or weak, and map your home to find the best spot for your router or extender.",
             icon = Icons.Rounded.GridOn,
             preview = {
                 val demo = remember {
@@ -118,7 +121,25 @@ fun HeatmapScreen(nav: NavHostController) {
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            premiumGate { HeatmapContent(net, key, points) }
+            premiumGate {
+                var mode by rememberSaveable { mutableIntStateOf(0) }
+                Column(Modifier.fillMaxSize()) {
+                    SegmentedTabs(
+                        listOf("Live camera", "Floor map"),
+                        mode,
+                        onSelect = { mode = it },
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
+                    )
+                    if (mode == 0) {
+                        if (net.needsLocation || !net.wifiOn) {
+                            LocationNeededCard(net, Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp))
+                        }
+                        CameraSignalView(key, Modifier.fillMaxWidth().weight(1f).padding(start = 16.dp, end = 16.dp, bottom = 12.dp))
+                    } else {
+                        HeatmapContent(net, key, points)
+                    }
+                }
+            }
         }
     }
     if (confirmReset) {
