@@ -7,6 +7,9 @@ on:
       - ".github/workflows/wifi-analyzer.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,3 +50,19 @@ jobs:
             WifiAnalyzer/app/build/outputs/apk/release/*.apk
             WifiAnalyzer/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+
+      - name: Publish download page (GitHub Release)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: wifi-analyzer-v1.0.0-build${{ github.run_number }}
+          name: WiFi Analyzer 1.0.0 (build ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          body: |
+            - app-debug.apk: install on your phone for testing (Google test ads)
+            - app-release.apk: release build
+            - app-release.aab: upload this to Google Play Console
+          files: |
+            WifiAnalyzer/app/build/outputs/apk/debug/app-debug.apk
+            WifiAnalyzer/app/build/outputs/apk/release/app-release.apk
+            WifiAnalyzer/app/build/outputs/bundle/release/app-release.aab
