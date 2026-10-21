@@ -1,0 +1,48 @@
+name: Build APK
+
+on:
+  push:
+    branches: ["main", "master", "ccr-c912a4bc-jo1vml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :core:test :android:assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: cp android/build/outputs/apk/release/android-release.apk "SnakeAttack-v1.0.${{ github.run_number }}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SnakeAttack-apk
+          path: SnakeAttack-v1.0.${{ github.run_number }}.apk
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Snake Attack v1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: SnakeAttack-v1.0.${{ github.run_number }}.apk
+          body: |
+            Snake Attack Android build from commit ${{ github.sha }}.
+            Download the APK below on your phone and open it to install
+            (allow "Install unknown apps" for your browser/file manager if asked).
