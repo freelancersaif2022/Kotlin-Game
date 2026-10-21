@@ -51,7 +51,7 @@ fun SpeedGauge(
     mbps: Float,
     colors: List<Color>,
     modifier: Modifier = Modifier,
-    center: @Composable BoxScope.() -> Unit,
+    centerContent: @Composable BoxScope.() -> Unit,
 ) {
     val fraction by animateFloatAsState(gaugeFraction(mbps), spring(dampingRatio = 0.75f, stiffness = 60f), label = "gauge")
     val measurer = rememberTextMeasurer()
@@ -115,7 +115,7 @@ fun SpeedGauge(
                 cap = StrokeCap.Round,
             )
         }
-        center()
+        centerContent()
     }
 }
 
