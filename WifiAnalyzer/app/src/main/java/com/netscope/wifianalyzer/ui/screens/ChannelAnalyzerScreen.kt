@@ -209,8 +209,8 @@ private fun ChannelContent() {
             }
         }
         item { SectionTitle("Nearby networks") }
-        items(inBand, key = { it.bssid + it.frequency }) { ap ->
-            ApRow(ap, apColors[(inBand.indexOf(ap)) % apColors.size], Modifier.animateItem())
+        items(inBand) { ap ->
+            ApRow(ap, apColors[(inBand.indexOf(ap)) % apColors.size])
         }
     }
 }
