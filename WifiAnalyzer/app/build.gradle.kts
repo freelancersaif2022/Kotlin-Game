@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -17,7 +18,7 @@ val testAppOpen = "ca-app-pub-3940256099942544/9257395921"
 
 // Release signing is read from environment variables (set as GitHub secrets in CI)
 // or from a local keystore.properties file that is never committed.
-val keystoreProps = java.util.Properties().apply {
+val keystoreProps = Properties().apply {
     val f = rootProject.file("keystore.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
