@@ -56,6 +56,11 @@ class Girl : Rig() {
             *faces.values.toTypedArray(), foreL, armL, foreR, armR,
         )
         showFace("happy")
+        // the generated arm art is oversized for the body: shorter arms, smaller hands
+        armL.baseScale = 0.86f
+        armR.baseScale = 0.86f
+        foreL.baseScale = 0.8f
+        foreR.baseScale = 0.8f
     }
 
     private fun faceBone(name: String) = bone(Assets.r(name), 84f, 150f, neck, 0f, 0f)

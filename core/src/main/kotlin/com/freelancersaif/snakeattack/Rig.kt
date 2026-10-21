@@ -31,6 +31,9 @@ class Bone(
     /** Optional drawing scale for swapped regions of a different resolution. */
     var regionScale = 1f
 
+    /** Constant proportion fix applied to this bone and everything attached to it. */
+    var baseScale = 1f
+
     val world = Affine2()
     private val tmp = Affine2()
 
@@ -44,7 +47,7 @@ class Bone(
         }
         world.translate(dx, -dy)
         world.rotate(rot)
-        world.scale(sx, sy)
+        world.scale(sx * baseScale, sy * baseScale)
     }
 
     fun draw(batch: Batch, alpha: Float, extraTint: Color?) {
