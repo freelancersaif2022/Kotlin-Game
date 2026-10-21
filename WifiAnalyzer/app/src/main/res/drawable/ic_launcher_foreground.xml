@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer gauge ring -->
+    <path
+        android:pathData="M32.79,77.21 A30,30 0 1,1 75.21,77.21"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="#3348E5FF" />
+    <!-- Wi-Fi arcs -->
+    <path
+        android:pathData="M32.55,48.0 A28,28 0 0,1 75.45,48.0"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000">
+        <aapt:attr name="android:strokeColor">
+            <gradient android:type="linear"
+                android:startX="32" android:startY="40" android:endX="76" android:endY="40">
+                <item android:offset="0" android:color="#FF22D3EE" />
+                <item android:offset="1" android:color="#FFA78BFA" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M39.45,53.78 A19,19 0 0,1 68.55,53.78"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000">
+        <aapt:attr name="android:strokeColor">
+            <gradient android:type="linear"
+                android:startX="39" android:startY="48" android:endX="69" android:endY="48">
+                <item android:offset="0" android:color="#FF38BDF8" />
+                <item android:offset="1" android:color="#FF8B5CF6" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M46.34,59.57 A10,10 0 0,1 61.66,59.57"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="#FF60A5FA" />
+    <!-- Speed needle -->
+    <path
+        android:pathData="M54,66 L70.7,46.1"
+        android:strokeWidth="3.6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF" />
+    <!-- Pivot -->
+    <path
+        android:pathData="M54,66 m-5.5,0 a5.5,5.5 0 1,0 11,0 a5.5,5.5 0 1,0 -11,0"
+        android:fillColor="#FFFFFFFF" />
+    <path
+        android:pathData="M54,66 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0"
+        android:fillColor="#FF22D3EE" />
+</vector>

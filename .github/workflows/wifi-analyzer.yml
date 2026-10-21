@@ -1,0 +1,49 @@
+name: Build WiFi Analyzer
+
+on:
+  push:
+    paths:
+      - "WifiAnalyzer/**"
+      - ".github/workflows/wifi-analyzer.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+      SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+      SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+    defaults:
+      run:
+        working-directory: WifiAnalyzer
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode upload keystore
+        if: env.SIGNING_KEYSTORE_BASE64 != ''
+        run: |
+          echo "$SIGNING_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          echo "SIGNING_STORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build debug APK, release APK and Play bundle
+        run: ./gradlew assembleDebug assembleRelease bundleRelease --stacktrace
+
+      - name: Upload APKs and bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: wifi-analyzer-builds
+          path: |
+            WifiAnalyzer/app/build/outputs/apk/debug/*.apk
+            WifiAnalyzer/app/build/outputs/apk/release/*.apk
+            WifiAnalyzer/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error

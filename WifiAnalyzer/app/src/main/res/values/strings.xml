@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WiFi Analyzer</string>
+    <string name="widget_signal_label">Wi-Fi Signal</string>
+    <string name="widget_speed_label">Speed Test</string>
+    <string name="widget_signal_desc">Live Wi-Fi signal strength on your home screen</string>
+    <string name="widget_speed_desc">Your last speed test and a one-tap test button</string>
+    <string name="notif_channel_intruder">Intruder alerts</string>
+    <string name="notif_channel_intruder_desc">Alerts when a new device joins your Wi-Fi</string>
+</resources>
