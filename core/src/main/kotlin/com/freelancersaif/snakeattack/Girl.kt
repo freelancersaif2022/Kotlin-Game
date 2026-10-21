@@ -8,8 +8,9 @@ import kotlin.math.sin
 
 /**
  * The girl the player protects: a cut-out rig with procedural animation.
- * Arms and legs are single seamless sprites (baked by tools/build_assets.py),
- * so no elbow / knee seams ever show.
+ * Arms are the forearm sprites joined straight to the shoulder (their joint end
+ * hides under the puffy sleeve) and legs are the lower-leg sprites joined at the
+ * hip under the skirt, so no elbow / knee joints ever show.
  */
 class Girl : Rig() {
     enum class Mood { IDLE, WORRIED, PANIC, CHEER, CAUGHT, WAVE }
@@ -25,10 +26,10 @@ class Girl : Rig() {
     private val hips = bone(null, 0f, 0f)
     private val torso = bone(Assets.r("girl_torso"), 80f, 126f, hips, 0f, 0f)
     private val skirt = bone(Assets.r("girl_skirt"), 92f, 10f, hips, 0f, -8f)
-    private val legL = bone(Assets.r("girl_leg_left"), 76f, 26f, hips, -22f, 26f)
-    private val legR = bone(Assets.r("girl_leg_right"), 44f, 26f, hips, 22f, 26f)
-    private val armL = bone(Assets.r("girl_arm_left"), 44f, 30f, torso, 22f, 30f)
-    private val armR = bone(Assets.r("girl_arm_right"), 38f, 30f, torso, 134f, 30f)
+    private val legL = bone(Assets.r("girl_lowerleg_right"), 54f, 12f, hips, -24f, 58f)
+    private val legR = bone(Assets.r("girl_lowerleg_left"), 20f, 12f, hips, 24f, 58f)
+    private val armL = bone(Assets.r("girl_lowerarm_left"), 16f, 10f, torso, 24f, 36f)
+    private val armR = bone(Assets.r("girl_lowerarm_right"), 38f, 10f, torso, 132f, 36f)
     private val neck = bone(null, 0f, 0f, torso, 78f, 8f)
     private val faces = mapOf(
         "happy" to faceBone("face_happy"),
@@ -49,12 +50,11 @@ class Girl : Rig() {
     var baseY = 0f
 
     init {
-        // arms go over the head so raised hands stay visible
-        order(ponytail, legL, legR, torso, skirt, *faces.values.toTypedArray(), armL, armR)
+        // arms sit behind the torso so the sleeves cover the shoulder joint
+        order(ponytail, legL, legR, armL, armR, torso, skirt, *faces.values.toTypedArray())
         showFace("happy")
-        // the generated arm art is oversized for the body (forearm already shrunk when baked)
-        armL.baseScale = 0.86f
-        armR.baseScale = 0.86f
+        armL.baseScale = 0.92f
+        armR.baseScale = 0.92f
     }
 
     private fun faceBone(name: String) = bone(Assets.r(name), 84f, 150f, neck, 0f, 0f)
@@ -78,8 +78,8 @@ class Girl : Rig() {
                 val br = sin(t * 2.4f)
                 torso.sy = 1f + br * 0.015f
                 neck.rot = sin(t * 1.3f) * 3f
-                armL.rot = -3f + sin(t * 1.6f) * 3f
-                armR.rot = 3f - sin(t * 1.6f + 0.4f) * 3f
+                armL.rot = -12f + sin(t * 1.6f) * 3f
+                armR.rot = 12f - sin(t * 1.6f + 0.4f) * 3f
                 hips.rot = sin(t * 1.2f) * 1.5f
                 if (mood == Mood.WAVE) {
                     armR.rot = 145f + sin(t * 9f) * 18f
