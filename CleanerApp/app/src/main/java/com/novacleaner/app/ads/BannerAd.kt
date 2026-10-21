@@ -37,7 +37,7 @@ fun BannerAd(modifier: Modifier = Modifier) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val widthDp = maxWidth.value.toInt()
             val adSize = remember(widthDp) {
-                AdSize.getCurrentOrientationAnchoredAdaptiveBannerSize(context, widthDp)
+                AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthDp)
             }
             val adView = remember(widthDp) {
                 AdView(context).apply {

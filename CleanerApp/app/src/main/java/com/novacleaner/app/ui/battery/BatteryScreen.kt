@@ -168,9 +168,10 @@ fun BatteryScreen(vm: BatteryViewModel = viewModel()) {
                         Text("${state.level}%", style = MaterialTheme.typography.displayMedium)
                         Text(state.status, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.height(10.dp))
+                        val ttf = state.timeToFullMin
                         Text(
                             when {
-                                state.timeToFullMin != null -> "Full in about ${state.timeToFullMin / 60}h ${state.timeToFullMin % 60}m"
+                                ttf != null -> "Full in about ${ttf / 60}h ${ttf % 60}m"
                                 state.charging -> "Charging via ${state.plugged}"
                                 else -> "Running on battery"
                             },
