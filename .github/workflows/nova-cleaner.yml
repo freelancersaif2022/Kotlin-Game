@@ -1,0 +1,67 @@
+name: Nova Cleaner – build APK
+
+on:
+  push:
+    paths:
+      - "CleanerApp/**"
+      - ".github/workflows/nova-cleaner.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nova-cleaner-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CleanerApp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK and AAB
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease --stacktrace --no-daemon
+
+      - name: Report sizes
+        run: |
+          ls -la app/build/outputs/apk/release/ app/build/outputs/bundle/release/
+          echo "### Nova Cleaner build" >> "$GITHUB_STEP_SUMMARY"
+          for f in app/build/outputs/apk/release/*.apk app/build/outputs/bundle/release/*.aab; do
+            echo "- $(basename "$f"): $(du -h "$f" | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+          done
+          cp app/build/outputs/apk/release/app-release.apk NovaCleaner-v1.0.0.apk
+          cp app/build/outputs/bundle/release/app-release.aab NovaCleaner-v1.0.0.aab
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NovaCleaner-release
+          path: |
+            CleanerApp/NovaCleaner-v1.0.0.apk
+            CleanerApp/NovaCleaner-v1.0.0.aab
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nova-cleaner-build-${{ github.run_number }}
+          name: Nova Cleaner 1.0.0 (build ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          body: |
+            Release APK built by GitHub Actions from `${{ github.ref_name }}` @ ${{ github.sha }}.
+            Ads use Google's **test** ad unit IDs. Replace them before publishing to Play.
+          files: |
+            CleanerApp/NovaCleaner-v1.0.0.apk
+            CleanerApp/NovaCleaner-v1.0.0.aab

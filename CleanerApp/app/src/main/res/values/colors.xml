@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="brand_emerald">#FF00C896</color>
+    <color name="brand_emerald_dark">#FF00A57C</color>
+    <color name="window_background">#FFF2F6F4</color>
+    <color name="splash_background">#FF007A5E</color>
+    <color name="ic_launcher_background">#FF00A57C</color>
+</resources>
