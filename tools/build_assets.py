@@ -158,17 +158,149 @@ def gen_pill():
     return rounded((120, 64), 31, (40, 25, 20, 170))
 
 
-def gen_button(color, dark):
-    w, h = 240, 96
+def vgrad(w, h, top, bottom):
+    """Vertical colour gradient image."""
+    t = np.linspace(0, 1, h)[:, None, None]
+    a = np.array(top, np.float32)[None, None, :]
+    b = np.array(bottom, np.float32)[None, None, :]
+    arr = np.repeat(a * (1 - t) + b * t, w, axis=1)
+    return Image.fromarray(arr.astype(np.uint8), "RGB").convert("RGBA")
+
+
+def masked(im, mask):
+    out = im.copy()
+    out.putalpha(mask)
+    return out
+
+
+def rr_mask(w, h, r, ss=4):
+    m = Image.new("L", (w * ss, h * ss), 0)
+    ImageDraw.Draw(m).rounded_rectangle((0, 0, w * ss - 1, h * ss - 1), r * ss, fill=255)
+    return m.resize((w, h), Image.LANCZOS)
+
+
+def lighten(c, k):
+    return tuple(int(v + (255 - v) * k) for v in c)
+
+
+def darken(c, k):
+    return tuple(int(v * (1 - k)) for v in c)
+
+
+def gen_button(color, dark, w=300, h=100):
+    """Glossy pill button: dark base lip, gradient face, top shine, outline."""
+    r = h // 2 - 4
     im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    base = rounded((w, h), 40, dark + (255,))
-    top = rounded((w - 12, h - 20), 34, color + (255,))
-    im.alpha_composite(base)
-    im.alpha_composite(top, (6, 5))
-    shine = rounded((w - 60, 22), 11, (255, 255, 255, 110))
-    im.alpha_composite(shine, (30, 12))
-    outline = rounded((w, h), 40, (0, 0, 0, 0), outline=(40, 25, 20, 255), width=5)
-    im.alpha_composite(outline)
+    im.alpha_composite(rounded((w, h), r, darken(dark, 0.2) + (255,)))
+    face_h = h - 16
+    face = masked(vgrad(w - 10, face_h, lighten(color, 0.25), color), rr_mask(w - 10, face_h, r - 5))
+    im.alpha_composite(face, (5, 4))
+    shine = rounded((w - 70, 20), 10, (255, 255, 255, 120))
+    im.alpha_composite(shine, (35, 11))
+    im.alpha_composite(rounded((w, h), r, (0, 0, 0, 0), outline=(45, 26, 16, 255), width=5))
+    return im
+
+
+def gen_round_button(color, dark, size=120):
+    ss = 4
+    S = size * ss
+    im = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.ellipse((0, 0, S - 1, S - 1), fill=(45, 26, 16, 255))
+    o = 5 * ss
+    d.ellipse((o, o, S - 1 - o, S - 1 - o), fill=darken(dark, 0.1) + (255,))
+    face = masked(vgrad(S - 2 * o, S - 2 * o - 7 * ss, lighten(color, 0.3), color),
+                  Image.new("L", (S - 2 * o, S - 2 * o - 7 * ss), 0))
+    m = Image.new("L", face.size, 0)
+    ImageDraw.Draw(m).ellipse((0, 0, face.width - 1, face.height - 1), fill=255)
+    face.putalpha(m)
+    im.alpha_composite(face, (o, o))
+    sh = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    ImageDraw.Draw(sh).ellipse((int(S * 0.24), int(S * 0.12), int(S * 0.76), int(S * 0.34)), fill=(255, 255, 255, 110))
+    im.alpha_composite(sh)
+    return im.resize((size, size), Image.LANCZOS)
+
+
+def gen_icon(kind, size=96):
+    """White icons with a dark outline: home, restart, next, close."""
+    ss = 4
+    S = size * ss
+    shape = Image.new("L", (S, S), 0)
+    d = ImageDraw.Draw(shape)
+    u = S / 100.0
+    if kind == "home":
+        d.polygon([(50 * u, 14 * u), (88 * u, 48 * u), (78 * u, 48 * u), (78 * u, 86 * u), (22 * u, 86 * u),
+                   (22 * u, 48 * u), (12 * u, 48 * u)], fill=255)
+        d.rectangle((42 * u, 60 * u, 58 * u, 86 * u), fill=0)
+    elif kind == "restart":
+        d.arc((18 * u, 18 * u, 82 * u, 82 * u), 300, 230, fill=255, width=int(15 * u))
+        d.polygon([(10 * u, 30 * u), (40 * u, 30 * u), (22 * u, 56 * u)], fill=255)
+    elif kind == "next":
+        d.polygon([(30 * u, 16 * u), (82 * u, 50 * u), (30 * u, 84 * u)], fill=255)
+    elif kind == "close":
+        d.line((24 * u, 24 * u, 76 * u, 76 * u), fill=255, width=int(16 * u))
+        d.line((76 * u, 24 * u, 24 * u, 76 * u), fill=255, width=int(16 * u))
+    outline = shape.filter(ImageFilter.MaxFilter(int(9 * u) | 1))
+    im = Image.new("RGBA", (S, S), (45, 26, 16, 0))
+    im.putalpha(outline)
+    white = Image.new("RGBA", (S, S), (255, 255, 255, 0))
+    white.putalpha(shape)
+    im.alpha_composite(white)
+    return im.resize((size, size), Image.LANCZOS)
+
+
+def gen_ribbon(color, w=560, h=120):
+    """Banner ribbon with folded tails for popup titles."""
+    ss = 2
+    W2, H2 = w * ss, h * ss
+    im = Image.new("RGBA", (W2, H2), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    tail_w = int(W2 * 0.13)
+    band_top, band_bot = int(H2 * 0.08), int(H2 * 0.78)
+    tail_top, tail_bot = int(H2 * 0.3), H2 - 2
+    dk = darken(color, 0.38)
+    for side in (0, 1):
+        x0 = 0 if side == 0 else W2 - tail_w - int(W2 * 0.04)
+        x1 = x0 + tail_w + int(W2 * 0.04)
+        notch = x0 + int(tail_w * 0.35) if side == 0 else x1 - int(tail_w * 0.35)
+        pts = ([(x0, tail_top), (x1, tail_top), (x1, tail_bot), (x0, tail_bot), (notch, (tail_top + tail_bot) // 2)]
+               if side == 0 else
+               [(x0, tail_top), (x1, tail_top), (notch, (tail_top + tail_bot) // 2), (x1, tail_bot), (x0, tail_bot)])
+        d.polygon(pts, fill=(45, 26, 16, 255))
+        inner = [(px + (6 if px < W2 / 2 else -6) * ss * (1 if px in (x0, x1) else 0), py) for px, py in pts]
+        d.polygon(inner, fill=dk + (255,))
+    # folds
+    for fx in (tail_w, W2 - tail_w):
+        d.polygon([(fx - 2, band_bot - 4), (fx + (20 if fx < W2 / 2 else -20) * ss, band_bot - 4),
+                   (fx + (20 if fx < W2 / 2 else -20) * ss, tail_bot - 10)], fill=darken(color, 0.6) + (255,))
+    x0, x1 = int(W2 * 0.09), W2 - int(W2 * 0.09)
+    d.rounded_rectangle((x0, band_top, x1, band_bot), 14 * ss, fill=(45, 26, 16, 255))
+    face = masked(vgrad(x1 - x0 - 10 * ss, band_bot - band_top - 10 * ss, lighten(color, 0.3), color),
+                  rr_mask(x1 - x0 - 10 * ss, band_bot - band_top - 10 * ss, 10 * ss, 1))
+    im.alpha_composite(face, (x0 + 5 * ss, band_top + 5 * ss))
+    shine = rounded((x1 - x0 - 50 * ss, 12 * ss), 6 * ss, (255, 255, 255, 90), ss=1)
+    im.alpha_composite(shine, (x0 + 25 * ss, band_top + 10 * ss))
+    return im.resize((w, h), Image.LANCZOS)
+
+
+def gen_frame_panel():
+    """Popup panel 9-patch: brown outline, warm frame, cream inset (splits 46)."""
+    w = h = 150
+    im = rounded((w, h), 40, (255, 196, 92, 255), outline=(60, 33, 18, 255), width=6)
+    inner = rounded((w - 36, h - 36), 26, (255, 249, 233, 255), outline=(196, 128, 52, 255), width=4)
+    im.alpha_composite(inner, (18, 18))
+    hl = rounded((w - 30, 10), 5, (255, 255, 255, 110))
+    im.alpha_composite(hl, (15, 9))
+    return im
+
+
+def gen_switch(on, w=120, h=60):
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    col = (88, 204, 40) if on else (175, 170, 165)
+    im.alpha_composite(rounded((w, h), h // 2, col + (255,), outline=(45, 26, 16, 255), width=4))
+    im.alpha_composite(rounded((w - 20, 10), 5, (255, 255, 255, 80)), (10, 8))
+    knob = gen_circle(h - 12, outline=4)
+    im.alpha_composite(knob, (w - h + 6 if on else 6, 6))
     return im
 
 
@@ -279,9 +411,10 @@ def make_font(name, size, stroke, shadow):
         im = Image.new("RGBA", (cw, chh), (0, 0, 0, 0))
         d = ImageDraw.Draw(im)
         ox, oy = pad, pad + ascent
-        if ch != " ":
+        if ch != " " and shadow > 0:
             d.text((ox, oy + shadow), ch, font=font, anchor="ls", fill=(40, 20, 10, 150),
                    stroke_width=stroke, stroke_fill=(40, 20, 10, 150))
+        if ch != " ":
             d.text((ox, oy), ch, font=font, anchor="ls", fill=(255, 255, 255, 255),
                    stroke_width=stroke, stroke_fill=(55, 30, 18, 255))
         bbox = im.getchannel("A").getbbox()
@@ -357,15 +490,18 @@ def main():
     add("skull_fail", load("main/skull_fail.png"), 380)
     add("slot_empty", load("main/slot_empty.png"), 168)
     add("slot_locked", load("main/slot_locked.png"), 168)
-    add("snake_head_attack", load("main/snake_head_attack.png"), 420)
     add("star", load("main/star.png"), 190)
 
+    # source art the game does not use (kept in art/ for future features)
+    unused = {"button_pressed_glow", "coin_glow", "dust_cloud", "fire_trail", "girl_head", "hand_fist_left",
+              "hand_fist_right", "hand_wave_left", "hand_wave_right", "segment_crack_overlay", "undo_arrow",
+              "heart_life", "coin_spin_1", "coin_spin_2", "coin_spin_3", "coin_spin_4", "coin_spin_5", "coin_spin_6"}
     anim = os.path.join(ART, "anim")
     factors = {"girl": 0.62, "girl_faces": 0.62, "dragon": 0.85, "tail": 0.6,
                "effects": 0.8, "ui": 0.5}
     for folder, f in factors.items():
         for fn in sorted(os.listdir(os.path.join(anim, folder))):
-            if fn.endswith(".png"):
+            if fn.endswith(".png") and fn[:-4] not in unused:
                 ff = f
                 if folder == "ui" and fn.startswith(("heart", "hint", "undo", "star_sparkle")):
                     ff = 0.45
@@ -376,13 +512,22 @@ def main():
     gen = {
         "white": gen_white(), "glow": gen_glow(), "circle": gen_circle(96),
         "badge": gen_circle(64, outline=6), "arrow": gen_arrow(96), "panel": gen_panel(),
-        "board_panel": gen_board_panel(), "pill": gen_pill(), "ring": gen_ring(),
+        "board_panel": gen_board_panel(), "pill": gen_pill(),
         "ray": gen_ray(),
         "btn_green": gen_button((88, 204, 40), (40, 120, 20)),
         "btn_orange": gen_button((255, 160, 30), (190, 90, 10)),
         "btn_blue": gen_button((40, 150, 255), (20, 80, 180)),
-        "btn_red": gen_button((240, 70, 70), (150, 30, 30)),
         "btn_grey": gen_button((170, 170, 180), (100, 100, 110)),
+        "rbtn_green": gen_round_button((88, 204, 40), (40, 120, 20)),
+        "rbtn_orange": gen_round_button((255, 160, 30), (190, 90, 10)),
+        "rbtn_blue": gen_round_button((40, 150, 255), (20, 80, 180)),
+        "rbtn_red": gen_round_button((240, 70, 70), (150, 30, 30)),
+        "icon_home": gen_icon("home"), "icon_restart": gen_icon("restart"),
+        "icon_next": gen_icon("next"), "icon_close": gen_icon("close"),
+        "ribbon_green": gen_ribbon((80, 196, 40)), "ribbon_red": gen_ribbon((232, 64, 52)),
+        "ribbon_blue": gen_ribbon((40, 140, 245)), "ribbon_orange": gen_ribbon((255, 150, 30)),
+        "frame_panel": gen_frame_panel(),
+        "switch_on": gen_switch(True), "switch_off": gen_switch(False),
     }
     for name, im in gen.items():
         items.append((name, bleed(im) if name not in ("white",) else im))
@@ -421,6 +566,7 @@ def main():
 
     make_font("font_big", 84, 6, 5)
     make_font("font_small", 46, 4, 3)
+    make_font("font_plain", 52, 0, 0)
     print("done")
 
 

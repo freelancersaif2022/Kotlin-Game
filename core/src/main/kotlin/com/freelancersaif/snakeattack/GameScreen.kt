@@ -36,7 +36,6 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
     private var roaredDanger = false
     private var stars = 0
     private var reward = 0
-    private var shownCoins = Save.coins.toFloat()
     private var redFlash = 0f
     private var whiteFlash = 0f
     private var slowMo = 1f
@@ -46,36 +45,59 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
     private var autoTimer = 0f
     private val autoplay = System.getProperty("snake.autoplay") != null
     private var debugPause = System.getProperty("snake.pause") != null
+    private var pauseTime = 0f
+    private val onArrive: (Block) -> Unit = { b -> b.slot?.let { combat.place(it, b.color, spec.shotsPerBlock) } }
+    private val onHitRef: (Projectile) -> Unit = { onHit(it) }
 
     private class FloatText(val text: String, var x: Float, var y: Float, val size: Float, val color: Color, val life: Float = 1.1f) {
         var age = 0f
     }
 
     // HUD + overlay buttons
-    private val settingsBtn = Button(Assets.r("btn_settings"), 74f) { openPause() }
-    private val hintBtn = Button(Assets.r("btn_orange"), 92f) { useHint() }
-    private val resumeBtn = Button(Assets.r("btn_green"), 300f, "RESUME", 44f) { closePause() }
-    private val restartBtn = Button(Assets.r("btn_orange"), 300f, "RESTART", 44f) { restart() }
-    private val homeBtn = Button(Assets.r("btn_blue"), 300f, "HOME", 44f) { goHome() }
-    private val soundBtn = Button(Assets.r("btn_green"), 160f, "", 22f) { Save.sound = !Save.sound; refreshToggles() }
-    private val musicBtn = Button(Assets.r("btn_green"), 160f, "", 22f) { Save.music = !Save.music; Assets.refreshMusic(); refreshToggles() }
-    private val vibBtn = Button(Assets.r("btn_green"), 160f, "", 22f) { Save.vibration = !Save.vibration; refreshToggles() }
-    private val nextBtn = Button(Assets.r("btn_green"), 320f, "NEXT", 50f) { nextLevel() }
-    private val retryBtn = Button(Assets.r("btn_orange"), 320f, "TRY AGAIN", 46f) { restart() }
-    private val endHomeBtn = Button(Assets.r("btn_blue"), 200f, "HOME", 38f) { goHome() }
-    private val overlayButtons = listOf(resumeBtn, restartBtn, homeBtn, soundBtn, musicBtn, vibBtn)
-    private val endButtons = listOf(nextBtn, retryBtn, endHomeBtn)
+    private val settingsBtn = Button(Assets.r("btn_settings"), 76f) { openPause() }
+    private val hintBtn = Button(Assets.r("rbtn_orange"), 88f) { useHint() }
+    private val resumeBtn = Button(Assets.r("btn_green"), 380f, "RESUME", 46f) { closePause() }
+    private val pauseHomeBtn = Button(Assets.r("rbtn_blue"), 104f) { goHome() }
+    private val pauseRestartBtn = Button(Assets.r("rbtn_orange"), 104f) { restart() }
+    private val soundBtn = Button(Assets.r("switch_on"), 112f) { Save.sound = !Save.sound; refreshToggles() }
+    private val musicBtn = Button(Assets.r("switch_on"), 112f) { Save.music = !Save.music; Assets.refreshMusic(); refreshToggles() }
+    private val vibBtn = Button(Assets.r("switch_on"), 112f) { Save.vibration = !Save.vibration; refreshToggles() }
+    private val nextBtn = Button(Assets.r("btn_green"), 380f, "NEXT LEVEL", 44f) { nextLevel() }
+    private val winHomeBtn = Button(Assets.r("rbtn_blue"), 104f) { goHome() }
+    private val winReplayBtn = Button(Assets.r("rbtn_orange"), 104f) { restart() }
+    private val retryBtn = Button(Assets.r("btn_orange"), 380f, "TRY AGAIN", 44f) { restart() }
+    private val loseHomeBtn = Button(Assets.r("rbtn_blue"), 104f) { goHome() }
+    private val pauseButtons = listOf(resumeBtn, pauseHomeBtn, pauseRestartBtn, soundBtn, musicBtn, vibBtn)
+    private val winButtons = listOf(nextBtn, winHomeBtn, winReplayBtn)
+    private val loseButtons = listOf(retryBtn, loseHomeBtn)
+    private val levelText = "LEVEL $levelNumber"
+    private var progressText = "0/$totalSegments"
+    private var rewardText = ""
+    private var destroyedText = ""
+    private val settingRows = listOf("Sound" to soundBtn, "Music" to musicBtn, "Vibration" to vibBtn)
 
     init {
         combat.setup(5, if (Save.extraSlot) 5 else 4)
         buttons += settingsBtn
         buttons += hintBtn
-        buttons += overlayButtons
-        buttons += endButtons
+        buttons += pauseButtons
+        buttons += winButtons
+        buttons += loseButtons
         hintBtn.icon = Assets.r("hint_lightbulb")
-        hintBtn.iconSize = 46f
-        overlayButtons.forEach { it.visible = false }
-        endButtons.forEach { it.visible = false }
+        hintBtn.iconSize = 50f
+        fun icon(b: Button, name: String, size: Float) {
+            b.icon = Assets.r(name)
+            b.iconSize = size
+        }
+        icon(resumeBtn, "icon_next", 46f)
+        icon(nextBtn, "icon_next", 46f)
+        icon(retryBtn, "icon_restart", 50f)
+        icon(pauseHomeBtn, "icon_home", 56f)
+        icon(winHomeBtn, "icon_home", 56f)
+        icon(loseHomeBtn, "icon_home", 56f)
+        icon(pauseRestartBtn, "icon_restart", 56f)
+        icon(winReplayBtn, "icon_restart", 56f)
+        (pauseButtons + winButtons + loseButtons).forEach { it.visible = false }
         girl.scale = 0.32f
         refreshToggles()
     }
@@ -132,23 +154,34 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         val boardTop = slotY - 82f
         board.layout(W / 2 - 350f, 34f, 700f, boardTop - 34f)
 
-        settingsBtn.x = W - 50f
-        settingsBtn.y = H - 50f
+        settingsBtn.x = W - 52f
+        settingsBtn.y = H - 52f - safeTop
         layoutOverlay()
     }
 
     private fun layoutOverlay() {
         val cx = W / 2
-        val cy = H / 2
-        resumeBtn.x = cx; resumeBtn.y = cy + 110f
-        restartBtn.x = cx; restartBtn.y = cy - 15f
-        homeBtn.x = cx; homeBtn.y = cy - 140f
-        soundBtn.x = cx - 170f; musicBtn.x = cx; vibBtn.x = cx + 170f
-        soundBtn.y = cy - 265f; musicBtn.y = cy - 265f; vibBtn.y = cy - 265f
-        nextBtn.x = cx; nextBtn.y = cy - 170f
-        retryBtn.x = cx; retryBtn.y = cy - 230f
-        endHomeBtn.x = cx; endHomeBtn.y = cy - 330f
+        // pause popup
+        val pc = H / 2
+        resumeBtn.x = cx; resumeBtn.y = pc - 190f
+        soundBtn.x = cx + 160f; soundBtn.y = pc + 100f
+        musicBtn.x = cx + 160f; musicBtn.y = pc + 10f
+        vibBtn.x = cx + 160f; vibBtn.y = pc - 80f
+        pauseHomeBtn.x = cx - 80f; pauseHomeBtn.y = pc - 375f
+        pauseRestartBtn.x = cx + 80f; pauseRestartBtn.y = pc - 375f
+        // win popup
+        val wc = winCenter()
+        nextBtn.x = cx; nextBtn.y = wc - 150f
+        winHomeBtn.x = cx - 80f; winHomeBtn.y = wc - 335f
+        winReplayBtn.x = cx + 80f; winReplayBtn.y = wc - 335f
+        // lose popup
+        val lc = loseCenter()
+        retryBtn.x = cx; retryBtn.y = lc - 125f
+        loseHomeBtn.x = cx; loseHomeBtn.y = lc - 305f
     }
+
+    private fun winCenter() = H / 2 - 40f
+    private fun loseCenter() = H / 2 - 110f
 
     private fun groundAt(x: Float): Float {
         var s = 0f
@@ -171,13 +204,9 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
     }
 
     private fun refreshToggles() {
-        fun set(b: Button, name: String, on: Boolean) {
-            b.region = Assets.r(if (on) "btn_green" else "btn_grey")
-            b.label = "$name ${if (on) "ON" else "OFF"}"
-        }
-        set(soundBtn, "SOUND", Save.sound)
-        set(musicBtn, "MUSIC", Save.music)
-        set(vibBtn, "VIBRATE", Save.vibration)
+        soundBtn.region = Assets.r(if (Save.sound) "switch_on" else "switch_off")
+        musicBtn.region = Assets.r(if (Save.music) "switch_on" else "switch_off")
+        vibBtn.region = Assets.r(if (Save.vibration) "switch_on" else "switch_off")
     }
 
     // ------------------------------------------------------------------ input
@@ -201,7 +230,7 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
                 Assets.sfx("error", 0.7f)
                 combat.slots.forEach { it.shake = 0.3f }
                 b.squash.kick(-5f)
-                floatText("SLOTS FULL!", W / 2, combat.slots.first().y + 70f, 40f, Color.valueOf("ff6b6b"))
+                floatText("SLOTS FULL!", W / 2, combat.slots.first().y + 70f, 40f, Palette.RED)
                 Save.vibrate(30)
                 return
             }
@@ -224,14 +253,14 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
             slot.locked = false
             slot.pop.value = 0.5f
             slot.pop.kick(8f)
-            particles.sparkle(slot.x, slot.y, 10, 60f, Color.valueOf("ffe066"))
+            particles.sparkle(slot.x, slot.y, 10, 60f, Palette.GOLD)
             particles.flash("shockwave_ring", slot.x, slot.y, 40f, 200f, 0.4f)
             Assets.sfx("unlock")
-            floatText("UNLOCKED!", slot.x - 60f, slot.y + 80f, 38f, Color.valueOf("ffe066"))
+            floatText("UNLOCKED!", slot.x - 60f, slot.y + 80f, 38f, Palette.GOLD)
         } else {
             Assets.sfx("error", 0.7f)
             slot.shake = 0.3f
-            floatText("NEED 150 COINS", slot.x - 120f, slot.y + 80f, 34f, Color.valueOf("ff6b6b"))
+            floatText("NEED 150 COINS", slot.x - 120f, slot.y + 80f, 34f, Palette.RED)
         }
     }
 
@@ -241,7 +270,7 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         if (free.isEmpty()) return
         if (Save.coins < 25) {
             Assets.sfx("error", 0.7f)
-            floatText("NEED 25 COINS", hintBtn.x - 100f, hintBtn.y + 70f, 32f, Color.valueOf("ff6b6b"))
+            floatText("NEED 25 COINS", hintBtn.x - 100f, hintBtn.y + 70f, 32f, Palette.RED)
             return
         }
         Save.coins -= 25
@@ -262,14 +291,16 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
     private fun openPause() {
         if (state == State.WIN || state == State.LOSE) return
         paused = true
-        overlayButtons.forEach { it.visible = true; it.appear = 0f }
+        pauseTime = 0f
+        Assets.sfx("swoosh_in", 0.5f)
+        pauseButtons.forEach { it.visible = true; it.appear = 0f }
         settingsBtn.enabled = false
         hintBtn.enabled = false
     }
 
     private fun closePause() {
         paused = false
-        overlayButtons.forEach { it.visible = false }
+        pauseButtons.forEach { it.visible = false }
         settingsBtn.enabled = true
         hintBtn.enabled = true
     }
@@ -285,15 +316,17 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
     // ----------------------------------------------------------------- update
 
     override fun update(dt: Float) {
-        overlayButtons.forEach { it.appear = min(1f, it.appear + dt * 5f) }
-        endButtons.forEach { if (it.visible) it.appear = min(1f, it.appear + dt * 4f) }
+        pauseTime += dt
+        // staggered pop-in of popup buttons
+        pauseButtons.forEachIndexed { i, b -> if (b.visible && pauseTime > 0.12f + i * 0.04f) b.appear = min(1f, b.appear + dt * 5f) }
+        winButtons.forEach { if (it.visible) it.appear = min(1f, it.appear + dt * 4f) }
+        loseButtons.forEach { if (it.visible) it.appear = min(1f, it.appear + dt * 4f) }
         if (paused) return
         val gdt = dt * slowMo
         slowMo = min(1f, slowMo + dt * 1.5f)
         stateTime += gdt
         redFlash = max(0f, redFlash - dt * 2f)
         whiteFlash = max(0f, whiteFlash - dt * 3f)
-        shownCoins += (Save.coins - shownCoins) * min(1f, dt * 8f)
 
         val visibleTotal = goalS - introS
         val ratio = MathUtils.clamp((goalS - snake.headS) / visibleTotal, 0f, 1f)
@@ -369,9 +402,9 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         if (comboTimer <= 0f) combo = 0
 
         girl.update(gdt)
-        board.update(gdt) { b -> b.slot?.let { combat.place(it, b.color, spec.shotsPerBlock) } }
+        board.update(gdt, onArrive)
         if (state == State.PLAY) board.nudgeIdle(gdt)
-        combat.update(gdt, if (state == State.PLAY || state == State.INTRO) snake else null, W + 30f, state == State.PLAY, ::onHit)
+        combat.update(gdt, if (state == State.PLAY || state == State.INTRO) snake else null, W + 30f, state == State.PLAY, onHitRef)
         particles.update(gdt)
         floats.removeAll { f ->
             f.age += dt
@@ -391,6 +424,7 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         }
         seg.dead = true
         kills++
+        progressText = "$kills/$totalSegments"
         // neighbours flinch
         if (idx > 0) snake.segments.getOrNull(idx - 1)?.let { it.scaleKick.kick(3f); it.flash = 0.6f }
         snake.segments.getOrNull(idx)?.let { it.scaleKick.kick(3f); it.flash = 0.6f }
@@ -413,7 +447,7 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         comboTimer = 0.9f
         if (combo == 4 || combo == 8 || combo == 12) {
             val word = when (combo) { 4 -> "NICE!"; 8 -> "AWESOME!"; else -> "UNSTOPPABLE!" }
-            floatText(word, W / 2, y + 90f, 56f, Color.valueOf("ffe066"))
+            floatText(word, W / 2, y + 90f, 56f, Palette.GOLD)
             Assets.sfx("combo", 0.8f)
         }
         if (snake.segments.isEmpty()) slowMo = 0.25f
@@ -463,10 +497,10 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
                 val hy = snake.head.y
                 particles.flash("explosion", hx, hy, 80f, 300f, 0.55f, additive = false)
                 particles.flash("shockwave_ring", hx, hy, 40f, 380f, 0.5f)
-                particles.burst(hx, hy, Color.valueOf("ff7a2a"), 30, 600f, 26f)
+                particles.burst(hx, hy, Palette.BLAST, 30, 600f, 26f)
                 particles.scales(hx, hy, Assets.r("dragon_upper_head"), 4)
                 particles.smoke(hx, hy, 140f, 6, 60f)
-                particles.sparkle(hx, hy, 12, 120f, Color.valueOf("ffe066"))
+                particles.sparkle(hx, hy, 12, 120f, Palette.GOLD)
                 snake.tailPos(tmp)
                 if (tmp.x < W + 60f) {
                     particles.flash("explosion", tmp.x, tmp.y, 50f, 160f, 0.4f, additive = false)
@@ -484,21 +518,19 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
             Save.level = max(Save.level, levelNumber + 1)
             Save.setStars(levelNumber, stars)
             Save.coins += reward
-            nextBtn.visible = true
-            nextBtn.appear = 0f
+            rewardText = "+$reward"
+            winButtons.forEach { it.visible = true; it.appear = -0.6f }
             nextBtn.pulse = true
-            endHomeBtn.visible = true
-            endHomeBtn.appear = 0f
         }
         for (i in 1..stars) {
             val at = 2.0f + i * 0.35f
             if (t > at && t - dt <= at) {
                 Assets.sfx("star$i", 0.9f, 1f, 0f)
-                particles.sparkle(W / 2 + (i - 2) * 130f, H / 2 + 150f + if (i == 2) 30f else 0f, 8, 50f, Color.valueOf("ffe066"))
+                particles.sparkle(W / 2 + (i - 2) * 140f, starY(i), 8, 50f, Palette.GOLD)
             }
         }
         if (t > 3.4f && t - dt <= 3.4f) {
-            particles.coinsFly(W / 2, H / 2 - 40f, 10)
+            particles.coinsFly(W / 2, winCenter() + 10f, 10)
             Assets.sfx("coin", 0.9f)
         }
     }
@@ -527,11 +559,9 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         }
         if (t > 1.3f && t - dt <= 1.3f) {
             Assets.sfx("lose", 0.9f)
-            retryBtn.visible = true
-            retryBtn.appear = 0f
+            loseButtons.forEach { it.visible = true; it.appear = -0.5f }
+            destroyedText = "Snake destroyed: $kills / $totalSegments"
             retryBtn.pulse = true
-            endHomeBtn.visible = true
-            endHomeBtn.appear = 0f
         }
     }
 
@@ -561,8 +591,8 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
             val pop = Ease.outBack(min(1f, f.age * 5f))
             b.text(Assets.fontBig, f.text, f.x, f.y, f.size * pop, f.color, alpha = a)
         }
-        if (whiteFlash > 0f) b.fillRect(-20f, -20f, W + 40f, H + 40f, Color(1f, 1f, 1f, whiteFlash))
-        if (redFlash > 0f) b.fillRect(-20f, -20f, W + 40f, H + 40f, Color(1f, 0.1f, 0.1f, redFlash * 0.45f))
+        if (whiteFlash > 0f) b.fillRect(-20f, -20f, W + 40f, H + 40f, 1f, 1f, 1f, whiteFlash)
+        if (redFlash > 0f) b.fillRect(-20f, -20f, W + 40f, H + 40f, 1f, 0.1f, 0.1f, redFlash * 0.45f)
         when {
             paused -> drawPause()
             state == State.WIN && stateTime > 1.6f -> drawWin()
@@ -579,7 +609,7 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
         val bx = tmp.x + 66f
         val by = tmp.y + 18f
         b.drawCentered(Assets.r("speech_bubble_help"), bx, by, 120f * s, rotation = wob)
-        b.text(Assets.fontBig, "HELP!", bx + 4f, by + 6f, 34f * s, Color.valueOf("e8412c"))
+        b.text(Assets.fontBig, "HELP!", bx + 4f, by + 6f, 34f * s, Palette.HELP_RED)
     }
 
     private fun drawDanger() {
@@ -602,107 +632,150 @@ class GameScreen(game: SnakeAttackGame, private val levelNumber: Int) : BaseScre
 
     private fun drawHud() {
         val b = batch
-        // level banner + snake progress
-        val bannerW = 270f
-        b.drawCentered(Assets.r("banner_level"), W / 2, H - 50f, bannerW)
-        b.text(Assets.fontBig, "LEVEL $levelNumber", W / 2, H - 47f, 36f)
-        val pw = 200f
+        val top = H - safeTop
+        // level badge + snake progress bar
+        b.drawCentered(Assets.r("banner_level"), W / 2, top - 50f, 270f)
+        b.text(Assets.fontBig, levelText, W / 2, top - 46f, 36f)
+        val pw = 210f
         val px = W / 2 - pw / 2
-        val py = H - 100f
-        Assets.pill.draw(b, px - 6f, py - 7f, pw + 12f, 26f)
+        val py = top - 102f
+        Assets.pill.draw(b, px - 6f, py - 8f, pw + 12f, 28f)
         val frac = kills / totalSegments.toFloat()
-        if (frac > 0f) b.fillRect(px, py - 1f, pw * frac, 12f, Color.valueOf("7cf04a"))
-        b.text(Assets.fontSmall, "$kills/$totalSegments", W / 2, py + 5f, 18f)
-
-        // coins
-        val cw = 150f
-        val cx = W - 100f - cw
-        val cy = H - 50f
-        Assets.pill.draw(b, cx, cy - 26f, cw, 52f)
-        b.drawCentered(Assets.r("coin"), cx + 8f, cy, 52f, rotation = sin(time * 2f) * 6f)
-        b.text(Assets.fontBig, shownCoins.toInt().toString(), cx + cw / 2 + 14f, cy + 1f, 32f)
+        if (frac > 0f) b.fillRect(px, py - 1f, pw * frac, 14f, Palette.GREEN)
+        b.text(Assets.fontSmall, progressText, W / 2, py + 6f, 19f)
 
         settingsBtn.draw(b)
         if (state == State.PLAY || state == State.INTRO) {
             hintBtn.draw(b)
-            b.drawCentered(Assets.r("coin"), hintBtn.x - 18f, hintBtn.y - 44f, 22f)
-            b.text(Assets.fontSmall, "25", hintBtn.x + 8f, hintBtn.y - 44f, 22f, Color.valueOf("ffe066"))
+            Assets.pill.draw(b, hintBtn.x - 32f, hintBtn.y - 66f, 64f, 30f)
+            b.drawCentered(Assets.r("coin"), hintBtn.x - 14f, hintBtn.y - 51f, 22f)
+            b.text(Assets.fontSmall, "25", hintBtn.x + 10f, hintBtn.y - 50f, 20f, Palette.GOLD)
         }
-        // intro banner
-        if (state == State.INTRO) {
-            val t = stateTime
-            val s = Ease.outBack(min(1f, t * 3f)) * (1f - clamp01((t - 1.4f) * 4f))
-            if (s > 0f) {
-                val iy = board.panelY + board.panelH / 2
-                b.text(Assets.fontBig, "LEVEL $levelNumber", W / 2, iy + 40f, 92f * s, Color.valueOf("ffe066"))
-                b.text(Assets.fontBig, "Save her from the snake!", W / 2, iy - 40f, 40f * s)
-            }
+        if (state == State.INTRO) drawIntro()
+    }
+
+    /** "LEVEL n" ribbon that swoops in from the left, holds, then leaves to the right. */
+    private fun drawIntro() {
+        val b = batch
+        val t = stateTime
+        val inT = Ease.outBack(clamp01(t / 0.45f), 1.2f)
+        val outT = Ease.inCubic(clamp01((t - 1.55f) / 0.35f))
+        val x = W / 2 + (1f - inT) * -W + outT * W
+        val y = board.panelY + board.panelH / 2 + 50f
+        b.setColor(0f, 0f, 0f, 0.35f * (1f - outT))
+        b.drawCentered(Assets.r("glow"), W / 2, y - 20f, W * 1.3f, 360f)
+        b.color = Color.WHITE
+        b.drawCentered(Assets.r("ribbon_orange"), x, y, 560f)
+        b.text(Assets.fontBig, levelText, x, y + 10f, 60f)
+        val sub = clamp01((t - 0.3f) / 0.3f) * (1f - outT)
+        if (sub > 0f) {
+            val w = 470f
+            Assets.pill.draw(b, W / 2 - w / 2, y - 120f, w, 56f)
+            b.text(Assets.fontSmall, "Save her from the dragon!", W / 2, y - 91f, 30f, alpha = sub)
         }
     }
 
-    private fun dim(alpha: Float) = batch.fillRect(-20f, -20f, W + 40f, H + 40f, Color(0.02f, 0.05f, 0.02f, alpha))
+    private fun dim(alpha: Float) = batch.fillRect(-20f, -20f, W + 40f, H + 40f, 0.02f, 0.04f, 0.02f, alpha)
+
+    /** Framed popup with a title ribbon across its top edge. */
+    private fun drawPopup(cy: Float, w: Float, h: Float, ribbon: String, title: String, scale: Float) {
+        if (scale <= 0f) return
+        val b = batch
+        val pw = w * scale
+        val ph = h * scale
+        val cx = W / 2
+        b.setColor(0f, 0f, 0f, 0.45f)
+        b.drawCentered(Assets.r("glow"), cx, cy - 20f, pw * 1.5f, ph * 1.4f)
+        b.color = Color.WHITE
+        Assets.framePanel.draw(b, cx - pw / 2, cy - ph / 2, pw, ph)
+        val ry = cy + ph / 2 - 6f * scale
+        b.drawCentered(Assets.r(ribbon), cx, ry, (w + 60f) * scale)
+        b.text(Assets.fontBig, title, cx, ry + 10f * scale, 52f * scale)
+    }
 
     private fun drawPause() {
         val b = batch
-        dim(0.6f)
-        val s = Ease.outBack(resumeBtn.appear)
-        val pw = 580f * s
-        val ph = 700f * s
-        Assets.panel.draw(b, W / 2 - pw / 2, H / 2 - ph / 2 - 30f, pw, ph)
-        b.text(Assets.fontBig, "PAUSED", W / 2, H / 2 + 240f, 64f * s, Color.valueOf("ffb02e"))
-        overlayButtons.forEach { it.draw(b) }
+        val k = clamp01(pauseTime * 5f)
+        dim(0.62f * k)
+        val s = Ease.outBack(k)
+        val cy = H / 2
+        drawPopup(cy, 560f, 600f, "ribbon_blue", "PAUSED", s)
+        if (s < 0.95f) return
+        // coin balance
+        val cw = 220f
+        Assets.pill.draw(b, W / 2 - cw / 2, cy + 165f, cw, 60f)
+        b.drawCentered(Assets.r("coin"), W / 2 - cw / 2 + 30f, cy + 195f, 48f)
+        b.text(Assets.fontBig, Save.coins.toString(), W / 2 + 20f, cy + 197f, 34f, Palette.GOLD)
+        // settings rows
+        for ((label, btn) in settingRows) {
+            b.fillRect(W / 2 - 220f, btn.y - 40f, 440f, 2f, 0.85f, 0.7f, 0.5f, 0.6f)
+            b.text(Assets.fontPlain, label, W / 2 - 205f, btn.y + 2f, 38f, Palette.BROWN, alignX = 0f)
+        }
+        pauseButtons.forEach { it.draw(b) }
     }
+
+    private fun starY(i: Int) = winCenter() + 260f + if (i == 2) 120f else 82f
 
     private fun drawWin() {
         val b = batch
         val t = stateTime - 1.6f
-        dim(min(0.55f, t * 2f))
-        // rotating light rays behind the panel
-        drawRays(W / 2, H / 2 + 150f, 1f, Color.valueOf("fff3b0"), min(1f, t * 2f) * 0.55f)
-        val s = Ease.outBack(min(1f, t * 3f))
-        val pw = 600f * s
-        val ph = 640f * s
-        Assets.panel.draw(b, W / 2 - pw / 2, H / 2 - ph / 2 - 30f, pw, ph)
-        b.text(Assets.fontBig, "LEVEL COMPLETE!", W / 2, H / 2 + 225f, 54f * s, Color.valueOf("4ccf2a"))
+        val k = clamp01(t * 3f)
+        dim(0.6f * k)
+        val cy = winCenter()
+        drawRays(W / 2, starY(2) - 20f, 1f, Palette.RAYS_WIN, k * 0.5f)
+        drawPopup(cy, 560f, 520f, "ribbon_green", levelText, Ease.outBack(k))
+        if (k < 1f) return
+        b.text(Assets.fontBig, "COMPLETED!", W / 2, cy + 140f, 62f, Palette.DARK_GREEN)
+        b.text(Assets.fontPlain, "You saved her from the dragon!", W / 2, cy + 80f, 30f, Palette.BROWN)
+        // stars sit on top of the ribbon
         for (i in 1..3) {
             val at = 0.4f + i * 0.35f
             val st = clamp01((t - at) / 0.35f)
-            val sx = W / 2 + (i - 2) * 130f
-            val sy = H / 2 + 120f + if (i == 2) 30f else 0f
-            val size = if (i == 2) 150f else 120f
-            b.setColor(0.25f, 0.2f, 0.15f, 0.35f)
-            b.drawCentered(Assets.r("star"), sx, sy, size)
+            val sx = W / 2 + (i - 2) * 140f
+            val sy = starY(i)
+            val size = if (i == 2) 160f else 124f
+            val rot = (i - 2) * -12f
+            b.setColor(0.3f, 0.22f, 0.15f, 0.55f)
+            b.drawCentered(Assets.r("star"), sx, sy, size, rotation = rot)
             if (i <= stars && st > 0f) {
                 b.color = Color.WHITE
-                b.drawCentered(Assets.r("star"), sx, sy, size * Ease.outElastic(st), rotation = (1f - st) * 90f)
+                b.drawCentered(Assets.r("star"), sx, sy, size * Ease.outElastic(st), rotation = rot + (1f - st) * 90f)
             }
         }
         b.color = Color.WHITE
+        // reward
         val ct = clamp01((t - 1.7f) * 3f)
+        val rw = 300f
+        Assets.pill.draw(b, W / 2 - rw / 2, cy - 30f, rw, 76f)
         if (ct > 0f) {
-            b.drawCentered(Assets.r("coin"), W / 2 - 60f, H / 2 - 40f, 64f * Ease.outBack(ct))
-            b.text(Assets.fontBig, "+$reward", W / 2 + 30f, H / 2 - 38f, 54f * ct, Color.valueOf("ffe066"))
+            b.drawCentered(Assets.r("coin"), W / 2 - 70f, cy + 8f, 60f * Ease.outBack(ct))
+            b.text(Assets.fontBig, rewardText, W / 2 + 26f, cy + 10f, 50f * ct, Palette.GOLD)
         }
-        nextBtn.draw(b)
-        endHomeBtn.draw(b)
+        winButtons.forEach { it.draw(b) }
     }
 
     private fun drawLose() {
         val b = batch
         val t = stateTime - 1.1f
-        dim(min(0.65f, t * 2f))
-        drawRays(W / 2, H / 2 + 110f, 1.1f, Color.valueOf("ffb347"), min(1f, t * 2f) * 0.7f)
-        val s = Ease.outBack(min(1f, t * 2.5f))
-        val wob = sin(time * 3f) * 4f
-        b.drawCentered(Assets.r("sunburst_rays"), W / 2, H / 2 + 110f, 520f * s, rotation = -time * 20f)
-        b.drawCentered(Assets.r("skull_fail"), W / 2, H / 2 + 110f, 300f * s, rotation = wob)
-        b.text(Assets.fontBig, "OH NO!", W / 2, H / 2 - 70f, 84f * s, Color.valueOf("ff5a4a"))
-        b.text(Assets.fontBig, "The snake got her!", W / 2, H / 2 - 130f, 38f * s)
-        retryBtn.draw(b)
-        endHomeBtn.draw(b)
+        val k = clamp01(t * 2.5f)
+        dim(0.66f * k)
+        val cy = loseCenter()
+        val skullY = cy + 230f + 182f
+        drawRays(W / 2, skullY, 1.05f, Palette.RAYS_LOSE, k * 0.6f)
+        val s = Ease.outBack(k)
+        // sunburst behind the panel, skull in front of it (above the ribbon)
+        if (s > 0f) b.drawCentered(Assets.r("sunburst_rays"), W / 2, skullY, 420f * s, rotation = -time * 20f)
+        drawPopup(cy, 560f, 460f, "ribbon_red", levelText, s)
+        if (s > 0f) b.drawCentered(Assets.r("skull_fail"), W / 2, skullY, 200f * s, rotation = sin(time * 3f) * 4f)
+        if (k < 1f) return
+        b.text(Assets.fontBig, "LEVEL FAILED", W / 2, cy + 120f, 60f, Palette.DARK_RED)
+        b.text(Assets.fontPlain, "The dragon reached her!", W / 2, cy + 62f, 32f, Palette.BROWN)
+        b.text(Assets.fontPlain, destroyedText, W / 2, cy + 16f, 28f, Palette.BROWN)
+        loseButtons.forEach { it.draw(b) }
     }
 
     private fun drawRays(x: Float, y: Float, scale: Float, color: Color, alpha: Float) {
+        if (alpha <= 0f) return
         val b = batch
         b.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
         b.setColor(color.r, color.g, color.b, alpha)

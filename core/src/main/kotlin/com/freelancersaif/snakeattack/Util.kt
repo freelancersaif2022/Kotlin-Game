@@ -77,7 +77,7 @@ fun Batch.text(
     alignX: Float = 0.5f, alpha: Float = 1f,
 ) {
     if (size < 0.5f) return
-    val base = if (font === Assets.fontBig) 84f else 46f
+    val base = Assets.baseSize(font)
     val s = size / base
     font.data.setScale(s)
     font.color = color
@@ -89,16 +89,33 @@ fun Batch.text(
 }
 
 fun textWidth(font: BitmapFont, str: String, size: Float): Float {
-    val base = if (font === Assets.fontBig) 84f else 46f
+    val base = Assets.baseSize(font)
     font.data.setScale(size / base)
     layout.setText(font, str)
     font.data.setScale(1f)
     return layout.width
 }
 
-fun Batch.fillRect(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    val c = this.color.cpy()
-    this.color = color
+fun Batch.fillRect(x: Float, y: Float, w: Float, h: Float, color: Color) = fillRect(x, y, w, h, color.r, color.g, color.b, color.a)
+
+fun Batch.fillRect(x: Float, y: Float, w: Float, h: Float, r: Float, g: Float, b: Float, a: Float) {
+    val old = packedColor
+    setColor(r, g, b, a)
     draw(Assets.white, x, y, w, h)
-    this.color = c
+    packedColor = old
+}
+
+/** Shared colours (parsing hex strings every frame would allocate). */
+object Palette {
+    val GOLD: Color = Color.valueOf("ffe066")
+    val RED: Color = Color.valueOf("ff6b6b")
+    val GREEN: Color = Color.valueOf("7cf04a")
+    val ORANGE: Color = Color.valueOf("ffb02e")
+    val BROWN: Color = Color.valueOf("6b3a1c")
+    val DARK_GREEN: Color = Color.valueOf("2f8f1a")
+    val DARK_RED: Color = Color.valueOf("c8321f")
+    val HELP_RED: Color = Color.valueOf("e8412c")
+    val RAYS_WIN: Color = Color.valueOf("fff3b0")
+    val RAYS_LOSE: Color = Color.valueOf("ffb347")
+    val BLAST: Color = Color.valueOf("ff7a2a")
 }

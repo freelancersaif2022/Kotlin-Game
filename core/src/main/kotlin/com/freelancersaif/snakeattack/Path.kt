@@ -58,10 +58,13 @@ class Path(points: List<Vector2>) {
         return out.set(MathUtils.lerp(xs[i], xs[i + 1], t), MathUtils.lerp(ys[i], ys[i + 1], t))
     }
 
+    private val ta = Vector2()
+    private val tb = Vector2()
+
     /** Angle (degrees) of the direction pointing *backwards* along the path (towards the start). */
     fun backAngle(s: Float): Float {
-        val a = pos(s - 6f, Vector2())
-        val b = pos(s + 6f, Vector2())
-        return MathUtils.atan2(a.y - b.y, a.x - b.x) * MathUtils.radiansToDegrees
+        pos(s - 6f, ta)
+        pos(s + 6f, tb)
+        return MathUtils.atan2(ta.y - tb.y, ta.x - tb.x) * MathUtils.radiansToDegrees
     }
 }

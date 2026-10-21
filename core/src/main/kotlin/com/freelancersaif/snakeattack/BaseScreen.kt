@@ -18,10 +18,18 @@ import kotlin.math.sin
 /** Common camera / viewport / transition handling for every screen. */
 abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
     val camera = OrthographicCamera()
-    val viewport = ExtendViewport(720f, 1280f, 720f, 1640f, camera)
+    // no maximum size: any aspect ratio (tall phones, tablets) fills the whole screen, no bars
+    val viewport = ExtendViewport(720f, 1280f, 0f, 0f, camera)
     val batch get() = game.batch
     val W get() = viewport.worldWidth
     val H get() = viewport.worldHeight
+
+    /** Height (world units) hidden by a notch / status bar at the top; keep HUD below it. */
+    val safeTop: Float
+        get() {
+            val px = Gdx.graphics.safeInsetTop
+            return if (px <= 0 || Gdx.graphics.height <= 0) 0f else px * H / Gdx.graphics.height
+        }
     private var fadeIn = 1f
     private var fadeOut = -1f
     private var next: (() -> Unit)? = null
@@ -106,11 +114,11 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
         // transitions
         if (fadeIn > 0f) {
             fadeIn = max(0f, fadeIn - dt * 3f)
-            batch.fillRect(-50f, -50f, W + 100f, H + 100f, Color(0.06f, 0.1f, 0.05f, fadeIn))
+            batch.fillRect(-50f, -50f, W + 100f, H + 100f, 0.06f, 0.1f, 0.05f, fadeIn)
         }
         if (fadeOut >= 0f) {
             fadeOut = min(1f, fadeOut + dt * 3.5f)
-            batch.fillRect(-50f, -50f, W + 100f, H + 100f, Color(0.06f, 0.1f, 0.05f, fadeOut))
+            batch.fillRect(-50f, -50f, W + 100f, H + 100f, 0.06f, 0.1f, 0.05f, fadeOut)
         }
         batch.end()
         if (fadeOut >= 1f) {
@@ -174,15 +182,22 @@ class Button(
     }
 
     fun draw(b: Batch) {
-        if (!visible) return
-        var s = pop.value * appear
-        if (pulse) s *= 1f + sin(t * 5f) * 0.04f
+        if (!visible || appear <= 0f) return
+        var s = pop.value * Ease.outBack(appear)
+        if (pulse) s *= 1f + sin(t * 5f) * 0.035f
+        // soft drop shadow grounds the button on the panel
+        b.setColor(0f, 0f, 0f, 0.22f * alpha)
+        b.drawCentered(region, x, y - 6f * s, width * s * 0.98f)
         b.setColor(1f, 1f, 1f, alpha * if (enabled) 1f else 0.5f)
         b.drawCentered(region, x, y, width * s)
-        icon?.let { b.drawCentered(it, x - if (label.isNotEmpty()) width * 0.28f * s else 0f, y + 3f, iconSize * s) }
+        val faceY = y + height * 0.06f * s   // the face sits above the darker bottom lip
+        icon?.let {
+            val ix = if (label.isNotEmpty()) x - width * 0.30f * s else x
+            b.drawCentered(it, ix, faceY, iconSize * s)
+        }
         if (label.isNotEmpty()) {
             val lx = if (icon != null) x + width * 0.08f * s else x
-            b.text(Assets.fontBig, label, lx, y + 4f * s, labelSize * s, alpha = alpha)
+            b.text(Assets.fontBig, label, lx, faceY, labelSize * s, alpha = alpha)
         }
         b.color = Color.WHITE
     }

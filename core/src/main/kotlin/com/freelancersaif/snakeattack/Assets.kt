@@ -28,10 +28,17 @@ object Assets {
     lateinit var bg: Texture
     lateinit var fontBig: BitmapFont
     lateinit var fontSmall: BitmapFont
+    lateinit var fontPlain: BitmapFont
     lateinit var panel: NinePatch
     lateinit var boardPanel: NinePatch
     lateinit var pill: NinePatch
     lateinit var white: TextureRegion
+    lateinit var framePanel: NinePatch
+
+    // per-colour regions cached up front so the render loop never builds strings
+    private lateinit var blocks: Array<TextureRegion>
+    private lateinit var cannons: Array<TextureRegion>
+    private lateinit var segments: Array<TextureRegion>
 
     private val regions = HashMap<String, TextureRegion>()
     private val sounds = HashMap<String, Sound>()
@@ -46,10 +53,15 @@ object Assets {
         }
         fontBig = loadFont("fonts/font_big.fnt")
         fontSmall = loadFont("fonts/font_small.fnt")
+        fontPlain = loadFont("fonts/font_plain.fnt")
         white = r("white").let { TextureRegion(it, 4, 4, 4, 4) }
         panel = NinePatch(r("panel"), 42, 42, 42, 42)
         boardPanel = NinePatch(r("board_panel"), 40, 40, 40, 40)
         pill = NinePatch(r("pill"), 32, 32, 30, 30)
+        framePanel = NinePatch(r("frame_panel"), 48, 48, 48, 48)
+        blocks = Array(GemColor.entries.size) { r("block_${GemColor.entries[it].key}") }
+        cannons = Array(GemColor.entries.size) { r("cannon_${GemColor.entries[it].key}") }
+        segments = Array(GemColor.entries.size) { r("segment_${GemColor.entries[it].key}") }
 
         for (name in listOf(
             "tap", "whoosh", "bonk", "place", "shoot", "hit", "explode", "coin", "win", "lose",
@@ -63,18 +75,31 @@ object Assets {
         }
     }
 
-    private fun loadFont(path: String) = BitmapFont(Gdx.files.internal(path)).apply {
-        regions.forEach { it.texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) }
-        setUseIntegerPositions(false)
+    /** Fonts get mip-mapped textures so small text stays crisp instead of shimmering. */
+    private fun loadFont(path: String): BitmapFont {
+        val png = Gdx.files.internal(path.replace(".fnt", ".png"))
+        val tex = Texture(png, true).apply {
+            setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear)
+        }
+        return BitmapFont(Gdx.files.internal(path), TextureRegion(tex), false).apply {
+            setUseIntegerPositions(false)
+        }
+    }
+
+    /** Pixel size each bitmap font was baked at. */
+    fun baseSize(font: BitmapFont) = when {
+        font === fontBig -> 84f
+        font === fontPlain -> 52f
+        else -> 46f
     }
 
     fun r(name: String): TextureRegion = regions.getOrPut(name) {
         atlas.findRegion(name) ?: error("Missing sprite '$name'")
     }
 
-    fun block(c: GemColor) = r("block_${c.key}")
-    fun cannon(c: GemColor) = r("cannon_${c.key}")
-    fun segment(c: GemColor) = r("segment_${c.key}")
+    fun block(c: GemColor) = blocks[c.ordinal]
+    fun cannon(c: GemColor) = cannons[c.ordinal]
+    fun segment(c: GemColor) = segments[c.ordinal]
 
     /** Plays a sound with a little random pitch variation so repeats never sound robotic. */
     fun sfx(name: String, volume: Float = 1f, pitch: Float = 1f, vary: Float = 0.06f) {
@@ -108,6 +133,10 @@ object Assets {
     fun dispose() {
         atlas.dispose()
         bg.dispose()
+        fontBig.region.texture.dispose()
+        fontSmall.region.texture.dispose()
+        fontPlain.region.texture.dispose()
+        fontPlain.dispose()
         fontBig.dispose()
         fontSmall.dispose()
         sounds.values.forEach { it.dispose() }

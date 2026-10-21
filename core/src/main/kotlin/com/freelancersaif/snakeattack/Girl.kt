@@ -3,6 +3,7 @@ package com.freelancersaif.snakeattack
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.sin
 
 /** The girl the player protects: a 12-bone cut-out rig with procedural animation. */
@@ -48,9 +49,11 @@ class Girl : Rig() {
     var baseY = 0f
 
     init {
+        // lower limbs first so the upper limb's rounded end hides the joint cap;
+        // arms go over the head so raised hands stay visible
         order(
-            ponytail, thighL, thighR, shinL, shinR, torso, skirt,
-            armL, foreL, armR, foreR, *faces.values.toTypedArray(),
+            ponytail, shinL, shinR, thighL, thighR, torso, skirt,
+            *faces.values.toTypedArray(), foreL, armL, foreR, armR,
         )
         showFace("happy")
     }
@@ -92,32 +95,41 @@ class Girl : Rig() {
                 }
             }
             Mood.WORRIED -> {
+                // hands pulled up to the face, knees trembling
                 face = "scared"
-                val sh = sin(t * 40f) * 1.2f
-                hips.dx = sh
-                armL.rot = -55f + sin(t * 6f) * 8f
-                armR.rot = 55f - sin(t * 6f + 1f) * 8f
-                foreL.rot = 100f
-                foreR.rot = -100f
-                neck.rot = sin(t * 3f) * 6f
-                thighL.rot = -4f
-                thighR.rot = 4f
-                hips.dy = 3f
+                hips.dx = sin(t * 40f) * 1.2f
+                armL.rot = -22f + sin(t * 7f) * 4f
+                armR.rot = 22f - sin(t * 7f + 1f) * 4f
+                foreL.rot = 150f + sin(t * 9f) * 6f
+                foreR.rot = -150f - sin(t * 9f + 1f) * 6f
+                neck.rot = sin(t * 3f) * 5f
+                thighL.rot = 3f
+                thighR.rot = -3f
+                shinL.rot = -4f
+                shinR.rot = 4f
+                torso.rot = sin(t * 2f) * 2f
             }
             Mood.PANIC, Mood.CAUGHT -> {
+                // running on the spot seen from the front: knees lift alternately
+                // (the thigh foreshortens), arms flail above the head
                 face = "crying"
-                val run = t * 16f
-                thighL.rot = sin(run) * 28f
-                thighR.rot = -sin(run) * 28f
-                shinL.rot = (sin(run + 1.3f) * 0.5f + 0.5f) * -38f
-                shinR.rot = (sin(run + 1.3f + MathUtils.PI) * 0.5f + 0.5f) * 38f
-                jumpY = abs(sin(run)) * 7f
-                armL.rot = -150f + sin(t * 14f) * 22f
-                armR.rot = 150f + sin(t * 14f + 2f) * 22f
-                foreL.rot = sin(t * 14f) * 30f
-                foreR.rot = -sin(t * 14f + 2f) * 30f
-                neck.rot = sin(t * 10f) * 7f
-                torso.rot = sin(run) * 4f
+                val run = t * 15f
+                val liftL = max(0f, sin(run))
+                val liftR = max(0f, -sin(run))
+                thighL.sy = 1f - liftL * 0.42f
+                thighR.sy = 1f - liftR * 0.42f
+                thighL.rot = -liftL * 6f
+                thighR.rot = liftR * 6f
+                shinL.rot = liftL * 14f
+                shinR.rot = -liftR * 14f
+                jumpY = abs(sin(run)) * 5f
+                armL.rot = -145f + sin(t * 13f) * 20f
+                armR.rot = 145f + sin(t * 13f + 2f) * 20f
+                foreL.rot = -20f + sin(t * 13f + 1f) * 30f
+                foreR.rot = 20f - sin(t * 13f + 3f) * 30f
+                neck.rot = sin(t * 9f) * 6f
+                torso.rot = sin(run) * 3f
+                hips.rot = sin(run) * 2f
                 if (mood == Mood.CAUGHT) {
                     face = if (moodTime < 0.3f) "surprised" else "crying"
                     hips.dx = sin(t * 50f) * 4f
@@ -129,14 +141,17 @@ class Girl : Rig() {
                 jumpY = j * 34f
                 val squash = 1f - (1f - j) * 0.08f
                 hips.sy = squash
-                armL.rot = -160f + sin(t * 10f) * 18f
-                armR.rot = 160f - sin(t * 10f) * 18f
-                foreL.rot = -25f + sin(t * 10f + 1f) * 25f
-                foreR.rot = 25f - sin(t * 10f + 1f) * 25f
-                thighL.rot = -10f * j
-                thighR.rot = 10f * j
-                shinL.rot = 30f * j
-                shinR.rot = -30f * j
+                armL.rot = -150f + sin(t * 7f) * 12f
+                armR.rot = 150f - sin(t * 7f) * 12f
+                foreL.rot = -15f + sin(t * 14f) * 22f
+                foreR.rot = 15f - sin(t * 14f) * 22f
+                // legs tuck while airborne
+                thighL.sy = 1f - j * 0.2f
+                thighR.sy = 1f - j * 0.2f
+                thighL.rot = -6f * j
+                thighR.rot = 6f * j
+                shinL.rot = 12f * j
+                shinR.rot = -12f * j
                 neck.rot = sin(t * 7f) * 8f
             }
         }

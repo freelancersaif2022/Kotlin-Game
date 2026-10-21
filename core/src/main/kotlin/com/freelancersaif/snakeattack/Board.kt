@@ -48,6 +48,8 @@ class Board(val spec: LevelSpec) {
     var panelW = 0f
     var panelH = 0f
     private var time = 0f
+    private val tmp = Vector2()
+    private val freeList = ArrayList<Block>()
 
     init {
         spec.blocks.forEach { b ->
@@ -106,7 +108,12 @@ class Board(val spec: LevelSpec) {
 
     fun isFree(b: Block) = b.state == Block.State.IDLE && blockedAfter(b) < 0
 
-    fun freeBlocks() = blocks.filter { isFree(it) }
+    /** Blocks that can slide out right now (the returned list is reused). */
+    fun freeBlocks(): List<Block> {
+        freeList.clear()
+        for (b in blocks) if (isFree(b)) freeList += b
+        return freeList
+    }
 
     fun remaining() = blocks.count { it.state == Block.State.IDLE || it.state == Block.State.BUMP }
 
@@ -197,7 +204,7 @@ class Board(val spec: LevelSpec) {
         Assets.boardPanel.draw(batch, panelX, panelY, panelW, panelH)
         // subtle cell dots
         batch.setColor(1f, 1f, 1f, 0.08f)
-        val v = Vector2()
+        val v = tmp
         for (c in 0 until spec.cols) for (r in 0 until spec.rows) {
             cellCenter(c, r, v)
             batch.drawCentered(Assets.r("circle"), v.x, v.y, cell * 0.22f)

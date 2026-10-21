@@ -18,11 +18,17 @@ class SnakeAttackGame : Game() {
     }?.toMutableList()
 
     override fun create() {
-        batch = SpriteBatch()
+        batch = SpriteBatch(4000)
         Assets.load()
         val start = System.getProperty("snake.scene")
         val level = System.getProperty("snake.level")?.toInt() ?: Save.level
-        setScreen(if (start == "game") GameScreen(this, level) else MenuScreen(this))
+        setScreen(
+            when (start) {
+                "game" -> GameScreen(this, level)
+                "rig" -> RigPreviewScreen(this)
+                else -> MenuScreen(this)
+            },
+        )
     }
 
     override fun setScreen(screen: com.badlogic.gdx.Screen?) {

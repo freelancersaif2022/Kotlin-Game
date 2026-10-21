@@ -37,7 +37,14 @@ object Save {
         if (stars > stars(level)) prefs.putInteger("stars_$level", stars).flush()
     }
 
+    private var lastVibrate = 0L
+
+    /** Rate-limited so rapid hits don't flood the vibrator service (which can cause frame hitches). */
     fun vibrate(ms: Int) {
-        if (vibration) Gdx.input.vibrate(ms)
+        if (!vibration) return
+        val now = com.badlogic.gdx.utils.TimeUtils.millis()
+        if (now - lastVibrate < 90L) return
+        lastVibrate = now
+        Gdx.input.vibrate(ms)
     }
 }

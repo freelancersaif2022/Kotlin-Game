@@ -16,7 +16,8 @@
             android:name="com.freelancersaif.snakeattack.android.AndroidLauncher"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:exported="true"
-            android:screenOrientation="sensorPortrait">
+            android:screenOrientation="sensorPortrait"
+            android:hardwareAccelerated="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

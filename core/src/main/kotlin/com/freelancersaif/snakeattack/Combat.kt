@@ -112,7 +112,7 @@ class Combat(private val particles: Particles) {
             val p = Projectile(c, target, mx, my)
             p.dur = 0.28f + Vector2.dst(mx, my, target.pos.x, target.pos.y) / 1500f
             projectiles += p
-            particles.flash("muzzle_flash", mx, my + 26f, 70f, 110f, 0.16f, rot = 90f, tint = c.color.tint.cpy().lerp(Color.WHITE, 0.5f))
+            particles.flash("muzzle_flash", mx, my + 26f, 70f, 110f, 0.16f, rot = 90f, tint = c.color.tint).color.lerp(Color.WHITE, 0.5f)
             particles.smoke(mx, my + 10f, 40f, 2, 90f)
             Assets.sfx("shoot", 0.55f, 1.1f, 0.12f)
             Save.vibrate(8)
@@ -155,7 +155,7 @@ class Combat(private val particles: Particles) {
             val reg = if (s.locked) Assets.r("slot_locked") else Assets.r("slot_empty")
             batch.drawCentered(reg, s.x + shake, s.y, slotSize * ps)
             if (s.locked) {
-                batch.text(Assets.fontSmall, "150", s.x + 10f, s.y - slotSize * 0.5f + 2f, 22f, Color.valueOf("ffe066"))
+                batch.text(Assets.fontSmall, "150", s.x + 10f, s.y - slotSize * 0.5f + 2f, 22f, Palette.GOLD)
                 batch.drawCentered(Assets.r("coin"), s.x - 26f, s.y - slotSize * 0.5f + 2f, 22f)
             }
         }
@@ -176,7 +176,7 @@ class Combat(private val particles: Particles) {
                 batch.color = c.color.tint
                 batch.drawCentered(Assets.r("badge"), bx, by, 34f * app)
                 batch.color = Color.WHITE
-                batch.text(Assets.fontSmall, c.ammo.toString(), bx, by + 1f, 22f * app)
+                batch.text(Assets.fontSmall, DIGITS[c.ammo.coerceIn(0, 9)], bx, by + 1f, 22f * app)
             }
         }
     }
@@ -192,5 +192,9 @@ class Combat(private val particles: Particles) {
 
     fun clear() {
         projectiles.clear()
+    }
+
+    companion object {
+        private val DIGITS = Array(10) { it.toString() }
     }
 }

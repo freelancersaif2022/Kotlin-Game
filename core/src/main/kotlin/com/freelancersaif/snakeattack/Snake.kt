@@ -13,9 +13,9 @@ class DragonHead : Rig() {
     val root = bone(null, 0f, 0f)
     private val neck = bone(Assets.r("dragon_neck_piece"), 40f, 52f, root, 6f, 4f)
     private val head = bone(Assets.r("dragon_upper_head"), 226f, 118f, root, 0f, 0f)
-    private val mouth = bone(Assets.r("circle"), 48f, 48f, head, 128f, 146f)
-    private val jaw = bone(Assets.r("dragon_lower_jaw"), 186f, 30f, head, 214f, 140f)
-    private val tongue = bone(Assets.r("dragon_tongue"), 196f, 22f, jaw, 170f, 40f)
+    private val mouth = bone(Assets.r("circle"), 48f, 48f, head, 132f, 160f)
+    private val jaw = bone(Assets.r("dragon_lower_jaw"), 178f, 22f, head, 222f, 156f)
+    private val tongue = bone(Assets.r("dragon_tongue"), 196f, 22f, jaw, 128f, 34f)
     private val frill = bone(Assets.r("dragon_frill"), 22f, 112f, head, 236f, 92f)
     private val hornBack = bone(Assets.r("dragon_horn_back"), 24f, 128f, head, 214f, 40f)
     private val hornFront = bone(Assets.r("dragon_horn_front"), 26f, 150f, head, 186f, 44f)
@@ -35,12 +35,13 @@ class DragonHead : Rig() {
 
     init {
         mouth.tint.set(0.36f, 0.05f, 0.09f, 1f)
+        tongue.regionScale = 0.62f
         order(frill, hornBack, neck, mouth, tongue, jaw, head, eye, eyeAngry, eyeLid, hornFront, stars)
     }
 
     fun hit() {
         flinch.kick(-260f)
-        jawSpring.kick(-6f)
+        jawSpring.kick(80f)
         flash = 1f
     }
 
@@ -48,16 +49,19 @@ class DragonHead : Rig() {
         time += dt
         flash = max(0f, flash - dt * 5f)
         val chompWave = if (chomp > 0f) abs(sin(time * 14f)) else 0f
-        jawSpring.target = -(mouthOpen + chompWave * chomp * 0.6f + sin(time * 3f) * 0.05f) * 34f
+        // positive rotation swings the (left-pointing) jaw tip down, i.e. opens the mouth
+        jawSpring.target = (MathUtils.clamp(mouthOpen + chompWave * chomp * 0.7f, 0f, 1f) + sin(time * 3f) * 0.04f) * 30f
         jawSpring.update(dt)
-        jaw.rot = MathUtils.clamp(jawSpring.value, -38f, 0f)
-        tongue.rot = jaw.rot * 0.25f + sin(time * 6f) * 4f
-        // dark mouth interior: a flat ellipse that opens with the jaw, never wider than the jaw
-        val open = -jaw.rot / 38f
-        mouth.sx = 1.25f
-        mouth.sy = 0.15f + open * 0.55f
-        mouth.dy = open * 22f
-        mouth.visible = open > 0.05f
+        jaw.rot = MathUtils.clamp(jawSpring.value, 0f, 32f)
+        val open = jaw.rot / 32f
+        // tongue flicks in and out of the open mouth
+        tongue.rot = -jaw.rot * 0.2f + sin(time * 7f) * 5f
+        tongue.dx = -6f - open * 14f + sin(time * 9f) * 4f
+        // dark mouth interior: a flat ellipse that opens with the jaw
+        mouth.sx = 1.3f
+        mouth.sy = 0.1f + open * 0.62f
+        mouth.dy = open * 18f
+        mouth.visible = open > 0.06f
         flinch.update(dt)
         head.rot = flinch.value * 0.04f + sin(time * 2.2f) * 2.5f
         head.dx = flinch.value * 0.06f
@@ -114,6 +118,10 @@ class Snake(var path: Path, colors: List<GemColor>) {
     )
     private val tailScale = 0.36f
     private val tmp = Vector2()
+    private val tailS = FloatArray(3)
+    private val tailRegions = tailParts.map { Assets.r(it.first) }
+    private val shadowRegion = Assets.r("segment_shadow")
+    private val shineRegion = Assets.r("segment_shine_overlay")
 
     init {
         colors.forEachIndexed { i, c ->
@@ -149,7 +157,8 @@ class Snake(var path: Path, colors: List<GemColor>) {
     private fun layout() {
         var s = headS
         val wiggleAmp = 5f
-        for ((i, seg) in segments.withIndex()) {
+        for (i in segments.indices) {
+            val seg = segments[i]
             s -= seg.gap
             seg.s = s
             path.pos(s, seg.pos)
@@ -176,14 +185,14 @@ class Snake(var path: Path, colors: List<GemColor>) {
         batch.setColor(1f, 1f, 1f, alpha)
         // tail (from tip to base)
         var s = lastS - 30f
-        val tailS = FloatArray(3)
         for (i in 0..2) {
             tailS[i] = s
             s -= 56f
         }
         for (i in 2 downTo 0) {
-            val (name, px, py) = tailParts[i]
-            val reg = Assets.r(name)
+            val px = tailParts[i].second
+            val py = tailParts[i].third
+            val reg = tailRegions[i]
             path.pos(tailS[i], tmp)
             if (tmp.x > viewRight + 200f) continue
             val w = sin(time * 5f - (segments.size + i) * 0.7f) * 6f
@@ -195,7 +204,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
                 px * tailScale, (reg.regionHeight - py) * tailScale, ww, hh, 1f, 1f, ang)
         }
         // shadows
-        val shadow = Assets.r("segment_shadow")
+        val shadow = shadowRegion
         batch.setColor(1f, 1f, 1f, 0.55f * alpha)
         for (seg in segments) {
             if (seg.pos.x > viewRight + segSize) continue
@@ -210,7 +219,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
             batch.setColor(1f, 1f, 1f, alpha)
             batch.drawCentered(Assets.segment(seg.color), seg.pos.x, seg.pos.y, sz, rotation = seg.angle + 180f)
             batch.setColor(1f, 1f, 1f, 0.35f * alpha)
-            batch.drawCentered(Assets.r("segment_shine_overlay"), seg.pos.x - 4f, seg.pos.y + 8f, sz * 0.8f)
+            batch.drawCentered(shineRegion, seg.pos.x - 4f, seg.pos.y + 8f, sz * 0.8f)
             if (seg.flash > 0f) {
                 batch.setColor(1f, 1f, 1f, seg.flash * alpha)
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE)
