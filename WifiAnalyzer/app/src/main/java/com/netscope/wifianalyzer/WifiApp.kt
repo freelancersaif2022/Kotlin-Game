@@ -12,6 +12,7 @@ class WifiApp : Application() {
         AppGraph.init(this)
         Notifications.createChannels(this)
         if (AppGraph.prefs.intruderEnabled.value) IntruderWorker.schedule(this)
+        IntruderWorker.watchWifi(this)
         WidgetRefreshWorker.schedule(this)
         AppGraph.premium.addChangeListener { WidgetUpdater.updateAll(this) }
     }

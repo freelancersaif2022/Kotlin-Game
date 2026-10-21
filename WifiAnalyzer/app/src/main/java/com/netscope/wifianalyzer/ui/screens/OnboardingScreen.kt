@@ -48,7 +48,6 @@ import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Tv
 import androidx.compose.material.icons.rounded.Videocam
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -72,6 +71,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.netscope.wifianalyzer.ui.components.AppIcons
 import com.netscope.wifianalyzer.net.WifiUtils
 import com.netscope.wifianalyzer.ui.components.AppCard
 import com.netscope.wifianalyzer.ui.components.GradientButton
@@ -315,7 +315,7 @@ private fun PremiumIllustration() {
                 .clip(RoundedCornerShape(44.dp))
                 .background(AppColors.ext.premiumGradient),
             contentAlignment = Alignment.Center,
-        ) { Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(84.dp)) }
+        ) { Icon(AppIcons.Crown, null, tint = Color.White, modifier = Modifier.size(84.dp)) }
     }
 }
 

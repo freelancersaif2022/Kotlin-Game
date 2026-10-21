@@ -53,7 +53,7 @@ import com.netscope.wifianalyzer.ui.components.SectionTitle
 import com.netscope.wifianalyzer.ui.components.SegmentedTabs
 import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.components.findActivity
-import com.netscope.wifianalyzer.ui.components.rememberPremiumState
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.navigation.Routes
 import com.netscope.wifianalyzer.ui.navigation.navigateTab
 import com.netscope.wifianalyzer.ui.theme.AppColors
@@ -64,7 +64,7 @@ fun SettingsScreen(nav: NavHostController) {
     val context = LocalContext.current
     val snackbar = LocalSnackbar.current
     val actions = LocalPremiumActions.current
-    val premium by rememberPremiumState()
+    val isPremium by rememberIsPremium()
     val theme by AppGraph.prefs.theme.collectAsState()
     val unit by AppGraph.prefs.unit.collectAsState()
     val sound by AppGraph.prefs.soundGuide.collectAsState()
@@ -75,10 +75,8 @@ fun SettingsScreen(nav: NavHostController) {
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
         ) {
-            PremiumStatusCard(premium.subscribed, premium.rewardActive, premium.rewardRemainingMs, premium.rewardAdsWatched) {
-                actions.openRewardUnlock()
-            }
-            if (!premium.subscribed) {
+            PremiumStatusCard { actions.openRewardUnlock() }
+            if (!isPremium) {
                 Spacer(Modifier.height(10.dp))
                 AppCard(Modifier.fillMaxWidth(), padding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)) {
                     NavRow(Icons.Rounded.ManageAccounts, Palette.Gold, "Go Premium", "Remove ads and unlock everything", pro = true) {

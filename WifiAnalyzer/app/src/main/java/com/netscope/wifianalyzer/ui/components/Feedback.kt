@@ -30,7 +30,6 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarData
@@ -121,7 +120,7 @@ private fun AppSnackbar(data: SnackbarData) {
         SnackType.Success -> Icons.Rounded.CheckCircle to Palette.Mint
         SnackType.Error -> Icons.Rounded.ErrorOutline to Palette.Rose
         SnackType.Info -> Icons.Rounded.Info to Palette.Cyan
-        SnackType.Premium -> Icons.Rounded.WorkspacePremium to Palette.Gold
+        SnackType.Premium -> AppIcons.Crown to Palette.Gold
     }
     val appear = remember { Animatable(0f) }
     LaunchedEffect(data) { appear.animateTo(1f, spring(dampingRatio = 0.7f, stiffness = 400f)) }

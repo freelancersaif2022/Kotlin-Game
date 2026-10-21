@@ -1,6 +1,16 @@
 package com.netscope.wifianalyzer.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -44,7 +54,7 @@ import com.netscope.wifianalyzer.ui.components.LocalPremiumActions
 import com.netscope.wifianalyzer.ui.components.PremiumStatusCardCompact
 import com.netscope.wifianalyzer.ui.components.ProBadge
 import com.netscope.wifianalyzer.ui.components.ScreenScaffold
-import com.netscope.wifianalyzer.ui.components.rememberPremiumState
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.navigation.Routes
 import com.netscope.wifianalyzer.ui.navigation.navigateTab
 import com.netscope.wifianalyzer.ui.theme.AppColors
@@ -82,43 +92,95 @@ fun openTool(nav: NavHostController, tool: ToolItem) {
     if (tool.tab) nav.navigateTab(tool.route) else nav.navigate(tool.route) { launchSingleTop = true }
 }
 
+private val toolSections = listOf(
+    "Test & measure" to listOf(Routes.SPEED, Routes.SIGNAL, Routes.HISTORY, Routes.WIFI_INFO),
+    "Network & security" to listOf(Routes.DEVICES, Routes.INTRUDER, Routes.ROUTER),
+    "Optimize" to listOf(Routes.CHANNELS, Routes.HEATMAP, Routes.DATA_USAGE, Routes.WIDGETS),
+)
+
 @Composable
 fun ToolTile(tool: ToolItem, locked: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    AppCard(modifier.height(138.dp), onClick = onClick, padding = PaddingValues(14.dp)) {
+    AppCard(
+        modifier.height(140.dp),
+        onClick = onClick,
+        padding = PaddingValues(14.dp),
+        brush = Brush.linearGradient(
+            listOf(tool.color.copy(alpha = 0.13f), MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surface),
+        ),
+    ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-            IconBadge(tool.icon, tool.color, size = 42.dp)
+            Box(
+                Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Brush.linearGradient(listOf(tool.color, tool.color.copy(alpha = 0.6f)))),
+                contentAlignment = Alignment.Center,
+            ) { Icon(tool.icon, null, tint = Color.White, modifier = Modifier.size(23.dp)) }
             Spacer(Modifier.weight(1f))
-            if (tool.pro) {
-                if (locked) Icon(Icons.Rounded.Lock, null, tint = AppColors.ext.gold, modifier = Modifier.size(16.dp)) else ProBadge()
+            when {
+                tool.pro && locked -> Box(
+                    Modifier.size(26.dp).clip(CircleShape).background(AppColors.ext.gold.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Rounded.Lock, "Locked", tint = AppColors.ext.gold, modifier = Modifier.size(14.dp)) }
+                tool.pro -> ProBadge(size = 24.dp)
+                else -> Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, tint = AppColors.ext.subtle, modifier = Modifier.size(18.dp))
             }
         }
         Spacer(Modifier.weight(1f))
         Text(tool.title, style = MaterialTheme.typography.titleSmall, maxLines = 1)
-        Text(tool.subtitle, style = MaterialTheme.typography.bodySmall, color = AppColors.ext.muted, maxLines = 2)
+        Spacer(Modifier.height(2.dp))
+        Text(tool.subtitle, style = MaterialTheme.typography.bodySmall, color = AppColors.ext.muted, maxLines = 2, lineHeight = 15.sp)
     }
 }
 
 @Composable
 fun ToolsScreen(nav: NavHostController) {
-    val premium by rememberPremiumState()
+    val isPremium by rememberIsPremium()
     val actions = LocalPremiumActions.current
+    val lockedCount = allTools.count { it.pro }
     ScreenScaffold(title = "Tools", onBack = null, topLevel = true) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            if (!premium.isPremium) {
-                item(span = { GridItemSpan(2) }) {
-                    Box(Modifier.padding(bottom = 4.dp)) {
-                        PremiumStatusCardCompact(onUnlock = actions.openRewardUnlock, onPaywall = actions.openPaywall)
+            item(span = { GridItemSpan(2) }, contentType = "hero") {
+                if (isPremium) {
+                    AppCard(Modifier.fillMaxWidth(), brush = AppColors.ext.heroGradient) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            ProBadge(size = 44.dp)
+                            Spacer(Modifier.width(14.dp))
+                            Column {
+                                Text("All ${allTools.size} tools unlocked", color = Color.White, style = MaterialTheme.typography.titleMedium)
+                                Text("Enjoy every Pro feature with no ads", color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
                     }
+                } else {
+                    PremiumStatusCardCompact(
+                        lockedCount = lockedCount,
+                        onUnlock = actions.openRewardUnlock,
+                        onPaywall = actions.openPaywall,
+                    )
                 }
             }
-            items(allTools, key = { it.route }) { tool ->
-                ToolTile(tool, locked = tool.pro && !premium.isPremium) { openTool(nav, tool) }
+            toolSections.forEach { (title, routes) ->
+                item(span = { GridItemSpan(2) }, key = "h_$title", contentType = "header") {
+                    Text(
+                        title.uppercase(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AppColors.ext.muted,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.2.sp,
+                        modifier = Modifier.padding(top = 10.dp, start = 4.dp),
+                    )
+                }
+                val tools = routes.mapNotNull { r -> allTools.firstOrNull { it.route == r } }
+                items(tools, key = { it.route }, contentType = { "tool" }) { tool ->
+                    ToolTile(tool, locked = tool.pro && !isPremium) { openTool(nav, tool) }
+                }
             }
         }
     }

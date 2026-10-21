@@ -63,7 +63,7 @@ import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.components.TourOverlay
 import com.netscope.wifianalyzer.ui.components.TourState
 import com.netscope.wifianalyzer.ui.components.TourStep
-import com.netscope.wifianalyzer.ui.components.rememberPremiumState
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.components.tourTarget
 import com.netscope.wifianalyzer.ui.screens.ChannelAnalyzerScreen
 import com.netscope.wifianalyzer.ui.screens.DataUsageScreen
@@ -111,8 +111,6 @@ object Routes {
 
     fun speed(auto: Boolean) = if (auto) "speed?auto=true" else SPEED
 }
-
-private data class TabItem(val route: String, val pattern: String, val label: String, val icon: ImageVector)
 
 private val tabs = listOf(
     TabItem(Routes.HOME, Routes.HOME, "Home", Icons.Rounded.Home),
@@ -163,7 +161,7 @@ fun AppRoot(deepLink: MutableStateFlow<String?>) {
         val backStack by nav.currentBackStackEntryAsState()
         val currentRoute = backStack?.destination?.route
         val showBottomBar = tabs.any { it.pattern == currentRoute }
-        val premium by rememberPremiumState()
+        val isPremium by rememberIsPremium()
 
         // Deep links from notifications and widgets.
         val pending by deepLink.collectAsState()
@@ -217,24 +215,12 @@ fun AppRoot(deepLink: MutableStateFlow<String?>) {
                             exit = slideOutVertically { it } + fadeOut(),
                         ) {
                             Column {
-                                if (!premium.isPremium && currentRoute != Routes.SPEED_PATTERN) BannerAd()
-                                NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
-                                    tabs.forEach { tab ->
-                                        val selected = currentRoute == tab.pattern
-                                        NavigationBarItem(
-                                            selected = selected,
-                                            onClick = { if (!selected) nav.navigateTab(tab.route) },
-                                            icon = { Icon(tab.icon, tab.label) },
-                                            label = { Text(tab.label, style = MaterialTheme.typography.labelSmall) },
-                                            modifier = Modifier.tourTarget(tour, "tab_${tab.route}"),
-                                            colors = NavigationBarItemDefaults.colors(
-                                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
-                                            ),
-                                        )
-                                    }
-                                }
+                                if (!isPremium && currentRoute != Routes.SPEED_PATTERN) BannerAd()
+                                AppBottomBar(
+                                    items = tabs,
+                                    selected = tabs.indexOfFirst { it.pattern == currentRoute },
+                                    tour = tour,
+                                ) { i -> if (tabs[i].pattern != currentRoute) nav.navigateTab(tabs[i].route) }
                             }
                         }
                     },
@@ -243,10 +229,10 @@ fun AppRoot(deepLink: MutableStateFlow<String?>) {
                         navController = nav,
                         startDestination = startRoute,
                         modifier = Modifier.fillMaxSize().padding(bottom = padding.calculateBottomPadding()),
-                        enterTransition = { fadeIn(tween(220)) + slideInHorizontally(tween(260)) { it / 12 } },
-                        exitTransition = { fadeOut(tween(160)) },
-                        popEnterTransition = { fadeIn(tween(220)) },
-                        popExitTransition = { fadeOut(tween(160)) + slideOutHorizontally(tween(220)) { it / 12 } },
+                        enterTransition = { fadeIn(tween(170)) + slideInHorizontally(tween(200)) { it / 16 } },
+                        exitTransition = { fadeOut(tween(110)) },
+                        popEnterTransition = { fadeIn(tween(170)) },
+                        popExitTransition = { fadeOut(tween(110)) + slideOutHorizontally(tween(170)) { it / 16 } },
                     ) {
                         composable(Routes.ONBOARDING, enterTransition = { EnterTransition.None }) {
                             OnboardingScreen(onFinish = {

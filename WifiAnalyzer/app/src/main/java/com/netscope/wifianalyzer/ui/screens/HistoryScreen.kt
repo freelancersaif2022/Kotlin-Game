@@ -61,7 +61,7 @@ import com.netscope.wifianalyzer.ui.components.SectionTitle
 import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.components.StatTile
 import com.netscope.wifianalyzer.ui.components.findActivity
-import com.netscope.wifianalyzer.ui.components.rememberPremiumState
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.navigation.Routes
 import com.netscope.wifianalyzer.ui.navigation.navigateTab
 import com.netscope.wifianalyzer.ui.theme.AppColors
@@ -74,7 +74,7 @@ fun HistoryScreen(nav: NavHostController) {
     val context = LocalContext.current
     val results by AppGraph.history.results.collectAsState()
     val unit by AppGraph.prefs.unit.collectAsState()
-    val premium by rememberPremiumState()
+    val isPremium by rememberIsPremium()
     val actions = LocalPremiumActions.current
     val snackbar = LocalSnackbar.current
     var confirmClear by remember { mutableStateOf(false) }
@@ -86,7 +86,7 @@ fun HistoryScreen(nav: NavHostController) {
     }
     BackHandler(onBack = leave)
 
-    val visible = if (premium.isPremium) results else results.take(AppConfig.FREE_HISTORY_LIMIT)
+    val visible = if (isPremium) results else results.take(AppConfig.FREE_HISTORY_LIMIT)
     val hidden = results.size - visible.size
 
     ScreenScaffold(
@@ -95,7 +95,7 @@ fun HistoryScreen(nav: NavHostController) {
         actions = {
             if (results.isNotEmpty()) {
                 IconButton(onClick = {
-                    if (!premium.isPremium) {
+                    if (!isPremium) {
                         actions.openRewardUnlock()
                     } else {
                         runCatching {
@@ -143,7 +143,7 @@ fun HistoryScreen(nav: NavHostController) {
             }
             item {
                 SectionTitle("Trend")
-                if (premium.isPremium) {
+                if (isPremium) {
                     AppCard(Modifier.fillMaxWidth()) {
                         val series = results.take(30).reversed()
                         LineChart(

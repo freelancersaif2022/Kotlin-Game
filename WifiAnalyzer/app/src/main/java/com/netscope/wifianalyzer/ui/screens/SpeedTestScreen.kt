@@ -476,8 +476,13 @@ private fun MetricCard(
     active: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val t = rememberInfiniteTransition(label = "metric")
-    val glow by t.animateFloat(0.2f, 0.6f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "glow")
+    // Only the card for the running phase animates, so idle cards cost nothing per frame.
+    val glow = if (active) {
+        val t = rememberInfiniteTransition(label = "metric")
+        t.animateFloat(0.2f, 0.6f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "glow").value
+    } else {
+        0f
+    }
     Column(
         modifier
             .clip(RoundedCornerShape(18.dp))

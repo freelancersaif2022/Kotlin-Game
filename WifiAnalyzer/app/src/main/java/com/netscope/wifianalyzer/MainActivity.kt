@@ -32,7 +32,19 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splash = installSplashScreen()
+        // Smooth exit: the logo zooms out and fades into the app.
+        splash.setOnExitAnimationListener { provider ->
+            val view = provider.view
+            val icon = runCatching { provider.iconView }.getOrNull()
+            icon?.animate()?.scaleX(1.35f)?.scaleY(1.35f)?.setDuration(260)?.start()
+            view.animate()
+                .alpha(0f)
+                .setDuration(280)
+                .setInterpolator(android.view.animation.AccelerateInterpolator())
+                .withEndAction { provider.remove() }
+                .start()
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         deepLink.value = intent?.getStringExtra(EXTRA_ROUTE)

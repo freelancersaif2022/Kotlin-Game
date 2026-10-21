@@ -20,8 +20,8 @@ import com.netscope.wifianalyzer.BuildConfig
 @Composable
 fun BannerAd(modifier: Modifier = Modifier) {
     val canRequest by AppGraph.ads.canRequestAds.collectAsState()
-    val premium by rememberPremiumState()
-    if (!canRequest || premium.isPremium) return
+    val isPremium by rememberIsPremium()
+    if (!canRequest || isPremium) return
     val context = LocalContext.current
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val width = maxWidth.value.toInt().coerceAtLeast(300)

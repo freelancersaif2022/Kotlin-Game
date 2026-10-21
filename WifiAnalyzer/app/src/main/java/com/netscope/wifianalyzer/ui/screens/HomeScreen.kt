@@ -38,7 +38,6 @@ import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.WifiOff
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -64,6 +63,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.netscope.wifianalyzer.ui.components.AppIcons
 import com.netscope.wifianalyzer.AppConfig
 import com.netscope.wifianalyzer.AppGraph
 import com.netscope.wifianalyzer.net.WifiUtils
@@ -79,6 +79,7 @@ import com.netscope.wifianalyzer.ui.components.SoftButton
 import com.netscope.wifianalyzer.ui.components.findActivity
 import com.netscope.wifianalyzer.ui.components.formatRemaining
 import com.netscope.wifianalyzer.ui.components.pressScale
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.components.rememberPremiumState
 import com.netscope.wifianalyzer.ui.components.signalColor
 import com.netscope.wifianalyzer.ui.components.tourTarget
@@ -102,7 +103,7 @@ private val tips = listOf(
 fun HomeScreen(nav: NavHostController) {
     val context = LocalContext.current
     val net by rememberNetState()
-    val premium by rememberPremiumState()
+    val isPremium by rememberIsPremium()
     val history by AppGraph.history.results.collectAsState()
     val unit by AppGraph.prefs.unit.collectAsState()
     val tour = LocalTour.current
@@ -126,33 +127,7 @@ fun HomeScreen(nav: NavHostController) {
             .statusBarsPadding()
             .padding(horizontal = 20.dp),
     ) {
-        // Header
-        Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("WiFi Analyzer", style = MaterialTheme.typography.headlineMedium)
-                Text("Speed test & network tools", style = MaterialTheme.typography.bodySmall, color = AppColors.ext.muted)
-            }
-            when {
-                premium.subscribed -> ProBadge(text = "PREMIUM")
-                premium.rewardActive -> Pill("PRO ${formatRemaining(premium.rewardRemainingMs).substringBefore(" ")}", AppColors.ext.gold, icon = Icons.Rounded.Timer)
-                else -> Box(
-                    Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(AppColors.ext.premiumGradient)
-                        .clickable { actions.openPaywall() }
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Go PRO", color = Color.White, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-            IconButton(onClick = { nav.navigate(Routes.HELP) }) {
-                Icon(Icons.Rounded.HelpOutline, "Help", tint = AppColors.ext.muted)
-            }
-        }
+        HomeHeader(nav)
 
         HeroCard(net, nav = nav, modifier = Modifier.tourTarget(tour, "hero"))
 
@@ -163,9 +138,7 @@ fun HomeScreen(nav: NavHostController) {
 
         Spacer(Modifier.height(16.dp))
         Box(Modifier.tourTarget(tour, "unlock")) {
-            PremiumStatusCard(premium.subscribed, premium.rewardActive, premium.rewardRemainingMs, premium.rewardAdsWatched) {
-                actions.openRewardUnlock()
-            }
+            PremiumStatusCard { actions.openRewardUnlock() }
         }
 
         // Last result
@@ -205,7 +178,7 @@ fun HomeScreen(nav: NavHostController) {
         featured.chunked(2).forEach { row ->
             Row(Modifier.fillMaxWidth().padding(bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 row.forEach { tool ->
-                    ToolTile(tool, locked = tool.pro && !premium.isPremium, modifier = Modifier.weight(1f)) { openTool(nav, tool) }
+                    ToolTile(tool, locked = tool.pro && !isPremium, modifier = Modifier.weight(1f)) { openTool(nav, tool) }
                 }
                 if (row.size == 1) Spacer(Modifier.weight(1f))
             }
@@ -397,14 +370,82 @@ private fun GoButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 }
 
 @Composable
-fun PremiumStatusCard(subscribed: Boolean, rewardActive: Boolean, remainingMs: Long, watched: Int, onUnlock: () -> Unit) {
+private fun HomeHeader(nav: NavHostController) {
+    val premium by rememberPremiumState()
+    val actions = LocalPremiumActions.current
+    val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+    val greeting = when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..16 -> "Good afternoon"
+        else -> "Good evening"
+    }
+    Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(greeting, style = MaterialTheme.typography.labelLarge, color = AppColors.ext.muted)
+            Text("WiFi Analyzer", style = MaterialTheme.typography.headlineMedium)
+        }
+        when {
+            premium.subscribed -> ProBadge(size = 40.dp)
+            premium.rewardActive -> Row(
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(AppColors.ext.gold.copy(alpha = 0.14f))
+                    .clickable { actions.openPaywall() }
+                    .padding(start = 6.dp, end = 12.dp, top = 6.dp, bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ProBadge(size = 26.dp)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    formatRemaining(premium.rewardRemainingMs).substringBeforeLast(" "),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = AppColors.ext.gold,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            else -> {
+                val t = rememberInfiniteTransition(label = "crown")
+                val glow by t.animateFloat(0.35f, 0.8f, infiniteRepeatable(tween(1400), RepeatMode.Reverse), label = "glow")
+                Box(
+                    Modifier.size(42.dp).clip(CircleShape).clickable { actions.openPaywall() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .graphicsLayer { alpha = glow }
+                            .background(Palette.Gold.copy(alpha = 0.3f), CircleShape),
+                    )
+                    ProBadge(size = 32.dp)
+                }
+            }
+        }
+        Spacer(Modifier.width(8.dp))
+        Box(
+            Modifier
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .clickable { nav.navigate(Routes.HELP) },
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.Rounded.HelpOutline, "Help", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp)) }
+    }
+}
+
+@Composable
+fun PremiumStatusCard(onUnlock: () -> Unit) {
+    val premium by rememberPremiumState()
+    val subscribed = premium.subscribed
+    val rewardActive = premium.rewardActive
+    val remainingMs = premium.rewardRemainingMs
+    val watched = premium.rewardAdsWatched
     when {
         subscribed -> AppCard(Modifier.fillMaxWidth(), color = AppColors.ext.gold.copy(alpha = 0.08f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     Modifier.size(40.dp).clip(CircleShape).background(AppColors.ext.premiumGradient),
                     contentAlignment = Alignment.Center,
-                ) { Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(22.dp)) }
+                ) { Icon(AppIcons.Crown, null, tint = Color.White, modifier = Modifier.size(22.dp)) }
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text("Premium active", style = MaterialTheme.typography.titleSmall)

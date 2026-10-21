@@ -44,7 +44,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +53,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -117,7 +117,7 @@ fun AppCard(
         .clip(shape)
         .then(if (brush != null) Modifier.background(brush) else Modifier.background(color))
         .border(BorderStroke(1.dp, AppColors.ext.cardBorder), shape)
-        .then(if (onClick != null) Modifier.clickable(interactionSource = interaction, indication = null, onClick = onClick) else Modifier)
+        .then(if (onClick != null) Modifier.clickable(interactionSource = interaction, indication = ripple(), onClick = onClick) else Modifier)
         .padding(padding)
     Column(modifier = base, content = content)
 }
@@ -208,18 +208,17 @@ fun IconBadge(icon: ImageVector, tint: Color, size: Dp = 44.dp, iconSize: Dp = 2
     }
 }
 
+/** Icon-only premium marker: a gold crown in a glowing gradient disc. */
 @Composable
-fun ProBadge(modifier: Modifier = Modifier, text: String = "PRO") {
-    Row(
+fun ProBadge(modifier: Modifier = Modifier, size: Dp = 20.dp) {
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(50))
-            .background(AppColors.ext.premiumGradient)
-            .padding(horizontal = 7.dp, vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .size(size)
+            .clip(CircleShape)
+            .background(AppColors.ext.premiumGradient),
+        contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(11.dp))
-        Spacer(Modifier.width(3.dp))
-        Text(text, color = Color.White, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
+        Icon(AppIcons.Crown, "Premium", tint = Color.White, modifier = Modifier.size(size * 0.62f))
     }
 }
 
@@ -426,7 +425,7 @@ fun ScreenScaffold(
     topLevel: Boolean = false,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val premium by AppGraph.premium.state.collectAsState()
+    val isPremium by AppGraph.premium.active.collectAsState()
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
@@ -447,7 +446,7 @@ fun ScreenScaffold(
             )
         },
         bottomBar = {
-            if (showBanner && !topLevel && !premium.isPremium) {
+            if (showBanner && !topLevel && !isPremium) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     BannerAd(Modifier.fillMaxWidth().navigationBarsPadding())
                 }

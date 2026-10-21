@@ -32,7 +32,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -67,8 +66,13 @@ class PremiumActions(val openRewardUnlock: () -> Unit, val openPaywall: () -> Un
 
 val LocalPremiumActions = staticCompositionLocalOf<PremiumActions> { error("No premium actions") }
 
+/** Ticks every second while a reward unlock runs; use only where a countdown is shown. */
 @Composable
 fun rememberPremiumState(): State<PremiumState> = AppGraph.premium.state.collectAsState()
+
+/** Changes only when premium access starts or ends, so screens don't recompose every second. */
+@Composable
+fun rememberIsPremium(): State<Boolean> = AppGraph.premium.active.collectAsState()
 
 fun formatRemaining(ms: Long): String {
     val totalSec = ms / 1000
@@ -91,8 +95,8 @@ fun PremiumGate(
     preview: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    val premium by rememberPremiumState()
-    if (premium.isPremium) {
+    val isPremium by rememberIsPremium()
+    if (isPremium) {
         content()
         return
     }
@@ -147,7 +151,7 @@ fun LockedFeatureCard(feature: String, description: String, icon: ImageVector, m
                 ) { Icon(Icons.Rounded.Lock, null, tint = AppColors.ext.gold, modifier = Modifier.size(13.dp)) }
             }
             Spacer(Modifier.height(14.dp))
-            ProBadge(text = "PREMIUM")
+            ProBadge(size = 26.dp)
             Spacer(Modifier.height(10.dp))
             Text(feature, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
             Spacer(Modifier.height(6.dp))
@@ -171,7 +175,7 @@ fun LockedFeatureCard(feature: String, description: String, icon: ImageVector, m
             GradientButton(
                 "Go Premium • No ads",
                 onClick = actions.openPaywall,
-                icon = Icons.Rounded.WorkspacePremium,
+                icon = AppIcons.Crown,
                 brush = AppColors.ext.premiumGradient,
                 contentColor = Color.White,
                 modifier = Modifier.fillMaxWidth(),
@@ -230,7 +234,7 @@ fun RewardUnlockDialog(onDismiss: () -> Unit, onGoPremium: () -> Unit) {
         Box(Modifier.fillMaxSize()) {
             AppDialog(
                 onDismiss = onDismiss,
-                icon = Icons.Rounded.WorkspacePremium,
+                icon = AppIcons.Crown,
                 iconBrush = AppColors.ext.premiumGradient,
                 title = "Premium unlocked!",
                 message = "Enjoy every Pro feature with no ads for the next 12 hours.",
@@ -338,7 +342,7 @@ fun RewardUnlockDialog(onDismiss: () -> Unit, onGoPremium: () -> Unit) {
         GradientButton(
             "Go Premium instead",
             onClick = onGoPremium,
-            icon = Icons.Rounded.WorkspacePremium,
+            icon = AppIcons.Crown,
             brush = AppColors.ext.premiumGradient,
             contentColor = Color.White,
             modifier = Modifier.fillMaxWidth(),
@@ -348,7 +352,7 @@ fun RewardUnlockDialog(onDismiss: () -> Unit, onGoPremium: () -> Unit) {
 }
 
 @Composable
-fun PremiumStatusCardCompact(onUnlock: () -> Unit, onPaywall: () -> Unit) {
+fun PremiumStatusCardCompact(onUnlock: () -> Unit, onPaywall: () -> Unit, lockedCount: Int = 6) {
     AppCard(
         Modifier.fillMaxWidth(),
         brush = androidx.compose.ui.graphics.Brush.linearGradient(
@@ -359,17 +363,17 @@ fun PremiumStatusCardCompact(onUnlock: () -> Unit, onPaywall: () -> Unit) {
             Box(
                 Modifier.size(44.dp).clip(RoundedCornerShape(14.dp)).background(AppColors.ext.premiumGradient),
                 contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White) }
+            ) { Icon(AppIcons.Crown, null, tint = Color.White) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text("6 Pro tools are locked", style = MaterialTheme.typography.titleSmall)
+                Text("$lockedCount Pro tools are locked", style = MaterialTheme.typography.titleSmall)
                 Text("Unlock all free for 12h or remove ads forever", style = MaterialTheme.typography.bodySmall, color = AppColors.ext.muted)
             }
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             SoftButton("Watch 3 ads", onClick = onUnlock, icon = Icons.Rounded.PlayCircle, modifier = Modifier.weight(1f), height = 44.dp)
-            SoftButton("Go Premium", onClick = onPaywall, icon = Icons.Rounded.WorkspacePremium, tint = AppColors.ext.gold, modifier = Modifier.weight(1f), height = 44.dp)
+            SoftButton("Go Premium", onClick = onPaywall, icon = AppIcons.Crown, tint = AppColors.ext.gold, modifier = Modifier.weight(1f), height = 44.dp)
         }
     }
 }

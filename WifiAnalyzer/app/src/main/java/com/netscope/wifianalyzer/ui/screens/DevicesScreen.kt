@@ -103,7 +103,7 @@ import com.netscope.wifianalyzer.ui.components.ScreenScaffold
 import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.components.SoftButton
 import com.netscope.wifianalyzer.ui.components.findActivity
-import com.netscope.wifianalyzer.ui.components.rememberPremiumState
+import com.netscope.wifianalyzer.ui.components.rememberIsPremium
 import com.netscope.wifianalyzer.ui.navigation.Routes
 import com.netscope.wifianalyzer.ui.theme.AppColors
 import com.netscope.wifianalyzer.ui.theme.Palette
@@ -195,7 +195,7 @@ fun DevicesScreen(nav: NavHostController) {
     val vm: DevicesViewModel = viewModel()
     val ui by vm.ui.collectAsState()
     val net by rememberNetState(5_000)
-    val premium by rememberPremiumState()
+    val isPremium by rememberIsPremium()
     val actions = LocalPremiumActions.current
     val context = LocalContext.current
     val knownVersion by AppGraph.knownDevices.version.collectAsState()
@@ -213,7 +213,7 @@ fun DevicesScreen(nav: NavHostController) {
     val known = remember(knownVersion, ui.networkKey) {
         ui.networkKey?.let { k -> AppGraph.knownDevices.devices(k).associateBy { it.key } } ?: emptyMap()
     }
-    val visible = if (premium.isPremium) ui.devices else ui.devices.take(AppConfig.FREE_DEVICE_LIMIT)
+    val visible = if (isPremium) ui.devices else ui.devices.take(AppConfig.FREE_DEVICE_LIMIT)
     val hiddenCount = ui.devices.size - visible.size
     val showList = !ui.awaitingReveal
 
@@ -375,28 +375,26 @@ private fun Radar(scanning: Boolean, progress: Float, modifier: Modifier = Modif
 
 @Composable
 private fun DeviceRow(device: NetDevice, name: String, isNew: Boolean, trusted: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    AnimatedVisibility(visible = true, enter = fadeIn() + slideInVertically { it / 3 }) {
-        AppCard(modifier.fillMaxWidth(), onClick = onClick, padding = PaddingValues(14.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconBadge(deviceIcon(device.type), deviceColor(device.type), size = 46.dp, iconSize = 24.dp)
-                Spacer(Modifier.width(14.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(name, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(
-                        listOfNotNull(device.ip, device.vendor?.takeIf { !device.isSelf }, device.type.label.takeIf { device.type != DeviceType.UNKNOWN })
-                            .distinct().joinToString(" • "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.ext.muted,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                when {
-                    device.isSelf -> Pill("You", MaterialTheme.colorScheme.primary)
-                    device.isGateway -> Pill("Router", Palette.Violet)
-                    isNew -> Pill("New", Palette.Rose)
-                    trusted -> Icon(Icons.Rounded.VerifiedUser, "Trusted", tint = AppColors.ext.success, modifier = Modifier.size(18.dp))
-                }
+    AppCard(modifier.fillMaxWidth(), onClick = onClick, padding = PaddingValues(14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconBadge(deviceIcon(device.type), deviceColor(device.type), size = 46.dp, iconSize = 24.dp)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(name, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    listOfNotNull(device.ip, device.vendor?.takeIf { !device.isSelf }, device.type.label.takeIf { device.type != DeviceType.UNKNOWN })
+                        .distinct().joinToString(" • "),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AppColors.ext.muted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            when {
+                device.isSelf -> Pill("You", MaterialTheme.colorScheme.primary)
+                device.isGateway -> Pill("Router", Palette.Violet)
+                isNew -> Pill("New", Palette.Rose)
+                trusted -> Icon(Icons.Rounded.VerifiedUser, "Trusted", tint = AppColors.ext.success, modifier = Modifier.size(18.dp))
             }
         }
     }

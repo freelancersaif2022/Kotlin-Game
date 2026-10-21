@@ -67,6 +67,9 @@ import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.theme.AppColors
 import com.netscope.wifianalyzer.ui.theme.Palette
 import com.netscope.wifianalyzer.work.IntruderWorker
+import com.netscope.wifianalyzer.work.Notifications
+import com.netscope.wifianalyzer.ui.components.SoftButton
+import androidx.compose.material.icons.rounded.NotificationsActive
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
@@ -98,6 +101,7 @@ private fun IntruderContent() {
     fun enable() {
         AppGraph.prefs.setIntruderEnabled(true)
         IntruderWorker.schedule(context)
+        IntruderWorker.runNow(context)
         snackbar.show("Intruder alert is on. We'll check your Wi-Fi every 15 minutes.", SnackType.Success)
     }
 
@@ -200,6 +204,22 @@ private fun IntruderContent() {
                     color = AppColors.ext.muted,
                 )
             }
+        }
+        item {
+            SoftButton(
+                "Send a test alert",
+                onClick = {
+                    if (Notifications.showTest(context)) {
+                        snackbar.show("Test alert sent. Check your notifications.", SnackType.Success)
+                    } else if (Build.VERSION.SDK_INT >= 33) {
+                        notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        snackbar.show("Notifications are turned off for this app", SnackType.Error, "Settings") { openAppSettings(context) }
+                    }
+                },
+                icon = Icons.Rounded.NotificationsActive,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
         item { SectionTitle("Known devices (${known.size})") }
         if (known.isEmpty()) {

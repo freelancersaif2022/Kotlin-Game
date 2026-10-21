@@ -43,7 +43,6 @@ import androidx.compose.material.icons.rounded.Router
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Widgets
-import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.netscope.wifianalyzer.ui.components.AppIcons
 import com.netscope.wifianalyzer.AppConfig
 import com.netscope.wifianalyzer.AppGraph
 import com.netscope.wifianalyzer.billing.PlanInfo
@@ -76,9 +76,11 @@ import com.netscope.wifianalyzer.ui.components.LocalPremiumActions
 import com.netscope.wifianalyzer.ui.components.LocalSnackbar
 import com.netscope.wifianalyzer.ui.components.SnackType
 import com.netscope.wifianalyzer.ui.components.findActivity
+import com.netscope.wifianalyzer.ui.components.formatRemaining
 import com.netscope.wifianalyzer.ui.components.rememberPopIn
 import com.netscope.wifianalyzer.ui.components.rememberPremiumState
 import com.netscope.wifianalyzer.ui.navigation.Routes
+import com.netscope.wifianalyzer.ui.navigation.navigateTab
 import com.netscope.wifianalyzer.ui.theme.AppColors
 import com.netscope.wifianalyzer.ui.theme.Palette
 import java.text.NumberFormat
@@ -142,6 +144,15 @@ fun PremiumScreen(nav: NavHostController) {
                 IconButton(onClick = { nav.popBackStack() }) { Icon(Icons.Rounded.Close, "Close", tint = AppColors.ext.muted) }
             }
             PremiumHero()
+            if (premium.isPremium) {
+                ActivePremium(
+                    subscribed = premium.subscribed,
+                    plan = premium.plan,
+                    remainingMs = premium.rewardRemainingMs,
+                    onManage = { openSubscriptions(context) },
+                    onExplore = { nav.popBackStack(); nav.navigateTab(Routes.TOOLS) },
+                )
+            } else {
             Spacer(Modifier.height(18.dp))
             Text("WiFi Analyzer Premium", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
             Spacer(Modifier.height(6.dp))
@@ -227,7 +238,7 @@ fun PremiumScreen(nav: NavHostController) {
                             AppGraph.billing.launch(activity, selected)
                         }
                     },
-                    icon = Icons.Rounded.WorkspacePremium,
+                    icon = AppIcons.Crown,
                     brush = AppColors.ext.premiumGradient,
                     contentColor = Color.White,
                     modifier = Modifier.fillMaxWidth(),
@@ -259,6 +270,7 @@ fun PremiumScreen(nav: NavHostController) {
                     textAlign = TextAlign.Center,
                 )
             }
+            }
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 FooterLink("Restore") { AppGraph.billing.refreshPurchases(reportRestore = true) }
@@ -267,6 +279,78 @@ fun PremiumScreen(nav: NavHostController) {
             }
             Spacer(Modifier.height(20.dp))
         }
+    }
+}
+
+@Composable
+private fun ActivePremium(
+    subscribed: Boolean,
+    plan: String?,
+    remainingMs: Long,
+    onManage: () -> Unit,
+    onExplore: () -> Unit,
+) {
+    Spacer(Modifier.height(22.dp))
+    Text(if (subscribed) "You're Premium" else "Premium is active", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+    Spacer(Modifier.height(6.dp))
+    Text(
+        if (subscribed) "Every Pro tool is unlocked and ads are gone. Thank you for your support!"
+        else "Every Pro tool is unlocked and ads are off for the time shown below.",
+        style = MaterialTheme.typography.bodyLarge,
+        color = AppColors.ext.muted,
+        textAlign = TextAlign.Center,
+    )
+    Spacer(Modifier.height(24.dp))
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(AppColors.ext.gold.copy(alpha = 0.08f))
+            .border(1.dp, AppColors.ext.gold.copy(alpha = 0.35f), RoundedCornerShape(24.dp))
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            if (subscribed) "Current plan" else "Time remaining",
+            style = MaterialTheme.typography.labelLarge,
+            color = AppColors.ext.muted,
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            when {
+                !subscribed -> formatRemaining(remainingMs)
+                plan == AppConfig.PRODUCT_YEARLY -> "Yearly"
+                plan == AppConfig.PRODUCT_MONTHLY -> "Monthly"
+                else -> "Premium"
+            },
+            style = MaterialTheme.typography.headlineSmall,
+            color = AppColors.ext.gold,
+            fontWeight = FontWeight.Bold,
+        )
+        if (!subscribed) {
+            Spacer(Modifier.height(12.dp))
+            androidx.compose.material3.LinearProgressIndicator(
+                progress = { (remainingMs.toFloat() / AppConfig.REWARD_DURATION_MS).coerceIn(0f, 1f) },
+                modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                color = AppColors.ext.gold,
+                trackColor = AppColors.ext.gold.copy(alpha = 0.15f),
+                strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
+                gapSize = 0.dp,
+                drawStopIndicator = {},
+            )
+        }
+    }
+    Spacer(Modifier.height(20.dp))
+    GradientButton("Explore Pro tools", onClick = onExplore, modifier = Modifier.fillMaxWidth())
+    if (subscribed) {
+        Spacer(Modifier.height(10.dp))
+        GradientButton(
+            "Manage subscription",
+            onClick = onManage,
+            brush = AppColors.ext.premiumGradient,
+            contentColor = Color.White,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -310,7 +394,7 @@ private fun PremiumHero() {
             .background(AppColors.ext.premiumGradient),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(64.dp))
+        Icon(AppIcons.Crown, null, tint = Color.White, modifier = Modifier.size(64.dp))
         Canvas(Modifier.fillMaxSize()) {
             val x = size.width * shine
             drawRect(

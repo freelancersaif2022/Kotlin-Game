@@ -31,6 +31,13 @@ class PremiumManager(private val prefs: AppPrefs, scope: CoroutineScope) {
 
     val isPremium: Boolean get() = _state.value.copy(now = System.currentTimeMillis()).isPremium
 
+    /**
+     * Only changes when access is gained or lost. Screens gate features on this
+     * instead of [state], which ticks every second while a reward unlock is running.
+     */
+    private val _active = MutableStateFlow(_state.value.isPremium)
+    val active: StateFlow<Boolean> = _active.asStateFlow()
+
     private val listeners = mutableListOf<(Boolean) -> Unit>()
 
     init {
@@ -49,7 +56,10 @@ class PremiumManager(private val prefs: AppPrefs, scope: CoroutineScope) {
         listeners += listener
     }
 
-    private fun notifyChanged(premium: Boolean) = listeners.forEach { it(premium) }
+    private fun notifyChanged(premium: Boolean) {
+        _active.value = premium
+        listeners.forEach { it(premium) }
+    }
 
     private fun read() = PremiumState(
         subscribed = prefs.subscribed,
