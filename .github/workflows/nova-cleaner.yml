@@ -33,7 +33,13 @@ jobs:
       - name: Build release APK and AAB
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease bundleRelease --stacktrace --no-daemon
+          set -o pipefail
+          ./gradlew assembleRelease bundleRelease --no-daemon 2>&1 | tee build.log
+
+      - name: Show compile errors
+        if: failure()
+        run: |
+          grep -E "^e: |^w: .*(deprecated|unused)$|What went wrong|^> |error:" build.log | grep -vE "^w: " | sed 's#file:///home/runner/work/Kotlin-Game/Kotlin-Game/CleanerApp/app/src/main/java/com/novacleaner/app/##' | head -150
 
       - name: Report sizes
         run: |
