@@ -12,3 +12,4 @@
 *.keystore
 keystore.properties
 /build-output/
+/dist/

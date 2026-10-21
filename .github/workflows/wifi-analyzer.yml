@@ -51,6 +51,15 @@ jobs:
             WifiAnalyzer/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
+      - name: Check APK size (must be 15 MB or less) and name files
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/WiFiAnalyzer-v1.0.0.apk
+          cp app/build/outputs/bundle/release/app-release.aab dist/WiFiAnalyzer-v1.0.0-PlayStore.aab
+          size=$(stat -c%s dist/WiFiAnalyzer-v1.0.0.apk)
+          echo "Release APK size: $((size / 1024 / 1024)) MB ($size bytes)"
+          if [ "$size" -gt 15728640 ]; then echo "::error::APK is larger than 15 MB"; exit 1; fi
+
       - name: Publish download page (GitHub Release)
         uses: softprops/action-gh-release@v2
         with:
@@ -59,10 +68,9 @@ jobs:
           target_commitish: ${{ github.sha }}
           prerelease: true
           body: |
-            - app-debug.apk: install on your phone for testing (Google test ads)
-            - app-release.apk: release build
-            - app-release.aab: upload this to Google Play Console
+            100% Kotlin (Jetpack Compose).
+            - WiFiAnalyzer-v1.0.0.apk: optimized release APK (R8 + resource shrinking), install on your phone
+            - WiFiAnalyzer-v1.0.0-PlayStore.aab: upload this to Google Play Console
           files: |
-            WifiAnalyzer/app/build/outputs/apk/debug/app-debug.apk
-            WifiAnalyzer/app/build/outputs/apk/release/app-release.apk
-            WifiAnalyzer/app/build/outputs/bundle/release/app-release.aab
+            WifiAnalyzer/dist/WiFiAnalyzer-v1.0.0.apk
+            WifiAnalyzer/dist/WiFiAnalyzer-v1.0.0-PlayStore.aab
