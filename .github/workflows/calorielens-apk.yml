@@ -1,0 +1,80 @@
+name: Build CalorieLens APK
+
+on:
+  push:
+    branches: [ccr-119d45e6-5uq35a]
+    paths: ['CalorieLens/**', '.github/workflows/calorielens-apk.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: CalorieLens
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Download on-device food model
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/model app/src/main/assets/models
+          ok=0
+          for url in \
+            "https://www.kaggle.com/api/v1/models/google/aiy/tfLite/vision-classifier-food-v1/1/download" \
+            "https://tfhub.dev/google/lite-model/aiy/vision/classifier/food_V1/1?lite-format=tflite"; do
+            echo "Trying $url"
+            if curl -fsSL --retry 3 -o /tmp/model/dl.bin "$url"; then
+              file /tmp/model/dl.bin
+              if file /tmp/model/dl.bin | grep -qi gzip; then
+                tar -xzf /tmp/model/dl.bin -C /tmp/model
+                f=$(find /tmp/model -name '*.tflite' | head -1)
+              else
+                f=/tmp/model/dl.bin
+              fi
+              if [ -n "${f:-}" ] && [ "$(stat -c%s "$f")" -gt 1000000 ]; then
+                cp "$f" app/src/main/assets/models/food_model.tflite
+                ok=1; break
+              fi
+            fi
+          done
+          [ "$ok" = 1 ] || { echo "::error::Could not download the food model"; exit 1; }
+          ls -la app/src/main/assets/models
+          # Show a sample of the model's labels (stored as zip metadata inside the .tflite)
+          unzip -l app/src/main/assets/models/food_model.tflite || true
+          unzip -p app/src/main/assets/models/food_model.tflite '*.txt' '*.csv' 2>/dev/null | head -40 || true
+
+      - name: Unit tests
+        run: chmod +x gradlew && ./gradlew testReleaseUnitTest --stacktrace
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk CalorieLens.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CalorieLens-apk
+          path: CalorieLens/CalorieLens.apk
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: calorielens-v1.0.${{ github.run_number }}
+          name: CalorieLens v1.0 (build ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          files: CalorieLens/CalorieLens.apk
+          body: |
+            CalorieLens Android app. Download **CalorieLens.apk** below and install it on your phone
+            (allow "Install unknown apps" when asked). Ads use Google test IDs; Premium is a demo purchase.
