@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.task.core.BaseOptions
 import org.tensorflow.lite.task.vision.classifier.ImageClassifier
+import java.util.zip.ZipInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,8 +50,8 @@ class FoodRecognizer @Inject constructor(@ApplicationContext private val context
                 c.classify(TensorImage.fromBitmap(input)).firstOrNull()?.categories.orEmpty()
             }
             val ranked = categories
-                .map { Recognition(it.displayName.ifBlank { it.label }, it.score) }
-                .filterNot { it.label.isBlank() || it.label.contains("background", ignoreCase = true) }
+                .map { Recognition(readableName(it.label, it.displayName), it.score) }
+                .filterNot { it.label.isBlank() || it.label.startsWith("/") || it.label.contains("background", ignoreCase = true) }
                 .sortedByDescending { it.confidence }
             val best = ranked.firstOrNull()
             if (best == null || best.confidence < MIN_CONFIDENCE) {
@@ -64,6 +65,37 @@ class FoodRecognizer @Inject constructor(@ApplicationContext private val context
         } catch (t: Throwable) {
             RecognitionResult.Failed(t.message ?: "Recognition failed")
         }
+    }
+
+    /**
+     * The model's raw labels are Knowledge Graph ids (e.g. "/g/11b6cn_mpy"); the English dish names ship in a
+     * second file inside the .tflite (a zip). Both lists have one entry per class, so they are matched by index.
+     */
+    private val idToName: Map<String, String> by lazy {
+        runCatching {
+            val files = mutableMapOf<String, List<String>>()
+            context.assets.open("models/$MODEL_FILE").use { stream ->
+                ZipInputStream(stream).use { zip ->
+                    var entry = zip.nextEntry
+                    while (entry != null) {
+                        if (!entry.isDirectory) files[entry.name] = zip.readBytes().decodeToString().lines().map { it.trim() }
+                        entry = zip.nextEntry
+                    }
+                }
+            }
+            val ids = files.entries.firstOrNull { (_, lines) -> lines.count { it.startsWith("/") } > lines.size / 2 }
+                ?: return@runCatching emptyMap()
+            val names = files.entries.firstOrNull { (name, lines) ->
+                name != ids.key && lines.size == ids.value.size && lines.count { it.startsWith("/") } < lines.size / 10
+            } ?: return@runCatching emptyMap()
+            ids.value.zip(names.value).filter { (id, n) -> id.isNotBlank() && n.isNotBlank() }.toMap()
+        }.getOrDefault(emptyMap())
+    }
+
+    private fun readableName(label: String, displayName: String): String = when {
+        displayName.isNotBlank() && !displayName.startsWith("/") -> displayName
+        label.startsWith("/") -> idToName[label] ?: label
+        else -> label
     }
 
     private fun ensureClassifier(): ImageClassifier {
