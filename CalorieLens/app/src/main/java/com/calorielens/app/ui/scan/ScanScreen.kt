@@ -261,16 +261,7 @@ private fun AnalysisPanel(progress: Float, finished: Boolean, doneState: ScanSta
                     )
                 }
                 if (finished) {
-                    val appear = remember { MutableTransitionState(false).apply { targetState = true } }
-                    AnimatedVisibility(visibleState = appear, enter = scaleIn(spring(dampingRatio = Spring.DampingRatioMediumBouncy)) + fadeIn()) {
-                        Box(
-                            Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Brand.primaryGradient),
-                            contentAlignment = Alignment.Center,
-                        ) { Icon(Icons.Rounded.Check, null, tint = Color(0xFF04140F)) }
-                    }
+                    CheckBadge()
                 } else {
                     Text("${(progress * 100).toInt()}%", style = MaterialTheme.typography.titleSmall, color = Color.White, fontWeight = FontWeight.Bold)
                 }
@@ -350,4 +341,18 @@ private fun PulsingDot() {
             .clip(CircleShape)
             .background(Color.White),
     )
+}
+
+@Composable
+private fun CheckBadge() {
+    val appear = remember { MutableTransitionState(false).apply { targetState = true } }
+    AnimatedVisibility(visibleState = appear, enter = scaleIn(spring(dampingRatio = Spring.DampingRatioMediumBouncy)) + fadeIn()) {
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Brand.primaryGradient),
+            contentAlignment = Alignment.Center,
+        ) { Icon(Icons.Rounded.Check, null, tint = Color(0xFF04140F)) }
+    }
 }

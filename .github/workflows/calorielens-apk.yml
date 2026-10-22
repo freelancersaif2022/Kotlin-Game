@@ -50,9 +50,9 @@ jobs:
           done
           [ "$ok" = 1 ] || { echo "::error::Could not download the food model"; exit 1; }
           ls -la app/src/main/assets/models
-          # Show a sample of the model's labels (stored as zip metadata inside the .tflite)
-          unzip -l app/src/main/assets/models/food_model.tflite || true
-          unzip -p app/src/main/assets/models/food_model.tflite '*.txt' '*.csv' 2>/dev/null | head -40 || true
+          # Print the label metadata packed inside the .tflite (compact)
+          mkdir -p /tmp/meta && cd /tmp/meta && unzip -o -q "$GITHUB_WORKSPACE/CalorieLens/app/src/main/assets/models/food_model.tflite" || true
+          for f in /tmp/meta/*; do echo "== $f ($(wc -l < "$f") lines)"; head -12 "$f"; echo "..."; sed -n '500,505p' "$f"; done
 
       - name: Unit tests
         run: chmod +x gradlew && ./gradlew testReleaseUnitTest --stacktrace

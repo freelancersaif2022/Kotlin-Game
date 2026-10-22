@@ -71,6 +71,7 @@ class FoodRecognizer @Inject constructor(@ApplicationContext private val context
         val options = ImageClassifier.ImageClassifierOptions.builder()
             .setBaseOptions(BaseOptions.builder().setNumThreads(4).build())
             .setMaxResults(6)
+            .setDisplayNamesLocale("en")
             .build()
         return ImageClassifier.createFromFileAndOptions(context, "models/$MODEL_FILE", options).also { classifier = it }
     }
