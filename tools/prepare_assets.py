@@ -23,8 +23,9 @@ BACKGROUNDS = {
 
 # Puppet layers share a 1024x1024 canvas; they are trimmed and their offset is
 # written to layers.txt so the game can place them back exactly.
+# torso_arm_* are the full torso with the right arm attached (one per pose).
 LAYERS = [
-    "char_body", "char_arm_idle", "char_arm_hold", "char_arm_mouth",
+    "torso_arm_idle", "torso_arm_hold", "torso_arm_mouth",
     "head_normal", "head_smoking", "head_exhale",
     "head_red_1", "head_red_2", "head_red_3", "head_burnt",
 ]

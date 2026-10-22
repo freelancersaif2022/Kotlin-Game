@@ -57,7 +57,7 @@ class Assets(private val am: AssetManager) {
         val ALL = listOf(
             "lobby_bg.jpg", "gameplay_bg.jpg", "character_lobby.png",
             "btn_play.png", "btn_highscore.png", "btn_settings.png",
-            "char_body.png", "char_arm_idle.png", "char_arm_hold.png", "char_arm_mouth.png",
+            "torso_arm_idle.png", "torso_arm_hold.png", "torso_arm_mouth.png",
             "head_normal.png", "head_smoking.png", "head_exhale.png", "head_red_1.png",
             "head_red_2.png", "head_red_3.png", "head_burnt.png",
             "cig_box_1.png", "cig_box_2.png", "cig_box_3.png", "cig_box_4.png", "cig_box_5.png",

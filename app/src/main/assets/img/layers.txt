@@ -1,7 +1,6 @@
-char_body 289 410
-char_arm_idle 86 462
-char_arm_hold 147 476
-char_arm_mouth 272 322
+torso_arm_idle 104 410
+torso_arm_hold 81 410
+torso_arm_mouth 108 339
 head_normal 377 75
 head_smoking 377 75
 head_exhale 377 75

@@ -42,31 +42,29 @@ private class Layer(val bmp: Bitmap, val x: Float, val y: Float)
  * heart pounds) until the cigarette explodes.
  *
  * The hero is a puppet of layers that share a 1024x1024 canvas (see
- * layer_layout.json in the art pack): head behind body, arm in front, the arm
- * rotating around the right shoulder.
+ * layer_layout.json in the art pack): an expression head behind one of three
+ * torso poses (the right arm is part of each torso, so it never detaches).
  */
 class PlayScreen(g: Game) : Screen(g) {
 
     // ---- puppet anchors (canvas units)
     private companion object {
-        const val SHOULDER_X = 340f
-        const val SHOULDER_Y = 500f
         const val NECK_X = 512f
         const val NECK_Y = 490f
         const val MOUTH_X = 512f
         const val MOUTH_Y = 360f
-        const val TIP_HOLD_X = 602f
-        const val TIP_HOLD_Y = 723f
-        const val TIP_MOUTH_X = 447f
-        const val TIP_MOUTH_Y = 342f
-        const val HAND_X = 545f
-        const val HAND_Y = 765f
+        const val TIP_HOLD_X = 468f
+        const val TIP_HOLD_Y = 772f
+        const val TIP_MOUTH_X = 366f
+        const val TIP_MOUTH_Y = 358f
+        const val HAND_X = 415f
+        const val HAND_Y = 760f
 
         // background art anchors (gameplay_bg.png pixels)
         const val COUNTER_TOP = 1294f
         const val BOX_BASE = 1410f
         const val CHAR_X = 0f
-        const val CHAR_Y = 325f
+        const val CHAR_Y = 360f
 
         const val ZONE_HALF = 120f
 
@@ -205,11 +203,11 @@ class PlayScreen(g: Game) : Screen(g) {
 
     // puppet animation
     private var bob = 0f
-    private var armName = "char_arm_idle"
-    private var armRot = 0f
-    private var prevArm = "char_arm_idle"
-    private var prevArmRot = 0f
-    private var armFade = 0f
+    private var torsoName = "torso_arm_idle"
+    private var prevTorso = "torso_arm_idle"
+    private var torsoFade = 0f
+    private var leanX = 0f
+    private var leanY = 0f
     private var headName = "head_normal"
     private var prevHead = "head_normal"
     private var headFade = 0f
@@ -224,7 +222,7 @@ class PlayScreen(g: Game) : Screen(g) {
     private var hintStep = 0
 
     init {
-        for (name in listOf("char_body", "char_arm_idle", "char_arm_hold", "char_arm_mouth", "head_normal", "head_smoking",
+        for (name in listOf("torso_arm_idle", "torso_arm_hold", "torso_arm_mouth", "head_normal", "head_smoking",
             "head_exhale", "head_red_1", "head_red_2", "head_red_3", "head_burnt")) {
             val o = g.assets.layerOffset[name]!!
             layers[name] = Layer(g.assets[name], o.x, o.y)
@@ -666,44 +664,30 @@ class PlayScreen(g: Game) : Screen(g) {
     }
 
     private fun updatePuppet(dt: Float) {
-        // arm pose + rotation around the shoulder
-        val pose: String
-        var rot: Float
+        // torso pose (the right arm is drawn into each torso image)
+        val pose = when (state) {
+            PICK -> if (stateT < 0.18f) "torso_arm_idle" else "torso_arm_hold"
+            LIGHT, HOLD, EXHALE -> "torso_arm_hold"
+            INHALE -> "torso_arm_mouth"
+            THROW -> if (stateT < 0.3f) "torso_arm_hold" else "torso_arm_idle"
+            else -> "torso_arm_idle"
+        }
+        if (pose != torsoName) {
+            prevTorso = torsoName
+            torsoName = pose
+            torsoFade = 1f
+        }
+        torsoFade = maxOf(0f, torsoFade - dt / 0.1f)
+        // small body motion: lean in to inhale, flick on throw, jolt on a miss
+        var lx = 0f
+        var ly = 0f
         when (state) {
-            PICK -> {
-                pose = "char_arm_hold"
-                rot = 30f * (1f - Ease.outCubic(stateT / 0.38f))
-            }
-            LIGHT, HOLD -> {
-                pose = "char_arm_hold"
-                rot = 1.2f * sin(t * 1.3f)
-            }
-            INHALE -> {
-                pose = "char_arm_mouth"
-                rot = -14f * (1f - Ease.outCubic(stateT / 0.1f))
-            }
-            EXHALE -> {
-                pose = "char_arm_hold"
-                rot = 9f * (1f - Ease.outCubic(stateT / 0.18f)) + 1.2f * sin(t * 1.3f)
-            }
-            THROW -> {
-                pose = if (stateT < 0.3f) "char_arm_hold" else "char_arm_idle"
-                rot = if (stateT < 0.3f) -32f * sin(PI.toFloat() * stateT / 0.3f) else 0f
-            }
-            else -> {
-                pose = "char_arm_idle"
-                rot = 1.5f * sin(t * 1.4f)
-            }
+            INHALE -> ly = -4f
+            THROW -> lx = -10f * sin(PI.toFloat() * clamp01(stateT / 0.3f))
         }
-        if (missT > 0f) rot += -10f * sin(PI.toFloat() * missT / 0.35f)
-        if (pose != armName) {
-            prevArm = armName
-            prevArmRot = armRot
-            armName = pose
-            armFade = 1f
-        }
-        armRot = rot
-        armFade = maxOf(0f, armFade - dt / 0.09f)
+        if (missT > 0f) lx += -12f * sin(PI.toFloat() * missT / 0.35f)
+        leanX = approach(leanX, lx, 16f, dt)
+        leanY = approach(leanY, ly, 12f, dt)
 
         // head expression
         val head = when {
@@ -734,17 +718,10 @@ class PlayScreen(g: Game) : Screen(g) {
 
     // ------------------------------------------------------------------ geometry
 
-    /** Canvas point on the (rotated) arm -> virtual coordinates in [pt]. */
+    /** Canvas point on the current torso -> virtual coordinates in [pt]. */
     private fun armPoint(px: Float, py: Float) {
-        val a = Math.toRadians(armRot.toDouble())
-        val ca = cos(a).toFloat()
-        val sa = sin(a).toFloat()
-        val dx = px - SHOULDER_X
-        val dy = py - SHOULDER_Y
-        val x = SHOULDER_X + dx * ca - dy * sa
-        val y = SHOULDER_Y + dx * sa + dy * ca
-        pt[0] = charX + shakeX + x * charS
-        pt[1] = charY + (y + bob) * charS
+        pt[0] = charX + shakeX + (px + leanX) * charS
+        pt[1] = charY + (py + bob + leanY) * charS
     }
 
     /** Canvas point on the head -> virtual coordinates in [pt]. */
@@ -817,17 +794,10 @@ class PlayScreen(g: Game) : Screen(g) {
         drawLayer(c, headName, 1f - headFade, tint)
         c.restore()
 
-        drawLayer(c, "char_body", 1f)
-
-        if (armFade > 0f) {
-            c.save()
-            c.rotate(prevArmRot, SHOULDER_X, SHOULDER_Y)
-            drawLayer(c, prevArm, armFade)
-            c.restore()
-        }
         c.save()
-        c.rotate(armRot, SHOULDER_X, SHOULDER_Y)
-        drawLayer(c, armName, 1f)
+        c.translate(leanX, leanY)
+        if (torsoFade > 0f) drawLayer(c, prevTorso, 1f)
+        drawLayer(c, torsoName, 1f - torsoFade)
         c.restore()
         c.restore()
     }
