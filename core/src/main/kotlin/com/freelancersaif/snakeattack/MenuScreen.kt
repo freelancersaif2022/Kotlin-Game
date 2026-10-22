@@ -11,12 +11,12 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
     private val particles = Particles()
     private var roarTimer = 2.5f
     private var titleIn = 0f
-    private val coinsText = Save.coins.toString()
     private val levelText = "LEVEL ${Save.level}"
 
-    private val playBtn = Button(Assets.r("btn_play"), 300f) { play() }
-    private val soundBtn = Button(Assets.r("btn_green"), 190f, "", 26f) { Save.sound = !Save.sound; refresh() }
-    private val musicBtn = Button(Assets.r("btn_green"), 190f, "", 26f) {
+    private val playBtn = Button(Assets.r("ui_btn_play_big"), 330f) { play() }
+    private val plusBtn = coinPlusButton()
+    private val soundBtn = Button(Assets.r("ui_btn_sound_on"), 96f) { Save.sound = !Save.sound; refresh() }
+    private val musicBtn = Button(Assets.r("ui_btn_music_on"), 96f) {
         Save.music = !Save.music
         Assets.refreshMusic()
         refresh()
@@ -27,7 +27,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         buttons += soundBtn
         buttons += musicBtn
         playBtn.pulse = true
-        dragon.scale = 0.82f
+        dragon.scale = 0.7f
         dragon.angry = true
         girl.scale = 0.8f
         girl.mood = Girl.Mood.WAVE
@@ -40,10 +40,8 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
     }
 
     private fun refresh() {
-        soundBtn.region = Assets.r(if (Save.sound) "btn_green" else "btn_grey")
-        soundBtn.label = if (Save.sound) "SOUND ON" else "SOUND OFF"
-        musicBtn.region = Assets.r(if (Save.music) "btn_green" else "btn_grey")
-        musicBtn.label = if (Save.music) "MUSIC ON" else "MUSIC OFF"
+        soundBtn.region = Assets.r(if (Save.sound) "ui_btn_sound_on" else "ui_btn_sound_off")
+        musicBtn.region = Assets.r(if (Save.music) "ui_btn_music_on" else "ui_btn_music_off")
     }
 
     private fun play() = goTo { game.setScreen(MapScreen(game)) }
@@ -53,13 +51,13 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
     override fun layout() {
         playBtn.x = W / 2
         playBtn.y = H * 0.24f
-        soundBtn.x = W / 2 - 110f
-        musicBtn.x = W / 2 + 110f
+        soundBtn.x = W / 2 - 70f
+        musicBtn.x = W / 2 + 70f
         soundBtn.y = H * 0.1f
         musicBtn.y = H * 0.1f
-        girl.baseX = W * 0.22f
+        girl.baseX = W * 0.2f
         girl.baseY = H * 0.33f
-        dragon.x = W * 0.74f
+        dragon.x = W * 0.62f
         dragon.y = H * 0.55f
     }
 
@@ -87,7 +85,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         b.fillRect(-10f, -10f, W + 20f, H + 20f, 0f, 0.08f, 0f, 0.25f)
         // a coiled body trailing off-screen behind the head
         val colors = GemColor.entries
-        dragon.drawNeck(b)
+        dragon.drawNeck(b, dragon.x + 40f, dragon.y - 70f + sin(time * 3f) * 12f, 92f)
         for (i in 8 downTo 0) {
             val sx = dragon.x + 40f + i * 46f
             val sy = dragon.y - 70f - i * 26f + sin(time * 3f - i * 0.6f) * 12f
@@ -112,11 +110,8 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         soundBtn.draw(b)
         musicBtn.draw(b)
 
-        // coins
-        val cw = 160f
+        // coins with the + (buy coins) button
         val top = H - safeTop
-        Assets.pill.draw(b, W - cw - 24f, top - 76f, cw, 52f)
-        b.drawCentered(Assets.r("coin"), W - cw - 16f, top - 50f, 54f, rotation = sin(time * 2f) * 8f)
-        b.text(Assets.fontBig, coinsText, W - cw / 2 - 10f, top - 49f, 32f)
+        Ui.coins(b, W - 230f, top - 50f, 190f, plusBtn)
     }
 }

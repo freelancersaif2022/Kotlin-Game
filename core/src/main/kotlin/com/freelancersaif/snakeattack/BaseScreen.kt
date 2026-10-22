@@ -44,7 +44,7 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
 
     private val input = object : InputAdapter() {
         override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-            if (pointer > 0 || fadeOut >= 0f) return true
+            if (pointer > 0 || fadeOut >= 0f || Ads.showing) return true
             viewport.unproject(touch.set(screenX.toFloat(), screenY.toFloat()))
             downAt.set(touch)
             lastDrag.set(touch)
@@ -74,6 +74,10 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
 
         override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
             if (pointer > 0) return true
+            if (Ads.showing) {
+                buttons.forEach { it.pressed = false }
+                return true
+            }
             viewport.unproject(touch.set(screenX.toFloat(), screenY.toFloat()))
             var clicked = false
             for (b in buttons.asReversed()) if (b.pressed) {
@@ -123,6 +127,11 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
 
     open fun onRelease() {}
 
+    /** Small "+" button shown after the coin counter; opens the coin shop. */
+    protected fun coinPlusButton(): Button = Button(Assets.r("ui_btn_plus_coins"), 56f) { openCoinShop() }.also { buttons += it }
+
+    open fun openCoinShop() = goTo { game.setScreen(ShopScreen(game, ShopScreen.TAB_COINS)) }
+
     /** Background image drawn by [drawBackground]. */
     open val background = "bg/bg_forest.jpg"
     open fun onBack() {}
@@ -138,7 +147,9 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
     override fun render(delta: Float) {
         val dt = min(delta, 1 / 30f)
         time += dt
-        update(dt)
+        Ads.update(dt)
+        // the game world stands still while a video ad is on screen
+        if (!Ads.showing) update(dt)
         buttons.forEach { it.update(dt) }
         shake = max(0f, shake - dt * 2.2f)
         val sx = if (shake > 0f) MathUtils.random(-1f, 1f) * shake * 14f else 0f
@@ -150,6 +161,7 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
         batch.projectionMatrix = camera.combined
         batch.begin()
         draw()
+        Ads.draw(batch, W, H, time)
         // transitions
         if (fadeIn > 0f) {
             fadeIn = max(0f, fadeIn - dt * 3f)

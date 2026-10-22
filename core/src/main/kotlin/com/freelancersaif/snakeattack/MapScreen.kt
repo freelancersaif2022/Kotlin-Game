@@ -15,14 +15,13 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
     private val firstLevel = page * LEVELS + 1
     private val nodes = Array(LEVELS) { Vector2() }   // map space: x world, y from map bottom
     private val labels = Array(LEVELS) { (firstLevel + it).toString() }
+    private val signPos = Array(5) { Vector2() }
     private var mapScale = 1f
     private var mapH = 0f
     private var mapX = 0f
     private var scroll = 0f
     private var velocity = 0f
     private var dragging = false
-    private var noLives = 0f
-    private var noLivesOpen = false
     private val particles = Particles()
     private var autoScrollTo = -1f
 
@@ -32,19 +31,14 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
     private val spinBtn = Button(Assets.r("ui_spin_wheel_8_slices"), 92f) { goTo { game.setScreen(SpinScreen(game)) } }
     private val trophyBtn = Button(Assets.r("ui_trophy_gold"), 92f) { goTo { game.setScreen(AchievementsScreen(game)) } }
     private val homeBtn = Button(Assets.r("ui_home_button"), 72f) { goTo { game.setScreen(MenuScreen(game)) } }
-    private val refillBtn = Button(Assets.r("btn_green"), 340f, "REFILL  150", 38f) { refill() }
-    private val closeBtn = Button(Assets.r("ui_close_x_button"), 74f) { noLivesOpen = false }
+    private val plusBtn = coinPlusButton()
     private val levelText = "PLAY  LEVEL ${Save.level}"
 
     init {
-        buttons += listOf(playBtn, shopBtn, dailyBtn, spinBtn, trophyBtn, homeBtn, refillBtn, closeBtn)
+        buttons += listOf(playBtn, shopBtn, dailyBtn, spinBtn, trophyBtn, homeBtn)
         playBtn.label = levelText
         playBtn.labelSize = 40f
         playBtn.pulse = true
-        refillBtn.icon = Assets.r("coin")
-        refillBtn.iconSize = 44f
-        refillBtn.visible = false
-        closeBtn.visible = false
     }
 
     override fun show() {
@@ -76,6 +70,21 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
                 path.pos(s0 + (s1 - s0) * (k + 0.5f) / 10f, nodes[w * 10 + k])
             }
         }
+        // each world's sign: try spots around its first node, keep the one farthest from every node
+        for (w in 0 until 5) {
+            val n = nodes[w * 10]
+            var best = -1f
+            for (dx in floatArrayOf(-210f, -150f, 150f, 210f, 0f)) for (dy in floatArrayOf(0f, 70f, -70f, 140f)) {
+                val x = MathUtils.clamp(n.x + dx, 110f, W - 110f)
+                val y = n.y + dy
+                var d = Float.MAX_VALUE
+                for (m in nodes) d = minOf(d, Vector2.dst(x, y, m.x, m.y) - (if (abs(m.y - y) < 60f) 40f else 0f))
+                if (d > best) {
+                    best = d
+                    signPos[w].set(x, y)
+                }
+            }
+        }
         val cur = (Save.level - firstLevel).coerceIn(0, LEVELS - 1)
         scroll = clampScroll(nodes[cur].y - H * 0.42f)
         val top = H - safeTop
@@ -88,8 +97,6 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
         dailyBtn.x = W / 2 - 80f; dailyBtn.y = bar
         spinBtn.x = W / 2 + 80f; spinBtn.y = bar
         trophyBtn.x = W / 2 + 240f; trophyBtn.y = bar
-        refillBtn.x = W / 2; refillBtn.y = H / 2 - 90f
-        closeBtn.x = W / 2 + 250f; closeBtn.y = H / 2 + 200f
     }
 
     // the map may scroll a little past its bottom so level 1 clears the bottom bar
@@ -108,7 +115,6 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
     private fun clampScroll(v: Float) = MathUtils.clamp(v, -BOTTOM_PAD, max(-BOTTOM_PAD, mapH - H))
 
     override fun onDrag(dx: Float, dy: Float) {
-        if (noLivesOpen) return
         dragging = true
         scroll = clampScroll(scroll - dy)
         velocity = -dy * 60f
@@ -119,7 +125,6 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
     }
 
     override fun onTap(x: Float, y: Float) {
-        if (noLivesOpen) return
         for (i in 0 until LEVELS) {
             val n = nodes[i]
             if (Vector2.dst(x, y, n.x, n.y - scroll) < 46f) {
@@ -133,30 +138,12 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
     }
 
     private fun tryPlay(level: Int) {
-        if (Save.lives <= 0) {
-            noLivesOpen = true
-            noLives = 0f
-            Assets.sfx("no_lives", 0.8f)
-            return
-        }
         Assets.sfx("node_pop", 0.8f)
         goTo { game.setScreen(game.levelScreen(level)) }
     }
 
-    private fun refill() {
-        if (Save.coins >= 150) {
-            Save.coins -= 150
-            Save.refillAllLives()
-            Assets.sfx("purchase", 0.9f)
-            particles.sparkle(W / 2, H / 2, 14, 120f, Palette.GOLD)
-            noLivesOpen = false
-        } else {
-            Assets.sfx("error", 0.7f)
-        }
-    }
-
     override fun onBack() {
-        if (noLivesOpen) noLivesOpen = false else goTo { game.setScreen(MenuScreen(game)) }
+        goTo { game.setScreen(MenuScreen(game)) }
     }
 
     override fun update(dt: Float) {
@@ -165,10 +152,6 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
             velocity *= 1f / (1f + dt * 4f)
             if (abs(velocity) < 5f) velocity = 0f
         }
-        noLives += dt
-        refillBtn.visible = noLivesOpen
-        closeBtn.visible = noLivesOpen
-        listOf(playBtn, shopBtn, dailyBtn, spinBtn, trophyBtn).forEach { it.enabled = !noLivesOpen }
         if (MathUtils.randomBoolean(dt * 1.5f)) particles.sparkle(MathUtils.random(W), MathUtils.random(H), 1, 10f)
         particles.update(dt)
     }
@@ -198,18 +181,13 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
             }
         }
         b.color = Color.WHITE
-        // world sign boards
+        // world sign boards (positions chosen in layout so they never cover a node)
         for (w in 0 until 5) {
-            val n = nodes[w * 10]
-            val y = n.y - scroll + 70f
+            val p = signPos[w]
+            val y = p.y - scroll
             if (y < -100f || y > H + 100f) continue
-            // put the sign on the side away from where the path heads next
-            var ax = 0f
-            for (k in 0 until 5) ax += nodes[(w * 10 + k).coerceAtMost(LEVELS - 1)].x
-            ax /= 5f
-            val sx = MathUtils.clamp(if (ax > n.x) n.x - 170f else n.x + 170f, 110f, W - 110f)
-            b.drawCentered(Assets.r("ui_map_world_sign_board"), sx, y, 210f)
-            b.text(Assets.fontBig, World.entries[w].title, sx, y + 16f, 20f)
+            b.drawCentered(Assets.r("ui_map_world_sign_board"), p.x, y, 210f)
+            b.text(Assets.fontBig, World.entries[w].title, p.x, y + 16f, 20f)
         }
         // nodes
         for (i in 0 until LEVELS) {
@@ -248,15 +226,14 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
         }
         particles.draw(b)
         drawHud()
-        if (noLivesOpen) drawNoLives()
     }
 
     private fun drawHud() {
         val b = batch
         val top = H - safeTop
         b.fillRect(0f, top - 90f, W, 90f + safeTop, 0f, 0f, 0f, 0.28f)
-        Ui.lives(b, 24f, top - 46f)
-        Ui.coins(b, W - 190f, top - 46f, 170f)
+        Ui.stars(b, 30f, top - 46f)
+        Ui.coins(b, W - 230f, top - 46f, 190f, plusBtn)
         homeBtn.draw(b)
         // bottom bar
         b.fillRect(0f, 0f, W, 150f, 0f, 0f, 0f, 0.35f)
@@ -281,18 +258,6 @@ class MapScreen(game: SnakeAttackGame) : BaseScreen(game) {
         val y = btn.y + 34f + sin(time * 6f) * 3f
         b.drawCentered(Assets.r("booster_count_badge"), x, y, 36f)
         b.text(Assets.fontSmall, text, x, y + 1f, 20f)
-    }
-
-    private fun drawNoLives() {
-        val b = batch
-        val k = clamp01(noLives * 5f)
-        Ui.dim(b, W, H, 0.6f * k)
-        Ui.popup(b, W / 2, H / 2, 560f, 460f, "ribbon_red", "OUT OF LIVES", Ease.outBack(k))
-        if (k < 1f) return
-        b.drawCentered(Assets.r("ui_heart_broken"), W / 2, H / 2 + 100f, 130f)
-        b.text(Assets.fontPlain, "Next life in " + Ui.clock(Save.nextLifeIn), W / 2, H / 2 + 10f, 34f, Palette.BROWN)
-        refillBtn.draw(b)
-        closeBtn.draw(b)
     }
 
     companion object {

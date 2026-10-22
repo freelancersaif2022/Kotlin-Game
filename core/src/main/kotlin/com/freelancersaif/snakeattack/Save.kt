@@ -15,8 +15,6 @@ enum class Booster(val key: String, val icon: String, val title: String) {
 object Save {
     private val prefs: Preferences by lazy { Gdx.app.getPreferences("snake_attack") }
 
-    const val MAX_LIVES = 5
-    const val LIFE_REFILL_MS = 20L * 60L * 1000L
 
     var level: Int
         get() = prefs.getInteger("level", 1)
@@ -52,56 +50,6 @@ object Save {
     }
 
     val totalStars get() = prefs.getInteger("totalStars", 0)
-
-    // ------------------------------------------------------------------ lives
-
-    private var livesCache = -1
-    private var livesCheckedAt = 0L
-
-    /** Current lives, applying the time-based refill (re-read at most once a second). */
-    val lives: Int
-        get() {
-            val now = TimeUtils.millis()
-            if (livesCache < 0 || now - livesCheckedAt > 1000L) {
-                refillLives()
-                livesCache = prefs.getInteger("lives", MAX_LIVES)
-                livesCheckedAt = now
-            }
-            return livesCache
-        }
-
-    private fun refillLives() {
-        var l = prefs.getInteger("lives", MAX_LIVES)
-        if (l >= MAX_LIVES) return
-        val now = TimeUtils.millis()
-        var last = prefs.getLong("lifeTime", now)
-        val gained = ((now - last) / LIFE_REFILL_MS).toInt()
-        if (gained > 0) {
-            l = minOf(MAX_LIVES, l + gained)
-            last += gained * LIFE_REFILL_MS
-            prefs.putInteger("lives", l).putLong("lifeTime", if (l >= MAX_LIVES) now else last).flush()
-        }
-    }
-
-    /** Milliseconds until the next life (0 when full). */
-    val nextLifeIn: Long
-        get() {
-            if (lives >= MAX_LIVES) return 0L
-            val last = prefs.getLong("lifeTime", TimeUtils.millis())
-            return (LIFE_REFILL_MS - (TimeUtils.millis() - last)).coerceAtLeast(0L)
-        }
-
-    fun loseLife() {
-        val l = lives
-        if (l >= MAX_LIVES) prefs.putLong("lifeTime", TimeUtils.millis())
-        prefs.putInteger("lives", (l - 1).coerceAtLeast(0)).flush()
-        livesCache = -1
-    }
-
-    fun refillAllLives() {
-        prefs.putInteger("lives", MAX_LIVES).flush()
-        livesCache = -1
-    }
 
     // --------------------------------------------------------------- boosters
 

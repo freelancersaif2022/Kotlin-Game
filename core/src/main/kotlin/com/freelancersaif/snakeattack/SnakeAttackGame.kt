@@ -34,7 +34,7 @@ class SnakeAttackGame : Game() {
                 "game" -> GameScreen(this, level)
                 "rig" -> RigPreviewScreen(this)
                 "map" -> MapScreen(this)
-                "shop" -> ShopScreen(this)
+                "shop" -> ShopScreen(this, System.getProperty("snake.tab")?.toInt() ?: ShopScreen.TAB_BOOSTERS)
                 "daily" -> DailyScreen(this)
                 "spin" -> SpinScreen(this)
                 "awards" -> AchievementsScreen(this)

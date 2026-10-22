@@ -2,7 +2,7 @@ package com.freelancersaif.snakeattack
 
 /** Shop catalogue entries. */
 class ShopItem(val id: String, val title: String, val icon: String, val price: Int, val kind: Kind, val amount: Int = 1) {
-    enum class Kind { BOOSTER, BOOSTER_PACK, LIVES, OUTFIT, HAT, SKIN }
+    enum class Kind { BOOSTER, BOOSTER_PACK, OUTFIT, HAT, SKIN }
 }
 
 object Shop {
@@ -12,7 +12,6 @@ object Shop {
         ShopItem("rainbow", "Rainbow", "ui_booster_rainbow", 150, ShopItem.Kind.BOOSTER),
         ShopItem("shuffle", "Shuffle", "ui_booster_shuffle", 80, ShopItem.Kind.BOOSTER),
         ShopItem("pack", "Mega Pack", "ui_booster_pack_box", 400, ShopItem.Kind.BOOSTER_PACK, 2),
-        ShopItem("lives", "Full Lives", "ui_heart_plus", 150, ShopItem.Kind.LIVES),
     )
 
     val outfits = listOf(
@@ -31,6 +30,9 @@ object Shop {
         ShopItem("hat_princess_tiara", "Tiara", "ui_hat_princess_tiara", 500, ShopItem.Kind.HAT),
         ShopItem("hat_witch", "Witch Hat", "ui_hat_witch", 500, ShopItem.Kind.HAT),
     )
+
+    /** Items unlocked by watching a rewarded video instead of paying coins. */
+    val adUnlocks = setOf("body_pink_dress", "body_yellow_summer", "hat_flower_crown")
 
     val skins = DragonSkinCatalog.shop.map { ShopItem(it.id, it.title, it.preview, it.price, ShopItem.Kind.SKIN) }
 
@@ -57,13 +59,12 @@ object Shop {
         when (item.kind) {
             ShopItem.Kind.BOOSTER -> Save.addBooster(Booster.entries.first { it.key == item.id }, 1)
             ShopItem.Kind.BOOSTER_PACK -> Booster.entries.forEach { Save.addBooster(it, item.amount) }
-            ShopItem.Kind.LIVES -> Save.refillAllLives()
             else -> {
                 Save.buy(item.id)
                 equip(item)
             }
         }
-        if (item.kind != ShopItem.Kind.LIVES) Save.addStat("purchases")
+        Save.addStat("purchases")
         return true
     }
 }

@@ -7,6 +7,7 @@ abstract class MetaScreen(game: SnakeAttackGame, private val title: String, priv
     protected val particles = Particles()
     protected val toasts = ArrayList<Ui.Toast>()
     private val backBtn = Button(Assets.r("ui_back_arrow_button"), 82f) { back() }
+    private val plusBtn = coinPlusButton()
     override val background = World.of(Save.level).bg
 
     init {
@@ -54,10 +55,10 @@ abstract class MetaScreen(game: SnakeAttackGame, private val title: String, priv
         particles.draw(b)
         b.color = Color.WHITE
         b.fillRect(0f, top - 112f, W, 112f + safeTop, 0f, 0f, 0f, 0.25f)
-        b.drawCentered(Assets.r(ribbon), W / 2 - 10f, top - 56f, 340f)
-        b.text(Assets.fontBig, title, W / 2 - 10f, top - 48f, 36f)
+        b.drawCentered(Assets.r(ribbon), W / 2 - 34f, top - 56f, 320f)
+        b.text(Assets.fontBig, title, W / 2 - 34f, top - 48f, 34f)
         backBtn.draw(b)
-        Ui.coins(b, W - 180f, top - 56f, 160f)
+        Ui.coins(b, W - 196f, top - 56f, 170f, plusBtn)
         toasts.firstOrNull()?.let { Ui.drawToast(b, W, top - 110f, it) }
     }
 }

@@ -519,6 +519,56 @@ def gen_neck(w=76, h=90):
     return im.resize((w, h), Image.LANCZOS)
 
 
+def v3(folder, name):
+    return load(f"v3/{folder}/{name}.png")
+
+
+def largest_component(im, thresh=40):
+    """Keeps only the biggest connected opaque blob (drops stray slicing fragments)."""
+    a = np.asarray(im.convert("RGBA")).copy()
+    solid = a[..., 3] > thresh
+    h, w = solid.shape
+    labels = np.zeros((h, w), np.int32)
+    best, best_n, cur = 0, 0, 0
+    for y0 in range(h):
+        for x0 in np.where(solid[y0] & (labels[y0] == 0))[0]:
+            cur += 1
+            stack = [(y0, x0)]
+            labels[y0, x0] = cur
+            n = 0
+            while stack:
+                y, x = stack.pop()
+                n += 1
+                for yy, xx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                    if 0 <= yy < h and 0 <= xx < w and solid[yy, xx] and labels[yy, xx] == 0:
+                        labels[yy, xx] = cur
+                        stack.append((yy, xx))
+            if n > best_n:
+                best, best_n = cur, n
+    keep = labels == best
+    # keep the soft edge pixels next to the blob too
+    grown = np.asarray(Image.fromarray((keep * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(5))) > 0
+    a[..., 3] = np.where(grown, a[..., 3], 0)
+    return Image.fromarray(a, "RGBA")
+
+
+def clean_neck(im):
+    """The generated neck connector sits on a dark brown backdrop; cut it out by colour."""
+    a = np.asarray(im.convert("RGBA")).copy()
+    hsv = np.asarray(im.convert("RGB").convert("HSV")).astype(np.float32) / 255.0
+    sat, val = hsv[..., 1], hsv[..., 2]
+    body = (val > 0.42) & ((sat > 0.35) | (val > 0.75)) & (a[..., 3] > 40)
+    m = Image.fromarray((body * 255).astype(np.uint8)).filter(ImageFilter.MedianFilter(7))
+    for _ in range(3):
+        m = m.filter(ImageFilter.MaxFilter(5))     # close gaps between scales
+    for _ in range(2):
+        m = m.filter(ImageFilter.MinFilter(5))
+    m = m.filter(ImageFilter.MaxFilter(5))         # include the dark outline ring
+    alpha = np.asarray(m.filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32)
+    a[..., 3] = np.minimum(a[..., 3], alpha).astype(np.uint8)
+    return largest_component(Image.fromarray(a, "RGBA"))
+
+
 def pack_atlas(name, items):
     packer = Packer()
     placements = packer.pack(items)
@@ -583,9 +633,14 @@ def main():
     add("g_head", fix_head(v2("girl_rig_main", "girl_head")), factor=G, keep=True)
     for fn in sorted(os.listdir(os.path.join(ART, V2, "girl_faces"))):
         add("g_" + fn[:-4], fix_head(v2("girl_faces", fn[:-4])), factor=G, keep=True)
-    for n in ("girl_ponytail", "girl_arm_left", "girl_arm_right", "girl_arm_left_up", "girl_arm_right_up",
-              "girl_leg_left", "girl_leg_right", "girl_leg_left_run", "girl_leg_right_run"):
-        add("g_" + n[5:], v2("girl_rig_main", n), factor=G)
+    add("g_ponytail", v2("girl_rig_main", "girl_ponytail"), factor=G)
+    # v3 limbs: slim one-piece arms and legs with small hands (same 1000px scale)
+    for n in ("girl_arm_left", "girl_arm_right", "girl_leg_left", "girl_leg_right"):
+        add("g_" + n[5:], largest_component(v3("girl_rig_v3", n)), factor=G)
+    add("g_neck", largest_component(v3("girl_body_v3", "girl_neck")), factor=G)
+    # dragon neck connector (red; recoloured per skin by the hue shader like the head)
+    add("dragon_neck_connector", clean_neck(v3("dragon_neck", "dragon_neck_connector")), 200)
+    add("video_ad_badge_small", v3("video_ads", "video_ad_badge_small"), 56)
 
     # boosters, boss, special balls, world particles, lives
     for n in ("booster_bomb", "booster_freeze", "booster_rainbow", "booster_shuffle"):
@@ -605,7 +660,6 @@ def main():
     add("boss_crown", v2("dragon_skins", "boss_crown"), 180)
     for n in ("ember_particle", "firefly_particle", "leaf_particle", "sand_particle", "snowflake_particle", "rain_drop_particle"):
         add(n, v2("world_icons", n), 56)
-    add("heart_full", v2("lives_and_currency", "heart_full"), 72)
 
     gen = {
         "white": gen_white(), "glow": gen_glow(), "circle": gen_circle(96),
@@ -626,7 +680,6 @@ def main():
         "ribbon_blue": gen_ribbon((40, 140, 245)), "ribbon_orange": gen_ribbon((255, 150, 30)),
         "ribbon_purple": gen_ribbon((160, 80, 230)),
         "frame_panel": gen_frame_panel(), "switch_on": gen_switch(True), "switch_off": gen_switch(False),
-        "g_neck": gen_neck(),
     }
     for name, im in gen.items():
         items.append((name, bleed(im) if name != "white" else im))
@@ -669,6 +722,15 @@ def main():
     for fn in sorted(os.listdir(os.path.join(ART, V2, "girl_outfits"))):
         add("ui_" + fn[:-4], v2("girl_outfits", fn[:-4]), 150)
     add("ui_skull_fail", load("main/skull_fail.png"), 120)
+    for fn in sorted(os.listdir(os.path.join(ART, "v3", "buttons_ui"))):
+        n = fn[:-4]
+        add("ui_" + n, v3("buttons_ui", n), 330 if n == "btn_play_big" else (300 if n == "coin_counter_frame" else 120))
+    for fn in sorted(os.listdir(os.path.join(ART, "v3", "coin_packs"))):
+        n = fn[:-4]
+        add("ui_" + n, v3("coin_packs", n), 210 if n in ("coin_pack_card", "price_button_green") else 170)
+    for fn in sorted(os.listdir(os.path.join(ART, "v3", "video_ads"))):
+        n = fn[:-4]
+        add("ui_" + n, v3("video_ads", n), 300 if n == "video_ad_button_green" else 130)
     add("ui_body_default", v2("girl_rig_main", "girl_body"), 150)
     pack_atlas("ui", items)
 

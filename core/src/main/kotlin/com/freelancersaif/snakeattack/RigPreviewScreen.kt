@@ -24,7 +24,7 @@ class RigPreviewScreen(game: SnakeAttackGame) : BaseScreen(game) {
             dragons.forEachIndexed { i, d ->
                 d.x = W * 0.62f
                 d.y = H * (0.82f - i * 0.3f)
-                d.drawNeck(batch)
+                d.drawNeck(batch, d.x + 60f, d.y - 20f, 60f)
                 d.draw(batch)
             }
         } else {

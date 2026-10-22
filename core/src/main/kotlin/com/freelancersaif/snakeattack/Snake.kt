@@ -11,8 +11,6 @@ import kotlin.math.sin
 /** The rigged dragon head (faces left in its source art). */
 class DragonHead : Rig() {
     val root = bone(null, 0f, 0f)
-    // neck tube: its axis runs ~20° down-right in the art, rotated to point straight back
-    private val neck = bone(Assets.r("dragon_neck_piece"), 40f, 60f, root, 4f, -6f)
     private val head = bone(Assets.r("dragon_upper_head"), 226f, 118f, root, 0f, 0f)
     private val mouth = bone(Assets.r("circle"), 48f, 48f, head, 132f, 160f)
     private val jaw = bone(Assets.r("dragon_lower_jaw"), 178f, 22f, head, 222f, 156f)
@@ -71,7 +69,6 @@ class DragonHead : Rig() {
         flinch.update(dt)
         head.rot = flinch.value * 0.04f + sin(time * 2.2f) * 2.5f
         head.dx = flinch.value * 0.06f
-        neck.rot = 20f + sin(time * 2.2f + 0.5f) * 3f
         hornFront.rot = sin(time * 2.6f) * 3f
         hornBack.rot = sin(time * 2.6f + 0.6f) * 3f
         frill.rot = sin(time * 3.1f) * 6f
@@ -85,10 +82,27 @@ class DragonHead : Rig() {
         stars.rot = time * 120f
     }
 
-    /** Draws only the neck tube; called before the body so the first ball covers its cut end. */
-    fun drawNeck(batch: Batch) {
-        updateTransforms()
-        neck.draw(batch, alpha, null)
+    private val neckRegion = Assets.r("dragon_neck_connector")
+
+    /**
+     * Draws the scaly neck from the back of the head to the first body ball at
+     * ([ballX], [ballY]). The connector's round end (right side of the art) is
+     * centred on the ball, so the ball drawn on top hides it completely; the
+     * narrow end tucks under the head. Call before drawing the balls.
+     */
+    fun drawNeck(batch: Batch, ballX: Float, ballY: Float, ballSize: Float) {
+        val dx = ballX - x
+        val dy = ballY - y
+        val ang = MathUtils.atan2(dy, dx) * MathUtils.radiansToDegrees
+        val h = ballSize * 1.02f
+        val w = h * neckRegion.regionWidth / neckRegion.regionHeight
+        // round end centre sits at 86% of the art width
+        val ox = w * 0.86f
+        val oy = h * 0.5f
+        val c = batch.packedColor
+        batch.setColor(tintColor.r, tintColor.g, tintColor.b, alpha)
+        batch.draw(neckRegion, ballX - ox, ballY - oy, ox, oy, w, h, 1f, 1f, ang)
+        batch.packedColor = c
     }
 
     /** The boss crown is drawn after the colour shader so it stays golden. */
@@ -248,7 +262,15 @@ class Snake(var path: Path, specs: List<SegSpec>, val skin: DragonSkin, boss: Bo
             if (seg.pos.x > viewRight + segSize) continue
             batch.drawCentered(shadow, seg.pos.x + 4f, seg.pos.y - segSize * 0.36f, segSize * 1.2f)
         }
-        if (!dead) head.drawNeck(batch)
+        if (!dead) {
+            val first = segments.firstOrNull()
+            if (first != null) {
+                head.drawNeck(batch, first.pos.x, first.pos.y, segSize)
+            } else {
+                path.pos(headS - headGap, tmp)
+                head.drawNeck(batch, tmp.x, tmp.y, segSize)
+            }
+        }
         HueShader.end(batch)
         // body segments, back to front so the front overlaps
         for (i in segments.indices.reversed()) {

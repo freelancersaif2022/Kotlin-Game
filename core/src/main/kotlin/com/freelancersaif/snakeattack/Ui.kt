@@ -31,7 +31,18 @@ object Ui {
         b.text(Assets.fontBig, text, x + w / 2 + 16f, y + 1f, 30f, textColor)
     }
 
-    fun coins(b: Batch, x: Float, y: Float, w: Float = 160f) = pill(b, x, y, w, "coin", num(Save.coins))
+    /** Coin counter pill; [plus] (if given) sits on its right end and opens the coin shop. */
+    fun coins(b: Batch, x: Float, y: Float, w: Float = 160f, plus: Button? = null) {
+        val tw = if (plus != null) w - 30f else w
+        Assets.pill.draw(b, x, y - 26f, w, 52f)
+        b.drawCentered(Assets.r("coin"), x + 8f, y, 52f)
+        b.text(Assets.fontBig, num(Save.coins), x + tw / 2 + 14f, y + 1f, 30f)
+        if (plus != null) {
+            plus.x = x + w - 6f
+            plus.y = y
+            plus.draw(b)
+        }
+    }
 
     // small cache so per-frame counters don't allocate new strings
     private val numCache = HashMap<Int, String>()
@@ -39,15 +50,8 @@ object Ui {
     private var clockSec = -1
     private var clockStr = ""
 
-    /** Hearts pill: lives count and the refill countdown when not full. */
-    fun lives(b: Batch, x: Float, y: Float, w: Float = 190f) {
-        val l = Save.lives
-        Assets.pill.draw(b, x, y - 26f, w, 52f)
-        b.drawCentered(Assets.r("heart_full"), x + 10f, y, 58f)
-        b.text(Assets.fontBig, num(l), x + 10f, y + 2f, 28f)
-        val txt = if (l >= Save.MAX_LIVES) "FULL" else clock(Save.nextLifeIn)
-        b.text(Assets.fontBig, txt, x + w / 2 + 22f, y + 1f, 28f, if (l > 0) Color.WHITE else Palette.RED)
-    }
+    /** Total stars collected. */
+    fun stars(b: Batch, x: Float, y: Float, w: Float = 150f) = pill(b, x, y, w, "star", num(Save.totalStars), iconSize = 54f)
 
     fun clock(ms: Long): String {
         val s = (ms / 1000).toInt()
