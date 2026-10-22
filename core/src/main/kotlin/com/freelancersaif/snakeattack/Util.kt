@@ -118,4 +118,7 @@ object Palette {
     val RAYS_WIN: Color = Color.valueOf("fff3b0")
     val RAYS_LOSE: Color = Color.valueOf("ffb347")
     val BLAST: Color = Color.valueOf("ff7a2a")
+    val ICE: Color = Color.valueOf("9fe4ff")
+    val STEEL: Color = Color.valueOf("c9d2da")
+    val PURPLE: Color = Color.valueOf("8a4bd6")
 }

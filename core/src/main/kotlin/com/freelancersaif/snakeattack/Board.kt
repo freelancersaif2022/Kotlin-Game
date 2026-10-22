@@ -14,7 +14,16 @@ class Block(val spec: BlockSpec) {
     enum class State { IDLE, BUMP, EXIT, FLY, GONE }
 
     val color get() = spec.color
-    val dir get() = spec.dir
+    var dir = spec.dir
+    /** Spin animation (1 -> 0) played when the shuffle booster turns the arrow. */
+    var spin = 0f
+    private var oldAngle = 0f
+    fun arrowAngle() = if (spin > 0f) dir.angle + (oldAngle - dir.angle + 360f) * Ease.inCubic(spin) else dir.angle
+    fun turnTo(d: Dir) {
+        oldAngle = dir.angle
+        dir = d
+        spin = 1f
+    }
     var col = spec.col
     var row = spec.row
     var state = State.IDLE
@@ -134,6 +143,63 @@ class Board(val spec: LevelSpec) {
         b.squash.value = 0.82f
     }
 
+    /** Removes the idle blocks in the 3x3 area around (col, row) and returns them. */
+    fun bomb(col: Int, row: Int): List<Block> {
+        val hit = ArrayList<Block>()
+        for (c in col - 1..col + 1) for (r in row - 1..row + 1) {
+            if (c !in 0 until spec.cols || r !in 0 until spec.rows) continue
+            val b = grid[c][r] ?: continue
+            if (b.state != Block.State.IDLE && b.state != Block.State.BUMP) continue
+            grid[c][r] = null
+            b.state = Block.State.GONE
+            hit += b
+        }
+        return hit
+    }
+
+    fun cellOf(wx: Float, wy: Float): Pair<Int, Int>? {
+        val c = floor((wx - originX) / cell).toInt()
+        val r = floor((wy - originY) / cell).toInt()
+        return if (c in 0 until spec.cols && r in 0 until spec.rows) c to r else null
+    }
+
+    /**
+     * Gives every idle block a new arrow. Directions are assigned in a random order
+     * so each new arrow is clear of the blocks assigned before it, which keeps the
+     * board solvable (remove them in reverse order). Returns false if nothing changed.
+     */
+    fun shuffle(): Boolean {
+        val idle = blocks.filter { it.state == Block.State.IDLE && grid[it.col][it.row] === it }
+        if (idle.isEmpty()) return false
+        repeat(40) {
+            val order = idle.shuffled()
+            val placed = HashSet<Long>()
+            val result = HashMap<Block, Dir>()
+            var ok = true
+            for (b in order) {
+                val dirs = Dir.entries.filter { d ->
+                    var x = b.col + d.dx
+                    var y = b.row + d.dy
+                    var clear = true
+                    while (x in 0 until spec.cols && y in 0 until spec.rows) {
+                        if (placed.contains(x * 100L + y)) { clear = false; break }
+                        x += d.dx
+                        y += d.dy
+                    }
+                    clear
+                }
+                if (dirs.isEmpty()) { ok = false; break }
+                result[b] = dirs.random()
+                placed += b.col * 100L + b.row
+            }
+            if (ok) {
+                result.forEach { (b, d) -> b.turnTo(d) }
+                return true
+            }
+        }
+        return false
+    }
+
     fun bump(b: Block) {
         b.state = Block.State.BUMP
         b.time = 0f
@@ -144,6 +210,7 @@ class Board(val spec: LevelSpec) {
     fun update(dt: Float, onArrive: (Block) -> Unit) {
         time += dt
         for (b in blocks) {
+            b.spin = max(0f, b.spin - dt * 2.5f)
             b.squash.update(dt)
             b.wiggle.update(dt)
             b.hint = max(0f, b.hint - dt * 0.35f)
@@ -251,7 +318,7 @@ class Board(val spec: LevelSpec) {
         // arrow, slightly above centre because the block art has a thick bottom edge
         val pulse = if (hinted) 1f + 0.12f * sin(time * 10f) else 1f
         val ay = y + size * 0.05f
-        batch.drawCentered(Assets.r("arrow"), x, ay, size * 0.62f * pulse, rotation = b.dir.angle + rot, scaleX = sx, scaleY = sy)
+        batch.drawCentered(Assets.r("arrow"), x, ay, size * 0.62f * pulse * (1f + b.spin * 0.25f), rotation = b.arrowAngle() + rot, scaleX = sx, scaleY = sy)
     }
 
     fun nudgeIdle(dt: Float) {

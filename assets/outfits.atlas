@@ -1,0 +1,97 @@
+
+outfits0.png
+size: 2048,2048
+format: RGBA8888
+filter: MipMapLinearLinear,Linear
+repeat: none
+body_black_ninja
+  rotate: false
+  xy: 6, 462
+  size: 152, 215
+  orig: 152, 215
+  offset: 0, 0
+  index: -1
+body_default
+  rotate: false
+  xy: 6, 234
+  size: 150, 216
+  orig: 150, 216
+  offset: 0, 0
+  index: -1
+body_green_explorer
+  rotate: false
+  xy: 168, 234
+  size: 152, 215
+  orig: 152, 215
+  offset: 0, 0
+  index: -1
+body_orange_hoodie
+  rotate: false
+  xy: 6, 1143
+  size: 150, 215
+  orig: 150, 215
+  offset: 0, 0
+  index: -1
+body_pink_dress
+  rotate: false
+  xy: 169, 6
+  size: 151, 215
+  orig: 151, 215
+  offset: 0, 0
+  index: -1
+body_purple_witch
+  rotate: false
+  xy: 6, 689
+  size: 151, 215
+  orig: 151, 215
+  offset: 0, 0
+  index: -1
+body_red_princess
+  rotate: false
+  xy: 6, 6
+  size: 151, 216
+  orig: 151, 216
+  offset: 0, 0
+  index: -1
+body_white_bride
+  rotate: false
+  xy: 6, 916
+  size: 151, 215
+  orig: 151, 215
+  offset: 0, 0
+  index: -1
+body_yellow_summer
+  rotate: false
+  xy: 6, 1370
+  size: 152, 214
+  orig: 152, 214
+  offset: 0, 0
+  index: -1
+hat_explorer
+  rotate: false
+  xy: 169, 689
+  size: 106, 60
+  orig: 106, 60
+  offset: 0, 0
+  index: -1
+hat_flower_crown
+  rotate: false
+  xy: 170, 461
+  size: 106, 56
+  orig: 106, 56
+  offset: 0, 0
+  index: -1
+hat_princess_tiara
+  rotate: false
+  xy: 168, 1227
+  size: 106, 70
+  orig: 106, 70
+  offset: 0, 0
+  index: -1
+hat_witch
+  rotate: false
+  xy: 168, 1143
+  size: 106, 72
+  orig: 106, 72
+  offset: 0, 0
+  index: -1

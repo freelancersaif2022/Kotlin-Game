@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 /** Development-only screen (desktop, -Dsnake.scene=rig) that shows the character rigs large. */
 class RigPreviewScreen(game: SnakeAttackGame) : BaseScreen(game) {
     private val girls = Girl.Mood.entries.filter { it != Girl.Mood.CAUGHT }.map { mood -> Girl().also { it.mood = mood; it.scale = 0.5f } }
-    private val dragons = List(3) { DragonHead().also { it.scale = 0.75f } }
+    private val dragons = List(3) { DragonHead().also { it.scale = 0.75f; it.boss = it.hashCode() % 2 == 0 } }
     private val showDragon = System.getProperty("snake.rig") == "dragon"
 
     override fun update(dt: Float) {
@@ -30,7 +30,7 @@ class RigPreviewScreen(game: SnakeAttackGame) : BaseScreen(game) {
         } else {
             girls.forEachIndexed { i, g ->
                 g.baseX = W * (0.27f + (i % 2) * 0.46f)
-                g.baseY = H * (0.70f - (i / 2) * 0.33f)
+                g.baseY = H * (0.76f - (i / 2) * 0.31f)
                 g.render(batch)
                 batch.text(Assets.fontSmall, g.mood.name, g.baseX, g.baseY - 30f, 26f)
             }

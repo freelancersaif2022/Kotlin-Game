@@ -411,6 +411,142 @@ def sfx_scream():
     return reverb(finish(x * env(d, 0.03, 0.1, 0.8, 0.12), 0.6), wet=0.2)
 
 
+# ------------------------------------------------------------ v2 SFX
+
+def sfx_bomb():
+    d = 1.6
+    body = onepole_lp(noise(d), 200 + 3000 * np.exp(-t_(d) / 0.08)) * exp_env(d, 0.35) * 3
+    sub = np.sin(sweep(70, 25, 1.2)) * exp_env(1.2, 0.4) * 2
+    crack = biquad(noise(0.05), "hp", 1500) * exp_env(0.05, 0.01) * 2
+    debris = mix(*[at(biquad(noise(0.08), "bp", 2000 + 800 * k, 4) * exp_env(0.08, 0.02) * 0.5, 0.12 + 0.07 * k)
+                   for k in range(6)])
+    return reverb(finish(mix(body, sub, crack, debris), drive=2.6), wet=0.35)
+
+
+def sfx_freeze():
+    d = 1.4
+    shimmer = mix(*[at(bell(2000 + 450 * k, 0.6, 0.18) * 0.25, 0.035 * k) for k in range(10)])
+    crackle = biquad(noise(0.6), "hp", 4000) * (np.random.default_rng(3).random(len(noise(0.6))) > 0.985) * 3
+    wind = svf_sweep(noise(d), 3000, 800, q=2) * env(d, 0.05, 0.4, 0.3, 0.5) * 0.6
+    return reverb(finish(mix(shimmer, crackle, wind)), wet=0.45)
+
+
+def sfx_freeze_end():
+    out = mix(*[at(biquad(noise(0.07), "bp", 2500 + 600 * k, 3) * exp_env(0.07, 0.02), 0.05 * k) for k in range(5)])
+    return reverb(finish(out), wet=0.3)
+
+
+def sfx_rainbow():
+    notes = [72, 76, 79, 83, 84, 88, 91, 96]
+    out = mix(*[at(bell(midi(n), 0.7, 0.25) * 0.6, 0.05 * k) for k, n in enumerate(notes)])
+    gliss = np.sin(sweep(600, 2400, 0.5)) * env(0.5, 0.02, 0.3, 0.3, 0.15) * 0.25
+    return reverb(finish(mix(out, gliss)), wet=0.45)
+
+
+def sfx_shuffle():
+    sw = svf_sweep(noise(0.45), 400, 4000, q=1.5) * np.sin(np.pi * np.linspace(0, 1, int(0.45 * SR))) ** 1.5
+    clicks = mix(*[at(np.sin(sweep(1800, 900, 0.03)) * exp_env(0.03, 0.008) * 0.6, 0.04 * k + 0.1) for k in range(8)])
+    return reverb(finish(mix(sw, clicks)), wet=0.2)
+
+
+def sfx_armor():
+    t = t_(0.6)
+    metal = sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t / dk)
+                for f, a, dk in ((620, 0.7, 0.25), (1430, 0.5, 0.15), (2210, 0.4, 0.1), (3550, 0.3, 0.06)))
+    hit = biquad(noise(0.05), "bp", 3000, 2) * exp_env(0.05, 0.01) * 1.5
+    return reverb(finish(mix(metal, hit), drive=1.4), wet=0.25)
+
+
+def sfx_armor_break():
+    shards = mix(*[at(bell(2500 + 900 * (k % 4), 0.25, 0.06) * 0.5, 0.025 * k) for k in range(12)])
+    crunch = biquad(noise(0.3), "bp", 2200, 1.2) * exp_env(0.3, 0.07) * 2
+    return reverb(finish(mix(shards, crunch, sfx_armor() * 0.5), drive=1.5), wet=0.3)
+
+
+def sfx_boss_roar():
+    d = 2.2
+    t = t_(d)
+    f0 = 60 * (1 - 0.3 * t / d) * (1 + 0.05 * np.sin(2 * np.pi * 6 * t))
+    ph = 2 * np.pi * np.cumsum(f0) / SR
+    growl = saw(ph) * (0.7 + 0.3 * np.sin(2 * np.pi * 23 * t))
+    voice = mix(growl, noise(d) * 0.7)
+    form = svf_sweep(voice, 420, 300, q=4) * 1.4 + svf_sweep(voice, 900, 650, q=5) + svf_sweep(voice, 2000, 1500, q=6) * 0.4
+    shape = env(d, 0.2, 0.4, 0.8, 0.8)
+    sub = np.sin(ph * 0.5) * shape * 0.8
+    return reverb(finish(mix(form * shape, sub), drive=3), wet=0.4)
+
+
+def sfx_heart_lose():
+    out = mix(*[at(np.sin(2 * np.pi * midi(n) * t_(0.25)) * env(0.25, 0.01, 0.2, 0, 0.02) * 0.6, 0.18 * k)
+                for k, n in enumerate((76, 72, 67))])
+    return reverb(finish(out), wet=0.3)
+
+
+def sfx_spin_tick():
+    return finish(mix(np.sin(sweep(2200, 1500, 0.025)) * exp_env(0.025, 0.006),
+                      biquad(noise(0.015), "hp", 3000) * exp_env(0.015, 0.003) * 0.4), 0.5)
+
+
+def sfx_reward():
+    out = mix(sfx_coin(), at(mix(*[at(bell(midi(n), 0.8, 0.3) * 0.5, 0.07 * k) for k, n in enumerate((79, 84, 88, 91))]), 0.1))
+    return reverb(finish(out), wet=0.4)
+
+
+def sfx_chest_open():
+    creak = svf_sweep(saw(2 * np.pi * np.cumsum(140 + 60 * np.sin(np.linspace(0, 9, int(0.5 * SR)))) / SR), 600, 1200, q=6) * env(0.5, 0.05, 0.3, 0.5, 0.1) * 0.6
+    thud = np.sin(sweep(150, 60, 0.2)) * exp_env(0.2, 0.06)
+    sparkle = mix(*[at(bell(2000 + 300 * k, 0.5, 0.15) * 0.3, 0.45 + 0.04 * k) for k in range(10)])
+    return reverb(finish(mix(creak, at(thud, 0.45), sparkle)), wet=0.4)
+
+
+def sfx_purchase():
+    ding = mix(bell(midi(91), 0.8, 0.3), at(bell(midi(96), 0.9, 0.35), 0.09))
+    coins = mix(*[at(bell(3000 + 400 * (k % 3), 0.15, 0.04) * 0.3, 0.03 * k) for k in range(8)])
+    drawer = biquad(noise(0.12), "bp", 900, 2) * exp_env(0.12, 0.04)
+    return reverb(finish(mix(drawer, at(ding, 0.05), at(coins, 0.08))), wet=0.3)
+
+
+def sfx_achievement():
+    out = np.zeros(int(1.6 * SR))
+    for k, n in enumerate((67, 72, 76, 79)):
+        out += at(brass(midi(n), 0.16) * 0.5, 0.09 * k, len(out))
+    for n in (72, 76, 79, 84):
+        out += at(brass(midi(n), 0.9, vib=0.005) * 0.3, 0.38, len(out))
+    out += at(bell(midi(96), 1.0, 0.5) * 0.4, 0.38, len(out))
+    return reverb(finish(out), wet=0.35)
+
+
+def sfx_page():
+    x = svf_sweep(noise(0.35), 1200, 5000, q=0.8) * env(0.35, 0.02, 0.2, 0.3, 0.1)
+    return finish(x, 0.6)
+
+
+def sfx_node_pop():
+    x = np.sin(sweep(400, 1100, 0.08)) * exp_env(0.08, 0.03)
+    return reverb(finish(mix(x, at(bell(1760, 0.3, 0.1) * 0.3, 0.03))), wet=0.2)
+
+
+def sfx_hammer():
+    thud = np.sin(sweep(200, 70, 0.2)) * exp_env(0.2, 0.06) * 1.5
+    wood = biquad(noise(0.1), "bp", 700, 2) * exp_env(0.1, 0.02) * 2
+    return reverb(finish(mix(thud, wood, sfx_armor() * 0.3), drive=1.6), wet=0.2)
+
+
+def sfx_no_lives():
+    out = mix(*[at(onepole_lp(square(2 * np.pi * midi(n) * t_(0.22)), 1800) * env(0.22, 0.01, 0.15, 0.4, 0.05) * 0.5, 0.2 * k)
+                for k, n in enumerate((64, 60))])
+    return reverb(finish(out), wet=0.2)
+
+
+V2_SFX = {
+    "bomb": sfx_bomb, "freeze": sfx_freeze, "freeze_end": sfx_freeze_end, "rainbow": sfx_rainbow,
+    "shuffle": sfx_shuffle, "armor": sfx_armor, "armor_break": sfx_armor_break, "boss_roar": sfx_boss_roar,
+    "heart_lose": sfx_heart_lose, "spin_tick": sfx_spin_tick, "reward": sfx_reward, "chest_open": sfx_chest_open,
+    "purchase": sfx_purchase, "achievement": sfx_achievement, "page": sfx_page, "node_pop": sfx_node_pop,
+    "hammer": sfx_hammer, "no_lives": sfx_no_lives,
+}
+
+
 # -------------------------------------------------------------------- music
 
 def drum_kick():
@@ -539,7 +675,43 @@ def song_menu():
     return render_song(100, 8, prog, m, drums=True, stabs=False, lead="bell", swing=0.12)
 
 
+def song_map():
+    # bright, bouncy C major adventure for the world map
+    prog = [(60, [64, 67, 72]), (57, [64, 69, 72]), (53, [65, 69, 72]), (55, [67, 71, 74])]
+    mel = [[(0, 72, 0.5), (0.5, 76, 0.5), (1, 79, 1), (2, 76, 0.5), (2.5, 74, 0.5), (3, 72, 1)],
+           [(0, 69, 0.5), (0.5, 72, 0.5), (1, 76, 1), (2, 74, 1), (3, 72, 1)],
+           [(0, 77, 0.5), (0.5, 76, 0.5), (1, 74, 0.5), (1.5, 72, 0.5), (2, 69, 1), (3, 72, 1)],
+           [(0, 74, 1), (1, 79, 0.5), (1.5, 77, 0.5), (2, 76, 0.5), (2.5, 74, 0.5), (3, 71, 1)]]
+    m = []
+    for rep in range(2):
+        for b, ph in enumerate(mel):
+            for off, note, ln in ph:
+                m.append((rep * 4 + b, off, note + (12 if rep and off % 1 == 0 else 0), ln))
+    return render_song(116, 8, prog, m, swing=0.1)
+
+
+def song_boss():
+    # driving minor boss theme
+    prog = [(57, [69, 72, 76]), (57, [69, 72, 76]), (53, [65, 69, 72]), (52, [64, 68, 71])]
+    riff = [(0, 69, 0.5), (0.5, 69, 0.25), (0.75, 72, 0.25), (1, 76, 0.5), (1.5, 75, 0.5), (2, 74, 0.5),
+            (2.5, 72, 0.5), (3, 71, 0.5), (3.5, 68, 0.5)]
+    m = []
+    for b in range(8):
+        for off, note, ln in riff:
+            m.append((b, off, note + (0 if b < 4 else 12), ln))
+    return render_song(144, 8, prog, m)
+
+
 def main():
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "v2":
+        for name, fn in V2_SFX.items():
+            write_ogg(os.path.join(OUT_SFX, f"{name}.ogg"), fn(), quality=4)
+        l, r = song_map()
+        write_ogg(os.path.join(OUT_MUS, "map.ogg"), l, r, quality=4)
+        l, r = song_boss()
+        write_ogg(os.path.join(OUT_MUS, "boss.ogg"), l, r, quality=4)
+        return
     sfx = {
         "tap": sfx_tap, "whoosh": sfx_whoosh, "bonk": sfx_bonk, "place": sfx_place,
         "shoot": sfx_shoot, "hit": sfx_hit, "explode": sfx_explode, "coin": sfx_coin,
@@ -555,6 +727,12 @@ def main():
     write_ogg(os.path.join(OUT_MUS, "game.ogg"), l, r, quality=4)
     l, r = song_menu()
     write_ogg(os.path.join(OUT_MUS, "menu.ogg"), l, r, quality=4)
+    for name, fn in V2_SFX.items():
+        write_ogg(os.path.join(OUT_SFX, f"{name}.ogg"), fn(), quality=4)
+    l, r = song_map()
+    write_ogg(os.path.join(OUT_MUS, "map.ogg"), l, r, quality=4)
+    l, r = song_boss()
+    write_ogg(os.path.join(OUT_MUS, "boss.ogg"), l, r, quality=4)
 
 
 if __name__ == "__main__":

@@ -24,6 +24,9 @@ class DragonHead : Rig() {
     private val eyeAngry = bone(Assets.r("dragon_eye_angry"), 98f, 70f, head, 150f, 70f)
     private val eyeLid = bone(Assets.r("dragon_eyelid_closed"), 100f, 60f, head, 150f, 70f)
     private val stars = bone(Assets.r("dragon_hurt_stars"), 107f, 110f, head, 150f, 20f)
+    private val crownRegion = Assets.r("boss_crown")
+    private val crown = bone(crownRegion, crownRegion.regionWidth / 2f, crownRegion.regionHeight * 0.85f, head, 196f, 44f)
+    var boss = false
 
     private var time = MathUtils.random(5f)
     private var blink = 2f
@@ -37,6 +40,7 @@ class DragonHead : Rig() {
     init {
         mouth.tint.set(0.36f, 0.05f, 0.09f, 1f)
         tongue.regionScale = 0.62f
+        crown.rot = 12f
         // the neck is drawn separately (under the body balls) by Snake, see drawNeck()
         order(frill, hornBack, mouth, tongue, jaw, head, eye, eyeAngry, eyeLid, hornFront, stars)
     }
@@ -87,15 +91,27 @@ class DragonHead : Rig() {
         neck.draw(batch, alpha, null)
     }
 
+    /** The boss crown is drawn after the colour shader so it stays golden. */
+    fun drawCrown(batch: Batch) {
+        if (!boss) return
+        crown.rot = 12f + sin(time * 2.2f) * 4f
+        updateTransforms()
+        crown.draw(batch, alpha, null)
+    }
+
     /** Mouth tip in world space (for bite effects). */
     fun mouthPoint(out: Vector2) = head.worldPoint(30f, 150f, out)
 }
 
-class Segment(val color: GemColor) {
+class SegSpec(val color: GemColor, val armored: Boolean)
+
+class Segment(val color: GemColor, val armored: Boolean) {
     var gap = 0f          // current distance to the segment in front
     var s = 0f            // distance along the path
-    var claimed = false   // a projectile is on its way
+    var hp = if (armored) 2 else 1
+    var pending = 0       // fireballs already on their way
     var dead = false
+    val open get() = hp - pending > 0
     val pos = Vector2()
     var angle = 0f
     var flash = 0f
@@ -104,7 +120,7 @@ class Segment(val color: GemColor) {
 }
 
 /** The whole snake: rigged head, coloured body segments and a 3-piece tail. */
-class Snake(var path: Path, colors: List<GemColor>) {
+class Snake(var path: Path, specs: List<SegSpec>, val skin: DragonSkin, boss: Boolean) {
     val head = DragonHead()
     val segments = ArrayList<Segment>()
     var headS = 0f
@@ -115,6 +131,8 @@ class Snake(var path: Path, colors: List<GemColor>) {
     var dying = 0f
     var dead = false
     var alpha = 1f
+    /** Seconds left of the freeze booster (the snake doesn't move while > 0). */
+    var frozen = 0f
 
     val segSize = 56f
     private val spacing = 40f
@@ -130,21 +148,32 @@ class Snake(var path: Path, colors: List<GemColor>) {
     private val tailRegions = tailParts.map { Assets.r(it.first) }
     private val shadowRegion = Assets.r("segment_shadow")
     private val shineRegion = Assets.r("segment_shine_overlay")
+    private val iceRegion = Assets.r("freeze_ice_overlay")
+    private val crackRegion = Assets.r("armor_crack_overlay")
+    private val armoredRegions = HashMap<GemColor, com.badlogic.gdx.graphics.g2d.TextureRegion>()
 
     init {
-        colors.forEachIndexed { i, c ->
-            segments += Segment(c).apply { gap = if (i == 0) headGap else spacing }
+        specs.forEachIndexed { i, sp ->
+            segments += Segment(sp.color, sp.armored).apply { gap = if (i == 0) headGap else spacing }
         }
-        head.scale = 0.46f
+        for (c in listOf(GemColor.RED, GemColor.BLUE, GemColor.GREEN, GemColor.YELLOW)) {
+            armoredRegions[c] = Assets.r("segment_armored_${c.key}")
+        }
+        head.boss = boss
+        head.scale = if (boss) 0.58f else 0.46f
         layout()
     }
+
+    private fun segRegion(seg: Segment) =
+        if (seg.armored && seg.hp > 1) armoredRegions[seg.color] ?: Assets.segment(seg.color) else Assets.segment(seg.color)
 
     /** Distance from the head to the end of the road. */
     val remaining get() = path.length - headS
 
     fun update(dt: Float, moving: Boolean) {
         time += dt
-        if (moving) headS += (speed + boost) * dt
+        if (frozen > 0f) frozen = max(0f, frozen - dt)
+        if (moving && frozen <= 0f) headS += (speed + boost) * dt
         knock.update(dt)
         segments.forEach { seg ->
             val target = if (seg === segments.first()) headGap else spacing
@@ -153,7 +182,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
             seg.scaleKick.update(dt)
         }
         layout()
-        head.update(dt)
+        head.update(if (frozen > 0f) dt * 0.15f else dt)
     }
 
     /** Pushes the snake back along the road (e.g. after a hit). */
@@ -191,6 +220,7 @@ class Snake(var path: Path, colors: List<GemColor>) {
         if (dead) return
         val old = batch.packedColor
         batch.setColor(1f, 1f, 1f, alpha)
+        HueShader.begin(batch, skin, time)
         // tail (from tip to base)
         var s = lastS - 30f
         for (i in 0..2) {
@@ -219,29 +249,49 @@ class Snake(var path: Path, colors: List<GemColor>) {
             batch.drawCentered(shadow, seg.pos.x + 4f, seg.pos.y - segSize * 0.36f, segSize * 1.2f)
         }
         if (!dead) head.drawNeck(batch)
+        HueShader.end(batch)
         // body segments, back to front so the front overlaps
         for (i in segments.indices.reversed()) {
             val seg = segments[i]
             if (seg.pos.x > viewRight + segSize) continue
             val breathe = 1f + sin(time * 6f - i * 0.55f) * 0.035f
             val sz = segSize * breathe * seg.scaleKick.value
+            val reg = segRegion(seg)
+            val big = if (seg.armored && seg.hp > 1) 1.12f else 1f
             batch.setColor(1f, 1f, 1f, alpha)
-            batch.drawCentered(Assets.segment(seg.color), seg.pos.x, seg.pos.y, sz, rotation = seg.angle + 180f)
+            batch.drawCentered(reg, seg.pos.x, seg.pos.y, sz * big, rotation = seg.angle + 180f)
             batch.setColor(1f, 1f, 1f, 0.35f * alpha)
             batch.drawCentered(shineRegion, seg.pos.x - 4f, seg.pos.y + 8f, sz * 0.8f)
+            if (seg.armored && seg.hp == 1) {
+                batch.setColor(1f, 1f, 1f, 0.9f * alpha)
+                batch.drawCentered(crackRegion, seg.pos.x, seg.pos.y, sz * 0.9f, rotation = seg.angle)
+            }
+            if (frozen > 0f) {
+                batch.setColor(1f, 1f, 1f, min(1f, frozen * 2f) * 0.85f * alpha)
+                batch.drawCentered(iceRegion, seg.pos.x, seg.pos.y, sz * 1.15f)
+            }
             if (seg.flash > 0f) {
                 batch.setColor(1f, 1f, 1f, seg.flash * alpha)
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE)
-                batch.drawCentered(Assets.segment(seg.color), seg.pos.x, seg.pos.y, sz, rotation = seg.angle + 180f)
+                batch.drawCentered(reg, seg.pos.x, seg.pos.y, sz * big, rotation = seg.angle + 180f)
                 batch.setBlendFunction(com.badlogic.gdx.graphics.GL20.GL_SRC_ALPHA, com.badlogic.gdx.graphics.GL20.GL_ONE_MINUS_SRC_ALPHA)
             }
         }
         batch.packedColor = old
         head.alpha = alpha
-        if (!dead) head.draw(batch)
+        if (!dead) {
+            // frozen dragon turns icy blue
+            if (frozen > 0f) head.tintColor.set(0.6f, 0.85f, 1.2f, 1f) else head.tintColor.set(1f, 1f, 1f, 1f)
+            HueShader.begin(batch, skin, time)
+            head.draw(batch)
+            HueShader.end(batch)
+            head.drawCrown(batch)
+        }
     }
+
+    /** Total hits still needed to clear the body (boss health). */
+    val hitsLeft get() = segments.sumOf { it.hp }
 
     fun headPos(out: Vector2) = path.pos(headS, out)
 
-    fun colorsLeft(): Set<GemColor> = segments.map { it.color }.toSet()
 }

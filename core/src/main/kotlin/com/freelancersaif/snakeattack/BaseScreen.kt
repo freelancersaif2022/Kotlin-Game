@@ -35,6 +35,10 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
     private var next: (() -> Unit)? = null
     var shake = 0f
     private val touch = Vector2()
+    private val downAt = Vector2()
+    private val lastDrag = Vector2()
+    private var dragged = false
+    private var buttonDown = false
     protected val buttons = ArrayList<Button>()
     var time = 0f
 
@@ -42,24 +46,47 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
         override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
             if (pointer > 0 || fadeOut >= 0f) return true
             viewport.unproject(touch.set(screenX.toFloat(), screenY.toFloat()))
-            for (b in buttons.asReversed()) if (b.enabled && b.visible && b.contains(touch.x, touch.y)) {
+            downAt.set(touch)
+            lastDrag.set(touch)
+            dragged = false
+            buttonDown = false
+            for (b in buttons.asReversed()) if (b.enabled && b.visible && b.appear > 0.5f && b.contains(touch.x, touch.y)) {
                 b.pressed = true
+                buttonDown = true
                 return true
             }
             onTouch(touch.x, touch.y)
             return true
         }
 
+        override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+            if (pointer > 0) return true
+            viewport.unproject(touch.set(screenX.toFloat(), screenY.toFloat()))
+            if (!dragged && touch.dst(downAt) > 14f) {
+                dragged = true
+                // a drag that started on a button becomes a scroll instead of a click
+                buttons.forEach { it.pressed = false }
+            }
+            if (dragged) onDrag(touch.x - lastDrag.x, touch.y - lastDrag.y)
+            lastDrag.set(touch)
+            return true
+        }
+
         override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
             if (pointer > 0) return true
             viewport.unproject(touch.set(screenX.toFloat(), screenY.toFloat()))
+            var clicked = false
             for (b in buttons.asReversed()) if (b.pressed) {
                 b.pressed = false
                 if (b.contains(touch.x, touch.y) && b.enabled && b.visible) {
                     b.pop.kick(-6f)
                     Assets.sfx("click", 0.8f)
                     b.onClick()
+                    clicked = true
                 }
+            }
+            if (!clicked && !buttonDown) {
+                if (dragged) onRelease() else onTap(touch.x, touch.y)
             }
             return true
         }
@@ -85,7 +112,19 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
     }
 
     open fun layout() {}
+    /** Immediate touch-down (used by the puzzle board for responsive taps). */
     open fun onTouch(x: Float, y: Float) {}
+
+    /** A press + release that didn't move (map nodes, cards). */
+    open fun onTap(x: Float, y: Float) {}
+
+    /** Finger moved while held (scrolling); deltas in world units. */
+    open fun onDrag(dx: Float, dy: Float) {}
+
+    open fun onRelease() {}
+
+    /** Background image drawn by [drawBackground]. */
+    open val background = "bg/bg_forest.jpg"
     open fun onBack() {}
     abstract fun update(dt: Float)
     abstract fun draw()
@@ -136,7 +175,7 @@ abstract class BaseScreen(val game: SnakeAttackGame) : ScreenAdapter() {
         val w = 1024f * s
         val h = 1536f * s
         b.color = Color.WHITE
-        b.draw(Assets.bg, W / 2 - w / 2, H + BG_TOP_OFFSET - h, w, h)
+        b.draw(Assets.texture(background), W / 2 - w / 2, H + BG_TOP_OFFSET - h, w, h)
     }
 
     fun bgScale() = max(W / 1024f, (H + BG_TOP_OFFSET) / 1536f)

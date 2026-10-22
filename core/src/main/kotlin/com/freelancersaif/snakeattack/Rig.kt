@@ -88,6 +88,9 @@ open class Rig {
     var flash = 0f
     private val flashColor = Color()
 
+    /** Multiplied into every bone (e.g. icy blue while frozen). */
+    val tintColor = Color(Color.WHITE)
+
     fun bone(region: TextureRegion?, pivotX: Float, pivotY: Float, parent: Bone? = null, attachX: Float = 0f, attachY: Float = 0f): Bone {
         val b = Bone(region, pivotX, pivotY, parent, attachX, attachY)
         bones += b
@@ -108,9 +111,12 @@ open class Rig {
 
     fun draw(batch: Batch) {
         updateTransforms()
+        val plain = tintColor.r == 1f && tintColor.g == 1f && tintColor.b == 1f
         val tint = if (flash > 0f) {
             val f = 1f + flash * 1.6f
-            flashColor.set(f, f, f, 1f)
+            flashColor.set(f * tintColor.r, f * tintColor.g, f * tintColor.b, 1f)
+        } else if (!plain) {
+            flashColor.set(tintColor)
         } else {
             null
         }

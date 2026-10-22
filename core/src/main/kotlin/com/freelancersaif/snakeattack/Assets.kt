@@ -25,7 +25,8 @@ enum class GemColor(val key: String, val tint: Color) {
 
 object Assets {
     lateinit var atlas: TextureAtlas
-    lateinit var bg: Texture
+    lateinit var uiAtlas: TextureAtlas
+    lateinit var outfitAtlas: TextureAtlas
     lateinit var fontBig: BitmapFont
     lateinit var fontSmall: BitmapFont
     lateinit var fontPlain: BitmapFont
@@ -43,14 +44,14 @@ object Assets {
     private val regions = HashMap<String, TextureRegion>()
     private val sounds = HashMap<String, Sound>()
     private val music = HashMap<String, Music>()
+    private val textures = HashMap<String, Texture>()
     private var currentMusic: Music? = null
     private var currentMusicName: String? = null
 
     fun load() {
         atlas = TextureAtlas(Gdx.files.internal("sprites.atlas"))
-        bg = Texture(Gdx.files.internal("bg_level.jpg"), true).apply {
-            setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear)
-        }
+        uiAtlas = TextureAtlas(Gdx.files.internal("ui.atlas"))
+        outfitAtlas = TextureAtlas(Gdx.files.internal("outfits.atlas"))
         fontBig = loadFont("fonts/font_big.fnt")
         fontSmall = loadFont("fonts/font_small.fnt")
         fontPlain = loadFont("fonts/font_plain.fnt")
@@ -66,11 +67,13 @@ object Assets {
         for (name in listOf(
             "tap", "whoosh", "bonk", "place", "shoot", "hit", "explode", "coin", "win", "lose",
             "roar", "bite", "click", "unlock", "error", "combo", "swoosh_in", "scream",
-            "star1", "star2", "star3",
+            "star1", "star2", "star3", "bomb", "freeze", "freeze_end", "rainbow", "shuffle", "armor",
+            "armor_break", "boss_roar", "heart_lose", "spin_tick", "reward", "chest_open", "purchase",
+            "achievement", "page", "node_pop", "hammer", "no_lives",
         )) {
             sounds[name] = Gdx.audio.newSound(Gdx.files.internal("sounds/$name.ogg"))
         }
-        for (name in listOf("game", "menu")) {
+        for (name in listOf("game", "menu", "map", "boss")) {
             music[name] = Gdx.audio.newMusic(Gdx.files.internal("music/$name.ogg")).apply { isLooping = true }
         }
     }
@@ -94,7 +97,26 @@ object Assets {
     }
 
     fun r(name: String): TextureRegion = regions.getOrPut(name) {
-        atlas.findRegion(name) ?: error("Missing sprite '$name'")
+        atlas.findRegion(name) ?: uiAtlas.findRegion(name) ?: outfitAtlas.findRegion(name) ?: error("Missing sprite '$name'")
+    }
+
+    /**
+     * Large standalone images (backgrounds, map tiles, story panels) are loaded on
+     * demand and can be released with [unload] so only what a screen needs stays in memory.
+     */
+    fun texture(path: String): Texture = textures.getOrPut(path) {
+        Texture(Gdx.files.internal(path), false).apply {
+            setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+        }
+    }
+
+    fun unload(path: String) {
+        textures.remove(path)?.dispose()
+    }
+
+    /** Keeps only the given large textures loaded. */
+    fun keepOnly(paths: Collection<String>) {
+        textures.keys.filter { it !in paths }.forEach { unload(it) }
     }
 
     fun block(c: GemColor) = blocks[c.ordinal]
@@ -118,7 +140,11 @@ object Assets {
 
     fun refreshMusic() {
         val m = currentMusic ?: return
-        m.volume = if (name() == "menu") 0.55f else 0.42f
+        m.volume = when (name()) {
+            "menu", "map" -> 0.5f
+            "boss" -> 0.45f
+            else -> 0.4f
+        }
         if (Save.music) {
             if (!m.isPlaying) m.play()
         } else {
@@ -132,7 +158,11 @@ object Assets {
 
     fun dispose() {
         atlas.dispose()
-        bg.dispose()
+        uiAtlas.dispose()
+        outfitAtlas.dispose()
+        textures.values.forEach { it.dispose() }
+        textures.clear()
+        HueShader.dispose()
         fontBig.region.texture.dispose()
         fontSmall.region.texture.dispose()
         fontPlain.region.texture.dispose()

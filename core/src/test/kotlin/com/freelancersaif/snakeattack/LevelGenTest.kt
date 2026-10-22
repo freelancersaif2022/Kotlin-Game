@@ -45,6 +45,15 @@ class LevelGenTest {
                 )
             }
             assertTrue(spec.blocks.size >= 6, "level $n too small")
+            // every shot has exactly one ball hit-point to land on (armoured balls take two)
+            for (c in GemColor.entries) {
+                assertEquals(
+                    spec.blocks.count { it.color == c } * spec.shotsPerBlock,
+                    spec.segments.filter { it.color == c }.let { l -> l.size + l.count { it.armored } },
+                    "level $n colour $c hit points",
+                )
+            }
+            if (n % 10 == 0) assertTrue(spec.segments.any { it.armored } || spec.segments.none { it.color in listOf(GemColor.RED, GemColor.BLUE, GemColor.GREEN, GemColor.YELLOW) }, "boss level $n has no armour")
         }
     }
 }

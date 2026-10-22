@@ -29,7 +29,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         playBtn.pulse = true
         dragon.scale = 0.82f
         dragon.angry = true
-        girl.scale = 0.58f
+        girl.scale = 0.8f
         girl.mood = Girl.Mood.WAVE
         refresh()
     }
@@ -46,7 +46,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         musicBtn.label = if (Save.music) "MUSIC ON" else "MUSIC OFF"
     }
 
-    private fun play() = goTo { game.setScreen(GameScreen(game, Save.level)) }
+    private fun play() = goTo { game.setScreen(MapScreen(game)) }
 
     override fun onBack() = game.exit()
 
@@ -58,7 +58,7 @@ class MenuScreen(game: SnakeAttackGame) : BaseScreen(game) {
         soundBtn.y = H * 0.1f
         musicBtn.y = H * 0.1f
         girl.baseX = W * 0.22f
-        girl.baseY = H * 0.37f
+        girl.baseY = H * 0.33f
         dragon.x = W * 0.74f
         dragon.y = H * 0.55f
     }

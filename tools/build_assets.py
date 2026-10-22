@@ -335,26 +335,24 @@ def gen_check(size=80, on=True):
 # ------------------------------------------------------------------ packing
 
 class Packer:
-    """Simple shelf packer producing multiple pages."""
+    """MaxRects bin packer (best short side fit), multiple pages if needed."""
 
     def __init__(self):
         self.pages = []
 
     def pack(self, items):
-        items = sorted(items, key=lambda it: (-it[1].height, -it[1].width))
-        page = None
+        items = sorted(items, key=lambda it: -(max(it[1].width, it[1].height) * 10000 + min(it[1].width, it[1].height)))
         placements = []
         for name, im in items:
             w, h = im.width + PAD * 2, im.height + PAD * 2
-            placed = False
+            pos = None
             for p in self.pages:
                 pos = self._place(p, w, h)
                 if pos:
-                    placed = True
                     placements.append((name, im, p, pos))
                     break
-            if not placed:
-                p = {"shelves": [], "y": 0, "index": len(self.pages)}
+            if not pos:
+                p = {"free": [(0, 0, PAGE, PAGE)], "index": len(self.pages)}
                 self.pages.append(p)
                 pos = self._place(p, w, h)
                 assert pos, f"{name} too big"
@@ -363,17 +361,36 @@ class Packer:
 
     @staticmethod
     def _place(p, w, h):
-        for sh in p["shelves"]:
-            if h <= sh["h"] and sh["x"] + w <= PAGE:
-                pos = (sh["x"], sh["y"])
-                sh["x"] += w
-                return pos
-        if p["y"] + h <= PAGE:
-            sh = {"x": w, "y": p["y"], "h": h}
-            p["shelves"].append(sh)
-            p["y"] += h
-            return (0, sh["y"])
-        return None
+        best = None
+        for fx, fy, fw, fh in p["free"]:
+            if w <= fw and h <= fh:
+                score = (min(fw - w, fh - h), max(fw - w, fh - h))
+                if best is None or score < best[0]:
+                    best = (score, fx, fy)
+        if best is None:
+            return None
+        _, x, y = best
+        new_free = []
+        for fx, fy, fw, fh in p["free"]:
+            if x >= fx + fw or x + w <= fx or y >= fy + fh or y + h <= fy:
+                new_free.append((fx, fy, fw, fh))
+                continue
+            if x > fx:
+                new_free.append((fx, fy, x - fx, fh))
+            if x + w < fx + fw:
+                new_free.append((x + w, fy, fx + fw - x - w, fh))
+            if y > fy:
+                new_free.append((fx, fy, fw, y - fy))
+            if y + h < fy + fh:
+                new_free.append((fx, y + h, fw, fy + fh - y - h))
+        # drop rectangles contained in others
+        pruned = []
+        for a in new_free:
+            if not any(a != b and a[0] >= b[0] and a[1] >= b[1] and a[0] + a[2] <= b[0] + b[2]
+                       and a[1] + a[3] <= b[1] + b[3] for b in new_free):
+                pruned.append(a)
+        p["free"] = list(dict.fromkeys(pruned))
+        return (x, y)
 
 
 def write_atlas(placements, pages, name="sprites"):
@@ -464,63 +481,141 @@ def make_font(name, size, stroke, shadow):
     print(f"font {name}: {W}x{H}")
 
 
+# -------------------------------------------------------------------- v2 helpers
+
+V2 = "v2"
+
+
+def v2(folder, name):
+    return load(f"{V2}/{folder}/{name}.png")
+
+
+def fix_head(im):
+    """The generated heads come with a square skin block under the chin (a slicing
+    artefact). Remove it; the rig draws a proper neck behind the head instead."""
+    a = np.asarray(im.convert("RGBA")).copy()
+    h, w = a.shape[:2]
+    sy, sx = h / 286.0, w / 216.0
+    y0 = int(206 * sy)
+    x0, x1 = int(52 * sx), int(164 * sx)
+    a[y0:, x0:x1, 3] = 0
+    # soften the new bottom edge of the chin
+    for k in range(4):
+        y = y0 - 1 - k
+        a[y, x0:x1, 3] = (a[y, x0:x1, 3].astype(np.float32) * (0.35 + 0.16 * k)).astype(np.uint8)
+    return Image.fromarray(a, "RGBA")
+
+
+def gen_neck(w=76, h=90):
+    """Skin-coloured neck with a soft shadow under the chin and an outline."""
+    ss = 4
+    im = Image.new("RGBA", (w * ss, h * ss), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((0, 0, w * ss - 1, h * ss - 1), 14 * ss, fill=(110, 52, 30, 255))
+    o = 3 * ss
+    face = masked(vgrad(w * ss - 2 * o, h * ss - 2 * o, (226, 150, 112), (250, 196, 160)),
+                  rr_mask(w * ss - 2 * o, h * ss - 2 * o, 11 * ss, 1))
+    im.alpha_composite(face, (o, o))
+    return im.resize((w, h), Image.LANCZOS)
+
+
+def pack_atlas(name, items):
+    packer = Packer()
+    placements = packer.pack(items)
+    write_atlas(placements, packer.pages, name)
+    assert len(packer.pages) == 1, f"atlas {name} needs {len(packer.pages)} pages"
+
+
+def save_jpg(im, path, size, quality=86):
+    im.convert("RGB").resize(size, Image.LANCZOS).save(os.path.join(OUT, path), quality=quality, optimize=True)
+
+
 # -------------------------------------------------------------------- main
 
 def main():
-    os.makedirs(os.path.join(OUT, "fonts"), exist_ok=True)
-    os.makedirs(os.path.join(OUT, "icons"), exist_ok=True)
+    for d in ("fonts", "icons", "bg", "map", "story", "data"):
+        os.makedirs(os.path.join(OUT, d), exist_ok=True)
+
+    def adder(items):
+        def add(name, im, max_side=None, factor=None, keep=False):
+            if not keep:
+                im = trim(im)
+            if max_side:
+                im = fit(im, max_side)
+            if factor:
+                im = scale(im, factor)
+            items.append((name, bleed(im)))
+        return add
+
+    # ================= gameplay atlas =================
     items = []
-
-    def add(name, im, max_side=None, factor=None):
-        im = trim(im)
-        if max_side:
-            im = fit(im, max_side)
-        if factor:
-            im = scale(im, factor)
-        items.append((name, bleed(im)))
-
+    add = adder(items)
     for c in COLORS:
-        add(f"block_{c}", load(f"main/block_{c}.png"), 136)
-        add(f"cannon_{c}", load(f"main/cannon_{c}.png"), 168)
-        add(f"segment_{c}", load(f"main/segment_{c}.png"), 140)
-    add("banner_level", load("main/banner_level.png"), 460)
-    add("btn_play", load("main/btn_play.png"), 420)
-    add("btn_settings", load("main/btn_settings.png"), 140)
-    add("coin", load("main/coin.png"), 110)
-    add("explosion", load("main/explosion.png"), 300)
-    add("fireball", load("main/fireball.png"), 150)
-    add("skull_fail", load("main/skull_fail.png"), 380)
-    add("slot_empty", load("main/slot_empty.png"), 168)
-    add("slot_locked", load("main/slot_locked.png"), 168)
-    add("star", load("main/star.png"), 190)
+        add(f"block_{c}", load(f"main/block_{c}.png"), 128)
+        add(f"cannon_{c}", load(f"main/cannon_{c}.png"), 156)
+        add(f"segment_{c}", load(f"main/segment_{c}.png"), 128)
+    add("banner_level", load("main/banner_level.png"), 400)
+    add("btn_settings", load("main/btn_settings.png"), 130)
+    add("btn_play", load("main/btn_play.png"), 380)
+    add("coin", load("main/coin.png"), 100)
+    add("explosion", load("main/explosion.png"), 256)
+    add("fireball", load("main/fireball.png"), 140)
+    add("skull_fail", load("main/skull_fail.png"), 300)
+    add("slot_empty", load("main/slot_empty.png"), 156)
+    add("slot_locked", load("main/slot_locked.png"), 156)
+    add("star", load("main/star.png"), 170)
 
-    # source art the game does not use (kept in art/ for future features)
-    unused = {"button_pressed_glow", "coin_glow", "dust_cloud", "fire_trail", "girl_head", "hand_fist_left",
-              "hand_fist_right", "hand_wave_left", "hand_wave_right", "segment_crack_overlay", "undo_arrow",
-              "heart_life", "girl_upperarm_left", "girl_upperarm_right", "girl_upperleg_left",
-              "girl_upperleg_right", "coin_spin_1", "coin_spin_2", "coin_spin_3", "coin_spin_4", "coin_spin_5", "coin_spin_6"}
     anim = os.path.join(ART, "anim")
-    factors = {"girl": 0.62, "girl_faces": 0.62, "dragon": 0.85, "tail": 0.6,
-               "effects": 0.8, "ui": 0.5}
-    for folder, f in factors.items():
+    keep_anim = {
+        "dragon": None, "tail": ["tail_piece_1", "tail_piece_2", "tail_piece_3", "segment_shadow", "segment_shine_overlay"],
+        "effects": None, "ui": ["hint_lightbulb", "star_sparkle"], "girl_faces": ["speech_bubble_help"],
+    }
+    factors = {"dragon": 0.85, "tail": 0.6, "effects": 0.7, "ui": 0.45, "girl_faces": 0.62}
+    for folder, names in keep_anim.items():
         for fn in sorted(os.listdir(os.path.join(anim, folder))):
-            if fn.endswith(".png") and fn[:-4] not in unused:
-                ff = f
-                if folder == "ui" and fn.startswith(("heart", "hint", "undo", "star_sparkle")):
-                    ff = 0.45
-                if folder == "effects" and fn.startswith("sunburst"):
-                    ff = 1.0
-                add(fn[:-4], load(f"anim/{folder}/{fn}"), factor=ff)
+            if not fn.endswith(".png") or (names is not None and fn[:-4] not in names):
+                continue
+            ff = 1.0 if fn.startswith("sunburst") else factors[folder]
+            add(fn[:-4], load(f"anim/{folder}/{fn}"), factor=ff)
+
+    # girl v2 rig (all parts share one scale), heads/faces cleaned up
+    G = 0.5
+    add("g_head", fix_head(v2("girl_rig_main", "girl_head")), factor=G, keep=True)
+    for fn in sorted(os.listdir(os.path.join(ART, V2, "girl_faces"))):
+        add("g_" + fn[:-4], fix_head(v2("girl_faces", fn[:-4])), factor=G, keep=True)
+    for n in ("girl_ponytail", "girl_arm_left", "girl_arm_right", "girl_arm_left_up", "girl_arm_right_up",
+              "girl_leg_left", "girl_leg_right", "girl_leg_left_run", "girl_leg_right_run"):
+        add("g_" + n[5:], v2("girl_rig_main", n), factor=G)
+
+    # boosters, boss, special balls, world particles, lives
+    for n in ("booster_bomb", "booster_freeze", "booster_rainbow", "booster_shuffle"):
+        add(n, v2("boosters", n), 110)
+    add("booster_button_frame", v2("boosters", "booster_button_frame"), 140)
+    add("booster_count_badge", v2("boosters", "booster_count_badge"), 50)
+    add("bomb_explosion_big", v2("boosters", "bomb_explosion_big"), 300)
+    add("freeze_ice_overlay", v2("boosters", "freeze_ice_overlay"), 128)
+    add("shuffle_swirl_effect", v2("boosters", "shuffle_swirl_effect"), 220)
+    add("block_rainbow", v2("special_blocks", "block_rainbow"), 128)
+    for c in ("red", "blue", "green", "yellow"):
+        add(f"segment_armored_{c}", v2("boss_and_special_balls", f"segment_armored_{c}"), 128)
+    add("armor_crack_overlay", v2("boss_and_special_balls", "armor_crack_overlay"), 120)
+    add("armor_break_pieces", v2("boss_and_special_balls", "armor_break_pieces"), 140)
+    add("boss_health_bar_frame", v2("boss_and_special_balls", "boss_health_bar_frame"), 420)
+    add("boss_skull_badge", v2("boss_and_special_balls", "boss_skull_badge"), 96)
+    add("boss_crown", v2("dragon_skins", "boss_crown"), 180)
+    for n in ("ember_particle", "firefly_particle", "leaf_particle", "sand_particle", "snowflake_particle", "rain_drop_particle"):
+        add(n, v2("world_icons", n), 56)
+    add("heart_full", v2("lives_and_currency", "heart_full"), 72)
 
     gen = {
         "white": gen_white(), "glow": gen_glow(), "circle": gen_circle(96),
         "badge": gen_circle(64, outline=6), "arrow": gen_arrow(96), "panel": gen_panel(),
-        "board_panel": gen_board_panel(), "pill": gen_pill(),
-        "ray": gen_ray(),
+        "board_panel": gen_board_panel(), "pill": gen_pill(), "ray": gen_ray(),
         "btn_green": gen_button((88, 204, 40), (40, 120, 20)),
         "btn_orange": gen_button((255, 160, 30), (190, 90, 10)),
         "btn_blue": gen_button((40, 150, 255), (20, 80, 180)),
         "btn_grey": gen_button((170, 170, 180), (100, 100, 110)),
+        "btn_purple": gen_button((170, 90, 240), (100, 40, 170)),
         "rbtn_green": gen_round_button((88, 204, 40), (40, 120, 20)),
         "rbtn_orange": gen_round_button((255, 160, 30), (190, 90, 10)),
         "rbtn_blue": gen_round_button((40, 150, 255), (20, 80, 180)),
@@ -529,23 +624,67 @@ def main():
         "icon_next": gen_icon("next"), "icon_close": gen_icon("close"),
         "ribbon_green": gen_ribbon((80, 196, 40)), "ribbon_red": gen_ribbon((232, 64, 52)),
         "ribbon_blue": gen_ribbon((40, 140, 245)), "ribbon_orange": gen_ribbon((255, 150, 30)),
-        "frame_panel": gen_frame_panel(),
-        "switch_on": gen_switch(True), "switch_off": gen_switch(False),
+        "ribbon_purple": gen_ribbon((160, 80, 230)),
+        "frame_panel": gen_frame_panel(), "switch_on": gen_switch(True), "switch_off": gen_switch(False),
+        "g_neck": gen_neck(),
     }
     for name, im in gen.items():
-        items.append((name, bleed(im) if name not in ("white",) else im))
+        items.append((name, bleed(im) if name != "white" else im))
+    pack_atlas("sprites", items)
 
-    packer = Packer()
-    placements = packer.pack(items)
-    write_atlas(placements, packer.pages)
+    # ================= outfits atlas (girl bodies + hats) =================
+    items = []
+    add = adder(items)
+    add("body_default", v2("girl_rig_main", "girl_body"), factor=G)
+    for fn in sorted(os.listdir(os.path.join(ART, V2, "girl_outfits"))):
+        add(fn[:-4], v2("girl_outfits", fn[:-4]), factor=G)
+    pack_atlas("outfits", items)
 
-    # background (opaque jpg)
-    bg = Image.open(os.path.join(ART, "main", "bg_level.png")).convert("RGB")
-    bg = bg.resize((1080, 1620), Image.LANCZOS)
-    bg.save(os.path.join(OUT, "bg_level.jpg"), quality=88, optimize=True)
+    # ================= menu / meta UI atlas =================
+    items = []
+    add = adder(items)
+    ui = {
+        "map_and_ui": 120, "daily_reward": 150, "lives_and_currency": 110, "shop_ui": 150,
+        "achievements": 130, "world_icons": 150, "spin_wheel": 150,
+    }
+    big = {"spin_wheel_8_slices": 560, "spin_wheel_stand": 300, "map_world_sign_board": 300,
+           "calendar_day7_big_card": 230, "chest_gold_open": 210, "chest_gold_closed": 210,
+           "world_banner_frame": 420, "tab_button_active": 240, "tab_button_inactive": 240,
+           "shop_item_card": 200, "shop_item_card_selected": 200, "price_tag_coin": 170,
+           "map_node_current_marker": 90, "map_star_small": 40, "girl_map_avatar": 110,
+           "glow_burst": 260, "confetti_burst": 200, "star_burst": 200}
+    skip = {"ember_particle", "firefly_particle", "leaf_particle", "sand_particle", "snowflake_particle", "rain_drop_particle"}
+    for folder, size in ui.items():
+        for fn in sorted(os.listdir(os.path.join(ART, V2, folder))):
+            n = fn[:-4]
+            if n in skip:
+                continue
+            add("ui_" + n, v2(folder, n), big.get(n, size))
+    for fn in sorted(os.listdir(os.path.join(ART, V2, "boosters"))):
+        if fn.startswith("booster_") and fn[:-4] not in ("booster_button_frame", "booster_count_badge"):
+            add("ui_" + fn[:-4], v2("boosters", fn[:-4]), 110)
+    for fn in sorted(os.listdir(os.path.join(ART, V2, "dragon_skins"))):
+        if fn.startswith("dragon_head"):
+            add("ui_" + fn[:-4], v2("dragon_skins", fn[:-4]), 170)
+    for fn in sorted(os.listdir(os.path.join(ART, V2, "girl_outfits"))):
+        add("ui_" + fn[:-4], v2("girl_outfits", fn[:-4]), 150)
+    add("ui_skull_fail", load("main/skull_fail.png"), 120)
+    add("ui_body_default", v2("girl_rig_main", "girl_body"), 150)
+    pack_atlas("ui", items)
 
-    # icons
-    icon = Image.open(os.path.join(ART, "main", "app_icon.png")).convert("RGBA")
+    # ================= backgrounds, map, story =================
+    for w in ("forest", "desert", "snow", "volcano", "night"):
+        save_jpg(v2("backgrounds", f"bg_{w}"), f"bg/bg_{w}.jpg", (1080, 1620), 84)
+    m = v2("map", "level_map").convert("RGB")
+    for i in range(3):  # three 1024x1024 tiles, top to bottom
+        m.crop((0, i * 1024, 1024, (i + 1) * 1024)).save(os.path.join(OUT, "map", f"map_{i}.jpg"), quality=84, optimize=True)
+    for i, n in enumerate(("story_1_kidnap", "story_2_desert", "story_3_snow", "story_4_volcano", "story_5_night")):
+        save_jpg(v2("story", n), f"story/story_{i + 1}.jpg", (1024, 768), 85)
+    import shutil
+    shutil.copy(os.path.join(ART, V2, "data", "paths.json"), os.path.join(OUT, "data", "paths.json"))
+
+    # ================= launcher icons =================
+    icon = v2("promo", "app_icon_v2").convert("RGBA")
     icon.resize((64, 64), Image.LANCZOS).save(os.path.join(OUT, "icons", "icon_64.png"))
     densities = {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}
     for dens, px in densities.items():
@@ -561,10 +700,7 @@ def main():
         rd = icon.resize((px * 4, px * 4), Image.LANCZOS)
         rd.putalpha(mask)
         rd.resize((px, px), Image.LANCZOS).save(os.path.join(d, "ic_launcher_round.png"))
-    # adaptive icon foreground (full-bleed art, 108dp with 18dp inset safe zone)
-    for dens, px in densities.items():
         full = int(px * 108 / 48)
-        d = os.path.join(ANDROID_RES, f"mipmap-{dens}")
         icon.resize((full, full), Image.LANCZOS).save(os.path.join(d, "ic_launcher_foreground.png"))
 
     make_font("font_big", 84, 6, 5)

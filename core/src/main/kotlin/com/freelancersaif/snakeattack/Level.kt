@@ -17,6 +17,9 @@ class LevelSpec(
     val snakeColors: List<GemColor>,
     val shotsPerBlock: Int,
     val duration: Float,
+    /** Body balls in order; on boss levels some are armoured and take both shots of a block. */
+    val segments: List<SegSpec>,
+    val boss: Boolean,
 )
 
 /**
@@ -26,6 +29,8 @@ class LevelSpec(
  * generated board is solvable.
  */
 object LevelGen {
+    private val ARMORED = setOf(GemColor.RED, GemColor.BLUE, GemColor.GREEN, GemColor.YELLOW)
+
     fun generate(number: Int): LevelSpec {
         val rnd = Random(number * 7919 + 17)
         val n = number - 1
@@ -80,8 +85,23 @@ object LevelGen {
             sub.shuffle(rnd)
         }
 
-        val duration = 18f + placed.size * 0.95f - min(n, 20) * 0.2f
-        return LevelSpec(number, cols, rows, placed, snake, shots, duration)
+        val boss = number % 10 == 0
+        val segs = ArrayList<SegSpec>()
+        var i = 0
+        while (i < snake.size) {
+            val c = snake[i]
+            // on boss levels a pair of equal shots can become one armoured (2-hit) ball
+            if (boss && i + 1 < snake.size && snake[i + 1] == c && c in ARMORED && rnd.nextFloat() < 0.65f) {
+                segs += SegSpec(c, true)
+                i += 2
+            } else {
+                segs += SegSpec(c, false)
+                i++
+            }
+        }
+        var duration = 18f + placed.size * 0.95f - min(n, 20) * 0.2f
+        if (boss) duration *= 1.25f
+        return LevelSpec(number, cols, rows, placed, snake, shots, duration, segs, boss)
     }
 
     private fun dirLen(c: Int, r: Int, d: Dir, cols: Int, rows: Int) = when (d) {

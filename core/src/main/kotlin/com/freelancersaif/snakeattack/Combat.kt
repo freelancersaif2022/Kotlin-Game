@@ -8,7 +8,12 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 
-class Cannon(val color: GemColor, var ammo: Int) {
+/** A cannon in a slot; a rainbow cannon (color == null) can hit any colour. */
+class Cannon(val color: GemColor?, var ammo: Int) {
+    val rainbow get() = color == null
+
+    fun matches(seg: Segment) = color == null || seg.color == color
+
     var appear = 0f
     var cooldown = 0.25f
     val recoil = Spring(380f, 14f)
@@ -29,7 +34,8 @@ class Slot(val index: Int, var locked: Boolean) {
     val free get() = !locked && cannon == null && !reserved
 }
 
-class Projectile(val cannon: Cannon, val target: Segment, x: Float, y: Float) {
+/** A fireball; [cannon] is null for shots launched directly by a bomb. */
+class Projectile(val cannon: Cannon?, val target: Segment, x: Float, y: Float, val tint: Color) {
     val from = Vector2(x, y)
     val pos = Vector2(x, y)
     var t = 0f
@@ -42,6 +48,7 @@ class Combat(private val particles: Particles) {
     val slots = ArrayList<Slot>()
     val projectiles = ArrayList<Projectile>()
     private var time = 0f
+    private val tmpColor = Color()
     var slotSize = 104f
 
     fun setup(count: Int, lockedFrom: Int) {
@@ -63,7 +70,7 @@ class Combat(private val particles: Particles) {
 
     fun busy() = slots.any { it.cannon != null || it.reserved } || projectiles.isNotEmpty()
 
-    fun place(slot: Slot, color: GemColor, ammo: Int) {
+    fun place(slot: Slot, color: GemColor?, ammo: Int) {
         slot.reserved = false
         slot.cannon = Cannon(color, ammo)
         slot.pop.value = 0.6f
@@ -95,13 +102,20 @@ class Combat(private val particles: Particles) {
                 }
                 continue
             }
-            if (snake == null || !canFire || c.ammo <= 0) continue
+            if (snake == null || c.ammo <= 0) continue
+            // nothing of this colour left anywhere on the snake: the spare shots are useless
+            if (c.reserved == 0 && snake.segments.none { c.matches(it) && it.open }) {
+                c.ammo = 0
+                particles.sparkle(s.x, s.y + 20f, 5, 40f)
+                continue
+            }
+            if (!canFire) continue
             c.cooldown -= dt
             if (c.cooldown > 0f || c.appear < 1f) continue
             val target = snake.segments.firstOrNull {
-                it.color == c.color && !it.claimed && !it.dead && it.pos.x < viewRight - 20f
+                c.matches(it) && it.open && !it.dead && it.pos.x < viewRight - 20f
             } ?: continue
-            target.claimed = true
+            target.pending++
             c.ammo--
             c.reserved++
             c.cooldown = 0.32f
@@ -109,10 +123,10 @@ class Combat(private val particles: Particles) {
             c.squash.value = 1.25f
             val mx = s.x
             val my = s.y + slotSize * 0.42f
-            val p = Projectile(c, target, mx, my)
+            val p = Projectile(c, target, mx, my, c.color?.tint ?: RAINBOW_TINT)
             p.dur = 0.28f + Vector2.dst(mx, my, target.pos.x, target.pos.y) / 1500f
             projectiles += p
-            particles.flash("muzzle_flash", mx, my + 26f, 70f, 110f, 0.16f, rot = 90f, tint = c.color.tint).color.lerp(Color.WHITE, 0.5f)
+            particles.flash("muzzle_flash", mx, my + 26f, 70f, 110f, 0.16f, rot = 90f, tint = p.tint).color.lerp(Color.WHITE, 0.5f)
             particles.smoke(mx, my + 10f, 40f, 2, 90f)
             Assets.sfx("shoot", 0.55f, 1.1f, 0.12f)
             Save.vibrate(8)
@@ -137,12 +151,12 @@ class Combat(private val particles: Particles) {
                 p.trailTimer = 0.016f
                 particles.spawn(Assets.r("glow"), nx, ny).apply {
                     size0 = 34f; size1 = 6f; life = 0.25f; additive = true
-                    color.set(p.cannon.color.tint).lerp(Color.ORANGE, 0.35f)
+                    if (p.cannon?.rainbow == true) color.fromHsv(time * 400f % 360f, 0.8f, 1f) else color.set(p.tint).lerp(Color.ORANGE, 0.35f)
                 }
             }
             if (p.t >= 1f) {
                 it.remove()
-                p.cannon.reserved--
+                p.cannon?.let { c -> c.reserved-- }
                 onHit(p)
             }
         }
@@ -161,7 +175,7 @@ class Combat(private val particles: Particles) {
         }
         for (s in slots) {
             val c = s.cannon ?: continue
-            val reg = Assets.cannon(c.color)
+            val reg = c.color?.let { Assets.cannon(it) } ?: Assets.r("booster_rainbow")
             val app = Ease.outBack(c.appear)
             val leave = 1f - Ease.inCubic(c.leaving)
             val sq = c.squash.value
@@ -173,7 +187,7 @@ class Combat(private val particles: Particles) {
             if (c.ammo > 0 && c.leaving <= 0f) {
                 val bx = s.x + slotSize * 0.32f
                 val by = s.y - slotSize * 0.28f
-                batch.color = c.color.tint
+                batch.color = c.color?.tint ?: tmpColor.fromHsv(time * 200f % 360f, 0.7f, 1f)
                 batch.drawCentered(Assets.r("badge"), bx, by, 34f * app)
                 batch.color = Color.WHITE
                 batch.text(Assets.fontSmall, DIGITS[c.ammo.coerceIn(0, 9)], bx, by + 1f, 22f * app)
@@ -194,7 +208,22 @@ class Combat(private val particles: Particles) {
         projectiles.clear()
     }
 
+    /**
+     * Launches [count] fireballs straight from (x, y) at open segments of [color]
+     * (used by the bomb booster: bombed blocks still deliver their shots).
+     */
+    fun burst(snake: Snake, x: Float, y: Float, color: GemColor, count: Int) {
+        repeat(count) { k ->
+            val target = snake.segments.firstOrNull { it.color == color && it.open } ?: return
+            target.pending++
+            val p = Projectile(null, target, x, y, color.tint)
+            p.dur = 0.35f + k * 0.08f + Vector2.dst(x, y, target.pos.x, target.pos.y) / 1600f
+            projectiles += p
+        }
+    }
+
     companion object {
         private val DIGITS = Array(10) { it.toString() }
+        private val RAINBOW_TINT = Color(1f, 0.85f, 1f, 1f)
     }
 }
