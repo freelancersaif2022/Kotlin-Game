@@ -225,7 +225,12 @@ private fun LessonBlock(block: Block, onRunCode: (String) -> Unit) {
 
 /** Renders text where `backticks` become inline code and **double stars** become bold. */
 @Composable
-fun RichText(text: String, color: Color, modifier: Modifier = Modifier) {
+fun RichText(
+    text: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyLarge,
+) {
     val annotated = buildAnnotatedString {
         var i = 0
         while (i < text.length) {
@@ -262,5 +267,5 @@ fun RichText(text: String, color: Color, modifier: Modifier = Modifier) {
             }
         }
     }
-    Text(annotated, style = MaterialTheme.typography.bodyLarge, color = color, modifier = modifier)
+    Text(annotated, style = style, color = color, modifier = modifier)
 }

@@ -8,13 +8,19 @@ in the app are always real.
 import textwrap
 
 
+def _prose(text):
+    """Dedent and join soft-wrapped lines; blank lines stay as paragraph breaks."""
+    paragraphs = textwrap.dedent(text).strip().split("\n\n")
+    return "\n\n".join(" ".join(line.strip() for line in p.splitlines()) for p in paragraphs)
+
+
 def _clean(code):
     return textwrap.dedent(code).strip("\n") + "\n"
 
 
 def T(text):
     """Paragraph. Supports `inline code` and **bold**."""
-    return {"type": "text", "text": textwrap.dedent(text).strip()}
+    return {"type": "text", "text": _prose(text)}
 
 
 def H(text):
@@ -22,7 +28,7 @@ def H(text):
 
 
 def TIP(text):
-    return {"type": "tip", "text": textwrap.dedent(text).strip()}
+    return {"type": "tip", "text": _prose(text)}
 
 
 def LI(*items):
@@ -42,11 +48,11 @@ def L(id, title, summary, blocks, keys=(), practice="", minutes=6):
     return {
         "id": id,
         "title": title,
-        "summary": textwrap.dedent(summary).strip(),
+        "summary": _prose(summary),
         "minutes": minutes,
         "blocks": blocks,
         "keyPoints": list(keys),
-        "practice": textwrap.dedent(practice).strip(),
+        "practice": _prose(practice),
     }
 
 
@@ -67,7 +73,7 @@ def M(id, number, title, subtitle, image, lessons, quiz):
 
 
 def STEP(title, text, code=""):
-    return {"title": title, "text": textwrap.dedent(text).strip(), "code": _clean(code) if code else ""}
+    return {"title": title, "text": _prose(text), "code": _clean(code) if code else ""}
 
 
 def P(id, number, title, tagline, image, difficulty, minutes, overview, features, concepts, steps, code, stdin=()):
@@ -79,7 +85,7 @@ def P(id, number, title, tagline, image, difficulty, minutes, overview, features
         "image": image,
         "difficulty": difficulty,
         "minutes": minutes,
-        "overview": textwrap.dedent(overview).strip(),
+        "overview": _prose(overview),
         "features": features,
         "concepts": concepts,
         "steps": steps,

@@ -56,7 +56,7 @@ enum class ThemeVariant(val id: String, val title: String, val colors: AppColors
         AppColors(Color(0xFF090C1D), Color(0xFF121733), Color(0xFF1B2147), Color(0x24FFFFFF), Color(0xFF05070F))
     ),
     Carbon(
-        "carbon", "Carbon Grey",
+        "carbon", "Carbon",
         AppColors(Color(0xFF101214), Color(0xFF191C20), Color(0xFF23272D), Color(0x1FFFFFFF), Color(0xFF0A0B0D))
     );
 

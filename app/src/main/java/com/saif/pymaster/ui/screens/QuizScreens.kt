@@ -113,7 +113,7 @@ private fun QuizFlow(
                     .verticalScroll(rememberScrollState())
                     .padding(20.dp)
             ) {
-                Text(question.q, style = MaterialTheme.typography.titleLarge, color = Brand.White)
+                RichText(question.q, Brand.White, style = MaterialTheme.typography.titleLarge)
                 if (question.code.isNotBlank()) {
                     Spacer(Modifier.height(14.dp))
                     CodeBlock(question.code)
