@@ -101,6 +101,7 @@ object NotificationType {
     const val PROJECT = "project"
     const val CERTIFICATE = "certificate"
     const val QUIZ = "quiz"
+    const val QUIZ_UNLOCK = "quiz_unlock"
     const val INFO = "info"
 }
 

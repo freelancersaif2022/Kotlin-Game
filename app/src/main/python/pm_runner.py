@@ -6,6 +6,7 @@ Output is streamed to a Java/Kotlin bridge object which exposes
 
 import builtins
 import linecache
+import os
 import sys
 import time
 import traceback
@@ -65,10 +66,17 @@ def _tracer(frame, event, arg):
     return _tracer
 
 
-def run(code, bridge):
-    """Run ``code`` as ``__main__``. Returns an exit code."""
+def run(code, bridge, workdir=None):
+    """Run ``code`` as ``__main__``. Returns an exit code.
+
+    ``workdir`` (if given) becomes the current directory so programs can
+    create and read files safely inside the app's private storage.
+    """
     global _stop_requested
     _stop_requested = False
+    if workdir:
+        os.makedirs(workdir, exist_ok=True)
+        os.chdir(workdir)
 
     out = _Stream(bridge, False)
     err = _Stream(bridge, True)
