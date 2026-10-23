@@ -1,0 +1,15 @@
+<resources>
+    <style name="Theme.VoxCast" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/vox_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="Theme.VoxCast.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/vox_bg</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_mic</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.VoxCast</item>
+    </style>
+</resources>

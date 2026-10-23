@@ -1,0 +1,10 @@
+<resources>
+    <color name="vox_bg">#FF07090E</color>
+    <color name="vox_surface">#FF141821</color>
+    <color name="vox_surface_high">#FF1C212D</color>
+    <color name="vox_primary">#FF35D0FF</color>
+    <color name="vox_gold">#FFF4C46B</color>
+    <color name="vox_text">#FFEEF2FA</color>
+    <color name="vox_text_dim">#FF9AA3B5</color>
+    <color name="ic_launcher_background">#FF0B0F18</color>
+</resources>
