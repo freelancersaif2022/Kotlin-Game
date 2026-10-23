@@ -40,6 +40,15 @@ jobs:
           name: PyMaster-apk
           path: out/*.apk
 
+      - name: Render UI screenshots
+        continue-on-error: true
+        run: |
+          ./gradlew --no-daemon testDebugUnitTest --tests "com.saif.pymaster.ScreenshotTest" || true
+          if [ -d app/build/screenshots ]; then
+            (cd app/build/screenshots && zip -q -r "$GITHUB_WORKSPACE/out/screenshots.zip" .)
+          fi
+          ls -la out
+
       - name: Publish GitHub release
         if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
         uses: softprops/action-gh-release@v2
@@ -49,5 +58,7 @@ jobs:
           body: |
             PyMaster – Python learning app.
             Download the APK below and install it on your Android phone.
-          files: out/*.apk
+          files: |
+            out/*.apk
+            out/screenshots.zip
           prerelease: false

@@ -155,6 +155,7 @@ fun ProjectsScreen(state: AppState?, nav: Navigator) {
                     ).show()
                 }
             }
+            item { Spacer(Modifier.navigationBarsPadding()) }
         }
     }
 }
