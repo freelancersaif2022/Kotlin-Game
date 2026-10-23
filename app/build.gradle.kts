@@ -74,5 +74,6 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.play.services.ads)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.guava)
     debugImplementation(libs.androidx.ui.tooling)
 }

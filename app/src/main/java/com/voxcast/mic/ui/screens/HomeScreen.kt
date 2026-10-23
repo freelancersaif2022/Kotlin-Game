@@ -84,7 +84,7 @@ fun HomeScreen(
     var showGuide by rememberSaveable { mutableStateOf(false) }
     var showModes by rememberSaveable { mutableStateOf(false) }
 
-    val micPermission = rememberPermissionRequest(listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA), onOpenMic)
+    val micPermission = rememberPermissionRequest(listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA), onGranted = onOpenMic)
 
     VoxBackground {
         Column(Modifier.fillMaxSize()) {
