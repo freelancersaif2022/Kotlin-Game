@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.captureToImage
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import android.graphics.Canvas
+import org.robolectric.shadows.ShadowLooper
 import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import com.saif.pymaster.cert.CertificateData
@@ -67,7 +67,7 @@ import java.io.FileOutputStream
 class ScreenshotTest {
 
     @get:Rule
-    val compose = createComposeRule()
+    val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val app: Application get() = ApplicationProvider.getApplicationContext()
     private val outDir = File(System.getProperty("user.dir"), "build/screenshots").apply { mkdirs() }
@@ -93,7 +93,12 @@ class ScreenshotTest {
             }
         }
         compose.mainClock.advanceTimeBy(advanceMs)
-        save(name, compose.onRoot().captureToImage().asAndroidBitmap())
+        ShadowLooper.idleMainLooper()
+        compose.mainClock.advanceTimeBy(100)
+        val view = compose.activity.window.decorView
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        compose.activity.runOnUiThread { view.draw(Canvas(bitmap)) }
+        save(name, bitmap)
     }
 
     private fun progressState(): AppState {
