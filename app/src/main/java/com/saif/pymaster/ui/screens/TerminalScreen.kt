@@ -1,6 +1,15 @@
 package com.saif.pymaster.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.input.pointer.pointerInput
+import com.saif.pymaster.util.personalize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -166,7 +175,7 @@ fun TerminalScreen(state: AppState?, vm: TerminalViewModel) {
                             leadingIcon = { Icon(Icons.Rounded.Description, null, tint = Brand.Cyan) },
                             onClick = {
                                 showSamples = false
-                                vm.loadCode(code)
+                                vm.loadCode(personalize(code, state?.profile?.name))
                             },
                         )
                     }
@@ -203,12 +212,29 @@ fun TerminalScreen(state: AppState?, vm: TerminalViewModel) {
             ToolIcon(Icons.AutoMirrored.Rounded.Redo, "Redo", vm.canRedo) { vm.redo() }
             ToolIcon(Icons.Rounded.ContentCopy, "Copy code", true) { clipboard.setText(AnnotatedString(vm.code.text)) }
             ToolIcon(Icons.Rounded.DeleteSweep, "Clear code", vm.code.text.isNotEmpty()) { confirmClear = true }
+            ToolIcon(
+                if (vm.consoleVisible) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.KeyboardArrowUp,
+                if (vm.consoleVisible) "Hide console" else "Show console",
+                true,
+            ) { vm.consoleVisible = !vm.consoleVisible }
         }
 
+        // Editor, symbol keys and the slide-up console
+        BoxWithConstraints(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+        val consoleHeight by animateDpAsState(
+            if (vm.consoleVisible) maxHeight * 0.45f else 0.dp,
+            tween(280),
+            label = "console",
+        )
+        Column(Modifier.fillMaxSize()) {
         // Editor
         BoxWithConstraints(
             Modifier
-                .weight(0.58f)
+                .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 6.dp)
                 .clip(RoundedCornerShape(16.dp))
@@ -287,8 +313,12 @@ fun TerminalScreen(state: AppState?, vm: TerminalViewModel) {
             }
         }
 
-        // Console
-        Console(vm, monoStyle, Modifier.weight(0.42f))
+        // Console (hidden until Run; swipe down or tap the arrow to hide)
+        if (consoleHeight > 1.dp) {
+            Console(vm, monoStyle, Modifier.height(consoleHeight))
+        }
+        }
+        }
     }
 
     if (confirmClear) {
@@ -335,6 +365,7 @@ private fun Console(vm: TerminalViewModel, monoStyle: TextStyle, modifier: Modif
     Column(
         modifier
             .fillMaxWidth()
+            .clipToBounds()
             .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 12.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(colors.terminal)
@@ -344,6 +375,16 @@ private fun Console(vm: TerminalViewModel, monoStyle: TextStyle, modifier: Modif
             Modifier
                 .fillMaxWidth()
                 .background(Color(0x0DFFFFFF))
+                .pointerInput(Unit) {
+                    var dragged = 0f
+                    detectVerticalDragGestures(
+                        onDragStart = { dragged = 0f },
+                        onDragEnd = { if (dragged > 48.dp.toPx()) vm.consoleVisible = false },
+                    ) { change, dy ->
+                        change.consume()
+                        dragged += dy
+                    }
+                }
                 .padding(start = 14.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -362,6 +403,9 @@ private fun Console(vm: TerminalViewModel, monoStyle: TextStyle, modifier: Modif
             Text(status, style = MaterialTheme.typography.labelSmall, color = statusColor, modifier = Modifier.weight(1f))
             IconButton(onClick = { vm.clearOutput() }, enabled = !vm.running, modifier = Modifier.size(38.dp)) {
                 Icon(Icons.Rounded.ClearAll, "Clear output", tint = Brand.TextSecondary, modifier = Modifier.size(18.dp))
+            }
+            IconButton(onClick = { vm.consoleVisible = false }, modifier = Modifier.size(38.dp)) {
+                Icon(Icons.Rounded.KeyboardArrowDown, "Hide console", tint = Brand.TextSecondary, modifier = Modifier.size(22.dp))
             }
         }
         Box(

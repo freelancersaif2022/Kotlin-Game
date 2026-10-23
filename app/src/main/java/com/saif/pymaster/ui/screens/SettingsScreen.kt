@@ -99,8 +99,6 @@ fun SettingsScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
     val colors = LocalAppColors.current
     val context = LocalContext.current
     val haptics = LocalHaptics.current
-    var confirmReset by remember { mutableStateOf(false) }
-    var confirmClear by remember { mutableStateOf(false) }
     var versionTaps by remember { mutableIntStateOf(0) }
 
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -185,50 +183,22 @@ fun SettingsScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
             }
         }
 
-        // Profile
-        Group("Profile") {
-            NavRow(Icons.Rounded.Person, "Edit profile", "Name, avatar, photo, level and goal", Brand.PythonBlueBright) {
-                nav.to(Routes.EDIT_PROFILE)
-            }
-        }
-
         // Appearance
         Group("Appearance") {
             RowHeader(Icons.Rounded.Palette, "Theme", "Dark themes designed for long sessions", Brand.Purple)
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                ThemeVariant.entries.forEach { v ->
-                    val selected = settings.theme == v.id
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(14.dp))
-                            .clickable { haptics?.tick(); update { it.copy(theme = v.id) } },
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(Brush.verticalGradient(listOf(v.colors.surfaceHigh, v.colors.background)))
-                                .border(2.dp, if (selected) Brand.Cyan else Color(0x22FFFFFF), RoundedCornerShape(14.dp)),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            if (selected) Icon(Icons.Rounded.Check, null, tint = Brand.Cyan)
+            Spacer(Modifier.height(14.dp))
+            ThemeVariant.entries.chunked(2).forEach { pair ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    pair.forEach { v ->
+                        ThemeCard(v, selected = settings.theme == v.id, modifier = Modifier.weight(1f)) {
+                            haptics?.tick()
+                            update { it.copy(theme = v.id) }
                         }
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            v.title,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (selected) Brand.White else Brand.TextSecondary,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2,
-                        )
                     }
                 }
             }
@@ -327,19 +297,6 @@ fun SettingsScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
             }
         }
 
-        // Data
-        Group("Data & privacy") {
-            RowHeader(Icons.Rounded.Security, "Stored on this phone only", "Your profile, progress and notifications never leave your device.", Brand.Success)
-            Divider()
-            NavRow(Icons.Rounded.NotificationsOff, "Clear notifications", "${s.notifications.size} saved", Brand.TextSecondary) {
-                confirmClear = true
-            }
-            Divider()
-            NavRow(Icons.Rounded.DeleteForever, "Reset all progress", "Lessons, quizzes, projects, XP and certificate", Brand.Danger) {
-                confirmReset = true
-            }
-        }
-
         // About
         Group("About") {
             Row(
@@ -374,48 +331,7 @@ fun SettingsScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
             RowHeader(Icons.Rounded.VolunteerActivism, "100% free", "No ads. No premium. No account. Just learning.", Brand.PythonYellow)
         }
 
-        Spacer(Modifier.height(10.dp))
-        Text(
-            "Made with 🐍 and ❤️",
-            style = MaterialTheme.typography.bodySmall,
-            color = Brand.TextMuted,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-
-    if (confirmReset) {
-        AlertDialog(
-            onDismissRequest = { confirmReset = false },
-            containerColor = colors.surfaceHigh,
-            title = { Text("Reset all progress?", color = Brand.White) },
-            text = {
-                Text(
-                    "This permanently deletes your lessons, quiz scores, projects, XP, streak, certificate and notifications. Your profile is kept.",
-                    color = Brand.TextSecondary,
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmReset = false
-                    vm.resetProgress()
-                    Toast.makeText(context, "Progress reset", Toast.LENGTH_SHORT).show()
-                }) { Text("Reset", color = Brand.Danger) }
-            },
-            dismissButton = { TextButton(onClick = { confirmReset = false }) { Text("Cancel", color = Brand.White) } },
-        )
-    }
-    if (confirmClear) {
-        AlertDialog(
-            onDismissRequest = { confirmClear = false },
-            containerColor = colors.surfaceHigh,
-            title = { Text("Clear notifications?", color = Brand.White) },
-            text = { Text("All saved notifications will be removed.", color = Brand.TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { confirmClear = false; vm.clearNotifications() }) { Text("Clear", color = Brand.Danger) }
-            },
-            dismissButton = { TextButton(onClick = { confirmClear = false }) { Text("Cancel", color = Brand.White) } },
-        )
+        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -512,5 +428,87 @@ private fun Stepper(onMinus: () -> Unit, onPlus: () -> Unit) {
         IconButton(onClick = onMinus, modifier = Modifier.size(40.dp)) { Icon(Icons.Rounded.Remove, "Smaller", tint = Brand.White) }
         Box(Modifier.width(1.dp).height(20.dp).background(colors.stroke))
         IconButton(onClick = onPlus, modifier = Modifier.size(40.dp)) { Icon(Icons.Rounded.Add, "Bigger", tint = Brand.White) }
+    }
+}
+
+private val themeHints = mapOf(
+    "navy" to "Default blue",
+    "amoled" to "Pure black",
+    "space" to "Deep indigo",
+    "carbon" to "Neutral grey",
+)
+
+@Composable
+private fun ThemeCard(v: ThemeVariant, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        modifier
+            .clip(shape)
+            .background(v.colors.background)
+            .border(
+                if (selected) 2.dp else 1.dp,
+                if (selected) Brush.linearGradient(listOf(Brand.Cyan, Brand.PythonYellow))
+                else Brush.linearGradient(listOf(Color(0x26FFFFFF), Color(0x26FFFFFF))),
+                shape,
+            )
+            .clickable(onClick = onClick)
+            .padding(12.dp)
+    ) {
+        // Mini preview of the theme: a card with accent bars
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(46.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(v.colors.surface)
+                .border(1.dp, v.colors.stroke, RoundedCornerShape(10.dp))
+                .padding(8.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(Brush.horizontalGradient(listOf(Brand.PythonBlue, Brand.Cyan)))
+                )
+                Box(
+                    Modifier
+                        .fillMaxWidth(0.45f)
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(v.colors.surfaceHigh)
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    listOf(Brand.PythonBlueBright, Brand.Cyan, Brand.PythonYellow).forEach {
+                        Box(Modifier.size(7.dp).clip(CircleShape).background(it))
+                    }
+                }
+            }
+            if (selected) {
+                Box(
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .size(18.dp)
+                        .clip(CircleShape)
+                        .background(Brand.Cyan),
+                    contentAlignment = Alignment.Center,
+                ) { Icon(Icons.Rounded.Check, null, tint = Color(0xFF00141A), modifier = Modifier.size(13.dp)) }
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Text(
+            v.title,
+            style = MaterialTheme.typography.titleSmall,
+            color = Brand.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            themeHints[v.id] ?: "",
+            style = MaterialTheme.typography.labelSmall,
+            color = if (selected) Brand.Cyan else Brand.TextMuted,
+            maxLines = 1,
+        )
     }
 }

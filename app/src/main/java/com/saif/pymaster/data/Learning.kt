@@ -178,27 +178,19 @@ class Learning(private val context: Context) {
         repo.update { s -> s.copy(progress = s.progress.copy(lastLessonId = lessonId)) }
     }
 
-    suspend fun completeLesson(lessonId: String) = mutate { s0, pending ->
-        if (Rules.lessonDone(s0, lessonId)) return@mutate s0
-        val lesson = Content.lesson(lessonId) ?: return@mutate s0
-        val module = Content.moduleOfLesson(lessonId)
-        var s = Rules.touchStreak(s0)
-        s = s.copy(
-            progress = s.progress.copy(
-                completedLessons = s.progress.completedLessons + lessonId,
-                xp = s.progress.xp + Rules.XP_LESSON,
-                lastLessonId = lessonId,
-            )
-        )
-        s = pending.add(s, "Session complete ✅", "You finished \"${lesson.title}\". +${Rules.XP_LESSON} XP", NotificationType.LESSON)
-        if (module != null && Rules.allLessonsDone(s, module) && !Rules.quizPassed(s, module)) {
-            s = pending.add(
-                s, "Module quiz unlocked 🧠",
-                "All lessons of \"${module.title}\" are done. Pass the quiz to finish the module.",
-                NotificationType.QUIZ_UNLOCK
+    /** Lessons only save progress; notifications are sent when a whole module is completed. */
+    suspend fun completeLesson(lessonId: String) {
+        repo.update { s0 ->
+            if (Rules.lessonDone(s0, lessonId) || Content.lesson(lessonId) == null) return@update s0
+            val s = Rules.touchStreak(s0)
+            s.copy(
+                progress = s.progress.copy(
+                    completedLessons = s.progress.completedLessons + lessonId,
+                    xp = s.progress.xp + Rules.XP_LESSON,
+                    lastLessonId = lessonId,
+                )
             )
         }
-        s
     }
 
     /** Returns true when the quiz was passed. */

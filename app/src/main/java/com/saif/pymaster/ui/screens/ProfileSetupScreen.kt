@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -209,40 +210,29 @@ fun ProfileSetupScreen(initial: Profile?, onSave: (Profile) -> Unit, onBack: (()
 
             Spacer(Modifier.height(24.dp))
             Label("Choose your avatar")
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Content.avatars.forEachIndexed { i, res ->
-                    AvatarChoice(selected = avatarIndex == i, size = 64.dp, onClick = { avatarIndex = i; haptics?.tick() }) {
-                        Image(painterResource(res), "Avatar ${i + 1}", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val choiceSize = ((maxWidth - 40.dp) / 6).coerceAtMost(58.dp)
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Content.avatars.forEachIndexed { i, res ->
+                        AvatarChoice(selected = avatarIndex == i, size = choiceSize, onClick = { avatarIndex = i; haptics?.tick() }) {
+                            Image(painterResource(res), "Avatar ${i + 1}", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        }
                     }
-                }
-                AvatarChoice(selected = avatarIndex < 0, size = 64.dp, onClick = {
-                    val file = ImageUtils.newCameraFile(context)
-                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                    cameraUri = uri.toString()
-                    runCatching { takePicture.launch(uri) }.onFailure {
-                        Toast.makeText(context, "No camera app found", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                    Box(Modifier.fillMaxSize().background(colors.surfaceHigh), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Rounded.CameraAlt, "Camera", tint = Brand.Cyan)
-                    }
-                }
-                AvatarChoice(selected = false, size = 64.dp, onClick = {
-                    pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }) {
-                    Box(Modifier.fillMaxSize().background(colors.surfaceHigh), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Rounded.PhotoLibrary, "Gallery", tint = Brand.PythonYellow)
+                    AvatarChoice(selected = avatarIndex < 0, size = choiceSize, onClick = {
+                        pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }) {
+                        Box(Modifier.fillMaxSize().background(colors.surfaceHigh), contentAlignment = Alignment.Center) {
+                            Icon(Icons.Rounded.PhotoLibrary, "Gallery", tint = Brand.PythonYellow)
+                        }
                     }
                 }
             }
             Row(Modifier.fillMaxWidth().padding(top = 6.dp)) {
                 Text(
-                    "5 programmer avatars  •  camera  •  gallery",
+                    "Pick an avatar or your own photo from the gallery",
                     style = MaterialTheme.typography.bodySmall,
                     color = Brand.TextMuted,
                 )

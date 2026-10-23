@@ -2,7 +2,6 @@ package com.saif.pymaster.ui.screens
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -16,10 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,8 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -44,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.saif.pymaster.R
 import com.saif.pymaster.data.AppState
 import com.saif.pymaster.ui.Routes
-import com.saif.pymaster.ui.components.GradientProgressBar
 import com.saif.pymaster.ui.theme.Brand
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,7 +49,6 @@ fun SplashScreen(state: AppState?, onDone: (String) -> Unit) {
     val logoScale = remember { Animatable(0.6f) }
     val logoAlpha = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
-    val progress = remember { Animatable(0f) }
     val currentState by rememberUpdatedState(state)
 
     LaunchedEffect(Unit) {
@@ -66,7 +58,7 @@ fun SplashScreen(state: AppState?, onDone: (String) -> Unit) {
             delay(450)
             textAlpha.animateTo(1f, tween(700))
         }
-        progress.animateTo(1f, tween(2200, easing = LinearEasing))
+        delay(2200)
         val s = snapshotFlow { currentState }.filterNotNull().first()
         onDone(
             when {
@@ -117,26 +109,6 @@ fun SplashScreen(state: AppState?, onDone: (String) -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = Brand.TextSecondary,
                 modifier = Modifier.alpha(textAlpha.value),
-            )
-        }
-        Column(
-            Modifier
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            GradientProgressBar(
-                progress.value,
-                modifier = Modifier.width(160.dp),
-                height = 4.dp,
-                brush = Brush.horizontalGradient(listOf(Brand.PythonBlue, Brand.Cyan, Brand.PythonYellow)),
-            )
-            Spacer(Modifier.height(14.dp))
-            Text(
-                "Crafted by Saif A.",
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.White.copy(alpha = 0.55f),
             )
         }
     }

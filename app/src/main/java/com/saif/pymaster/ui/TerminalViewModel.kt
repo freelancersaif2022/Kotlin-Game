@@ -40,6 +40,7 @@ class TerminalViewModel(app: Application) : AndroidViewModel(app) {
     var waitingForInput by mutableStateOf(false)
         private set
     var inputText by mutableStateOf("")
+    var consoleVisible by mutableStateOf(false)
     var outputVersion by mutableStateOf(0)
         private set
 
@@ -181,6 +182,7 @@ class TerminalViewModel(app: Application) : AndroidViewModel(app) {
         if (running) return
         val source = code.text
         output.clear()
+        consoleVisible = true
         append("$ python main.py\n", Kind.SYS)
         running = true
         waitingForInput = false

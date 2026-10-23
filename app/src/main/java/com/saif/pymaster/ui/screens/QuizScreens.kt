@@ -65,6 +65,7 @@ import com.saif.pymaster.ui.components.PrimaryButton
 import com.saif.pymaster.ui.components.ProgressRing
 import com.saif.pymaster.ui.components.ScreenTopBar
 import com.saif.pymaster.ui.components.SecondaryButton
+import com.saif.pymaster.ui.components.Tag
 import com.saif.pymaster.ui.theme.Brand
 import com.saif.pymaster.ui.theme.LocalAppColors
 import com.saif.pymaster.util.LocalHaptics
@@ -203,7 +204,6 @@ private fun QuizFlow(
 
 @Composable
 private fun ResultView(
-    image: Int,
     title: String,
     message: String,
     correct: Int,
@@ -217,31 +217,39 @@ private fun ResultView(
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .navigationBarsPadding()
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painterResource(image), null, Modifier.size(170.dp))
-        Spacer(Modifier.height(8.dp))
-        ProgressRing(
-            correct.toFloat() / total.coerceAtLeast(1), size = 120.dp, stroke = 12.dp,
+        Column(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("$correct/$total", style = MaterialTheme.typography.headlineSmall, color = Brand.White)
-                Text("correct", style = MaterialTheme.typography.labelSmall, color = Brand.TextSecondary)
+            ProgressRing(
+                correct.toFloat() / total.coerceAtLeast(1), size = 156.dp, stroke = 14.dp,
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("$correct/$total", style = MaterialTheme.typography.headlineMedium, color = Brand.White)
+                    Text("correct", style = MaterialTheme.typography.labelMedium, color = Brand.TextSecondary)
+                }
             }
+            Spacer(Modifier.height(20.dp))
+            Tag(if (passed) "PASSED" else "NOT PASSED YET", if (passed) Brand.Success else Brand.PythonYellow)
+            Spacer(Modifier.height(14.dp))
+            Text(
+                title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Brand.White,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(message, style = MaterialTheme.typography.bodyMedium, color = Brand.TextSecondary, textAlign = TextAlign.Center)
         }
-        Spacer(Modifier.height(18.dp))
-        Text(
-            title,
-            style = MaterialTheme.typography.headlineSmall,
-            color = Brand.White,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(message, style = MaterialTheme.typography.bodyMedium, color = Brand.TextSecondary, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(16.dp))
         PrimaryButton(primary, modifier = Modifier.fillMaxWidth(), onClick = onPrimary)
         if (secondary != null) {
             Spacer(Modifier.height(12.dp))
@@ -272,7 +280,6 @@ fun ModuleQuizScreen(state: AppState?, moduleId: String, vm: MainViewModel, nav:
             val nextModule = Content.modules.getOrNull(m.number)
             val courseDone = Rules.courseComplete(s)
             ResultView(
-                image = if (passed) R.drawable.success_celebration else R.drawable.daily_quiz,
                 title = if (passed) "Module ${m.number} complete!" else "Almost there!",
                 message = if (passed) {
                     if (courseDone) "You finished the whole Python course! 15 real-world projects are now unlocked."
@@ -337,24 +344,30 @@ fun DailyQuizScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(painterResource(R.drawable.success_celebration), null, Modifier.size(150.dp))
-                ProgressRing(correct.toFloat() / questions.size.coerceAtLeast(1), size = 110.dp, stroke = 11.dp) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("$correct/${questions.size}", style = MaterialTheme.typography.headlineSmall, color = Brand.White)
-                        Text("today", style = MaterialTheme.typography.labelSmall, color = Brand.TextSecondary)
+                AppCard(Modifier.fillMaxWidth(), border = Brand.Cyan.copy(alpha = 0.35f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        ProgressRing(correct.toFloat() / questions.size.coerceAtLeast(1), size = 104.dp, stroke = 11.dp) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("$correct/${questions.size}", style = MaterialTheme.typography.titleLarge, color = Brand.White)
+                                Text("today", style = MaterialTheme.typography.labelSmall, color = Brand.TextSecondary)
+                            }
+                        }
+                        Spacer(Modifier.width(18.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Daily quiz complete ⚡", style = MaterialTheme.typography.titleMedium, color = Brand.White)
+                            Spacer(Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Tag("+${correct * Rules.XP_DAILY_CORRECT} XP", Brand.PythonYellow)
+                                Tag("${s.progress.streak} day streak", Brand.Warning)
+                            }
+                            Spacer(Modifier.height(8.dp))
+                            Text("New questions arrive tomorrow.", style = MaterialTheme.typography.bodySmall, color = Brand.TextSecondary)
+                        }
                     }
                 }
-                Spacer(Modifier.height(14.dp))
-                Text("Daily quiz complete ⚡", style = MaterialTheme.typography.headlineSmall, color = Brand.White)
+                Spacer(Modifier.height(22.dp))
                 Text(
-                    "+${correct * Rules.XP_DAILY_CORRECT} XP  •  ${s.progress.streak} day streak  •  New questions tomorrow",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Brand.TextSecondary,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(20.dp))
-                Text(
-                    "Review",
+                    "Review your answers",
                     style = MaterialTheme.typography.titleMedium,
                     color = Brand.White,
                     modifier = Modifier.fillMaxWidth(),
@@ -394,13 +407,7 @@ fun DailyQuizScreen(state: AppState?, vm: MainViewModel, nav: Navigator) {
                         }
                     }
                 }
-                Spacer(Modifier.height(18.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    SecondaryButton("Home", icon = Icons.Rounded.Home, modifier = Modifier.weight(1f)) { nav.back() }
-                    PrimaryButton("Keep learning", icon = Icons.Rounded.Refresh, modifier = Modifier.weight(1f)) {
-                        nav.back(); nav.tab(Routes.COURSE)
-                    }
-                }
+                Spacer(Modifier.height(12.dp))
             }
         }
     }

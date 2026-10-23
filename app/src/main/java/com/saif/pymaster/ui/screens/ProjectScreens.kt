@@ -78,6 +78,7 @@ import com.saif.pymaster.ui.components.Tag
 import com.saif.pymaster.ui.theme.Brand
 import com.saif.pymaster.ui.theme.LocalAppColors
 import com.saif.pymaster.util.LocalHaptics
+import com.saif.pymaster.util.personalize
 
 private fun difficultyColor(d: String) = when (d) {
     "Beginner" -> Brand.Success
@@ -251,6 +252,7 @@ fun ProjectDetailScreen(
     val complete = p.id in s.progress.completedProjects
     val stepsDone = s.progress.projectSteps[p.id] ?: emptySet()
     val allSteps = stepsDone.size >= p.steps.size
+    val userName = s.profile?.name
     TrackStudyTime(vm)
 
     Column(Modifier.fillMaxSize().background(colors.background)) {
@@ -348,7 +350,7 @@ fun ProjectDetailScreen(
                         }
                         if (p.sampleOutput.isNotBlank()) {
                             SectionTitle("Sample run")
-                            CodeBlock(code = p.sampleOutput.trimEnd(), title = "terminal — sample output")
+                            CodeBlock(code = personalize(p.sampleOutput.trimEnd(), userName), title = "terminal — sample output")
                         }
                         Spacer(Modifier.height(16.dp))
                         SecondaryButton("Start building", modifier = Modifier.fillMaxWidth()) { tab = 1 }
@@ -386,7 +388,8 @@ fun ProjectDetailScreen(
                                 RichText(step.text, Brand.White.copy(alpha = 0.88f))
                                 if (step.code.isNotBlank()) {
                                     Spacer(Modifier.height(10.dp))
-                                    CodeBlock(step.code, title = "step_${i + 1}.py", onRun = { onRunCode(step.code) })
+                                    val stepCode = personalize(step.code, userName)
+                                    CodeBlock(stepCode, title = "step_${i + 1}.py", onRun = { onRunCode(stepCode) })
                                 }
                                 Spacer(Modifier.height(10.dp))
                                 Row(
@@ -420,10 +423,11 @@ fun ProjectDetailScreen(
                             color = Brand.TextSecondary,
                         )
                         Spacer(Modifier.height(10.dp))
-                        CodeBlock(p.code, title = "${p.id}.py", onRun = { onRunCode(p.code) })
+                        val fullCode = personalize(p.code, userName)
+                        CodeBlock(fullCode, title = "${p.id}.py", onRun = { onRunCode(fullCode) })
                         Spacer(Modifier.height(12.dp))
                         PrimaryButton("Run in terminal", icon = Icons.Rounded.PlayArrow, modifier = Modifier.fillMaxWidth()) {
-                            onRunCode(p.code)
+                            onRunCode(fullCode)
                         }
                     }
                 }

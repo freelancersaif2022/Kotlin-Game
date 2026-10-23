@@ -59,7 +59,7 @@ object CertificateRenderer {
         val poppinsMedium = font(R.font.poppins_medium)
         val poppinsSemi = font(R.font.poppins_semibold)
         val playfair = font(R.font.playfair_bold)
-        val script = font(R.font.great_vibes)
+        val script = font(R.font.signature_allura)
 
         val gold = 0xFFFFD43B.toInt()
         val white = 0xFFFFFFFF.toInt()
@@ -127,7 +127,7 @@ object CertificateRenderer {
         val label = paint(poppinsMedium, 0.019f, white, 165, spacingEm = 0.06f)
         canvas.drawText("DATE OF ISSUE", leftX, h * 0.852f, label)
 
-        canvas.drawText("Saif A.", rightX, h * 0.805f, paint(script, 0.085f, white))
+        canvas.drawText("Saif A.", rightX, h * 0.802f, paint(script, 0.098f, white))
         line(rightX - half, rightX + half, h * 0.818f, gold, h * 0.0016f)
         canvas.drawText("SAIF A.  •  LEAD INSTRUCTOR", rightX, h * 0.852f, label)
 

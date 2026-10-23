@@ -347,8 +347,8 @@ fun TrackStudyTime(vm: MainViewModel) {
     LaunchedEffect(lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
-                delay(10_000)
-                vm.addStudySeconds(10)
+                delay(30_000)
+                vm.addStudySeconds(30)
             }
         }
     }

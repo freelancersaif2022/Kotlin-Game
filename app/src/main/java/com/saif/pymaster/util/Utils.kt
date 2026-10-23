@@ -111,3 +111,16 @@ fun timeAgo(millis: Long): String {
         else -> formatDate(millis, "dd MMM yyyy")
     }
 }
+
+/** Replaces the sample name used in course examples with the learner's own name. */
+fun personalize(text: String, fullName: String?): String {
+    val full = fullName?.trim().orEmpty()
+    if (full.isEmpty() || !text.contains("saif", ignoreCase = true)) return text
+    val first = full.split(Regex("\\s+")).first()
+    return text
+        .replace("Saif Ahmed", full)
+        .replace("saif ahmed", full.lowercase())
+        .replace("SAIF", first.uppercase())
+        .replace("Saif", first)
+        .replace("saif", first.lowercase())
+}

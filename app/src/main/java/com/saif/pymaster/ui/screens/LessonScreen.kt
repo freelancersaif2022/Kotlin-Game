@@ -56,6 +56,8 @@ import com.saif.pymaster.ui.components.Tag
 import com.saif.pymaster.ui.theme.Brand
 import com.saif.pymaster.ui.theme.Fonts
 import com.saif.pymaster.ui.theme.LocalAppColors
+import com.saif.pymaster.util.personalize
+import androidx.compose.runtime.remember
 
 @Composable
 fun LessonScreen(
@@ -99,7 +101,7 @@ fun LessonScreen(
             Text(lesson.summary, style = MaterialTheme.typography.bodyLarge, color = Brand.TextSecondary)
             Spacer(Modifier.height(8.dp))
 
-            lesson.blocks.forEach { block -> LessonBlock(block, onRunCode) }
+            lesson.blocks.forEach { block -> LessonBlock(block, s.profile?.name, onRunCode) }
 
             if (lesson.keyPoints.isNotEmpty()) {
                 Spacer(Modifier.height(18.dp))
@@ -170,7 +172,7 @@ fun LessonScreen(
 }
 
 @Composable
-private fun LessonBlock(block: Block, onRunCode: (String) -> Unit) {
+private fun LessonBlock(block: Block, userName: String?, onRunCode: (String) -> Unit) {
     when (block.type) {
         "heading" -> {
             Spacer(Modifier.height(20.dp))
@@ -203,7 +205,9 @@ private fun LessonBlock(block: Block, onRunCode: (String) -> Unit) {
                 Text(block.text, style = MaterialTheme.typography.labelMedium, color = Brand.TextSecondary)
                 Spacer(Modifier.height(6.dp))
             }
-            CodeBlock(code = block.code, output = block.output, onRun = { onRunCode(block.code) })
+            val code = remember(block.code, userName) { personalize(block.code, userName) }
+            val output = remember(block.output, userName) { personalize(block.output, userName) }
+            CodeBlock(code = code, output = output, onRun = { onRunCode(code) })
         }
         "tip" -> {
             Spacer(Modifier.height(14.dp))
