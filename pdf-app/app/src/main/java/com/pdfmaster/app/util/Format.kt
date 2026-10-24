@@ -21,7 +21,7 @@ object Format {
         if (millis <= 0) return ""
         val now = System.currentTimeMillis()
         return when {
-            now - millis < DateUtils.MINUTE_MILLIS -> "Just now"
+            now - millis < DateUtils.MINUTE_IN_MILLIS -> "Just now"
             DateUtils.isToday(millis) -> "Today, " + SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(millis))
             DateUtils.isToday(millis + DateUtils.DAY_IN_MILLIS) -> "Yesterday"
             now - millis < 7 * DateUtils.DAY_IN_MILLIS -> SimpleDateFormat("EEEE", Locale.getDefault()).format(Date(millis))

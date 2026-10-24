@@ -14,6 +14,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: pdf-app
@@ -46,3 +48,36 @@ jobs:
         with:
           name: PDFMaster-release-apk
           path: pdf-app/app/build/outputs/apk/release/*.apk
+
+      - name: Render UI screenshots
+        id: shots
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon testDebugUnitTest --tests "*ScreenshotTest*" 2>&1 | tee test.log
+          ls -la app/screenshots
+
+      - name: Show test errors
+        if: steps.shots.outcome == 'failure'
+        run: |
+          grep -E "^e: |What went wrong|Exception|Error|at com\.pdfmaster" test.log | head -120 || true
+          find app/build/test-results -name "*.xml" -exec grep -l "<failure" {} \; | head -3 | xargs -r -I{} sh -c 'grep -A40 "<failure" {} | head -80'
+
+      - name: Publish screenshots to branch
+        if: steps.shots.outcome == 'success' && github.event_name == 'push'
+        run: |
+          pip install --quiet pillow
+          mkdir -p docs/screenshots
+          python3 - <<'PY'
+          import glob, os
+          from PIL import Image
+          for f in sorted(glob.glob("app/screenshots/*.png")):
+              im = Image.open(f).convert("RGB")
+              im.thumbnail((540, 1200))
+              im.save(os.path.join("docs/screenshots", os.path.basename(f)), optimize=True)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          git diff --cached --quiet || git commit -m "Update UI screenshots [skip ci]"
+          git push origin HEAD:${{ github.ref_name }}

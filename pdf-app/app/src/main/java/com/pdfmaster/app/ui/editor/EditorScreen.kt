@@ -138,7 +138,9 @@ fun EditorScreen(uri: Uri, mode: String) {
     val nav = LocalNavigator.current
     val launcher = rememberToolLauncher()
     var confirmExit by remember { mutableStateOf(false) }
-    val exit = { if (vm.marks.isNotEmpty()) confirmExit = true else nav.back() }
+    val exit: () -> Unit = {
+        if (vm.marks.isNotEmpty()) confirmExit = true else nav.back()
+    }
     BackHandler { exit() }
 
     Box(Modifier.fillMaxSize().background(AppTheme.colors.pageBackground)) {
