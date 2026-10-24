@@ -74,6 +74,7 @@ import javax.inject.Inject
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = HiltTestApplication::class, sdk = [34], qualifiers = "w393dp-h852dp-xxhdpi")
+@OptIn(com.github.takahirom.roborazzi.ExperimentalRoborazziApi::class)
 class ScreenshotTest {
 
     @get:Rule(order = 0)

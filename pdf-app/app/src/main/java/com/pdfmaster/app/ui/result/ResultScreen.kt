@@ -37,7 +37,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.FolderOpen
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
@@ -163,7 +163,7 @@ fun ResultScreen() {
                     Spacer(Modifier.height(16.dp))
                     if (result.outputs.size == 1) {
                         val out = result.outputs.first()
-                        PrimaryButton("Open PDF", { nav.home(); nav.viewer(out.uri) }, icon = Icons.Rounded.OpenInNew)
+                        PrimaryButton("Open PDF", { nav.home(); nav.viewer(out.uri) }, icon = Icons.AutoMirrored.Rounded.OpenInNew)
                         Spacer(Modifier.height(10.dp))
                         SecondaryButton("Share", { FileActions.share(context, listOf(out.uri)) }, icon = Icons.Rounded.Share)
                     } else {

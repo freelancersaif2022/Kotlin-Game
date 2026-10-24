@@ -33,8 +33,8 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.PictureAsPdf
-import androidx.compose.material.icons.rounded.RotateLeft
-import androidx.compose.material.icons.rounded.RotateRight
+import androidx.compose.material.icons.automirrored.rounded.RotateLeft
+import androidx.compose.material.icons.automirrored.rounded.RotateRight
 import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -154,8 +154,8 @@ fun OrganizeTool(vm: ToolViewModel, initialUri: Uri?) {
                     OrgAction(Icons.Rounded.SelectAll, if (selected.size == pages.size) "None" else "All", true) {
                         if (selected.size == pages.size) selected.clear() else { selected.clear(); selected.addAll(pages.map { it.id }) }
                     }
-                    OrgAction(Icons.Rounded.RotateLeft, "Left", any) { rotate(-90) }
-                    OrgAction(Icons.Rounded.RotateRight, "Right", any) { rotate(90) }
+                    OrgAction(Icons.AutoMirrored.Rounded.RotateLeft, "Left", any) { rotate(-90) }
+                    OrgAction(Icons.AutoMirrored.Rounded.RotateRight, "Right", any) { rotate(90) }
                     OrgAction(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, "Earlier", any) { move(-1) }
                     OrgAction(Icons.AutoMirrored.Rounded.KeyboardArrowRight, "Later", any) { move(1) }
                     OrgAction(Icons.Rounded.Delete, "Delete", any && selected.size < pages.size) {

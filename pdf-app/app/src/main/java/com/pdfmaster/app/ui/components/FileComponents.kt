@@ -28,7 +28,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DriveFileRenameOutline
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Print
 import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material.icons.rounded.Share
@@ -223,7 +223,7 @@ fun FileActionsSheet(file: PdfFile, onDismiss: () -> Unit, callbacks: FileSheetC
                 }
             }
             HorizontalDivider(Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            SheetAction(Icons.Rounded.OpenInNew, "Open", callbacks.onOpen)
+            SheetAction(Icons.AutoMirrored.Rounded.OpenInNew, "Open", callbacks.onOpen)
             SheetAction(Icons.Rounded.Share, "Share", callbacks.onShare)
             SheetAction(
                 if (file.isFavorite) Icons.Rounded.Star else Icons.Rounded.StarBorder,
