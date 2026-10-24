@@ -89,7 +89,7 @@ class ToolViewModel @Inject constructor(
                 if (t is kotlinx.coroutines.CancellationException) throw t
                 _state.value = RunState.Failed(PdfErrors.friendly(t))
             } finally {
-                storage.workDir().listFiles()?.filter { it.name.startsWith("tmp_") && System.currentTimeMillis() - it.lastModified() > 60_000 }?.forEach { it.delete() }
+                storage.workDir().listFiles()?.filter { it.name.startsWith("tmp_") && System.currentTimeMillis() - it.lastModified() > 15 * 60_000 }?.forEach { it.delete() }
             }
         }
     }

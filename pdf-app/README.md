@@ -19,6 +19,17 @@ White-and-red brand UI, animated throughout, with AdMob ads, Google Play Billing
 
 Free users get 10 standard tasks per day. Premium (or an active pass) removes ads, limits and unlocks Pro tools.
 
+## Screenshots
+
+Rendered from the real Compose code by `ScreenshotTest` (Robolectric + Roborazzi) on every CI run.
+
+| | | |
+|---|---|---|
+| ![](docs/screenshots/01_splash.png) | ![](docs/screenshots/02_onboarding.png) | ![](docs/screenshots/03_home.png) |
+| ![](docs/screenshots/04_home_premium_pass.png) | ![](docs/screenshots/07_premium.png) | ![](docs/screenshots/08_unlock_sheet.png) |
+| ![](docs/screenshots/05_tools.png) | ![](docs/screenshots/06_files.png) | ![](docs/screenshots/09_compress_processing.png) |
+| ![](docs/screenshots/10_result.png) | ![](docs/screenshots/12_home_dark.png) | ![](docs/screenshots/14_signature_pad.png) |
+
 ## Project layout
 
 ```

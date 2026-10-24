@@ -78,12 +78,12 @@ fun ToolTile(tool: PdfTool, locked: Boolean, onClick: () -> Unit, modifier: Modi
             }
             .clip(RoundedCornerShape(16.dp))
             .bounceClick(onClick = onClick)
-            .padding(vertical = 6.dp),
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box {
             IconCircle(tool.icon, tool.color, size = 56.dp, iconSize = 26.dp)
-            if (locked) ProBadge(Modifier.align(Alignment.TopEnd).padding(start = 0.dp).graphicsLayer { translationX = 10.dp.toPx(); translationY = (-6).dp.toPx() }, small = true)
+            if (locked) ProBadge(Modifier.align(Alignment.TopEnd).graphicsLayer { translationX = 12.dp.toPx(); translationY = 2.dp.toPx() }, small = true)
         }
         Spacer(Modifier.height(8.dp))
         Text(
