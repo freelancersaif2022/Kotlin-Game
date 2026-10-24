@@ -63,6 +63,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.pulse.messenger.ui.components.Appear
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -180,7 +181,7 @@ fun GalleryPickerSheet(onDismiss: () -> Unit, onSend: (List<MessageContent>) -> 
                     }
                 }
             }
-            AnimatedVisibility(
+            Appear(
                 picked.isNotEmpty(),
                 enter = fadeIn() + scaleIn(initialScale = 0.9f),
                 exit = fadeOut() + scaleOut(targetScale = 0.9f),

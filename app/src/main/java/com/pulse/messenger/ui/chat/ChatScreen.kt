@@ -89,6 +89,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.pulse.messenger.ui.components.Appear
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -736,7 +737,7 @@ fun ChatScreen(nav: NavController, chatId: String) {
 
             // Quick reaction bar for a single selected message.
             val single = selectedMessages.singleOrNull()
-            AnimatedVisibility(
+            Appear(
                 single != null && single.content !is MessageContent.Deleted,
                 enter = fadeIn() + scaleIn(initialScale = 0.85f) + slideInVertically { -it / 2 },
                 exit = fadeOut() + scaleOut(targetScale = 0.85f),
@@ -768,7 +769,7 @@ fun ChatScreen(nav: NavController, chatId: String) {
                 }
             }
 
-            AnimatedVisibility(
+            Appear(
                 showScrollDown,
                 enter = scaleIn() + fadeIn(),
                 exit = scaleOut() + fadeOut(),
@@ -862,9 +863,9 @@ fun ChatScreen(nav: NavController, chatId: String) {
             sendContent(MessageContent.Document(d.name, d.sizeLabel, d.pages, d.extension, d.thumb))
         }
         ChatSheet.LOCATION -> LocationSheet(onDismiss = { sheet = null }) { sendContent(it) }
-        ChatSheet.CONTACT -> ContactPickerSheet(contacts.filter { !it.isBusiness }, onDismiss = { sheet = null }) { c ->
+        ChatSheet.CONTACT -> ContactPickerSheet(contacts.filter { !it.isBusiness }, onDismiss = { sheet = null }, onPick = { c ->
             sendContent(MessageContent.ContactCard(c.name, c.phone, c.avatar))
-        }
+        })
         ChatSheet.POLL -> PollSheet(onDismiss = { sheet = null }) { sendContent(it) }
         ChatSheet.AUDIO -> AudioPickerSheet(onDismiss = { sheet = null }) { sec -> sendContent(MessageContent.Voice(sec, MockData.waveform(sec))) }
         null -> Unit

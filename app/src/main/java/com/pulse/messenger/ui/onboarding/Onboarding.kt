@@ -74,6 +74,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
@@ -478,7 +479,8 @@ fun OtpScreen(nav: NavController, phone: String) {
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             modifier = Modifier.focusRequester(focus),
-            decorationBox = {
+            decorationBox = { inner ->
+                Box(Modifier.size(1.dp).graphicsLayer { alpha = 0f }) { inner() }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     repeat(6) { i ->
                         val ch = code.getOrNull(i)?.toString().orEmpty()

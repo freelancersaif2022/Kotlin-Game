@@ -54,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.pulse.messenger.ui.components.Appear
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -279,7 +280,7 @@ fun ChatRow(
                     ChatType.DIRECT -> AvatarFallback.INITIALS
                 },
             )
-            AnimatedVisibility(selected, enter = scaleIn(), exit = scaleOut(), modifier = Modifier.align(Alignment.BottomEnd)) {
+            Appear(selected, enter = scaleIn(), exit = scaleOut(), modifier = Modifier.align(Alignment.BottomEnd)) {
                 Box(
                     Modifier
                         .size(22.dp)
