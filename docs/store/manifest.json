@@ -1,0 +1,1878 @@
+[
+  {
+    "path": "01_brand/ic_launcher_background.png",
+    "width": 432,
+    "height": 432,
+    "bytes": 5847,
+    "description": "ic launcher background"
+  },
+  {
+    "path": "01_brand/ic_launcher_foreground.png",
+    "width": 432,
+    "height": 432,
+    "bytes": 5222,
+    "description": "ic launcher foreground"
+  },
+  {
+    "path": "01_brand/ic_launcher_legacy.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 20716,
+    "description": "ic launcher legacy"
+  },
+  {
+    "path": "01_brand/ic_launcher_monochrome.png",
+    "width": 432,
+    "height": 432,
+    "bytes": 5222,
+    "description": "ic launcher monochrome"
+  },
+  {
+    "path": "01_brand/logo_full_color.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 23749,
+    "description": "logo full color"
+  },
+  {
+    "path": "01_brand/logo_white.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 18931,
+    "description": "logo white"
+  },
+  {
+    "path": "01_brand/play_feature_graphic.png",
+    "width": 1024,
+    "height": 500,
+    "bytes": 434406,
+    "description": "Premium white and teal banner with generic phone and abstract conversation blocks."
+  },
+  {
+    "path": "01_brand/play_store_icon.png",
+    "width": 512,
+    "height": 512,
+    "bytes": 15811,
+    "description": "play store icon"
+  },
+  {
+    "path": "01_brand/splash_logo.png",
+    "width": 288,
+    "height": 288,
+    "bytes": 4099,
+    "description": "splash logo"
+  },
+  {
+    "path": "01_brand/wordmark_dark.png",
+    "width": 1200,
+    "height": 300,
+    "bytes": 17839,
+    "description": "wordmark dark"
+  },
+  {
+    "path": "01_brand/wordmark_light.png",
+    "width": 1200,
+    "height": 300,
+    "bytes": 23792,
+    "description": "wordmark light"
+  },
+  {
+    "path": "02_onboarding/onb_backup_restore.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 83984,
+    "description": "Large soft cloud above two rounded empty chat bubbles with elegant circular teal arrows indicating backup and restore."
+  },
+  {
+    "path": "02_onboarding/onb_calls.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 74524,
+    "description": "Two friendly diverse adults in separate large circular portrait windows enjoying a voice/video call, connected by a flowing mint curve and gentle audio waves. No UI chrome."
+  },
+  {
+    "path": "02_onboarding/onb_communities.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 109176,
+    "description": "Several small groups of diverse friendly people in circular clusters linked with organic teal curves to one central rounded chat hub."
+  },
+  {
+    "path": "02_onboarding/onb_privacy_e2e.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 82022,
+    "description": "A substantial rounded padlock and layered shield protect one empty rounded chat bubble, visually wrapping around it. No people."
+  },
+  {
+    "path": "02_onboarding/onb_profile_setup.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 126864,
+    "description": "Friendly young adult holding a rounded camera viewfinder frame around their own face, profile portrait card floating beside them."
+  },
+  {
+    "path": "02_onboarding/onb_status.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 102240,
+    "description": "Three overlapping rounded photo cards containing abstract illustrated landscapes and a friendly portrait, surrounded by incomplete mint story rings."
+  },
+  {
+    "path": "02_onboarding/onb_verify_phone.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 156828,
+    "description": "One upright simplified smartphone beside a rounded SMS speech bubble holding exactly six abstract circular dots, small verification sparkle. No text or digits."
+  },
+  {
+    "path": "02_onboarding/onb_welcome.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 107362,
+    "description": "Diverse friends chatting across smartphones with floating empty bubbles."
+  },
+  {
+    "path": "02_onboarding/perm_camera_mic.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 95218,
+    "description": "Rounded modern compact camera and friendly rounded microphone arranged as an editorial permission illustration. No small UI icons, no text."
+  },
+  {
+    "path": "02_onboarding/perm_contacts.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 119642,
+    "description": "Three overlapping address book cards with friendly diverse portrait circles and abstract line marks, rounded teal binding."
+  },
+  {
+    "path": "02_onboarding/perm_location.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 84296,
+    "description": "Large rounded teal location pin on an isometric folded stylized fictional map with pale streets, mint park and small water area, no labels."
+  },
+  {
+    "path": "02_onboarding/perm_notifications.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 75956,
+    "description": "Sculptural rounded notification bell with a small mint circular badge containing no numbers, subtle ringing arcs."
+  },
+  {
+    "path": "02_onboarding/perm_storage_media.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 153296,
+    "description": "Open rounded teal folder containing a landscape photo card, a video card with abstract imagery, and a plain document sheet with abstract lines."
+  },
+  {
+    "path": "03_empty_states/empty_archived.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 80442,
+    "description": "An open rounded archive box with a blank chat card tucked inside; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_blocked.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 53350,
+    "description": "A rounded shield beside an anonymous neutral profile silhouette; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_broadcast.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 28662,
+    "description": "A small broadcast horn with three faint outward waves; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_calls.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 32996,
+    "description": "A resting abstract audio waveform and two empty portrait discs; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_channels.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 67838,
+    "description": "A quiet broadcast megaphone beside an empty chat card; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_chats.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 66392,
+    "description": "Two empty rounded chat bubbles beside a tiny leafy sprout; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_communities.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 43340,
+    "description": "Three small empty group circles linked together; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_docs.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 101522,
+    "description": "A neat stack of document sheets with abstract lines; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_linked_devices.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 47860,
+    "description": "A sleeping laptop screen beside a small blank phone; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_links.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 67706,
+    "description": "Two friendly oversized interlocking chain links; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_media.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 91234,
+    "description": "Two blank overlapping photo frames with a simple mountain motif; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_notifications.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 52520,
+    "description": "A quiet bell with a small floating moon; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_search.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 46942,
+    "description": "A large magnifying glass over an empty rounded chat card; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_starred.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 108248,
+    "description": "One large softly glowing rounded star above a blank message card; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/empty_status.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 118254,
+    "description": "An empty circular story ring beside a blank photo card; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/state_error_generic.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 54438,
+    "description": "A rounded abstract warning triangle with an exclamation symbol made from a capsule and dot, beside a chat bubble; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/state_no_internet.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 63238,
+    "description": "A soft cloud with a disconnected rounded cable and tiny pause dots; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/state_storage_full.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 86674,
+    "description": "A rounded storage box with neatly packed blank files reaching the top; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "03_empty_states/state_success_check.webp",
+    "width": 720,
+    "height": 720,
+    "bytes": 43096,
+    "description": "A large friendly rounded mint circular confirmation badge containing one white check mark; soft muted teal and gray, gentle friendly empty-state illustration with lots of negative space"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_01.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 16038,
+    "description": "Soft mint fog and off-white with a diffuse teal bloom at lower right; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_02.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 15202,
+    "description": "White and pale teal with smooth rounded mint blobs along corners; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_03.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 16266,
+    "description": "Soft pale peach with an airy mint glow and tiny amber warmth; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_04.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 27520,
+    "description": "Pale blue-gray and white with flowing soft teal ribbons; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_05.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 10144,
+    "description": "Creamy white with a broad mint arch near the bottom; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_bright_06.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 15822,
+    "description": "Pale mint and warm ivory with overlapping soft translucent curves; calm abstract wallpaper, very smooth, no sharp detail"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_01.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 32360,
+    "description": "Midnight teal and #0B141A with a soft mint glow; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_02.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 33954,
+    "description": "Dark ink and indigo flowing blurred ribbons; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_03.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 17656,
+    "description": "Very dark teal with rounded charcoal shadow shapes; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_04.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 26554,
+    "description": "Deep plum and teal with smooth blended light; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_05.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 21958,
+    "description": "Charcoal navy and muted forest teal; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_dark_06.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 44144,
+    "description": "Dark blue-black and deep teal flowing mist; deep moody abstract wallpaper, low contrast"
+  },
+  {
+    "path": "04_wallpapers/wp_doodle_dark_tile.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 85483,
+    "description": "wp doodle dark tile"
+  },
+  {
+    "path": "04_wallpapers/wp_doodle_light_tile.png",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 79141,
+    "description": "wp doodle light tile"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_01.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 30340,
+    "description": "A misty quiet pine forest; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_02.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 28906,
+    "description": "Calm beach at dawn; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_03.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 52500,
+    "description": "A rain softened city street without signs; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_04.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 26232,
+    "description": "A hazy mountain lake; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_05.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 46486,
+    "description": "Sunlight through soft green leaves; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "04_wallpapers/wp_photo_06.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 39072,
+    "description": "A quiet coastal town at blue hour without signs; intentionally defocused calm photographic wallpaper, very low detail, no people, no readable text"
+  },
+  {
+    "path": "05_avatars/avatar_business_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 8176,
+    "description": "Original fictional bakery channel or small-business emblem. One simple geometric symbol evoking bakery, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_business_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16812,
+    "description": "Original fictional salon channel or small-business emblem. One simple geometric symbol evoking salon, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_business_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 6070,
+    "description": "Original fictional pharmacy channel or small-business emblem. One simple geometric symbol evoking pharmacy, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_business_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 6422,
+    "description": "Original fictional courier channel or small-business emblem. One simple geometric symbol evoking courier, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_business_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 12242,
+    "description": "Original fictional electronics shop channel or small-business emblem. One simple geometric symbol evoking electronics shop, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_business_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 6078,
+    "description": "Original fictional restaurant channel or small-business emblem. One simple geometric symbol evoking restaurant, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 12646,
+    "description": "Original fictional news channel or small-business emblem. One simple geometric symbol evoking news, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 8340,
+    "description": "Original fictional technology channel or small-business emblem. One simple geometric symbol evoking technology, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 12550,
+    "description": "Original fictional sports channel or small-business emblem. One simple geometric symbol evoking sports, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 7304,
+    "description": "Original fictional cooking channel or small-business emblem. One simple geometric symbol evoking cooking, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 10874,
+    "description": "Original fictional travel channel or small-business emblem. One simple geometric symbol evoking travel, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 9400,
+    "description": "Original fictional music channel or small-business emblem. One simple geometric symbol evoking music, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_07.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 7984,
+    "description": "Original fictional fitness channel or small-business emblem. One simple geometric symbol evoking fitness, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_08.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 8536,
+    "description": "Original fictional finance channel or small-business emblem. One simple geometric symbol evoking finance, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_09.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 11340,
+    "description": "Original fictional movies channel or small-business emblem. One simple geometric symbol evoking movies, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_channel_10.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 11240,
+    "description": "Original fictional science channel or small-business emblem. One simple geometric symbol evoking science, in mint/white on a solid deep teal or charcoal background. No lettering or words. Bold premium vector-look, centered with a circular crop-safe margin, entirely original, not a known logo"
+  },
+  {
+    "path": "05_avatars/avatar_community_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 31622,
+    "description": "Community hub photograph representing school parents, friendly diverse fictional adults in a relevant bright setting, centered composition suitable for circle cropping"
+  },
+  {
+    "path": "05_avatars/avatar_community_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 37784,
+    "description": "Community hub photograph representing apartment society, friendly diverse fictional adults in a relevant bright setting, centered composition suitable for circle cropping"
+  },
+  {
+    "path": "05_avatars/avatar_community_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 31708,
+    "description": "Community hub photograph representing startup network, friendly diverse fictional adults in a relevant bright setting, centered composition suitable for circle cropping"
+  },
+  {
+    "path": "05_avatars/avatar_community_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36858,
+    "description": "Community hub photograph representing sports club, friendly diverse fictional adults in a relevant bright setting, centered composition suitable for circle cropping"
+  },
+  {
+    "path": "05_avatars/avatar_group_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34668,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: family dinner. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28514,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: office team. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 30236,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: amateur football team. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36228,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: college friends. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28872,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: travel crew. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26008,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: gym friends. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_07.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26202,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: book club. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_08.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26656,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: cousins. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_09.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32584,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: wedding planning friends. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_10.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 33400,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: friendly neighbours. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_11.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28228,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: gaming squad. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_group_12.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29440,
+    "description": "A friendly diverse group of 4 to 6 fictional adults, theme: small music band. Candid natural smartphone group photograph, people clustered centrally so faces survive a circular crop, clear good lighting, no uniforms with marks, no brands or readable text"
+  },
+  {
+    "path": "05_avatars/avatar_person_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26340,
+    "description": "A fictional Bangladeshi woman, age 18, relaxed friendly natural expression, head-and-shoulders portrait in a softly lit cafe. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 47508,
+    "description": "A fictional West African woman, age 70, relaxed friendly natural expression, head-and-shoulders portrait in a modern office. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 43330,
+    "description": "A fictional East Asian woman, age 39, relaxed friendly natural expression, head-and-shoulders portrait in a leafy park. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 17470,
+    "description": "A fictional Arab woman, age 46, relaxed friendly natural expression, head-and-shoulders portrait in a neutral studio. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 35486,
+    "description": "A fictional Latino woman, age 53, relaxed friendly natural expression, head-and-shoulders portrait in a sunlit courtyard. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 31818,
+    "description": "A fictional South Asian woman, age 60, relaxed friendly natural expression, head-and-shoulders portrait in a home with houseplants. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_07.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 30962,
+    "description": "A fictional European woman, age 67, relaxed friendly natural expression, head-and-shoulders portrait in a seaside promenade. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_08.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26298,
+    "description": "A fictional Southeast Asian woman, age 21, relaxed friendly natural expression, head-and-shoulders portrait in a softly lit cafe. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_09.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 22184,
+    "description": "A fictional Caribbean woman, age 28, relaxed friendly natural expression, head-and-shoulders portrait in a modern office. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_10.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36862,
+    "description": "A fictional North African woman, age 35, relaxed friendly natural expression, head-and-shoulders portrait in a leafy park. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_11.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 21570,
+    "description": "A fictional Bangladeshi woman, age 42, relaxed friendly natural expression, head-and-shoulders portrait in a neutral studio. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_12.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 46484,
+    "description": "A fictional West African woman, age 49, relaxed friendly natural expression, head-and-shoulders portrait in a sunlit courtyard. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_13.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 35802,
+    "description": "A fictional East Asian woman, age 56, relaxed friendly natural expression, head-and-shoulders portrait in a home with houseplants. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_14.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32022,
+    "description": "A fictional Arab woman, age 63, relaxed friendly natural expression, head-and-shoulders portrait in a seaside promenade. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_15.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 31340,
+    "description": "A fictional Latino woman, age 70, relaxed friendly natural expression, head-and-shoulders portrait in a softly lit cafe. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_16.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 33598,
+    "description": "A fictional South Asian woman, age 24, relaxed friendly natural expression, head-and-shoulders portrait in a modern office. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_17.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 50016,
+    "description": "A fictional European woman, age 31, relaxed friendly natural expression, head-and-shoulders portrait in a leafy park. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_18.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 16334,
+    "description": "A fictional Southeast Asian woman, age 38, relaxed friendly natural expression, head-and-shoulders portrait in a neutral studio. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_19.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32816,
+    "description": "A fictional Caribbean man, age 45, relaxed friendly natural expression, head-and-shoulders portrait in a sunlit courtyard. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_20.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 22346,
+    "description": "A fictional North African man, age 52, relaxed friendly natural expression, head-and-shoulders portrait in a home with houseplants. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_21.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28134,
+    "description": "A fictional Bangladeshi man, age 59, relaxed friendly natural expression, head-and-shoulders portrait in a seaside promenade. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_22.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 40908,
+    "description": "A fictional West African man, age 66, relaxed friendly natural expression, head-and-shoulders portrait in a softly lit cafe. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_23.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 17678,
+    "description": "A fictional East Asian man, age 20, relaxed friendly natural expression, head-and-shoulders portrait in a modern office. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_24.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 33006,
+    "description": "A fictional Arab man, age 27, relaxed friendly natural expression, head-and-shoulders portrait in a leafy park. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_25.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 14784,
+    "description": "A fictional Latino man, age 34, relaxed friendly natural expression, head-and-shoulders portrait in a neutral studio. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_26.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27150,
+    "description": "A fictional South Asian man, age 41, relaxed friendly natural expression, head-and-shoulders portrait in a sunlit courtyard. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_27.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29964,
+    "description": "A fictional European man, age 48, relaxed friendly natural expression, head-and-shoulders portrait in a home with houseplants. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_28.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29922,
+    "description": "A fictional Southeast Asian man, age 55, relaxed friendly natural expression, head-and-shoulders portrait in a seaside promenade. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_29.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 30624,
+    "description": "A fictional Caribbean man, age 62, relaxed friendly natural expression, head-and-shoulders portrait in a softly lit cafe. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_30.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 22680,
+    "description": "A fictional North African man, age 69, relaxed friendly natural expression, head-and-shoulders portrait in a modern office. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_31.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32682,
+    "description": "A fictional Bangladeshi man, age 23, relaxed friendly natural expression, head-and-shoulders portrait in a leafy park. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_32.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 11712,
+    "description": "A fictional West African man, age 30, relaxed friendly natural expression, head-and-shoulders portrait in a neutral studio. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_33.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27414,
+    "description": "A fictional East Asian man, age 37, relaxed friendly natural expression, head-and-shoulders portrait in a sunlit courtyard. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_34.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 19770,
+    "description": "A fictional Arab man, age 44, relaxed friendly natural expression, head-and-shoulders portrait in a home with houseplants. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_35.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27972,
+    "description": "A fictional Latino man, age 51, relaxed friendly natural expression, head-and-shoulders portrait in a seaside promenade. Face centered in the central 55 percent of the square, eyes unobscured, generous headroom, varied everyday unbranded clothing. Realistic natural smartphone photograph"
+  },
+  {
+    "path": "05_avatars/avatar_person_36.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28000,
+    "description": "A friendly golden retriever portrait outdoors; naturally photographed, centered circular-avatar-friendly composition"
+  },
+  {
+    "path": "05_avatars/avatar_person_37.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 54020,
+    "description": "A peaceful green mountain landscape; naturally photographed, centered circular-avatar-friendly composition"
+  },
+  {
+    "path": "05_avatars/avatar_person_38.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27862,
+    "description": "A single warm pink flower with soft foliage; naturally photographed, centered circular-avatar-friendly composition"
+  },
+  {
+    "path": "05_avatars/avatar_person_39.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 64256,
+    "description": "A generic vintage blue car parked under a tree, no badges or plates; naturally photographed, centered circular-avatar-friendly composition"
+  },
+  {
+    "path": "05_avatars/avatar_person_40.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 38032,
+    "description": "A quiet beach with sea foam and warm sand; naturally photographed, centered circular-avatar-friendly composition"
+  },
+  {
+    "path": "06_chat_media/media_doc_thumb_01.webp",
+    "width": 600,
+    "height": 800,
+    "bytes": 6288,
+    "description": "A clean first page document preview of a fictional invoice with an abstract table and total bar, white paper, teal accents, abstract rounded lines instead of all text, no letters, digits or words, flat straight-on page view without background shadows"
+  },
+  {
+    "path": "06_chat_media/media_doc_thumb_02.webp",
+    "width": 600,
+    "height": 800,
+    "bytes": 12144,
+    "description": "A clean first page document preview of a fictional resume with portrait circle and abstract sections, white paper, teal accents, abstract rounded lines instead of all text, no letters, digits or words, flat straight-on page view without background shadows"
+  },
+  {
+    "path": "06_chat_media/media_doc_thumb_03.webp",
+    "width": 600,
+    "height": 800,
+    "bytes": 8838,
+    "description": "A clean first page document preview of a fictional report with a simple teal chart and abstract paragraphs, white paper, teal accents, abstract rounded lines instead of all text, no letters, digits or words, flat straight-on page view without background shadows"
+  },
+  {
+    "path": "06_chat_media/media_doc_thumb_04.webp",
+    "width": 600,
+    "height": 800,
+    "bytes": 12614,
+    "description": "A clean first page document preview of a fictional presentation cover with an abstract geometric diagram, white paper, teal accents, abstract rounded lines instead of all text, no letters, digits or words, flat straight-on page view without background shadows"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_01.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 74436,
+    "description": "A sleek unbranded computer chip and abstract circuitry; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_02.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 106358,
+    "description": "An inviting finished recipe bowl of roasted vegetables; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_03.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 101054,
+    "description": "A sunny coastal travel destination; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_04.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 72988,
+    "description": "A football resting on a green sports field; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_05.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 50468,
+    "description": "A minimal unbranded ceramic desk accessory product; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_06.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 64778,
+    "description": "Unbranded headphones and sound equipment; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_07.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 70644,
+    "description": "An abstract city newsroom visual with no text or logos; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_link_preview_08.webp",
+    "width": 1200,
+    "height": 630,
+    "bytes": 43438,
+    "description": "A microscope and glass science apparatus; clean generic editorial hero photograph, no readable text or logos"
+  },
+  {
+    "path": "06_chat_media/media_map_preview_01.webp",
+    "width": 800,
+    "height": 400,
+    "bytes": 30976,
+    "description": "A neighborhood street grid beside a mint park; crisp stylized fictional map tile, pale gray streets, white blocks, mint green parks, light teal water, no labels, symbols, pins, lettering or real map branding"
+  },
+  {
+    "path": "06_chat_media/media_map_preview_02.webp",
+    "width": 800,
+    "height": 400,
+    "bytes": 52538,
+    "description": "A winding river through a fictional small city; crisp stylized fictional map tile, pale gray streets, white blocks, mint green parks, light teal water, no labels, symbols, pins, lettering or real map branding"
+  },
+  {
+    "path": "06_chat_media/media_map_preview_03.webp",
+    "width": 800,
+    "height": 400,
+    "bytes": 58812,
+    "description": "A coastal neighborhood with a large central park; crisp stylized fictional map tile, pale gray streets, white blocks, mint green parks, light teal water, no labels, symbols, pins, lettering or real map branding"
+  },
+  {
+    "path": "06_chat_media/media_map_preview_04.webp",
+    "width": 800,
+    "height": 400,
+    "bytes": 34918,
+    "description": "Curved residential streets and small green squares; crisp stylized fictional map tile, pale gray streets, white blocks, mint green parks, light teal water, no labels, symbols, pins, lettering or real map branding"
+  },
+  {
+    "path": "06_chat_media/media_photo_01.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 101290,
+    "description": "A delicious homemade vegetable curry on a table; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_02.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 100934,
+    "description": "A sleepy tabby cat on a sofa; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_03.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 100946,
+    "description": "A quiet seaside travel view; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_04.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 86032,
+    "description": "A warm orange sunset over a lake; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_05.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 93284,
+    "description": "A smiling fictional young adult selfie outdoors; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_06.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 58342,
+    "description": "A birthday cake with plain unlettered decoration and no number candles; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_07.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 39834,
+    "description": "A cafe receipt deliberately heavily blurred so no characters are readable; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_08.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 18346,
+    "description": "An office whiteboard deliberately defocused with only abstract indistinct marks; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_09.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 68316,
+    "description": "A pair of generic unbranded sneakers on the floor; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_10.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 53718,
+    "description": "A stack of books with blank spines; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_11.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 83104,
+    "description": "Two cups of coffee by a window; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_12.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 45312,
+    "description": "An atmospheric concert crowd under colored lights, no performers identifiable; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_13.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 85448,
+    "description": "A peaceful beach with gentle waves; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_14.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 149020,
+    "description": "A majestic green mountain valley; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_15.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 76526,
+    "description": "A city at night with blurred lights and no signs; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_16.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 42164,
+    "description": "Tiny baby feet wrapped in a soft blanket, no face; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_17.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 121434,
+    "description": "A collection of leafy houseplants; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_18.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 110032,
+    "description": "A plate of colorful pasta; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_19.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 136788,
+    "description": "A friendly puppy playing in a garden; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_20.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 126442,
+    "description": "A rural road on a sunny travel day; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_21.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 69434,
+    "description": "A cloudy purple sunset over water; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_22.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 63406,
+    "description": "Two fictional adult friends taking a casual selfie; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_23.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 67756,
+    "description": "A plain birthday cake topped with berries; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_24.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 27916,
+    "description": "A grocery receipt out of focus, all printed content unreadable; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_25.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 36196,
+    "description": "A blurred collaborative whiteboard with indistinct abstract strokes; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_26.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 119604,
+    "description": "A pair of clean unbranded walking shoes outdoors; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_27.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 21118,
+    "description": "An open book entirely defocused so no printed content is readable; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_28.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 70082,
+    "description": "A close-up cappuccino with latte art; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_29.webp",
+    "width": 1024,
+    "height": 768,
+    "bytes": 66142,
+    "description": "A quiet beach picnic at golden hour; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_photo_30.webp",
+    "width": 768,
+    "height": 1024,
+    "bytes": 66440,
+    "description": "A sunlit houseplant beside a window; natural realistic everyday smartphone photograph, good light, no readable text, brands or watermark"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_01.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 101732,
+    "description": "A dog running through a sunny park; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_02.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 105832,
+    "description": "Waves breaking on a calm beach; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_03.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 61946,
+    "description": "A home cook stirring a saucepan; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_04.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 93836,
+    "description": "A city tram gliding past at dusk, no writing; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_05.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 88756,
+    "description": "Friends walking along a mountain path; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_06.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 57698,
+    "description": "Hands playing an unbranded acoustic guitar; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_07.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 92618,
+    "description": "A cyclist passing a leafy street; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_08.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 57918,
+    "description": "A birthday cake being set on a table; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_09.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 205210,
+    "description": "A waterfall flowing through green rocks; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "06_chat_media/media_video_thumb_10.webp",
+    "width": 1280,
+    "height": 720,
+    "bytes": 66724,
+    "description": "People cheering at a small outdoor sports match; realistic video-still frame with a hint of natural motion, no play button or UI"
+  },
+  {
+    "path": "07_status_stories/status_01.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 138056,
+    "description": "A quiet scenic travel overlook; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_02.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 138390,
+    "description": "Beautiful street food on a plate; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_03.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 81906,
+    "description": "A bright gym with generic equipment; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_04.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 78584,
+    "description": "A playful kitten by a window; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_05.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 146486,
+    "description": "Warm sunset over a calm sea; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_06.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 93088,
+    "description": "An outdoor garden party with fictional adults; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_07.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 416984,
+    "description": "A leafy forest trail; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_08.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 169148,
+    "description": "A city skyline at blue hour, no signs; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_09.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 110344,
+    "description": "Hands painting a small canvas; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_10.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 226026,
+    "description": "A sunny mountain travel path; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_11.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 124674,
+    "description": "A homemade breakfast by a window; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_12.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 63860,
+    "description": "A fictional adult stretching on a yoga mat; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_13.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 136622,
+    "description": "A friendly dog on a beach; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_14.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 108626,
+    "description": "Clouds glowing at sunset; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_15.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 82878,
+    "description": "A small birthday gathering with unlettered decorations; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_16.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 173670,
+    "description": "A peaceful lake and reeds; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_17.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 210870,
+    "description": "A rain softened city street, no signs; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_18.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 117548,
+    "description": "A person tending houseplants; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_19.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 182500,
+    "description": "A calm coastal village view, no signs; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_20.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 112140,
+    "description": "A cozy knitting hobby close-up; realistic natural smartphone story photograph; main subject in central 70 percent, top and bottom 15 percent visually calm low detail for overlay UI; no readable text or brands"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_01.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 10168,
+    "description": "Perfectly smooth soft deep teal to mint gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_02.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 8800,
+    "description": "Perfectly smooth soft dark ink to muted teal gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_03.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 8306,
+    "description": "Perfectly smooth soft warm amber to soft peach gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_04.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 8284,
+    "description": "Perfectly smooth soft indigo to navy gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_05.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 6672,
+    "description": "Perfectly smooth soft mint to pale ivory gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_06.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 7280,
+    "description": "Perfectly smooth soft plum to charcoal gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_07.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 7844,
+    "description": "Perfectly smooth soft sky gray to teal gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "07_status_stories/status_text_bg_08.webp",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 6842,
+    "description": "Perfectly smooth soft warm ivory to pale amber gradient for a text-status background; no text, no objects, generous calm field, low contrast"
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36926,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: waving one hand with a welcoming smile. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 37514,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: hands together in gratitude with a warm smile. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 38772,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: laughing with eyes squeezed shut and a tiny tear. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34232,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: hugging a small warm amber heart. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 37976,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: drooping with one tiny tear. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 39744,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: puffed cheeks and furrowed brows, cute and harmless. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_07.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36684,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: making a clear OK hand gesture. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_08.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34996,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: wide eyes and open mouth in surprise. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_09.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 35856,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: drooping eyelids while cuddling a tiny pillow. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_10.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34924,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: wearing a small party hat with sparse teal and amber confetti. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_11.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36102,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: one hand under chin, looking upward. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_12.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 42918,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: one hand gently covering the face. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_13.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34920,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: sleeping beside a little crescent moon, no letters. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_14.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 36442,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: stretching happily beside a little sunrise. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_15.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 40618,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: cheerfully jogging with a small satchel and speed lines. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/stk_16.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 30902,
+    "description": "A consistent cute chubby warm gray cat mascot with teal collar, rounded ears, tiny pink nose, fluffy cream belly and expressive eyes. Emotion/action: raising one hand toward a matching small friendly hand for a high five. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_cozy_cats/tray.png",
+    "width": 96,
+    "height": 96,
+    "bytes": 12141,
+    "description": "tray"
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_01.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 28060,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: waving one hand with a welcoming smile. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_02.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34074,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: hands together in gratitude with a warm smile. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_03.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32692,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: laughing with eyes squeezed shut and a tiny tear. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_04.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29658,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: hugging a small warm amber heart. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_05.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32668,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: drooping with one tiny tear. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_06.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29672,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: puffed cheeks and furrowed brows, cute and harmless. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_07.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 29670,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: making a clear OK hand gesture. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_08.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 33298,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: wide eyes and open mouth in surprise. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_09.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 34910,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: drooping eyelids while cuddling a tiny pillow. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_10.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32022,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: wearing a small party hat with sparse teal and amber confetti. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_11.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 31730,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: one hand under chin, looking upward. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_12.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 30712,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: one hand gently covering the face. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_13.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27390,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: sleeping beside a little crescent moon, no letters. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_14.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 26890,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: stretching happily beside a little sunrise. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_15.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 27856,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: cheerfully jogging with a small satchel and speed lines. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/stk_16.webp",
+    "width": 512,
+    "height": 512,
+    "bytes": 32868,
+    "description": "A cute rounded teal speech-bubble mascot with expressive eyes, small rounded arms and feet, original Pulse character with a small heartbeat-shaped bubble tail. Emotion/action: raising one hand toward a matching small friendly hand for a high five. Single sticker character, bold rounded flat vector-look, simple shapes and restrained soft shading, teal mint warm gray cream and tiny amber accents, no text or letters, complete character fully visible, centered with generous transparent margin. Clean white sticker outline; consistent character model across the pack."
+  },
+  {
+    "path": "08_stickers/pack_pulse_buddy/tray.png",
+    "width": 96,
+    "height": 96,
+    "bytes": 11037,
+    "description": "tray"
+  },
+  {
+    "path": "09_misc/call_bg_blur_01.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 9494,
+    "description": "An extremely smooth dark blurred gradient in teal and dark navy; no objects, no texture, no text; calm low contrast in-call background"
+  },
+  {
+    "path": "09_misc/call_bg_blur_02.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 10254,
+    "description": "An extremely smooth dark blurred gradient in indigo and midnight teal; no objects, no texture, no text; calm low contrast in-call background"
+  },
+  {
+    "path": "09_misc/call_bg_blur_03.webp",
+    "width": 1080,
+    "height": 2340,
+    "bytes": 9602,
+    "description": "An extremely smooth dark blurred gradient in plum and dark teal; no objects, no texture, no text; calm low contrast in-call background"
+  },
+  {
+    "path": "09_misc/illus_backup_cloud.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 85078,
+    "description": "A cloud receiving two small blank chat bubbles above an abstract circular progress arc with no numbers"
+  },
+  {
+    "path": "09_misc/illus_chat_lock.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 56158,
+    "description": "A rounded locked chat bubble with a decorative abstract fingerprint swirl"
+  },
+  {
+    "path": "09_misc/illus_disappearing.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 66464,
+    "description": "A rounded timer clock beside three chat bubbles progressively fading into soft tiny dots"
+  },
+  {
+    "path": "09_misc/illus_e2e_lock_banner.webp",
+    "width": 1080,
+    "height": 480,
+    "bytes": 59758,
+    "description": "A small rounded teal padlock flanked by two empty chat bubbles; a low wide horizontal arrangement"
+  },
+  {
+    "path": "09_misc/illus_invite_friends.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 81614,
+    "description": "Three friendly diverse adults sharing an abstract chain-link invite symbol between their phones"
+  },
+  {
+    "path": "09_misc/illus_linked_devices.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 156936,
+    "description": "A phone, laptop and tablet connected by soft mint flowing curves; all screens blank"
+  },
+  {
+    "path": "09_misc/illus_new_feature.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 53726,
+    "description": "A rounded teal gift box opening to release a mint chat bubble and a few tiny amber sparkles"
+  },
+  {
+    "path": "09_misc/illus_qr_frame.webp",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 107560,
+    "description": "A decorative rounded mint and teal frame confined entirely to the outer 180 pixels of a square canvas. Leave a completely empty transparent central square of 600 by 600 pixels. Tiny rounded bubbles and sparkles at corners only; no QR code"
+  },
+  {
+    "path": "09_misc/illus_storage_data.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 107282,
+    "description": "A rounded storage usage pie chart beside blank photo and document cards, with no numbers"
+  },
+  {
+    "path": "09_misc/illus_two_step.webp",
+    "width": 1080,
+    "height": 720,
+    "bytes": 119346,
+    "description": "Six abstract PIN dots in a rounded panel beside a protective teal shield"
+  },
+  {
+    "path": "README.txt",
+    "width": null,
+    "height": null,
+    "bytes": 3931,
+    "description": "README"
+  },
+  {
+    "path": "manifest.json",
+    "width": null,
+    "height": null,
+    "bytes": 95275,
+    "description": "Full file inventory including dimensions, bytes and descriptions"
+  }
+]
