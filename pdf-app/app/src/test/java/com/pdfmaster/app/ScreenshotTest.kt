@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,6 +18,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onRoot
+import android.os.Looper
+import com.github.takahirom.roborazzi.captureRoboImage
+import org.robolectric.Shadows.shadowOf
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -112,20 +117,23 @@ class ScreenshotTest {
         while (left > 0) {
             compose.mainClock.advanceTimeBy(100)
             Thread.sleep(15)
+            shadowOf(Looper.getMainLooper()).idle()
             left -= 100
         }
     }
 
-    private fun shot(name: String, index: Int, ms: Long = 2500) {
+    private fun shot(name: String, index: Int, ms: Long = 2500, popup: Boolean = false) {
         compose.runOnUiThread { scene = index }
         settle(ms)
-        captureScreenRoboImage("screenshots/$name.png")
+        compose.waitForIdle()
+        if (popup) captureScreenRoboImage("screenshots/$name.png")
+        else compose.onRoot().captureRoboImage("screenshots/$name.png")
     }
 
     @Test
     fun captureScreens() {
         compose.mainClock.autoAdvance = false
-        compose.setContent { Scenes(scene) }
+        compose.setContent { key(scene) { Scenes(scene) } }
         settle(300)
 
         shot("01_splash", 0, 1200)
@@ -137,8 +145,8 @@ class ScreenshotTest {
         shot("05_tools", 4)
         shot("06_files", 5)
         shot("07_premium", 6, 3000)
-        shot("08_unlock_sheet", 7)
-        shot("09_compress_processing", 8)
+        shot("08_unlock_sheet", 7, popup = true)
+        shot("09_compress_processing", 8, popup = true)
         results.current = ToolResult(
             PdfTool.COMPRESS, "PDF compressed", "Reduced by 63% — saved 3.0 MB.",
             listOf(OutputFile(Uri.parse("content://demo/out"), "Annual_Report_2026_compressed.pdf", 1_780_000, "application/pdf", 24)),
@@ -147,8 +155,8 @@ class ScreenshotTest {
         shot("10_result", 9, 900)
         shot("11_settings", 10)
         shot("12_home_dark", 11)
-        shot("13_snackbar_dialog", 12)
-        shot("14_signature_pad", 13)
+        shot("13_snackbar_dialog", 12, popup = true)
+        shot("14_signature_pad", 13, popup = true)
         shot("15_merge_tool", 14)
     }
 

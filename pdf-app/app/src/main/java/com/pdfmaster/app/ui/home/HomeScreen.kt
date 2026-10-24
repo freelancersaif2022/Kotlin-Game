@@ -230,9 +230,9 @@ private fun HeroCard(onBrowse: () -> Unit, onScan: () -> Unit) {
         }
         Image(
             painterResource(R.drawable.img_onboarding_1_read), null,
-            Modifier.align(Alignment.CenterEnd).size(170.dp).padding(end = 4.dp),
+            Modifier.align(Alignment.CenterEnd).size(150.dp).padding(end = 6.dp),
         )
-        Column(Modifier.align(Alignment.CenterStart).padding(start = 22.dp).fillMaxWidth(0.6f)) {
+        Column(Modifier.align(Alignment.CenterStart).padding(start = 22.dp).fillMaxWidth(0.56f)) {
             Text("Open any PDF", color = Color.White, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
             Spacer(Modifier.height(4.dp))
             Text("Read, edit, sign and share in a tap.", color = Color.White.copy(alpha = 0.85f), style = MaterialTheme.typography.bodyMedium)
