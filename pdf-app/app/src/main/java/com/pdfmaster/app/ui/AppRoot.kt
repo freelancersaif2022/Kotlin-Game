@@ -119,28 +119,7 @@ fun AppRoot(incoming: StateFlow<Uri?>, onIncomingHandled: () -> Unit) {
                     enter = slideInVertically { it } + fadeIn(),
                     exit = slideOutVertically { it } + fadeOut(),
                 ) {
-                    Column {
-                        BannerAd()
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
-                            tabs.forEach { tab ->
-                                val selected = route == tab.route
-                                NavigationBarItem(
-                                    selected = selected,
-                                    onClick = { if (!selected) navigator.tab(tab.route) },
-                                    icon = { Icon(if (selected) tab.selectedIcon else tab.icon, contentDescription = tab.label) },
-                                    label = { Text(tab.label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
-                                    colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                                        selectedTextColor = MaterialTheme.colorScheme.primary,
-                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    ),
-                                )
-                            }
-                        }
-                    }
+                    AppBottomBar(route) { navigator.tab(it) }
                 }
             },
         ) { padding ->
@@ -187,6 +166,33 @@ fun AppRoot(incoming: StateFlow<Uri?>, onIncomingHandled: () -> Unit) {
                     ToolScreen(tool, it.arguments?.getString("uri")?.let(Uri::parse))
                 }
                 composable(Routes.RESULT, enterTransition = { fadeIn(tween(350)) + scaleIn(initialScale = 0.94f, animationSpec = tween(350)) }) { ResultScreen() }
+            }
+        }
+    }
+}
+
+/** Banner ad plus the main tab bar. */
+@Composable
+fun AppBottomBar(route: String?, onSelect: (String) -> Unit) {
+    Column {
+        BannerAd()
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
+            tabs.forEach { tab ->
+                val selected = route == tab.route
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = { if (!selected) onSelect(tab.route) },
+                    icon = { Icon(if (selected) tab.selectedIcon else tab.icon, contentDescription = tab.label) },
+                    label = { Text(tab.label, fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
+                )
             }
         }
     }

@@ -66,7 +66,7 @@ import com.pdfmaster.app.ui.tools.PdfTool
 import com.pdfmaster.app.util.Format
 
 @Composable
-fun PdfThumbnail(uri: Uri, modifier: Modifier = Modifier, width: Dp = 48.dp, height: Dp = 60.dp) {
+fun PdfThumbnail(uri: Uri, modifier: Modifier = Modifier, width: Dp = 48.dp, height: Dp = 60.dp, locked: Boolean = false) {
     val loader = LocalAppDeps.current.thumbnails
     var bitmap by remember(uri) { mutableStateOf<Bitmap?>(loader.peek(uri)) }
     var failed by remember(uri) { mutableStateOf(false) }
@@ -89,7 +89,7 @@ fun PdfThumbnail(uri: Uri, modifier: Modifier = Modifier, width: Dp = 48.dp, hei
                 Image(bmp.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             } else {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    if (failed) {
+                    if (failed && locked) {
                         Icon(Icons.Rounded.Lock, null, tint = Brand.Red, modifier = Modifier.size(20.dp))
                     } else {
                         Text("PDF", color = Brand.Red, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.ExtraBold)
@@ -119,7 +119,7 @@ fun FileRow(
             .padding(start = 12.dp, top = 10.dp, bottom = 10.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PdfThumbnail(file.uri)
+        PdfThumbnail(file.uri, locked = file.pageCount < 0)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(

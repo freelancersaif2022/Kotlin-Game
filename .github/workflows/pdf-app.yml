@@ -28,7 +28,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build release APK
-        run: ./gradlew --no-daemon --stacktrace assembleRelease
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee build.log
+
+      - name: Show compiler errors
+        if: failure()
+        run: |
+          grep -E "^e: |^w: .*(deprecated|unused)|What went wrong|Execution failed|> " build.log | grep -vE "^w: " | head -150
 
       - name: APK size
         run: |
