@@ -13,18 +13,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +42,17 @@ import com.twinspace.app.UiEvent
 import com.twinspace.app.core.AppEntry
 import com.twinspace.app.core.ShortcutHelper
 import com.twinspace.app.core.SpaceStatus
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AcUnit
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.DeleteOutline
+import com.twinspace.app.ui.components.BusyCard
+import com.twinspace.app.ui.components.DialogPoint
+import com.twinspace.app.ui.components.DialogTone
+import com.twinspace.app.ui.components.ProDialog
 import com.twinspace.app.ui.screens.AddAppsScreen
+import com.twinspace.app.ui.screens.AppDialogHeader
 import com.twinspace.app.ui.screens.AppAction
 import com.twinspace.app.ui.screens.AppActionsSheet
 import com.twinspace.app.ui.screens.ConfirmDialog
@@ -84,6 +91,7 @@ fun TwinSpaceApp(
                 }
                 is UiEvent.StartForResult -> onStartForResult(event.intent, event.kind)
                 UiEvent.Authenticate -> onAuthenticate()
+                UiEvent.OpenSystemSettings -> onOpenSystemSettings()
             }
         }
     }
@@ -96,6 +104,7 @@ fun TwinSpaceApp(
     var sheetFor by remember { mutableStateOf<AppEntry?>(null) }
     var renameFor by remember { mutableStateOf<AppEntry?>(null) }
     var removeFor by remember { mutableStateOf<AppEntry?>(null) }
+    var freezeFor by remember { mutableStateOf<AppEntry?>(null) }
     var renamingSpace by rememberSaveable { mutableStateOf(false) }
     var deletingSpace by rememberSaveable { mutableStateOf(false) }
     var showHelp by rememberSaveable { mutableStateOf(false) }
@@ -167,20 +176,21 @@ fun TwinSpaceApp(
             }
         }
 
+        if (destination == "setup") {
+            com.twinspace.app.ui.components.ProSnackbarHost(
+                snackbar,
+                Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
+            )
+        }
+
         // A request is running inside the space (except on Add apps, which shows its own progress).
         val busy = state.busy
         if (busy != null && state.screen != Screen.AddApps && !state.locked) {
             Box(
-                Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.25f)),
+                Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.35f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerHigh, shadowElevation = 8.dp) {
-                    Row(Modifier.padding(horizontal = 24.dp, vertical = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-                        CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.5.dp)
-                        Spacer(Modifier.width(16.dp))
-                        Text(busy, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
+                BusyCard(busy)
             }
         }
     }
@@ -197,7 +207,7 @@ fun TwinSpaceApp(
                     AppAction.OPEN -> vm.launch(entry)
                     AppAction.RENAME -> renameFor = entry
                     AppAction.SHORTCUT -> vm.addShortcut(entry)
-                    AppAction.FREEZE -> vm.setFrozen(entry, !entry.frozen)
+                    AppAction.FREEZE -> if (entry.frozen) vm.setFrozen(entry, false) else freezeFor = entry
                     AppAction.INFO -> vm.openAppInfo(entry)
                     AppAction.REMOVE -> removeFor = entry
                 }
@@ -208,8 +218,10 @@ fun TwinSpaceApp(
     renameFor?.let { entry ->
         RenameDialog(
             title = "Rename clone",
+            message = "Shown in Twin Space and on this clone\u2019s home-screen shortcut.",
             current = nameOf(entry),
             original = entry.label,
+            header = { AppDialogHeader(entry, vm.icons) },
             onConfirm = { vm.rename(entry, it); renameFor = null },
             onDismiss = { renameFor = null },
         )
@@ -218,16 +230,53 @@ fun TwinSpaceApp(
     removeFor?.let { entry ->
         ConfirmDialog(
             title = "Remove ${nameOf(entry)}?",
-            body = "This deletes the clone and everything signed in to it. The original app on your phone is not affected.",
-            confirm = "Remove",
-            onConfirm = { vm.remove(entry); removeFor = null },
+            body = "The clone and everything signed in to it will be deleted. Your original app is not affected. Android will ask you to confirm once more.",
+            confirm = "Remove clone",
+            icon = Icons.Rounded.DeleteOutline,
+            header = { AppDialogHeader(entry, vm.icons) },
+            onConfirm = { removeFor = null; vm.remove(entry) },
             onDismiss = { removeFor = null },
         )
     }
 
+    freezeFor?.let { entry ->
+        ProDialog(
+            title = "Freeze ${nameOf(entry)}?",
+            message = "The clone is completely switched off until you unfreeze it.",
+            header = { AppDialogHeader(entry, vm.icons) },
+            tone = DialogTone.WARNING,
+            confirmText = "Freeze",
+            onConfirm = { freezeFor = null; vm.setFrozen(entry, true) },
+            onDismiss = { freezeFor = null },
+        ) {
+            DialogPoint("No background activity, sync or notifications")
+            DialogPoint("No mobile data or Wi-Fi use")
+            DialogPoint("Hidden from your app drawer")
+            DialogPoint("All its data and logins are kept")
+        }
+    }
+
+    state.unfreezePrompt?.let { pkg ->
+        val entry = state.cloned.firstOrNull { it.packageName == pkg }
+        if (entry == null) {
+            LaunchedEffect(pkg, state.loading) { if (!state.loading) vm.dismissUnfreezePrompt() }
+        } else {
+            ProDialog(
+                title = "${nameOf(entry)} is frozen",
+                message = "It\u2019s switched off right now. Unfreeze it to open it. Everything is just as you left it.",
+                header = { AppDialogHeader(entry, vm.icons) },
+                icon = Icons.Rounded.AcUnit,
+                confirmText = "Unfreeze & open",
+                onConfirm = { vm.dismissUnfreezePrompt(); vm.setFrozen(entry, hide = false, openAfter = true) },
+                onDismiss = vm::dismissUnfreezePrompt,
+            )
+        }
+    }
+
     if (renamingSpace) {
         RenameDialog(
-            title = "Space name",
+            title = "Rename space",
+            message = "Shown in Twin Space and in Android\u2019s settings.",
             current = spaceName,
             original = null,
             onConfirm = { if (it != null) vm.renameSpace(it); renamingSpace = false },
@@ -238,29 +287,29 @@ fun TwinSpaceApp(
     if (deletingSpace) {
         ConfirmDialog(
             title = "Remove your space?",
-            body = "All ${state.cloned.size} clones and their accounts, chats and files will be permanently deleted. Your original apps stay exactly as they are.",
+            body = "All ${state.cloned.size} clone${if (state.cloned.size == 1) "" else "s"} and their accounts, chats and files will be permanently deleted. Your original apps stay exactly as they are.",
             confirm = "Remove space",
-            requireCheck = "I understand this can't be undone",
+            icon = Icons.Rounded.DeleteForever,
+            requireCheck = "I understand this can\u2019t be undone",
             onConfirm = { deletingSpace = false; vm.deleteSpace() },
             onDismiss = { deletingSpace = false },
         )
     }
 
     if (showHelp) {
-        AlertDialog(
-            onDismissRequest = { showHelp = false },
-            title = { Text("How Twin Space works") },
-            text = {
-                Text(
-                    "Twin Space uses Android's built-in work profile to create a second, fully separate space on your phone.\n\n" +
-                        "• Cloning makes the same app available inside the space. It shares the app's code with the original, so it takes almost no extra storage, but has its own data and accounts.\n\n" +
-                        "• Clones update automatically together with the original app.\n\n" +
-                        "• Clones show a work badge in your app drawer and a \"2\" badge in Twin Space.\n\n" +
-                        "• Nothing is ever removed unless you remove it yourself.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            },
-            confirmButton = { TextButton(onClick = { showHelp = false }) { Text("Got it") } },
-        )
+        ProDialog(
+            title = "How Twin Space works",
+            message = "Twin Space uses Android\u2019s built-in work profile to create a second, fully separate space.",
+            icon = Icons.Rounded.AutoAwesome,
+            confirmText = "Got it",
+            dismissText = null,
+            onConfirm = { showHelp = false },
+            onDismiss = { showHelp = false },
+        ) {
+            DialogPoint("Clones share the original app\u2019s code, so they use almost no extra storage, but have their own data and accounts.")
+            DialogPoint("Clones update automatically with the original app.")
+            DialogPoint("Freezing switches a clone off completely without deleting anything.")
+            DialogPoint("Nothing is ever removed unless you remove it yourself.")
+        }
     }
 }

@@ -105,7 +105,7 @@ fun HomeScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbar) },
+        snackbarHost = { com.twinspace.app.ui.components.ProSnackbarHost(snackbar) },
         floatingActionButton = {
             AnimatedVisibility(apps.isNotEmpty(), enter = fadeIn(), exit = fadeOut()) {
                 ExtendedFloatingActionButton(

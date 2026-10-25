@@ -4,6 +4,7 @@
     <!-- Lets the space ask the system to remove a clone (the user always confirms). -->
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
         android:name="android.software.managed_users"
@@ -44,11 +45,11 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- Started by pinned home-screen shortcuts (launchers start these with our identity). -->
+        <!-- Started by pinned home-screen shortcuts. Exported so every launcher can open it; it only launches clones. -->
         <activity
             android:name=".ShortcutLauncherActivity"
             android:excludeFromRecents="true"
-            android:exported="false"
+            android:exported="true"
             android:noHistory="true"
             android:taskAffinity=""
             android:theme="@style/Theme.TwinSpace.Invisible" />
@@ -67,6 +68,15 @@
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
                 <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".admin.SpaceRepairReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 

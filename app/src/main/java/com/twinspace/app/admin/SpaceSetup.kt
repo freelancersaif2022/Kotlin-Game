@@ -45,6 +45,13 @@ object SpaceSetup {
             )
         }
 
+        // The gateway answers requests from the personal side in here.
+        context.packageManager.setComponentEnabledSetting(
+            ComponentName(context, SpaceGatewayActivity::class.java),
+            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+            PackageManager.DONT_KILL_APP,
+        )
+
         // The copy of Twin Space inside the space works silently; hide its launcher icon.
         context.packageManager.setComponentEnabledSetting(
             ComponentName(context.packageName, "${context.packageName}.Launcher"),

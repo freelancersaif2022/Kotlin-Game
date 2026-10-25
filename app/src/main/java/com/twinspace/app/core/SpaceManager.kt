@@ -10,11 +10,13 @@ import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.os.Build
 import android.os.PersistableBundle
 import android.os.Process
 import android.os.UserHandle
 import android.os.UserManager
 import com.twinspace.app.admin.SpaceAdminReceiver
+import com.twinspace.app.admin.SpaceGatewayActivity
 
 enum class SpaceStatus {
     /** The device can't host a work profile. */
@@ -173,9 +175,10 @@ class SpaceManager(private val context: Context) {
         }
 
     /**
-     * Builds a request for the space and points it at the system's cross-profile forwarder,
-     * so it is delivered to our copy inside the space rather than to ourselves.
-     * Returns null when no route exists (e.g. the space is paused or gone).
+     * Builds a request for our copy inside the space. It is sent as an implicit intent: Android's
+     * cross-profile forwarder is then the only match (our own personal-side gateway is disabled),
+     * so the system delivers it into the space. This doesn't depend on package-visibility rules,
+     * which can hide the forwarder from a plain intent query.
      */
     fun gatewayIntent(
         op: SpaceContract.Op,
@@ -183,24 +186,28 @@ class SpaceManager(private val context: Context) {
         packages: List<String> = emptyList(),
         hidden: Boolean = false,
         name: String? = null,
-    ): Intent? {
-        val intent = Intent(SpaceContract.ACTION_SPACE_OP).apply {
-            putExtra(SpaceContract.EXTRA_OP, op.name)
-            putExtra(SpaceContract.EXTRA_TOKEN, token)
-            putExtra(SpaceContract.EXTRA_PACKAGES, packages.toTypedArray())
-            putExtra(SpaceContract.EXTRA_HIDDEN, hidden)
-            if (name != null) putExtra(SpaceContract.EXTRA_NAME, name)
+    ): Intent = Intent(SpaceContract.ACTION_SPACE_OP).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+        putExtra(SpaceContract.EXTRA_OP, op.name)
+        putExtra(SpaceContract.EXTRA_TOKEN, token)
+        putExtra(SpaceContract.EXTRA_PACKAGES, packages.toTypedArray())
+        putExtra(SpaceContract.EXTRA_HIDDEN, hidden)
+        if (name != null) putExtra(SpaceContract.EXTRA_NAME, name)
+    }
+
+    /**
+     * On the personal side the gateway must never answer requests itself, otherwise Android would
+     * offer a chooser instead of forwarding into the space. Inside the space it stays enabled.
+     */
+    fun configureComponentsForThisSide() {
+        val insideSpace = isInsideSpace ||
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && userManager.isManagedProfile)
+        val gateway = ComponentName(context, SpaceGatewayActivity::class.java)
+        val wanted = if (insideSpace) PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+        else PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        if (pm.getComponentEnabledSetting(gateway) != wanted) {
+            pm.setComponentEnabledSetting(gateway, wanted, PackageManager.DONT_KILL_APP)
         }
-        // Only trust the system's own forwarder: the request carries our token.
-        val forwarder = pm.queryIntentActivities(intent, 0)
-            .firstOrNull {
-                it.activityInfo.packageName != ownPackage &&
-                    it.activityInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
-            }
-            ?: return null
-        return intent.setComponent(
-            ComponentName(forwarder.activityInfo.packageName, forwarder.activityInfo.name),
-        )
     }
 
     fun registerCallback(callback: LauncherApps.Callback) = launcherApps.registerCallback(callback)

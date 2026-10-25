@@ -100,7 +100,7 @@ fun AddAppsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbar) },
+        snackbarHost = { com.twinspace.app.ui.components.ProSnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = {

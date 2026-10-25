@@ -64,7 +64,7 @@ fun SettingsScreen(
 
     Scaffold(
         containerColor = colors.background,
-        snackbarHost = { SnackbarHost(snackbar) },
+        snackbarHost = { com.twinspace.app.ui.components.ProSnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text("Settings", style = MaterialTheme.typography.titleLarge) },

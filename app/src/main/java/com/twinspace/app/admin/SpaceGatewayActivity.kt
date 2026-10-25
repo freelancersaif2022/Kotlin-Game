@@ -30,13 +30,13 @@ class SpaceGatewayActivity : Activity() {
         }
 
         if (!dpm.isProfileOwnerApp(packageName)) return reply(false, "Twin Space is not set up on this side.")
-        if (!isAuthorized()) return reply(false, "Request refused.")
+        val op = runCatching { Op.valueOf(intent.getStringExtra(SpaceContract.EXTRA_OP).orEmpty()) }.getOrNull()
+        if (!isAuthorized(op)) return reply(false, "Request refused.")
 
         // Repair setup if something interrupted provisioning earlier.
         SpaceSetup.finish(this, null)
 
         val packages = intent.getStringArrayExtra(SpaceContract.EXTRA_PACKAGES).orEmpty().toList()
-        val op = runCatching { Op.valueOf(intent.getStringExtra(SpaceContract.EXTRA_OP).orEmpty()) }.getOrNull()
         when (op) {
             Op.PING -> reply(true)
             Op.CLONE -> clone(packages)
@@ -49,11 +49,13 @@ class SpaceGatewayActivity : Activity() {
     }
 
     /**
-     * The forwarder starts us "as the caller", so the calling package is the personal-side app.
-     * The token shared at creation time covers devices that report the forwarder instead.
+     * The forwarder starts us "as the caller" and forwards our result, so the calling package is
+     * the personal-side Twin Space. The token shared at creation time covers devices that report
+     * otherwise, but never for removing the whole space.
      */
-    private fun isAuthorized(): Boolean {
+    private fun isAuthorized(op: Op?): Boolean {
         if (callingPackage == packageName) return true
+        if (op == Op.DELETE_SPACE) return false
         val expected = SpaceSetup.token(this)
         val given = intent.getStringExtra(SpaceContract.EXTRA_TOKEN)
         return !expected.isNullOrEmpty() && expected == given

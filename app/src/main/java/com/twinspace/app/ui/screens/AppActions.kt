@@ -18,14 +18,12 @@ import androidx.compose.material.icons.rounded.DriveFileRenameOutline
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.WbSunny
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +47,15 @@ import com.twinspace.app.core.AppEntry
 import com.twinspace.app.core.IconCache
 import com.twinspace.app.ui.components.ActionRow
 import com.twinspace.app.ui.components.AppIcon
+import com.twinspace.app.ui.components.DialogCheck
+import com.twinspace.app.ui.components.DialogTone
+import com.twinspace.app.ui.components.ProDialog
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material3.AssistChip
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.twinspace.app.ui.theme.LocalExtraColors
 import kotlinx.coroutines.launch
 
@@ -136,75 +143,99 @@ fun RenameDialog(
     original: String?,
     onConfirm: (String?) -> Unit,
     onDismiss: () -> Unit,
+    message: String? = null,
+    header: (@Composable () -> Unit)? = null,
 ) {
     var value by remember { mutableStateOf(TextFieldValue(current, TextRange(0, current.length))) }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
-    val valid = value.text.isNotBlank() && value.text.length <= 40
+    val text = value.text.trim()
+    val valid = text.isNotEmpty() && value.text.length <= MAX_NAME
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = { value = it },
-                    singleLine = true,
-                    isError = value.text.length > 40,
-                    supportingText = { Text("${value.text.length}/40") },
-                    shape = MaterialTheme.shapes.medium,
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { if (valid) onConfirm(value.text) }),
-                    modifier = Modifier.fillMaxWidth().focusRequester(focus),
+    ProDialog(
+        title = title,
+        message = message,
+        onDismiss = onDismiss,
+        confirmText = "Save",
+        onConfirm = { if (valid) onConfirm(text) },
+        confirmEnabled = valid,
+        icon = Icons.Rounded.DriveFileRenameOutline,
+        header = header,
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = { if (it.text.length <= MAX_NAME + 5) value = it },
+            singleLine = true,
+            isError = value.text.length > MAX_NAME,
+            placeholder = { Text("Enter a name") },
+            supportingText = {
+                Text(
+                    "${value.text.length}/$MAX_NAME",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End,
                 )
-                if (original != null && current != original) {
-                    TextButton(onClick = { onConfirm(null) }) { Text("Reset to \"$original\"") }
+            },
+            trailingIcon = if (value.text.isNotEmpty()) {
+                {
+                    androidx.compose.material3.IconButton(onClick = { value = TextFieldValue("") }) {
+                        androidx.compose.material3.Icon(Icons.Rounded.Close, "Clear")
+                    }
                 }
-            }
-        },
-        confirmButton = { TextButton(onClick = { onConfirm(value.text) }, enabled = valid) { Text("Save") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
+            } else {
+                null
+            },
+            shape = RoundedCornerShape(16.dp),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { if (valid) onConfirm(text) }),
+            modifier = Modifier.fillMaxWidth().focusRequester(focus),
+        )
+        if (original != null && current != original) {
+            Spacer(Modifier.height(4.dp))
+            AssistChip(
+                onClick = { onConfirm(null) },
+                label = { Text("Reset to \u201c$original\u201d") },
+                leadingIcon = { androidx.compose.material3.Icon(Icons.Rounded.Restore, null, Modifier.size(18.dp)) },
+                shape = RoundedCornerShape(12.dp),
+            )
+        }
+    }
 }
+
+private const val MAX_NAME = 40
 
 @Composable
 fun ConfirmDialog(
     title: String,
     body: String,
     confirm: String,
-    destructive: Boolean = true,
+    icon: ImageVector,
+    tone: DialogTone = DialogTone.DESTRUCTIVE,
     requireCheck: String? = null,
+    header: (@Composable () -> Unit)? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     var checked by rememberSaveable { mutableStateOf(requireCheck == null) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column {
-                Text(body, style = MaterialTheme.typography.bodyMedium)
-                if (requireCheck != null) {
-                    Spacer(Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        androidx.compose.material3.Checkbox(checked = checked, onCheckedChange = { checked = it })
-                        Text(requireCheck, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
+    ProDialog(
+        title = title,
+        message = body,
+        icon = icon,
+        tone = tone,
+        header = header,
+        confirmText = confirm,
+        confirmEnabled = checked,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        content = if (requireCheck != null) {
+            { DialogCheck(requireCheck, checked) { checked = it } }
+        } else {
+            null
         },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                enabled = checked,
-                colors = if (destructive) {
-                    androidx.compose.material3.ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                } else {
-                    androidx.compose.material3.ButtonDefaults.textButtonColors()
-                },
-            ) { Text(confirm) }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
+}
+
+/** App icon with the clone badge, used as a dialog header. */
+@Composable
+fun AppDialogHeader(entry: AppEntry, icons: IconCache) {
+    AppIcon(entry, icons, size = 64.dp, showBadge = true, dimmed = entry.frozen)
 }

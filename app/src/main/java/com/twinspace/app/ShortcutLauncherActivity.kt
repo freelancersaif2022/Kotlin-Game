@@ -19,10 +19,11 @@ class ShortcutLauncherActivity : Activity() {
 
         when {
             pkg == null || user == null -> toast("The space isn't available right now.")
-            pkg in app.prefs.settings.value.frozen -> {
-                toast("This clone is frozen. Unfreeze it in Twin Space.")
-                startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
+            pkg in app.prefs.settings.value.frozen -> startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra(MainActivity.EXTRA_UNFREEZE, pkg),
+            )
             !app.space.launch(pkg, user, intent.sourceBounds) ->
                 toast("This clone isn't in your space any more. Open Twin Space to clone it again.")
         }

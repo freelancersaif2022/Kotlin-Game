@@ -11,7 +11,7 @@ Run a second copy of WhatsApp, Instagram, games or any other app, each with its 
 - **Launch clones** with a tap; long-press for every action.
 - **Rename** – give any clone your own name (shown in Twin Space and on its shortcut).
 - **Home-screen shortcuts** – pin a clone to the launcher with a "2" badge and your custom name. Renaming updates pinned shortcuts.
-- **Freeze / unfreeze** – stop a clone from running in the background without losing its data.
+- **Freeze / unfreeze** – switch a clone off completely (no background activity, sync, notifications or data use) without losing its data. Opening a frozen clone offers "Unfreeze & open".
 - **Remove clone** – deletes only that clone (Android asks you to confirm). The original app is never touched.
 - **Pause / resume space** – put all clones to sleep at once.
 - **App lock** – fingerprint, face or screen lock to open Twin Space.
@@ -43,8 +43,11 @@ Open the project in Android Studio (Ladybug or newer) and run, or from the comma
 
 ```bash
 ./gradlew assembleDebug      # app/build/outputs/apk/debug/app-debug.apk
-./gradlew assembleRelease    # minified; signed with the debug key until you add your own
+./gradlew assembleRelease    # minified, smaller and faster
 ```
+
+Both build types are signed with the bundled `app/twinspace.jks` so every new APK installs over the previous one.
+Replace it with your own key before publishing to a store.
 
 Every push also builds both APKs on GitHub Actions (see the **Build APK** workflow artifacts).
 

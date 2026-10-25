@@ -13,19 +13,31 @@ android {
         // DevicePolicyManager.installExistingPackage (the clone engine) needs API 28.
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         vectorDrawables { useSupportLibrary = true }
     }
 
+    // One fixed key for every build, so new APKs always install over older ones (an app with a
+    // work-profile copy can't be updated with a different signature). Use your own key to publish.
+    signingConfigs {
+        create("twinspace") {
+            storeFile = file("twinspace.jks")
+            storePassword = "twinspace"
+            keyAlias = "twinspace"
+            keyPassword = "twinspace"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("twinspace")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Signed with the debug key so `assembleRelease` produces an installable APK out of the box.
-            // Replace with your own signing config before publishing.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("twinspace")
         }
     }
 

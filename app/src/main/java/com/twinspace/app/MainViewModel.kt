@@ -47,12 +47,15 @@ data class UiState(
     val busy: String? = null,
     val locked: Boolean = false,
     val screen: Screen = Screen.Home,
+    /** Package of a frozen clone the user tried to open; the UI offers to unfreeze it. */
+    val unfreezePrompt: String? = null,
 )
 
 sealed interface UiEvent {
     data class Message(val text: String, val actionLabel: String? = null, val action: (() -> Unit)? = null) : UiEvent
     data class StartForResult(val intent: Intent, val kind: Kind) : UiEvent
     data object Authenticate : UiEvent
+    data object OpenSystemSettings : UiEvent
 
     enum class Kind { GATEWAY, PROVISION }
 }
@@ -61,7 +64,7 @@ sealed interface UiEvent {
 private sealed interface PendingOp {
     data class Clone(val entries: List<AppEntry>) : PendingOp
     data class Remove(val entry: AppEntry) : PendingOp
-    data class Freeze(val entry: AppEntry, val hide: Boolean) : PendingOp
+    data class Freeze(val entry: AppEntry, val hide: Boolean, val openAfter: Boolean) : PendingOp
     data class RenameSpace(val name: String) : PendingOp
     data object DeleteSpace : PendingOp
 }
@@ -80,6 +83,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val events = _events.receiveAsFlow()
 
     private var pending: PendingOp? = null
+    private var pendingSince = 0L
     private var refreshJob: Job? = null
     private var stoppedAt = 0L
 
@@ -194,7 +198,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun launch(entry: AppEntry, bounds: Rect? = null) {
         if (entry.frozen) {
-            message("${displayName(entry)} is frozen", "Unfreeze") { setFrozen(entry, false) }
+            _state.update { it.copy(unfreezePrompt = entry.packageName) }
             return
         }
         viewModelScope.launch {
@@ -214,7 +218,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             ShortcutHelper.refreshIfPinned(getApplication(), entry, label, icons)
         }
-        message(if (clean == null) "Name reset to ${entry.label}" else "Renamed to $clean")
+        message(if (clean == null) "Name reset to ${entry.label}" else "Renamed to \u201c$clean\u201d")
     }
 
     fun addShortcut(entry: AppEntry) {
@@ -234,8 +238,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun remove(entry: AppEntry) =
         runInSpace(PendingOp.Remove(entry), "Waiting for confirmation…", Op.REMOVE, listOf(entry.packageName))
 
-    fun setFrozen(entry: AppEntry, hide: Boolean) = runInSpace(
-        PendingOp.Freeze(entry, hide),
+    fun promptUnfreeze(packageName: String) = _state.update { it.copy(unfreezePrompt = packageName) }
+
+    fun dismissUnfreezePrompt() = _state.update { it.copy(unfreezePrompt = null) }
+
+    fun setFrozen(entry: AppEntry, hide: Boolean, openAfter: Boolean = false) = runInSpace(
+        PendingOp.Freeze(entry, hide, openAfter),
         if (hide) "Freezing…" else "Unfreezing…",
         Op.FREEZE,
         listOf(entry.packageName),
@@ -269,18 +277,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         hidden: Boolean = false,
         name: String? = null,
     ) {
-        if (pending != null) return
+        // A result that never came back (e.g. the process was killed) must not block later requests.
+        if (pending != null && SystemClock.elapsedRealtime() - pendingSince < PENDING_TIMEOUT_MS) return
         if (_state.value.status == SpaceStatus.PAUSED) {
             message("Your space is paused.", "Resume") { setPaused(false) }
             return
         }
         val intent = space.gatewayIntent(kind, prefs.token(), packages, hidden, name)
-        if (intent == null) {
-            message("Can't reach your space right now. Make sure it's turned on.")
-            refresh()
-            return
-        }
         pending = op
+        pendingSince = SystemClock.elapsedRealtime()
         _state.update { it.copy(busy = busyText) }
         send(UiEvent.StartForResult(intent, UiEvent.Kind.GATEWAY))
     }
@@ -316,7 +321,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             is PendingOp.Freeze -> if (op.entry.packageName in done) {
                 prefs.setFrozen(op.entry.packageName, op.hide)
-                message(if (op.hide) "${displayName(op.entry)} frozen. It won't run until you unfreeze it." else "${displayName(op.entry)} unfrozen")
+                if (op.openAfter) {
+                    viewModelScope.launch {
+                        // Give the launcher entry a moment to come back after unhiding.
+                        repeat(10) {
+                            if (withContext(Dispatchers.IO) { space.launch(op.entry.packageName, op.entry.user) }) return@launch
+                            delay(200)
+                        }
+                        message("${displayName(op.entry)} is unfrozen")
+                    }
+                } else {
+                    message(if (op.hide) "${displayName(op.entry)} is frozen and fully stopped" else "${displayName(op.entry)} is unfrozen")
+                }
             } else {
                 message(error ?: "Couldn't change ${displayName(op.entry)}.")
             }
@@ -332,7 +348,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     _state.update { it.copy(screen = Screen.Home) }
                     message("Space removed")
                 } else {
-                    message(error ?: "The space wasn't removed.")
+                    message(error ?: "The space wasn't removed.", "Settings") { send(UiEvent.OpenSystemSettings) }
                 }
                 viewModelScope.launch {
                     repeat(10) { refresh(); refreshJob?.join(); if (_state.value.status == SpaceStatus.NONE) return@launch; delay(800) }
@@ -384,5 +400,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private companion object {
         const val RELOCK_AFTER_MS = 5_000L
+        const val PENDING_TIMEOUT_MS = 60_000L
     }
 }

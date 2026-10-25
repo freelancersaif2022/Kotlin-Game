@@ -51,6 +51,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        handleIntent(intent)
+
         val versionName = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull() ?: "1.0"
         setContent {
             TwinSpaceTheme {
@@ -63,6 +65,17 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    /** A shortcut to a frozen clone sends the user here to unfreeze it. */
+    private fun handleIntent(intent: Intent?) {
+        intent?.getStringExtra(EXTRA_UNFREEZE)?.let(vm::promptUnfreeze)
+        intent?.removeExtra(EXTRA_UNFREEZE)
     }
 
     override fun onStart() {
@@ -82,7 +95,14 @@ class MainActivity : ComponentActivity() {
                 UiEvent.Kind.PROVISION -> provisionLauncher.launch(intent)
             }
         } catch (e: ActivityNotFoundException) {
-            fail(kind, "This device doesn't support it.")
+            fail(
+                kind,
+                if (kind == UiEvent.Kind.GATEWAY) {
+                    "Your space is still starting up. Pause and resume it once from the home screen, then try again."
+                } else {
+                    "This device doesn't support separate spaces."
+                },
+            )
         } catch (e: SecurityException) {
             fail(kind, "Android blocked the request.")
         }
@@ -145,5 +165,9 @@ class MainActivity : ComponentActivity() {
             val intent = keyguard.createConfirmDeviceCredentialIntent("Unlock Twin Space", "Verify it's you to continue")
             if (intent == null) vm.onAuthenticated() else credentialLauncher.launch(intent)
         }
+    }
+
+    companion object {
+        const val EXTRA_UNFREEZE = "unfreeze"
     }
 }
