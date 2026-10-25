@@ -43,18 +43,27 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun isInstalled(packageName: String) = repo.isInstalled(packageName)
 
-    fun addClone(app: InstalledApp, accent: Long) {
+    fun addClone(app: InstalledApp, label: String, accent: Long): Clone {
         val current = clones.value
-        val baseName = cloneName(app.label, current, app.packageName)
+        val name = label.trim().ifEmpty { cloneName(app.label, current, app.packageName) }
         val clone = Clone(
             id = System.currentTimeMillis(),
             packageName = app.packageName,
-            label = baseName,
+            label = name,
             accent = accent,
             createdAt = System.currentTimeMillis(),
         )
         persist(current + clone)
+        return clone
     }
+
+    fun canPinShortcuts(): Boolean = repo.canPinShortcuts()
+
+    fun pinShortcut(clone: Clone): Boolean = repo.pinShortcut(clone)
+
+    /** Default name suggestion for a brand-new clone of [app]. */
+    fun suggestName(app: InstalledApp): String =
+        cloneName(app.label, clones.value, app.packageName)
 
     fun rename(id: Long, newLabel: String) {
         val trimmed = newLabel.trim()
