@@ -151,7 +151,7 @@ class BornomalaIME : InputMethodService(),
         val r = FrameLayout(ctx).apply {
             addView(backgroundImage, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             addView(column, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-            addView(overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            addView(this@BornomalaIME.overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
         // Keep the keys above the gesture navigation area on edge-to-edge devices.
         r.setOnApplyWindowInsetsListener { _, insets ->
@@ -465,7 +465,7 @@ class BornomalaIME : InputMethodService(),
             val out = if (useBangla) nfc(text) else text
             if (autoSpaced && text.length == 1 && text[0] in SPACE_SWALLOWING_PUNCTUATION) {
                 val before = ic.getTextBeforeCursor(1, 0)
-                if (before == " ") ic.deleteSurroundingText(1, 0)
+                if (before?.toString() == " ") ic.deleteSurroundingText(1, 0)
                 ic.commitText("$out ", 1)
             } else {
                 ic.commitText(out, 1)

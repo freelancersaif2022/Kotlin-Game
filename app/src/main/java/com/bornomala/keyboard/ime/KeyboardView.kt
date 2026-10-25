@@ -40,7 +40,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
     var listener: Listener? = null
 
     private val density = resources.displayMetrics.density
-    private val handler = Handler(Looper.getMainLooper())
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     var theme: KeyboardTheme? = null
         set(value) {
@@ -256,7 +256,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
                 val k = key ?: return
                 mode = Mode.REPEATING
                 listener?.onKey(k, null)
-                handler.postDelayed(this, REPEAT_INTERVAL)
+                mainHandler.postDelayed(this, REPEAT_INTERVAL)
             }
         }
     }
@@ -354,7 +354,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         for (other in pointers.values) {
             val ok = other.key ?: continue
             if (other.mode == Mode.NORMAL && ok.code != KeyCode.SHIFT && ok.code != KeyCode.DELETE) {
-                handler.removeCallbacks(other.longPress)
+                mainHandler.removeCallbacks(other.longPress)
                 other.mode = Mode.CONSUMED
                 listener?.onKey(ok, null)
             }
@@ -369,8 +369,8 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     private fun scheduleLongPress(p: Pointer) {
         val key = p.key ?: return
-        if (key.repeatable) handler.postDelayed(p.repeat, REPEAT_START)
-        else handler.postDelayed(p.longPress, longPressDelay)
+        if (key.repeatable) mainHandler.postDelayed(p.repeat, REPEAT_START)
+        else mainHandler.postDelayed(p.longPress, longPressDelay)
     }
 
     private fun onMove(id: Int, x: Float, y: Float) {
@@ -398,14 +398,14 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
             Mode.NORMAL -> {}
         }
         if (key.code == KeyCode.SPACE && spaceSwipe && abs(x - p.downX) > touchSlop * 1.5f) {
-            handler.removeCallbacks(p.longPress)
+            mainHandler.removeCallbacks(p.longPress)
             p.mode = Mode.SPACE_SWIPE
             p.lastSwipeX = x
             overlay.hidePreview()
             return
         }
         if (key.code == KeyCode.DELETE && deleteSwipe && p.downX - x > touchSlop * 2) {
-            handler.removeCallbacks(p.repeat)
+            mainHandler.removeCallbacks(p.repeat)
             p.mode = Mode.DELETE_SWIPE
             p.deleteCount = 1
             return
@@ -413,8 +413,8 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         if (abs(x - p.downX) > touchSlop || abs(y - p.downY) > touchSlop) {
             val newKey = findKey(x, y)
             if (newKey != null && newKey !== key && key.code != KeyCode.SPACE && key.code != KeyCode.DELETE) {
-                handler.removeCallbacks(p.longPress)
-                handler.removeCallbacks(p.repeat)
+                mainHandler.removeCallbacks(p.longPress)
+                mainHandler.removeCallbacks(p.repeat)
                 p.key = newKey
                 showPreviewFor(newKey)
                 scheduleLongPress(p)
@@ -425,8 +425,8 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     private fun onUp(id: Int) {
         val p = pointers.remove(id) ?: return
-        handler.removeCallbacks(p.longPress)
-        handler.removeCallbacks(p.repeat)
+        mainHandler.removeCallbacks(p.longPress)
+        mainHandler.removeCallbacks(p.repeat)
         val key = p.key
         when (p.mode) {
             Mode.POPUP -> {
@@ -443,8 +443,8 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     fun cancelAllPointers() {
         for (p in pointers.values) {
-            handler.removeCallbacks(p.longPress)
-            handler.removeCallbacks(p.repeat)
+            mainHandler.removeCallbacks(p.longPress)
+            mainHandler.removeCallbacks(p.repeat)
         }
         pointers.clear()
         overlay.hideAll()
