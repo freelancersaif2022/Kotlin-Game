@@ -1,73 +1,63 @@
 #!/usr/bin/env bash
-# End-to-end smoke test on an emulator: install, enable the keyboard, type with real taps
-# on the soft keys and check the text that reaches the app.
-set -euo pipefail
+# End-to-end smoke test on an emulator: install, enable the keyboard, type with real taps on
+# the soft keys and check the text that reaches the app. Key positions come from the keyboard's
+# own geometry log (enabled through the BornomalaKeys log tag).
+set -uo pipefail
 
 APK="$1"
 PKG=com.bornomala.keyboard
-IME="$PKG/.ime.BornomalaIME"
 OUT=smoke
 mkdir -p "$OUT"
+fail() { echo "::error::$1"; adb logcat -d > "$OUT/logcat.txt"; grep -A30 "FATAL EXCEPTION" "$OUT/logcat.txt" | head -60; exit 1; }
 
-adb install -r "$APK"
-# The package manager may need a moment before the new input method is listed.
+adb install -r "$APK" || fail "install failed"
+IME=""
 for i in $(seq 1 30); do
-  adb shell ime list -a -s | grep -q "$PKG/" && break
+  IME=$(adb shell ime list -a -s | tr -d '\r' | grep "^$PKG/" | head -1)
+  [ -n "$IME" ] && break
   sleep 2
 done
-adb shell ime list -a -s
-IME=$(adb shell ime list -a -s | tr -d '\r' | grep "$PKG/" | head -1)
+[ -n "$IME" ] || fail "input method not registered"
 adb shell ime enable "$IME"
 adb shell ime set "$IME"
+adb shell setprop log.tag.BornomalaKeys DEBUG
 adb logcat -c
 
 adb shell am start -W -n "$PKG/.ui.MainActivity"
 sleep 4
 
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb shell cat /sdcard/ui.xml; }
+field_text() { dump | grep -o 'class="android.widget.EditText"[^>]*' | head -1 | grep -o ' text="[^"]*"'; }
 
-# Tap the "Try typing here" field.
+# Focus the "Try typing here" field.
 BOUNDS=$(dump | grep -o 'class="android.widget.EditText"[^>]*bounds="[^"]*"' | head -1 | grep -o 'bounds="[^"]*"' | grep -oE '[0-9]+' | tr '\n' ' ')
+[ -n "$BOUNDS" ] || fail "try-typing field not found"
 read -r X1 Y1 X2 Y2 <<<"$BOUNDS"
 adb shell input tap $(( (X1 + X2) / 2 )) $(( (Y1 + Y2) / 2 ))
 sleep 3
 
-# Find the keyboard window and compute key positions (strip 46dp, rows 54dp, 10 units wide).
-DENSITY=$(adb shell wm density | grep -oE '[0-9]+' | tail -1)
-WIDTH=$(adb shell wm size | grep -oE '[0-9]+x[0-9]+' | tail -1 | cut -dx -f1)
-IME_TOP=$(adb shell dumpsys window windows | grep -A40 'Window{.*InputMethod' | grep -m1 -oE 'frame=\[[0-9]+,[0-9]+\]' | grep -oE '[0-9]+' | tail -1)
-echo "density=$DENSITY width=$WIDTH imeTop=$IME_TOP"
-dp() { echo $(( $1 * DENSITY / 160 )); }
-key() { # $1 = row (0-3), $2 = x center in tenths of the keyboard width units*10
-  local y=$(( IME_TOP + $(dp 46) + $1 * $(dp 54) + $(dp 27) ))
-  local x=$(( WIDTH * $2 / 100 ))
-  adb shell input tap "$x" "$y"
-  sleep 0.4
+# tap LAYOUT KEY: look up the key centre logged by the keyboard.
+tap() {
+  local pos
+  pos=$(adb logcat -d -s BornomalaKeys:D | grep " key $1 $2 " | tail -1 | awk '{print $(NF-1), $NF}')
+  [ -n "$pos" ] || fail "key '$2' of layout '$1' not found in geometry log"
+  adb shell input tap $pos
+  sleep 0.5
 }
-# Bangla phonetic is the default language: a m i <space>
-key 1 10   # a
-key 2 80   # m
-key 0 75   # i
-key 3 55   # space
-sleep 1
-TEXT=$(dump | grep -o 'class="android.widget.EditText"[^>]*' | head -1)
-echo "$TEXT" | grep -o 'text="[^"]*"' || true
-adb exec-out screencap -p > "$OUT/typed.png" || true
 
-# Switch to English with the globe key and type "hi".
-key 3 20   # globe
-key 1 60   # h
-key 0 75   # i
+SPACE="#-9"; LANG="#-7"
+tap phonetic a; tap phonetic m; tap phonetic i; tap phonetic "$SPACE"
 sleep 1
-TEXT2=$(dump | grep -o 'class="android.widget.EditText"[^>]*' | head -1)
-echo "$TEXT2" | grep -o 'text="[^"]*"' || true
+T1=$(field_text); echo "after phonetic: $T1"
+echo "$T1" | grep -q 'আমি' || fail "phonetic typing did not produce আমি"
+
+tap phonetic "$LANG"; sleep 1
+tap english h; tap english i
+sleep 1
+T2=$(field_text); echo "after english: $T2"
+echo "$T2" | grep -q 'আমি hi' || fail "English typing after the language switch failed"
 
 adb logcat -d > "$OUT/logcat.txt"
-if grep -E "FATAL EXCEPTION|AndroidRuntime: Process: $PKG" "$OUT/logcat.txt"; then
-  grep -A30 "FATAL EXCEPTION" "$OUT/logcat.txt" | head -60
-  echo "::error::The app crashed during the smoke test"
-  exit 1
-fi
-echo "$TEXT" | grep -q 'আমি' || { echo "::error::Phonetic typing did not produce আমি"; exit 1; }
-echo "$TEXT2" | grep -qi 'আমি hi' || { echo "::error::English typing after language switch failed"; exit 1; }
+if grep -q "FATAL EXCEPTION" "$OUT/logcat.txt"; then fail "the app crashed during the smoke test"; fi
+adb exec-out screencap -p > "$OUT/screen.png" || true
 echo "Smoke test passed"

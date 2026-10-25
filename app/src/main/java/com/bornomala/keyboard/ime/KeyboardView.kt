@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -137,6 +138,23 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
                 x += key.width * unit
             }
             y += rowHeightPx
+        }
+        if (Log.isLoggable(GEOMETRY_TAG, Log.DEBUG)) post { logGeometry() }
+    }
+
+    /**
+     * Logs on-screen key centres for automated UI tests. Off unless enabled with
+     * `adb shell setprop log.tag.BornomalaKeys DEBUG`.
+     */
+    private fun logGeometry() {
+        val l = layout ?: return
+        val loc = IntArray(2)
+        getLocationOnScreen(loc)
+        for (row in l.rows) for (key in row.keys) {
+            val name = if (key.code == KeyCode.TEXT) key.text else "#${key.code}"
+            val cx = loc[0] + (key.vx + key.vw / 2).toInt()
+            val cy = loc[1] + (key.y + key.h / 2).toInt()
+            Log.d(GEOMETRY_TAG, "key ${l.id} $name $cx $cy")
         }
     }
 
@@ -457,6 +475,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
     }
 
     companion object {
+        private const val GEOMETRY_TAG = "BornomalaKeys"
         private const val REPEAT_START = 400L
         private const val REPEAT_INTERVAL = 50L
 
