@@ -1,0 +1,61 @@
+name: Build Release APK
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease --no-daemon --stacktrace
+
+      - name: Locate APK
+        id: apk
+        run: |
+          path=$(find app/build/outputs/apk/release -name "*.apk" | head -n1)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+          echo "APK: $path"
+          ls -lh "$path"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CloneHub-release-apk
+          path: ${{ steps.apk.outputs.path }}
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.ref == 'refs/heads/ccr-ba4d4d23-i9ngq1'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: CloneHub v1.0.0 (build ${{ github.run_number }})
+          body: |
+            CloneHub release APK — built automatically by GitHub Actions.
+
+            Install on Android 7.0+ by downloading the `.apk` below and allowing
+            installs from unknown sources.
+          files: ${{ steps.apk.outputs.path }}
+          draft: false
+          prerelease: false
