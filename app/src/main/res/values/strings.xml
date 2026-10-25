@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Twin Space</string>
+    <string name="admin_description">Manages the private Twin Space where your cloned apps live. Nothing outside the space is managed.</string>
+    <string name="space_default_name">Twin Space</string>
+</resources>
