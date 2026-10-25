@@ -27,10 +27,10 @@ adb shell am start -W -n "$PKG/.ui.MainActivity"
 sleep 4
 
 dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb shell cat /sdcard/ui.xml; }
-field_text() { dump | grep -o 'class="android.widget.EditText"[^>]*' | head -1 | grep -o ' text="[^"]*"'; }
+field_text() { dump | grep -o '<node [^>]*class="android.widget.EditText"[^>]*>' | head -1 | grep -o ' text="[^"]*"'; }
 
 # Focus the "Try typing here" field.
-BOUNDS=$(dump | grep -o 'class="android.widget.EditText"[^>]*bounds="[^"]*"' | head -1 | grep -o 'bounds="[^"]*"' | grep -oE '[0-9]+' | tr '\n' ' ')
+BOUNDS=$(dump | grep -o '<node [^>]*class="android.widget.EditText"[^>]*>' | head -1 | grep -o 'bounds="[^"]*"' | grep -oE '[0-9]+' | tr '\n' ' ')
 [ -n "$BOUNDS" ] || fail "try-typing field not found"
 read -r X1 Y1 X2 Y2 <<<"$BOUNDS"
 adb shell input tap $(( (X1 + X2) / 2 )) $(( (Y1 + Y2) / 2 ))
