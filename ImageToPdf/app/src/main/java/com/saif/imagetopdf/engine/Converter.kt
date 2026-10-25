@@ -18,29 +18,60 @@ import kotlin.math.roundToInt
 /** Image → OCR → style detection → layout/shape rebuild → vector PDF. Runs fully on the phone. */
 object Converter {
 
-    suspend fun convert(context: Context, uri: Uri, progress: (Float, String) -> Unit): ConversionResult =
+    /** Stages shown on the processing screen, in order. */
+    val STAGES = listOf(
+        "Reading image",
+        "Recognizing text",
+        "Finding seals, signatures & logos",
+        "Detecting fonts, weights & colors",
+        "Rebuilding layout",
+        "Writing PDF",
+    )
+
+    suspend fun convert(context: Context, uri: Uri, progress: (Float, Int) -> Unit): ConversionResult =
         withContext(Dispatchers.Default) {
-            progress(0.05f, "Reading image")
+            progress(0.04f, 0)
             val bitmap = ImageLoader.load(context, uri)
 
-            progress(0.15f, "Recognizing text on-device")
+            progress(0.12f, 1)
             val text = recognize(bitmap)
             val px = Pixels.of(bitmap)
             bitmap.recycle()
-            if (text.textBlocks.isEmpty()) error("No text found in this image. Try a clearer, well-lit photo.")
+            val allLines = text.textBlocks.flatMap { it.lines }
+            if (allLines.isEmpty()) error("No text found in this image. Try a clearer, well-lit photo.")
 
-            progress(0.45f, "Detecting fonts, sizes, weights & colors")
-            val lines = TextAnalyzer.analyze(px, text)
+            // Seals, stamps and signatures: OCR either can't read them (low confidence) or the
+            // "text" sits inside a larger drawn mark. Those stay pixel-exact graphics instead.
+            progress(0.42f, 2)
+            val firstBg = BackgroundBuilder.build(px, TextAnalyzer.textMask(px, allLines))
+            val marks = GraphicsExtractor.regions(px, TextAnalyzer.textMask(px, allLines), firstBg)
+            val textLines = allLines.filter { line ->
+                val box = line.boundingBox ?: return@filter false
+                val area = box.width().toFloat() * box.height()
+                val insideMark = marks.any { m ->
+                    m.width().toFloat() * m.height() > area * 2.5f && GraphicsExtractor.overlap(box, m) > 0.5f
+                }
+                line.confidence >= 0.45f && !insideMark
+            }
+            val textMask = TextAnalyzer.textMask(px, textLines)
 
-            progress(0.7f, "Rebuilding background, boxes & lines")
-            val bg = BackgroundBuilder.build(px, TextAnalyzer.textMask(px, text))
+            progress(0.58f, 3)
+            val lines = TextAnalyzer.analyze(px, textLines)
 
-            progress(0.9f, "Writing PDF")
-            val model = PageModel(px.w, px.h, bg.pageColor, bg.shapes, lines)
+            progress(0.74f, 4)
+            val bg = BackgroundBuilder.build(px, textMask)
+            val graphics = GraphicsExtractor.cut(px, textMask, bg, GraphicsExtractor.regions(px, textMask, bg))
+
+            progress(0.9f, 5)
+            val model = PageModel(px.w, px.h, bg.pageColor, bg.shapes + bg.rules, graphics, lines)
             val dir = File(context.cacheDir, "pdf").apply { mkdirs() }
             dir.listFiles()?.forEach { it.delete() }
             val file = File(dir, "converted_${System.currentTimeMillis()}.pdf")
-            PdfBuilder.write(model, file)
+            try {
+                PdfBuilder.write(model, file)
+            } finally {
+                graphics.forEach { it.bitmap.recycle() }
+            }
 
             val k = PdfBuilder.scale(model)
             val fonts = lines.flatMap { l -> l.words.map { w -> FontUsage(l.family, w.weight, w.italic, (l.fontSize * k).roundToInt(), 1) } }
@@ -48,12 +79,13 @@ object Converter {
                 .map { (_, list) -> list.first().copy(words = list.size) }
                 .sortedByDescending { it.words }
 
-            progress(1f, "Done")
+            progress(1f, STAGES.size)
             ConversionResult(
                 pdfPath = file.absolutePath,
                 lineCount = lines.size,
                 wordCount = lines.sumOf { it.words.size },
-                shapeCount = bg.shapes.size,
+                shapeCount = model.shapes.size,
+                graphicCount = graphics.size,
                 fonts = fonts,
             )
         }

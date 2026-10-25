@@ -9,7 +9,17 @@ import kotlin.math.max
  */
 object BackgroundBuilder {
 
-    class Result(val pageColor: Int, val shapes: List<ColorRect>)
+    class Result(
+        val pageColor: Int,
+        val shapes: List<ColorRect>,
+        val rules: List<ColorRect>,
+        /** Background colour of each cell×cell block, row-major, [cols] wide. */
+        val cellColor: IntArray,
+        val cols: Int,
+        val cell: Int,
+    ) {
+        fun backgroundAt(x: Int, y: Int) = cellColor[(y / cell) * cols + x / cell]
+    }
 
     fun build(px: Pixels, textMask: BooleanArray): Result {
         val cell = max(4, px.w / 160)
@@ -108,9 +118,9 @@ object BackgroundBuilder {
         open.values.forEach { close(it, rows) }
 
         // 4. Thin lines (underlines, table borders, dividers) that are thinner than a cell.
-        shapes += rules(px, textMask, color, cols, cell, horizontal = true)
-        shapes += rules(px, textMask, color, cols, cell, horizontal = false)
-        return Result(pageColor, shapes)
+        val ruleRects = rules(px, textMask, color, cols, cell, horizontal = true) +
+            rules(px, textMask, color, cols, cell, horizontal = false)
+        return Result(pageColor, shapes, ruleRects, color, cols, cell)
     }
 
     private fun rules(

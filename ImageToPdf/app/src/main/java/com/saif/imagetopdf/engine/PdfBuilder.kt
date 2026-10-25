@@ -32,6 +32,9 @@ object PdfBuilder {
                 canvas.drawRect(s.left - 0.4f, s.top - 0.4f, s.right + 0.4f, s.bottom + 0.4f, fill)
             }
 
+            val image = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
+            for (g in model.graphics) canvas.drawBitmap(g.bitmap, g.left, g.top, image)
+
             val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG or Paint.LINEAR_TEXT_FLAG)
             val bounds = Rect()
             for (line in model.lines) {

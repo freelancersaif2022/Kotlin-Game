@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 sealed interface UiState {
     data object Splash : UiState
     data object Home : UiState
-    data class Processing(val image: Uri, val progress: Float, val stage: String) : UiState
+    data class Processing(val image: Uri, val progress: Float, val stage: Int) : UiState
     data class Done(val image: Uri, val result: ConversionResult) : UiState
     data class Failed(val message: String) : UiState
 }
@@ -27,7 +27,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun convert(image: Uri) {
-        _state.value = UiState.Processing(image, 0f, "Starting")
+        _state.value = UiState.Processing(image, 0f, 0)
         viewModelScope.launch {
             _state.value = try {
                 val result = Converter.convert(getApplication(), image) { p, stage ->

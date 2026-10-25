@@ -100,18 +100,24 @@ object InkAnalyzer {
         return Ink(r, bg, ink, threshold, mask, true)
     }
 
-    /** Median horizontal run of ink = typical stem thickness in pixels. */
+    /**
+     * Average stroke thickness in pixels. A stroke of width w and length L has area w·L and
+     * outline ≈ 2·L, so thickness = 2·area / outline – whatever the letter shapes are.
+     */
     fun stemWidth(ink: Ink): Float {
         if (!ink.hasInk) return Float.NaN
-        val runs = ArrayList<Float>()
-        for (y in 0 until ink.h) {
-            var run = 0
-            for (x in 0..ink.w) {
-                if (x < ink.w && ink.at(x, y)) run++
-                else if (run > 0) { runs += run.toFloat(); run = 0 }
-            }
+        var area = 0
+        var edges = 0
+        for (y in 0 until ink.h) for (x in 0 until ink.w) {
+            if (!ink.at(x, y)) continue
+            area++
+            if (x == 0 || !ink.at(x - 1, y)) edges++
+            if (x == ink.w - 1 || !ink.at(x + 1, y)) edges++
+            if (y == 0 || !ink.at(x, y - 1)) edges++
+            if (y == ink.h - 1 || !ink.at(x, y + 1)) edges++
         }
-        return runs.median()
+        if (area < 8 || edges == 0) return Float.NaN
+        return 2f * area / edges
     }
 
     /** Text is italic when shearing it upright makes the vertical strokes line up much better. */

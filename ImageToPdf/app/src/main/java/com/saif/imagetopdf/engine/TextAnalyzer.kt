@@ -22,9 +22,9 @@ object TextAnalyzer {
         val family: Family?, val serifVote: Boolean?, val words: List<RawWord>,
     )
 
-    fun analyze(px: Pixels, text: Text): List<TextLine> {
+    fun analyze(px: Pixels, lines: List<Text.Line>): List<TextLine> {
         val raws = ArrayList<RawLine>()
-        for (block in text.textBlocks) for (line in block.lines) analyzeLine(px, line)?.let { raws += it }
+        for (line in lines) analyzeLine(px, line)?.let { raws += it }
         if (raws.isEmpty()) return emptyList()
 
         // Lines with too few clues borrow the page-wide serif/sans decision.
@@ -43,10 +43,10 @@ object TextAnalyzer {
         val pageRatio = ratios.median()
         val baseWeight = when {
             pageRatio.isNaN() -> 400
-            pageRatio < 0.068f -> 300
-            pageRatio < 0.105f -> 400
-            pageRatio < 0.125f -> 500
-            pageRatio < 0.17f -> 700
+            pageRatio < 0.055f -> 300
+            pageRatio < 0.092f -> 400
+            pageRatio < 0.108f -> 500
+            pageRatio < 0.155f -> 700
             else -> 900
         }
 
@@ -61,10 +61,12 @@ object TextAnalyzer {
                 fontSize = size,
                 family = family,
                 words = raw.words.map { w ->
-                    val rel = (w.stem / size) / pageRatio
+                    val ratio = w.stem / size
+                    val rel = ratio / pageRatio
                     val weight = when {
                         rel.isNaN() -> baseWeight
-                        rel > 1.30f -> if (baseWeight >= 700) 900 else 700
+                        // Clearly thicker than the body text, or thick in absolute terms: bold.
+                        rel > 1.22f || (ratio > 0.118f && baseWeight < 700) -> if (baseWeight >= 700) 900 else 700
                         rel > 1.15f && baseWeight <= 400 -> 500
                         rel < 0.75f && baseWeight >= 400 -> 300
                         else -> baseWeight
@@ -169,9 +171,9 @@ object TextAnalyzer {
     }
 
     /** Pixels covered by recognised text, so the background pass can look past the letters. */
-    fun textMask(px: Pixels, text: Text): BooleanArray {
+    fun textMask(px: Pixels, lines: List<Text.Line>): BooleanArray {
         val mask = BooleanArray(px.w * px.h)
-        for (block in text.textBlocks) for (line in block.lines) {
+        for (line in lines) {
             val b = line.boundingBox ?: continue
             val r = px.clamp(Rect(b.left - 2, b.top - 2, b.right + 2, b.bottom + 2))
             for (y in r.top until r.bottom) mask.fill(true, y * px.w + r.left, y * px.w + r.right)

@@ -28,11 +28,15 @@ data class TextLine(
 /** A filled rectangle that rebuilds the background, boxes, bands and rule lines. */
 data class ColorRect(val left: Float, val top: Float, val right: Float, val bottom: Float, val color: Int)
 
+/** A seal, signature, logo or other mark, copied pixel-exact with transparent paper. */
+class Graphic(val left: Float, val top: Float, val bitmap: android.graphics.Bitmap)
+
 data class PageModel(
     val width: Int,
     val height: Int,
     val background: Int,
     val shapes: List<ColorRect>,
+    val graphics: List<Graphic>,
     val lines: List<TextLine>,
 )
 
@@ -55,5 +59,6 @@ data class ConversionResult(
     val lineCount: Int,
     val wordCount: Int,
     val shapeCount: Int,
+    val graphicCount: Int,
     val fonts: List<FontUsage>,
 )
