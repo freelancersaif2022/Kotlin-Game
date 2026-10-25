@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M5 4H19Q21 4 21 6V15Q21 17 19 17H5Q3 17 3 15V6Q3 4 5 4Z M6.0 6Q5 6 5 7.0V14.0Q5 15 6.0 15H18.0Q19 15 19 14.0V7.0Q19 6 18.0 6Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M6.4,7h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M10.4,7h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M14.4,7h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M17.4,7h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M6.4,10h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M10.4,10h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M14.4,10h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M17.4,10h1.2a0.4,0.4 0 0 1 0.4,0.4v1.2a0.4,0.4 0 0 1 -0.4,0.4h-1.2a0.4,0.4 0 0 1 -0.4,-0.4v-1.2a0.4,0.4 0 0 1 0.4,-0.4Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M7.7,13h8.6a0.7,0.7 0 0 1 0.7,0.7v0.1a0.7,0.7 0 0 1 -0.7,0.7h-8.6a0.7,0.7 0 0 1 -0.7,-0.7v-0.1a0.7,0.7 0 0 1 0.7,-0.7Z"/>
+</vector>

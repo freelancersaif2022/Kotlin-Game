@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bornomala Keyboard</string>
+    <string name="ime_name">Bornomala Keyboard</string>
+    <string name="subtype_bangla">বাংলা (Bangla)</string>
+    <string name="subtype_english">English</string>
+    <string name="space_english">English</string>
+    <string name="space_phonetic">বাংলা · ফোনেটিক</string>
+    <string name="space_national">বাংলা · জাতীয়</string>
+    <string name="layout_phonetic">Bangla Phonetic (অভ্র style)</string>
+    <string name="layout_national">Bangla National (জাতীয়)</string>
+    <string name="clipboard_title">Clipboard</string>
+    <string name="clipboard_clear">Clear unpinned items</string>
+    <string name="clipboard_empty">Copied text will appear here.</string>
+    <string name="clipboard_disabled">Clipboard history is turned off in settings.</string>
+    <string name="one_handed_switch">Move keyboard to the other side</string>
+    <string name="one_handed_exit">Full-width keyboard</string>
+    <string name="removed_word">Removed “%1$s” from learned words</string>
+</resources>

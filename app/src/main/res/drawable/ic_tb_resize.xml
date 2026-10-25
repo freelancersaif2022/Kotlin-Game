@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group android:translateX="1.2" android:translateY="1.2" android:scaleX="0.9" android:scaleY="0.9">
+        <path android:fillColor="#FF000000" android:pathData="M11.000 3.000L11.000 21.000 13.000 21.000 13.000 3.000Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M11,3a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M11,21a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M8.707 7.707L12.707 3.707 11.293 2.293 7.293 6.293Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M11.293 3.707L15.293 7.707 16.707 6.293 12.707 2.293Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M7,7a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M11,3a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M15,7a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M7.293 17.707L11.293 21.707 12.707 20.293 8.707 16.293Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M12.707 21.707L16.707 17.707 15.293 16.293 11.293 20.293Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M7,17a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M11,21a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M15,17a1,1 0 1 0 2,0a1,1 0 1 0 -2,0Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M4,10h1a1,1 0 0 1 1,1v2a1,1 0 0 1 -1,1h-1a1,1 0 0 1 -1,-1v-2a1,1 0 0 1 1,-1Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M19,10h1a1,1 0 0 1 1,1v2a1,1 0 0 1 -1,1h-1a1,1 0 0 1 -1,-1v-2a1,1 0 0 1 1,-1Z"/>
+    </group>
+</vector>
