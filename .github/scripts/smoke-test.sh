@@ -10,6 +10,13 @@ OUT=smoke
 mkdir -p "$OUT"
 
 adb install -r "$APK"
+# The package manager may need a moment before the new input method is listed.
+for i in $(seq 1 30); do
+  adb shell ime list -a -s | grep -q "$PKG/" && break
+  sleep 2
+done
+adb shell ime list -a -s
+IME=$(adb shell ime list -a -s | tr -d '\r' | grep "$PKG/" | head -1)
 adb shell ime enable "$IME"
 adb shell ime set "$IME"
 adb logcat -c
