@@ -30,11 +30,19 @@ dump() { adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1; adb shell ca
 field_text() { dump | grep -o '<node [^>]*class="android.widget.EditText"[^>]*>' | head -1 | grep -o ' text="[^"]*"'; }
 
 # Focus the "Try typing here" field.
-BOUNDS=$(dump | grep -o '<node [^>]*class="android.widget.EditText"[^>]*>' | head -1 | grep -o 'bounds="[^"]*"' | grep -oE '[0-9]+' | tr '\n' ' ')
+BOUNDS=""
+for i in $(seq 1 15); do  # the first frame can take a while on a cold emulator
+  BOUNDS=$(dump | grep -o '<node [^>]*class="android.widget.EditText"[^>]*>' | head -1 | grep -o 'bounds="[^"]*"' | grep -oE '[0-9]+' | tr '\n' ' ')
+  [ -n "$BOUNDS" ] && break
+  sleep 2
+done
 [ -n "$BOUNDS" ] || fail "try-typing field not found"
 read -r X1 Y1 X2 Y2 <<<"$BOUNDS"
 adb shell input tap $(( (X1 + X2) / 2 )) $(( (Y1 + Y2) / 2 ))
-sleep 3
+for i in $(seq 1 15); do  # wait until the keyboard has laid out its keys
+  adb logcat -d -s BornomalaKeys:D | grep -q " key phonetic a " && break
+  sleep 1
+done
 
 # tap LAYOUT KEY: look up the key centre logged by the keyboard.
 tap() {
