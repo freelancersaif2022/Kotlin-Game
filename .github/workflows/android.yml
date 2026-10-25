@@ -17,6 +17,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    outputs:
+      version: ${{ steps.apk.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,16 +68,59 @@ jobs:
           path: dist/*.apk
           if-no-files-found: error
 
+
+  smoke-test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: apk
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Type on the keyboard in an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash .github/scripts/smoke-test.sh "$(find apk -name '*.apk' | head -1)"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: smoke/
+
+  release:
+    needs: [build, smoke-test]
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[release]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Bornomala-Keyboard-v${{ needs.build.outputs.version }}
+          path: dist
+
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[release]')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.apk.outputs.version }}
-          name: Bornomala Keyboard v${{ steps.apk.outputs.version }}
+          tag_name: v${{ needs.build.outputs.version }}
+          name: Bornomala Keyboard v${{ needs.build.outputs.version }}
           target_commitish: ${{ github.sha }}
           make_latest: true
           files: dist/*.apk
           body: |
             Free Bangla + English keyboard: Phonetic (অভ্র style), National (জাতীয়) and English. No ads, no premium, no internet permission.
 
-            **Install:** download `Bornomala-Keyboard-v${{ steps.apk.outputs.version }}.apk` below, open it on your phone and allow installing from this source. Then open the app and follow the two setup steps.
+            **Install:** download `Bornomala-Keyboard-v${{ needs.build.outputs.version }}.apk` below, open it on your phone and allow installing from this source. Then open the app and follow the two setup steps.
