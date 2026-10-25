@@ -83,6 +83,8 @@ class EmojiPanel(context: Context, private val listener: Listener) : LinearLayou
         theme = t
         bottomBar.removeAllViews()
         tabs.removeAllViews()
+        // applyTheme runs again on every theme change; detach the tab strip from the old scroller.
+        (tabs.parent as? ViewGroup)?.removeView(tabs)
         tabViews.clear()
         val abc = PanelUi.textButton(context, "ABC", t) { listener.onEmojiClose() }
         bottomBar.addView(abc, LayoutParams((56 * density).toInt(), LayoutParams.MATCH_PARENT).also {
