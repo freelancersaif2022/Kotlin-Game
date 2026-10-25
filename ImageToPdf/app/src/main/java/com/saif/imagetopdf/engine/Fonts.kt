@@ -17,6 +17,7 @@ object Fonts {
         val base = when (family) {
             Family.SANS -> Typeface.SANS_SERIF
             Family.SERIF -> Typeface.SERIF
+            Family.CONDENSED -> Typeface.create("sans-serif-condensed", Typeface.NORMAL)
             Family.MONO -> Typeface.MONOSPACE
         }
         if (Build.VERSION.SDK_INT >= 28) return Typeface.create(base, weight, italic)

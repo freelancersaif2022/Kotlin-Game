@@ -14,6 +14,7 @@ Splash → Upload image → Processing (progress) → Preview (PDF / Original / 
 | Load | `engine/ImageLoader.kt` | Decodes the image upright (EXIF) and resizes it for OCR |
 | OCR | `engine/Converter.kt` | Google ML Kit text recognition, model bundled in the APK |
 | Ink | `engine/InkAnalyzer.kt` | Separates letters from background: text colour, background colour, stroke mask |
+| Font match | `engine/FontMatcher.kt` | Every word is rendered in each candidate family (sans, serif, condensed, mono), weight (light → black) and slant, and compared pixel-by-pixel with the photo; the best overlap wins. Words no font reproduces are kept pixel-exact |
 | Fonts | `engine/TextAnalyzer.kt` | **Family**: serif (foot width of n/m/h/i/r/l…), monospace (even letter advance), sans. **Weight**: stroke thickness (2·area ÷ outline) ÷ font size, compared with the body text → Light/Regular/Medium/Bold/Black. **Italic**: the shear that makes strokes upright. **Size**: fitted so the rendered glyphs match the photo's ink height exactly |
 | Design | `engine/BackgroundBuilder.kt` | Page colour, coloured regions and thin rule/table lines as vector rectangles |
 | Marks | `engine/GraphicsExtractor.kt` | Seals, stamps, signatures, logos and handwriting are cut out pixel-exact with the paper made transparent, so they look identical to the photo |
@@ -26,7 +27,7 @@ Open the `ImageToPdf` folder in Android Studio, or run:
 ./gradlew assembleRelease
 ```
 
-You get one APK per CPU type (`app/build/outputs/apk/release/`), roughly 5–7 MB each.
+You get one APK per CPU type (`app/build/outputs/apk/release/`), about 10 MB (32-bit) to 14 MB (64-bit) each, mostly the offline text-recognition model.
 GitHub Actions (`.github/workflows/build-apk.yml`) builds them on every push and attaches them to a release.
 
 ## Limits

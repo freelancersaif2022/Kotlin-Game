@@ -43,7 +43,8 @@ object PdfBuilder {
                 if (line.angle != 0f) canvas.rotate(line.angle)
                 for (word in line.words) {
                     Fonts.apply(paint, line.family, word.weight, word.italic)
-                    paint.color = word.color
+                    // Exact words are shown by their copied pixels; the text stays selectable but invisible.
+                    paint.color = if (word.exact) (word.color and 0x00FFFFFF) or 0x01000000 else word.color
                     paint.textSize = line.fontSize
                     paint.textScaleX = 1f
                     paint.getTextBounds(word.text, 0, word.text.length, bounds)

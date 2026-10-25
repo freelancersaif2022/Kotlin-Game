@@ -326,7 +326,7 @@ private fun FontsList(fonts: List<FontUsage>) {
                         fontFamily = when (f.family) {
                             Family.SERIF -> FontFamily.Serif
                             Family.MONO -> FontFamily.Monospace
-                            Family.SANS -> FontFamily.SansSerif
+                            Family.SANS, Family.CONDENSED -> FontFamily.SansSerif
                         },
                         fontWeight = FontWeight(f.weight),
                         fontStyle = if (f.italic) FontStyle.Italic else FontStyle.Normal,

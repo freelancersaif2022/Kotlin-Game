@@ -1,7 +1,7 @@
 package com.saif.imagetopdf.engine
 
 /** Font families that can be drawn with the fonts every Android phone already has. */
-enum class Family(val label: String) { SANS("Sans-serif"), SERIF("Serif"), MONO("Monospace") }
+enum class Family(val label: String) { SANS("Sans-serif"), SERIF("Serif"), CONDENSED("Condensed sans"), MONO("Monospace") }
 
 /** One word, positioned along its line. All sizes are in image pixels. */
 data class Word(
@@ -11,6 +11,10 @@ data class Word(
     val color: Int,
     val weight: Int,       // 300 light, 400 regular, 500 medium, 700 bold, 900 black
     val italic: Boolean,
+    val background: Int,
+    val box: android.graphics.Rect,
+    /** No phone font reproduces this word well: its pixels are copied, text kept invisible for search. */
+    val exact: Boolean,
 )
 
 /** One line of text. Origin is the top-left corner of its ink; angle in degrees. */
