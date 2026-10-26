@@ -120,6 +120,12 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         layoutKeys()
     }
 
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        // The window can move (e.g. when navigation-bar insets arrive); keep test geometry current.
+        if (changed && Log.isLoggable(GEOMETRY_TAG, Log.DEBUG)) post { logGeometry() }
+    }
+
     private fun layoutKeys() {
         val l = layout ?: return
         val width = width.toFloat()
