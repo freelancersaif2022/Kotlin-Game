@@ -63,3 +63,54 @@ jobs:
             Branch: ${{ github.ref_name }} · Commit: ${{ github.sha }}
             Download **ZyroPay.apk** below and install it on your Android phone (allow "Install unknown apps").
           files: out/ZyroPay.apk
+
+  smoke-test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ZyroPay-apk
+          path: out
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run app on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb install -r out/ZyroPay.apk
+            python3 .github/scripts/ui.py shots
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZyroPay-screenshots
+          path: shots
+
+      - name: Publish screenshots
+        if: always()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: zyropay-screens
+          name: Zyro Pay screenshots (CI)
+          target_commitish: ${{ github.sha }}
+          make_latest: "false"
+          prerelease: true
+          overwrite_files: true
+          body: Screenshots captured automatically on an Android 14 emulator by the CI smoke test.
+          files: shots/*

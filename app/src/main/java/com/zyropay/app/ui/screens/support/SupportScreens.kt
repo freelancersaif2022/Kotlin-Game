@@ -211,7 +211,7 @@ fun SupportChatScreen(nav: NavController) {
         ) {
             IconButtonZ(R.drawable.ic_add, onClick = {}, tint = c.textSecondary)
             BasicTextField(
-                value = input, onValueChange = { input = it },
+                value = input, onValueChange = { input = it }, singleLine = true,
                 textStyle = Z.type.bodySmall.copy(color = c.textPrimary),
                 cursorBrush = SolidColor(c.primary),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
