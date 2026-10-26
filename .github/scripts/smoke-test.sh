@@ -66,6 +66,8 @@ T1=$(field_text); echo "after phonetic: $T1"
 echo "$T1" | grep -q 'আমি' || fail "phonetic typing did not produce আমি"
 
 tap phonetic "$LANG"; sleep 1
+echo "geometry log (q, h, space):"
+adb logcat -d -s BornomalaKeys:D | grep -E " key [a-z0-9]+ (q|h|#-9) " | tail -12
 tap english h; tap english i
 sleep 1
 T2=$(field_text); echo "after english: $T2"
