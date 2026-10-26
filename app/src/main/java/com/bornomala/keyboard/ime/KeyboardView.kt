@@ -120,10 +120,17 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         layoutKeys()
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        // The window can move (e.g. when navigation-bar insets arrive); keep test geometry current.
-        if (changed && Log.isLoggable(GEOMETRY_TAG, Log.DEBUG)) post { logGeometry() }
+    private val lastLoggedLocation = IntArray(2)
+    private val geometryWatcher = android.view.ViewTreeObserver.OnGlobalLayoutListener {
+        // The keyboard can move on screen (e.g. when navigation-bar insets arrive); keep test geometry current.
+        val loc = IntArray(2)
+        getLocationOnScreen(loc)
+        if (!loc.contentEquals(lastLoggedLocation)) logGeometry()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (Log.isLoggable(GEOMETRY_TAG, Log.DEBUG)) viewTreeObserver.addOnGlobalLayoutListener(geometryWatcher)
     }
 
     private fun layoutKeys() {
@@ -163,6 +170,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         val l = layout ?: return
         val loc = IntArray(2)
         getLocationOnScreen(loc)
+        loc.copyInto(lastLoggedLocation)
         for (row in l.rows) for (key in row.keys) {
             val name = if (key.code == KeyCode.TEXT) key.text else "#${key.code}"
             val cx = loc[0] + (key.vx + key.vw / 2).toInt()
@@ -511,6 +519,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        viewTreeObserver.removeOnGlobalLayoutListener(geometryWatcher)
         cancelAllPointers()
     }
 
