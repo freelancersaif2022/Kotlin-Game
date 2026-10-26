@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Zyro Pay APK
 
 on:
   push:
@@ -30,7 +30,13 @@ jobs:
       - name: Build release APK
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleRelease
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee build.log
+
+      - name: Show compile errors
+        if: failure()
+        run: |
+          grep -E "^e: |error:|What went wrong" -A2 build.log | head -150 || true
 
       - name: Collect APK
         run: |
@@ -47,12 +53,13 @@ jobs:
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: Zyro Pay v1.0.0 (build ${{ github.run_number }})
+          tag_name: zyropay-v1.0.0
+          name: Zyro Pay v1.0.0
           target_commitish: ${{ github.sha }}
-          make_latest: "true"
+          make_latest: "false"
+          overwrite_files: true
           body: |
-            Zyro Pay Android app — release APK (${{ env.APK_SIZE }}).
+            Zyro Pay Android app — release APK (${{ env.APK_SIZE }}), build #${{ github.run_number }}.
             Branch: ${{ github.ref_name }} · Commit: ${{ github.sha }}
             Download **ZyroPay.apk** below and install it on your Android phone (allow "Install unknown apps").
           files: out/ZyroPay.apk
