@@ -1,0 +1,58 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "**" ]
+    paths-ignore: [ "**.md", "docs/**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace assembleRelease
+
+      - name: Collect APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk out/ZyroPay.apk
+          ls -la out
+          echo "APK_SIZE=$(du -h out/ZyroPay.apk | cut -f1)" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZyroPay-apk
+          path: out/ZyroPay.apk
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Zyro Pay v1.0.0 (build ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          make_latest: "true"
+          body: |
+            Zyro Pay Android app — release APK (${{ env.APK_SIZE }}).
+            Branch: ${{ github.ref_name }} · Commit: ${{ github.sha }}
+            Download **ZyroPay.apk** below and install it on your Android phone (allow "Install unknown apps").
+          files: out/ZyroPay.apk
