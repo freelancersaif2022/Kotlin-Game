@@ -6,6 +6,8 @@ import android.graphics.Color
 import android.os.Build
 import androidx.annotation.DrawableRes
 import com.bornomala.keyboard.R
+import com.bornomala.keyboard.prefs.CustomThemeSettings
+import java.io.File
 
 /** Colours and decoration used to draw the keyboard. */
 data class KeyboardTheme(
@@ -24,6 +26,12 @@ data class KeyboardTheme(
     val cornerRadiusDp: Float,
     @DrawableRes val backgroundImage: Int = 0,
     val dark: Boolean = false,
+    /** Absolute path of the user's own background photo (custom theme). */
+    val backgroundFile: String? = null,
+    /** Vertical position of the photo: 0 = top, 1 = bottom. */
+    val imageAlign: Float = 0.5f,
+    /** Darkening applied over the photo, 0–90 %. */
+    val imageDim: Int = 0,
 ) {
     /** Text colour drawn on top of [accent]. */
     val onAccent: Int
@@ -81,7 +89,7 @@ object KeyboardThemes {
     )
 
     /** Theme ids offered in settings, in display order. */
-    val ALL_IDS = listOf("system", "dynamic", "green", "light", "dark", "amoled", "ocean", "rose") +
+    val ALL_IDS = listOf("custom", "system", "dynamic", "green", "light", "dark", "amoled", "ocean", "rose") +
         IMAGE_THEMES.map { it.id }
 
     private fun isNight(context: Context) =
@@ -90,11 +98,36 @@ object KeyboardThemes {
     fun displayName(id: String): String = when (id) {
         "system" -> "Follow system"
         "dynamic" -> "Material You"
+        "custom" -> "My photo"
         else -> (listOf(LIGHT, DARK, AMOLED, GREEN, OCEAN, ROSE) + IMAGE_THEMES).firstOrNull { it.id == id }?.name ?: id
     }
 
-    fun resolve(context: Context, id: String, keyBorders: Boolean): KeyboardTheme {
+    const val CUSTOM_FILE = "custom_keyboard_bg.webp"
+
+    fun customFile(context: Context) = File(context.filesDir, CUSTOM_FILE)
+
+    /** The user's photo theme; keys are tinted glass so the photo shows through. */
+    fun custom(context: Context, s: CustomThemeSettings): KeyboardTheme {
+        val f = customFile(context)
+        val base = if (s.darkKeys) DARK else LIGHT
+        val alpha = (s.keyOpacity.coerceIn(0, 100) * 255 / 100) shl 24
+        fun glass(c: Int) = (c and 0x00FFFFFF) or alpha
+        return base.copy(
+            id = "custom", name = "My photo",
+            key = glass(base.key),
+            functionalKey = glass(base.functionalKey),
+            keyPressed = base.keyPressed,
+            strip = 0,
+            borders = false,
+            backgroundFile = if (f.exists()) f.absolutePath else null,
+            imageAlign = s.align.coerceIn(0, 100) / 100f,
+            imageDim = s.dim,
+        )
+    }
+
+    fun resolve(context: Context, id: String, keyBorders: Boolean, customSettings: CustomThemeSettings? = null): KeyboardTheme {
         val base = when (id) {
+            "custom" -> custom(context, customSettings ?: CustomThemeSettings(0, 20, 70, 50, true))
             "system" -> if (isNight(context)) DARK else LIGHT
             "dynamic" -> dynamic(context) ?: if (isNight(context)) DARK else GREEN
             "light" -> LIGHT

@@ -81,6 +81,7 @@ fun <T> rememberPref(key: String, default: T): MutableState<T> {
 private fun <T> readPref(p: SharedPreferences, key: String, default: T): T = when (default) {
     is Boolean -> p.getBoolean(key, default) as T
     is Int -> p.getInt(key, default) as T
+    is Long -> p.getLong(key, default) as T
     is String -> (p.getString(key, default) ?: default) as T
     else -> default
 }
@@ -90,6 +91,7 @@ private fun <T> writePref(p: SharedPreferences, key: String, v: T) {
     when (v) {
         is Boolean -> e.putBoolean(key, v)
         is Int -> e.putInt(key, v)
+        is Long -> e.putLong(key, v)
         is String -> e.putString(key, v)
     }
     e.apply()

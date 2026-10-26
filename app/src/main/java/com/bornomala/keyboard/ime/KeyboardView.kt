@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -52,7 +53,13 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     var layout: KeyboardLayout? = null
         set(value) {
+            val changed = field != null && field?.id != value?.id
             field = value
+            if (changed && isShown) {
+                // Quick crossfade when switching language or symbols.
+                alpha = 0.55f
+                animate().alpha(1f).setDuration(140).start()
+            }
             cancelAllPointers()
             requestLayout()
             layoutKeys()
@@ -185,6 +192,8 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         borderPaint.strokeWidth = density
         shadowPaint.color = if (t.dark) 0x40000000 else 0x22000000
         val pressedKeys = pointers.values.mapNotNullTo(HashSet()) { if (it.mode != Mode.CONSUMED) it.key else null }
+        val now = SystemClock.uptimeMillis()
+        var fading = false
 
         for (row in l.rows) {
             for (key in row.keys) {
@@ -193,13 +202,18 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
                 val pressed = key in pressedKeys
                 val isEnter = key.code == KeyCode.ENTER
                 val shiftActive = key.code == KeyCode.SHIFT && shiftState > 0
-                keyPaint.color = when {
-                    pressed -> t.keyPressed
+                // 1 while held, then fades out smoothly after release.
+                val press = if (pressed) 1f else releasedAt[key]?.let { 1f - (now - it) / PRESS_FADE_MS.toFloat() }?.coerceAtLeast(0f) ?: 0f
+                if (!pressed && press > 0f) fading = true
+                val base = when {
                     isEnter -> t.accent
                     shiftActive -> t.keyPressed
                     key.functional -> t.functionalKey
                     else -> t.key
                 }
+                val pressedColor = if (isEnter) blend(t.accent, 0xFF000000.toInt(), 0.2f) else t.keyPressed
+                keyPaint.color = if (press > 0f) blend(base, pressedColor, press) else base
+                if (press > 0f) keyRect.inset(keyRect.width() * 0.025f * press, keyRect.height() * 0.035f * press)
                 if (!t.borders) {
                     keyRect.offset(0f, density)
                     canvas.drawRoundRect(keyRect, radius, radius, shadowPaint)
@@ -252,6 +266,23 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
                     }
                 }
             }
+        }
+        if (fading) postInvalidateOnAnimation()
+    }
+
+    private fun blend(a: Int, b: Int, f: Float): Int {
+        fun ch(shift: Int) = (((a shr shift) and 0xFF) * (1 - f) + ((b shr shift) and 0xFF) * f).toInt() shl shift
+        return ch(24) or ch(16) or ch(8) or ch(0)
+    }
+
+    /** Release times of keys whose press highlight is fading out. */
+    private val releasedAt = HashMap<Key, Long>()
+
+    private fun markReleased(key: Key) {
+        releasedAt[key] = SystemClock.uptimeMillis()
+        if (releasedAt.size > 16) {
+            val now = SystemClock.uptimeMillis()
+            releasedAt.entries.removeAll { now - it.value > PRESS_FADE_MS }
         }
     }
 
@@ -313,9 +344,9 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         }
         val (ox, oy) = overlayOffset()
         val w = max(key.vw * 1.1f, key.h * 0.9f)
-        val h = key.h * 1.05f
+        val h = key.h * 0.98f
         val left = (key.vx + key.vw / 2 - w / 2).coerceIn(0f, max(0f, width - w))
-        val top = key.y - h + key.h * 0.15f
+        val top = key.y - h + key.h * 0.2f
         overlay.showPreview(left + ox, top + oy, w, h, labelFor(key))
     }
 
@@ -338,7 +369,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
             p.popupCellW = cellW
             p.mode = Mode.POPUP
             val (ox, oy) = overlayOffset()
-            overlay.showPopup(left + ox, key.y - key.h * 0.85f + oy, cellW, key.h, all, 0)
+            overlay.showPopup(left + ox, key.y - key.h * 0.8f + oy, cellW, key.h, all, 0)
             listener?.onKeyDown(key)
         } else if (listener?.onLongPress(key) == true) {
             p.mode = Mode.LONG_HANDLED
@@ -374,6 +405,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
             if (other.mode == Mode.NORMAL && ok.code != KeyCode.SHIFT && ok.code != KeyCode.DELETE) {
                 mainHandler.removeCallbacks(other.longPress)
                 other.mode = Mode.CONSUMED
+                markReleased(ok)
                 listener?.onKey(ok, null)
             }
         }
@@ -433,6 +465,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
             if (newKey != null && newKey !== key && key.code != KeyCode.SPACE && key.code != KeyCode.DELETE) {
                 mainHandler.removeCallbacks(p.longPress)
                 mainHandler.removeCallbacks(p.repeat)
+                markReleased(key)
                 p.key = newKey
                 showPreviewFor(newKey)
                 scheduleLongPress(p)
@@ -446,6 +479,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
         mainHandler.removeCallbacks(p.longPress)
         mainHandler.removeCallbacks(p.repeat)
         val key = p.key
+        key?.let { markReleased(it) }
         when (p.mode) {
             Mode.POPUP -> {
                 overlay.hidePopup()
@@ -476,6 +510,7 @@ class KeyboardView(context: Context, private val overlay: KeyPopupOverlay) : Vie
 
     companion object {
         private const val GEOMETRY_TAG = "BornomalaKeys"
+        private const val PRESS_FADE_MS = 140L
         private const val REPEAT_START = 400L
         private const val REPEAT_INTERVAL = 50L
 

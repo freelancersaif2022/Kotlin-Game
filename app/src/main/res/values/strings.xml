@@ -11,7 +11,16 @@
     <string name="layout_national">Bangla National (জাতীয়)</string>
     <string name="clipboard_title">Clipboard</string>
     <string name="clipboard_clear">Clear unpinned items</string>
-    <string name="clipboard_empty">Copied text will appear here.</string>
+    <string name="clipboard_empty">Copied text appears here and stays for 24 hours. Pin an item to keep it.</string>
+    <string name="clipboard_hint">Kept for 24 hours · pinned items stay</string>
+    <string name="clipboard_pinned">Pinned · kept until you remove it</string>
+    <string name="clipboard_pin">Pin</string>
+    <string name="clipboard_unpin">Unpin</string>
+    <string name="clipboard_delete">Delete</string>
+    <string name="clipboard_expires">%1$s · clears in %2$d h</string>
+    <string name="time_just_now">Just now</string>
+    <string name="time_minutes">%1$d min ago</string>
+    <string name="time_hours">%1$d h ago</string>
     <string name="clipboard_disabled">Clipboard history is turned off in settings.</string>
     <string name="one_handed_switch">Move keyboard to the other side</string>
     <string name="one_handed_exit">Full-width keyboard</string>

@@ -98,6 +98,16 @@ class CandidateBar(context: Context, private val listener: Listener) : FrameLayo
         GradientDrawable().apply { setColor(0xFFFFFFFF.toInt()); cornerRadius = 8 * density },
     )
 
+    /** Highlighted pill behind the suggestion that space will insert. */
+    private fun pill(t: KeyboardTheme) = RippleDrawable(
+        ColorStateList.valueOf(t.keyPressed),
+        android.graphics.drawable.InsetDrawable(GradientDrawable().apply {
+            setColor((t.accent and 0x00FFFFFF) or 0x24000000)
+            cornerRadius = 20 * density
+        }, 0, (7 * density).toInt(), 0, (7 * density).toInt()),
+        null,
+    )
+
     fun setSuggestions(list: List<String>, defaultIndex: Int) {
         words = list
         this.defaultIndex = defaultIndex
@@ -113,12 +123,20 @@ class CandidateBar(context: Context, private val listener: Listener) : FrameLayo
     private fun render() {
         val t = theme ?: return
         if (words.isEmpty()) {
-            scroll.visibility = GONE
-            toolbar.visibility = VISIBLE
+            if (toolbar.visibility != VISIBLE) {
+                scroll.visibility = GONE
+                toolbar.visibility = VISIBLE
+                toolbar.alpha = 0f
+                toolbar.animate().alpha(1f).setDuration(120).start()
+            }
             return
         }
-        toolbar.visibility = GONE
-        scroll.visibility = VISIBLE
+        if (scroll.visibility != VISIBLE) {
+            toolbar.visibility = GONE
+            scroll.visibility = VISIBLE
+            scroll.alpha = 0f
+            scroll.animate().alpha(1f).setDuration(90).start()
+        }
         // Reuse existing views to keep typing allocation-free.
         while (candidateRow.childCount < words.size * 2) {
             val tv = TextView(context).apply {
@@ -145,7 +163,7 @@ class CandidateBar(context: Context, private val listener: Listener) : FrameLayo
                 tv.text = word
                 tv.setTextColor(if (i == defaultIndex) t.accent else t.keyText)
                 tv.typeface = if (i == defaultIndex) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-                tv.background = ripple(t)
+                tv.background = if (i == defaultIndex) pill(t) else ripple(t)
                 tv.setOnClickListener { listener.onCandidate(i) }
                 tv.setOnLongClickListener {
                     listener.onCandidateLongPress(word)

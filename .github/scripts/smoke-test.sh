@@ -54,6 +54,12 @@ tap() {
 }
 
 SPACE="#-9"; LANG="#-7"
+
+# Regression check: the keyboard must sit at the bottom of the screen, not the top.
+SCREEN_H=$(adb shell wm size | grep -oE '[0-9]+x[0-9]+' | tail -1 | cut -dx -f2)
+SPACE_Y=$(adb logcat -d -s BornomalaKeys:D | grep " key phonetic $SPACE " | tail -1 | awk '{print $NF}')
+echo "screen height=$SCREEN_H space bar y=$SPACE_Y"
+[ -n "$SPACE_Y" ] && [ "$SPACE_Y" -gt $(( SCREEN_H * 3 / 4 )) ] || fail "keyboard is not at the bottom of the screen"
 tap phonetic a; tap phonetic m; tap phonetic i; tap phonetic "$SPACE"
 sleep 1
 T1=$(field_text); echo "after phonetic: $T1"

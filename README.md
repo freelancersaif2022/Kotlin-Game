@@ -21,7 +21,7 @@ Free and open source: **no ads, no premium tier, no internet permission**.
 
 ## Install
 
-1. Download **Bornomala-Keyboard-v1.0.0.apk** from the [latest release](https://github.com/freelancersaif2022/Kotlin-Game/releases/latest).
+1. Download **Bornomala-Keyboard-v1.1.0.apk** from the [latest release](https://github.com/freelancersaif2022/Kotlin-Game/releases/latest).
 2. Open the file on your phone and allow installing apps from your browser or file manager when Android asks.
 3. Open **Bornomala Keyboard**, then follow the setup steps: turn the keyboard on, choose it, and pick Phonetic or National.
 4. In any app, tap the 🌐 key to switch between বাংলা and English. Long-press it for emoji.

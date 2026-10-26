@@ -34,6 +34,11 @@ object Keys {
     const val SPACE_LONG_PRESS_PICKER = "space_long_press_picker"
     const val CLIPBOARD_HISTORY = "clipboard_history"
     const val EMOJI_RECENT = "emoji_recent"
+    const val CUSTOM_BG_VERSION = "custom_bg_version"
+    const val CUSTOM_DIM = "custom_dim"
+    const val CUSTOM_KEY_OPACITY = "custom_key_opacity"
+    const val CUSTOM_ALIGN = "custom_align"
+    const val CUSTOM_DARK_KEYS = "custom_dark_keys"
 }
 
 object BanglaLayout {
@@ -77,6 +82,7 @@ data class KeyboardSettings(
     val deleteSwipe: Boolean,
     val spaceLongPressPicker: Boolean,
     val clipboardHistory: Boolean,
+    val custom: CustomThemeSettings,
 ) {
     companion object {
         fun from(p: SharedPreferences) = KeyboardSettings(
@@ -108,6 +114,7 @@ data class KeyboardSettings(
             deleteSwipe = p.getBoolean(Keys.DELETE_SWIPE, true),
             spaceLongPressPicker = p.getBoolean(Keys.SPACE_LONG_PRESS_PICKER, true),
             clipboardHistory = p.getBoolean(Keys.CLIPBOARD_HISTORY, true),
+            custom = CustomThemeSettings.from(p),
         )
     }
 }
@@ -117,4 +124,23 @@ object Prefs {
 
     fun get(context: Context): SharedPreferences =
         context.applicationContext.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+}
+
+/** Options of the user's own photo theme. */
+data class CustomThemeSettings(
+    val version: Long,
+    val dim: Int,
+    val keyOpacity: Int,
+    val align: Int,
+    val darkKeys: Boolean,
+) {
+    companion object {
+        fun from(p: SharedPreferences) = CustomThemeSettings(
+            version = p.getLong(Keys.CUSTOM_BG_VERSION, 0L),
+            dim = p.getInt(Keys.CUSTOM_DIM, 20),
+            keyOpacity = p.getInt(Keys.CUSTOM_KEY_OPACITY, 70),
+            align = p.getInt(Keys.CUSTOM_ALIGN, 50),
+            darkKeys = p.getBoolean(Keys.CUSTOM_DARK_KEYS, true),
+        )
+    }
 }

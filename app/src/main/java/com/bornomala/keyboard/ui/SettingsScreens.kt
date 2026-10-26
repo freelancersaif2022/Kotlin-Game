@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -40,7 +41,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -58,7 +64,11 @@ import com.bornomala.keyboard.ime.ClipboardHistory
 import com.bornomala.keyboard.ime.Dictionaries
 import com.bornomala.keyboard.prefs.BanglaLayout
 import com.bornomala.keyboard.prefs.Keys
+import com.bornomala.keyboard.prefs.CustomThemeSettings
 import com.bornomala.keyboard.prefs.OneHanded
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.bornomala.keyboard.theme.KeyboardTheme
 import com.bornomala.keyboard.theme.KeyboardThemes
 
@@ -140,9 +150,57 @@ fun ThemesScreen(back: () -> Unit) {
     val context = LocalContext.current
     var selected by rememberPref(Keys.THEME, "green")
     val borders = rememberPref(Keys.KEY_BORDERS, false)
+    val version = rememberPref(Keys.CUSTOM_BG_VERSION, 0L)
+    val dim = rememberPref(Keys.CUSTOM_DIM, 20)
+    val opacity = rememberPref(Keys.CUSTOM_KEY_OPACITY, 70)
+    val align = rememberPref(Keys.CUSTOM_ALIGN, 50)
+    val darkKeys = rememberPref(Keys.CUSTOM_DARK_KEYS, true)
+    var importing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val photo by produceState<ImageBitmap?>(null, version.value) {
+        value = withContext(Dispatchers.IO) { CustomBackground.preview(context)?.asImageBitmap() }
+    }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            importing = true
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) { CustomBackground.import(context, uri) }
+                importing = false
+                if (!ok) Toast.makeText(context, "Could not use this photo", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    val customSettings = CustomThemeSettings(version.value, dim.value, opacity.value, align.value, darkKeys.value)
+
     SettingsScaffold(Screen.THEMES.title, back) {
+        SectionTitle("My photo")
+        val customTheme = KeyboardThemes.resolve(context, "custom", false, customSettings)
+        if (photo != null) {
+            ThemeCard(
+                theme = customTheme, name = "My photo", selected = selected == "custom",
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp), photo = photo, aspect = 2.2f,
+            ) { selected = "custom" }
+            if (selected == "custom") {
+                SliderRow("Darken photo", dim, 0..80) { "$it%" }
+                SliderRow("Key opacity", opacity, 0..100) { "$it%" }
+                SliderRow("Photo position", align, 0..100) { when { it < 34 -> "Top"; it > 66 -> "Bottom"; else -> "Centre" } }
+                SwitchRow("Dark keys", "Light text on dark glass keys. Turn off for bright photos.", darkKeys)
+            }
+            Row(Modifier.padding(horizontal = 20.dp, vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(onClick = ::pick, enabled = !importing) { Text("Change photo") }
+                if (selected != "custom") Button(onClick = { selected = "custom" }) { Text("Use my photo") }
+            }
+        } else {
+            BodyText("Use any photo from your gallery as the keyboard background. You can darken it, move it and choose how see-through the keys are.")
+            Row(Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                Button(onClick = ::pick, enabled = !importing) { Text(if (importing) "Loading…" else "Choose a photo") }
+            }
+        }
+
+        SectionTitle("Built-in themes")
         SwitchRow("Key borders", "Draw an outline around every key", borders)
-        val ids = KeyboardThemes.ALL_IDS
+        val ids = KeyboardThemes.ALL_IDS.filter { it != "custom" }
         for (rowIds in ids.chunked(2)) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 for (id in rowIds) {
@@ -161,7 +219,15 @@ fun ThemesScreen(back: () -> Unit) {
 }
 
 @Composable
-private fun ThemeCard(theme: KeyboardTheme, name: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+private fun ThemeCard(
+    theme: KeyboardTheme,
+    name: String,
+    selected: Boolean,
+    modifier: Modifier,
+    photo: ImageBitmap? = null,
+    aspect: Float = 1.6f,
+    onClick: () -> Unit,
+) {
     val shape = RoundedCornerShape(14.dp)
     Column(
         modifier
@@ -173,8 +239,15 @@ private fun ThemeCard(theme: KeyboardTheme, name: String, selected: Boolean, mod
             )
             .clickable(onClick = onClick),
     ) {
-        Box(Modifier.fillMaxWidth().aspectRatio(1.6f).background(Color(theme.background))) {
-            if (theme.backgroundImage != 0) {
+        Box(Modifier.fillMaxWidth().aspectRatio(aspect).background(Color(theme.background))) {
+            if (photo != null) {
+                Image(
+                    photo, null, contentScale = ContentScale.Crop,
+                    alignment = BiasAlignment(0f, theme.imageAlign * 2f - 1f),
+                    modifier = Modifier.fillMaxSize(),
+                )
+                Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = theme.imageDim / 100f)))
+            } else if (theme.backgroundImage != 0) {
                 Image(painterResource(theme.backgroundImage), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             }
             Column(Modifier.fillMaxSize().padding(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -273,7 +346,7 @@ fun GesturesScreen(back: () -> Unit) {
 fun ClipboardScreen(back: () -> Unit) {
     val context = LocalContext.current
     SettingsScaffold(Screen.CLIPBOARD.title, back) {
-        SwitchRow("Clipboard history", "Keep the last 30 copied texts on this phone", rememberPref(Keys.CLIPBOARD_HISTORY, true))
+        SwitchRow("Clipboard history", "Copied text is kept for 24 hours. Pinned items stay until you remove them.", rememberPref(Keys.CLIPBOARD_HISTORY, true))
         BodyText("Passwords and other text that apps mark as sensitive are never saved. History is excluded from cloud backups.")
         Row(Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
             OutlinedButton(onClick = {

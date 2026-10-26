@@ -8,8 +8,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Recent clipboard items kept on the device (never uploaded anywhere). Items are re-read from
- * storage for every operation so the settings screen and the keyboard always agree.
+ * Recent clipboard items kept on the device (never uploaded anywhere). Unpinned items are kept
+ * for 24 hours, pinned items until the user removes them. Items are re-read from storage for
+ * every operation so the settings screen and the keyboard always agree.
  */
 class ClipboardHistory(context: Context) {
 
@@ -97,6 +98,8 @@ class ClipboardHistory(context: Context) {
         } catch (e: Exception) {
             items.clear()
         }
+        val now = System.currentTimeMillis()
+        if (items.removeAll { !it.pinned && (now - it.time > KEEP_MS || it.time > now + KEEP_MS) }) save()
     }
 
     private fun save() {
@@ -107,7 +110,10 @@ class ClipboardHistory(context: Context) {
 
     companion object {
         private const val KEY = "items"
-        private const val MAX_ITEMS = 30
+        private const val MAX_ITEMS = 50
+
+        /** Unpinned items are kept for 24 hours. */
+        const val KEEP_MS = 24L * 60 * 60 * 1000
         private const val MAX_LENGTH = 5000
 
         fun clearAll(context: Context) {

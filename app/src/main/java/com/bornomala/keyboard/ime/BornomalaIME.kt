@@ -13,7 +13,6 @@ import android.view.WindowInsets
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.bornomala.keyboard.R
@@ -56,8 +55,8 @@ class BornomalaIME : InputMethodService(),
     private var theme: KeyboardTheme = KeyboardThemes.GREEN
 
     // Views (created in onCreateInputView).
-    private var root: FrameLayout? = null
-    private lateinit var backgroundImage: ImageView
+    private var root: InputRootView? = null
+    private lateinit var backgroundView: KeyboardBackgroundView
     private lateinit var column: LinearLayout
     private lateinit var overlay: KeyPopupOverlay
     private lateinit var candidateBar: CandidateBar
@@ -147,9 +146,10 @@ class BornomalaIME : InputMethodService(),
             addView(candidateBar, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(46)))
             addView(keysRow, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         }
-        backgroundImage = ImageView(ctx).apply { scaleType = ImageView.ScaleType.CENTER_CROP }
-        val r = FrameLayout(ctx).apply {
-            addView(backgroundImage, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        backgroundView = KeyboardBackgroundView(ctx)
+        // InputRootView sizes the window to the keys only, so the keyboard always sits at the bottom.
+        val r = InputRootView(ctx, column).apply {
+            addView(backgroundView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             addView(column, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             addView(this@BornomalaIME.overlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
@@ -271,15 +271,8 @@ class BornomalaIME : InputMethodService(),
     // ------------------------------------------------------------------ appearance
 
     private fun applySettings() {
-        theme = KeyboardThemes.resolve(this, settings.theme, settings.keyBorders)
-        root?.setBackgroundColor(theme.background)
-        if (theme.backgroundImage != 0) {
-            backgroundImage.setImageResource(theme.backgroundImage)
-            backgroundImage.visibility = View.VISIBLE
-        } else {
-            backgroundImage.setImageDrawable(null)
-            backgroundImage.visibility = View.GONE
-        }
+        theme = KeyboardThemes.resolve(this, settings.theme, settings.keyBorders, settings.custom)
+        backgroundView.apply(theme)
         overlay.applyTheme(theme)
         candidateBar.applyTheme(theme)
         emojiPanel.applyTheme(theme)
@@ -384,6 +377,14 @@ class BornomalaIME : InputMethodService(),
         emojiPanel.visibility = if (p == Panel.EMOJI) View.VISIBLE else View.GONE
         clipboardPanel.visibility = if (p == Panel.CLIPBOARD) View.VISIBLE else View.GONE
         textEditPanel.visibility = if (p == Panel.TEXT_EDIT) View.VISIBLE else View.GONE
+        val shown = when (p) {
+            Panel.KEYS -> keyboardView
+            Panel.EMOJI -> emojiPanel
+            Panel.CLIPBOARD -> clipboardPanel
+            Panel.TEXT_EDIT -> textEditPanel
+        }
+        shown.alpha = 0f
+        shown.animate().alpha(1f).setDuration(150).start()
         when (p) {
             Panel.EMOJI -> emojiPanel.show()
             Panel.CLIPBOARD -> clipboardPanel.refresh()
