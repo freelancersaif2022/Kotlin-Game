@@ -184,6 +184,7 @@ fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = v
         if (doc != null && sheet == Sheet.Split) {
             SplitSheet(
                 doc = doc,
+                cache = vm.cache,
                 onDismiss = { sheet = null },
                 onSplit = vm::split,
             )

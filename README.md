@@ -6,7 +6,7 @@ A fast, minimal Android app (Kotlin + Jetpack Compose) to **preview, split, crop
 
 - **Splash screen**: animated logo, then the main screen.
 - **Upload & preview**: pick a PDF and see every page rendered sharply. Scroll, pinch or double-tap to zoom, and drag with one finger to move around while zoomed.
-- **Split**: type the pages you want (`1-3, 5, 8`) and press **Split**. The result opens in the preview right away.
+- **Split**: tap the page thumbnails you want to keep and press **Split**. The result opens in the preview right away.
 - **Crop**: drag the corners, the edges, or the whole frame to crop the page freely, then press **Crop**.
 - **Convert**: exports every page as a high-quality **JPG** (selected by default) or **PNG**, with an animated progress dialog.
 - **Dark / light mode** toggle in the top bar, remembered between launches.

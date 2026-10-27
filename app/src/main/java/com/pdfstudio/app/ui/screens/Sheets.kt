@@ -93,20 +93,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun SplitSheet(
     doc: DocState,
+    cache: PageBitmapCache,
     onDismiss: () -> Unit,
     onSplit: (List<Int>) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val keyboard = LocalSoftwareKeyboardController.current
-    var text by remember { mutableStateOf("") }
-    val result = remember(text, doc.pageCount) { PageRanges.parse(text, doc.pageCount) }
-    val selectedPages = (result as? PageRanges.Result.Valid)?.pages.orEmpty()
-    val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    var selected by remember { mutableStateOf(emptySet<Int>()) }
 
     fun close(then: () -> Unit = {}) {
-        keyboard?.hide()
         scope.launch { sheetState.hide() }.invokeOnCompletion {
             onDismiss()
             then()
@@ -124,48 +119,110 @@ fun SplitSheet(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .navigationBarsPadding()
-                .imePadding()
                 .padding(bottom = 16.dp)
         ) {
-            SheetHeader(ToolIcons.Split, Brand.SplitColors, "Split PDF", "Enter the pages to keep in a new PDF")
+            SheetHeader(
+                ToolIcons.Split,
+                Brand.SplitColors,
+                "Split PDF",
+                if (selected.isEmpty()) "Tap the pages to keep in a new PDF"
+                else "${selected.size} of ${doc.pageCount} page${if (doc.pageCount == 1) "" else "s"} selected",
+            )
             Spacer(Modifier.height(18.dp))
 
-            OutlinedTextField(
-                value = text,
-                onValueChange = { value -> text = value.filter { it.isDigit() || it == ',' || it == '-' || it == ' ' } },
-                modifier = Modifier.fillMaxWidth().focusRequester(focus),
-                label = { Text("Page numbers") },
-                placeholder = { Text("e.g. 1-3, 5, 8") },
-                singleLine = true,
-                isError = result is PageRanges.Result.Invalid,
-                supportingText = {
-                    Text(
-                        when (result) {
-                            is PageRanges.Result.Invalid -> result.message
-                            is PageRanges.Result.Valid -> "${result.pages.size} of ${doc.pageCount} pages selected"
-                            PageRanges.Result.Empty -> "Pages 1–${doc.pageCount}, e.g. 1-3, 5, 8"
-                        }
+            val thumbWidth = with(LocalDensity.current) { 120.dp.roundToPx() }
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(84.dp),
+                modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(top = 4.dp, bottom = 4.dp),
+            ) {
+                items(List(doc.pageCount) { it }, key = { it }) { index ->
+                    PageTile(
+                        doc = doc,
+                        cache = cache,
+                        index = index,
+                        thumbWidth = thumbWidth,
+                        selected = index in selected,
+                        onClick = { selected = if (index in selected) selected - index else selected + index },
                     )
-                },
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
-                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = MaterialTheme.colorScheme.outline),
-            )
-            Spacer(Modifier.height(16.dp))
+                }
+            }
+
+            Spacer(Modifier.height(18.dp))
             SheetButtons(
                 confirmText = "Split",
                 confirmIcon = ToolIcons.Split,
-                confirmEnabled = selectedPages.isNotEmpty(),
+                confirmEnabled = selected.isNotEmpty(),
                 onCancel = { close() },
                 onConfirm = {
-                    val pages = selectedPages
+                    val pages = selected.sorted()
                     close { onSplit(pages) }
                 },
             )
         }
     }
 }
+
+@Composable
+private fun PageTile(
+    doc: DocState,
+    cache: PageBitmapCache,
+    index: Int,
+    thumbWidth: Int,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val borderWidth by animateDpAsState(if (selected) 2.5.dp else 1.dp, label = "border")
+    val borderColor by animateColorAsState(if (selected) primary else MaterialTheme.colorScheme.outlineVariant, label = "borderColor")
+    val scale by animateFloatAsState(if (selected) 0.94f else 1f, spring(dampingRatio = 0.5f, stiffness = 500f), label = "scale")
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier
+                .scale(scale)
+                .fillMaxWidth()
+                .aspectRatio(0.75f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .border(borderWidth, borderColor, RoundedCornerShape(12.dp))
+                .clickable(onClick = onClick)
+                .padding(6.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            val size = doc.pageSizes[index]
+            val bitmap = rememberPageBitmap(doc, cache, index, thumbWidth)
+            PageImage(
+                bitmap = bitmap,
+                modifier = Modifier
+                    .aspectRatio(size.aspect, matchHeightConstraintsFirst = size.aspect < 0.75f)
+                    .clip(RoundedCornerShape(3.dp)),
+            )
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = selected,
+                    enter = scaleIn(spring(dampingRatio = 0.45f)) + fadeIn(),
+                    exit = scaleOut() + fadeOut(),
+                ) {
+                    Box(
+                        Modifier.size(22.dp).clip(CircleShape).background(primary),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Rounded.Check, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(15.dp))
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(
+            "${index + 1}",
+            style = MaterialTheme.typography.labelMedium,
+            color = if (selected) primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
