@@ -2,7 +2,10 @@ package com.pdfstudio.app.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.animateDecay
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,6 +54,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -58,6 +62,7 @@ import com.pdfstudio.app.DocState
 import com.pdfstudio.app.data.PageBitmapCache
 import com.pdfstudio.app.ui.components.PageImage
 import com.pdfstudio.app.ui.components.rememberPageBitmap
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,6 +81,7 @@ fun PdfPreview(
 ) {
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = doc.focusPage)
     val scope = rememberCoroutineScope()
+    var flingJob by remember { mutableStateOf<Job?>(null) }
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val renderBucket by remember { derivedStateOf { if (scale > 1.6f) 2 else 1 } }
@@ -93,8 +99,9 @@ fun PdfPreview(
 
     var indicatorVisible by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
-        snapshotFlow { listState.isScrollInProgress }.collectLatest { scrolling ->
-            if (scrolling) indicatorVisible = true else {
+        snapshotFlow { listState.isScrollInProgress to currentPage }.collectLatest { (scrolling, _) ->
+            indicatorVisible = true
+            if (!scrolling) {
                 delay(1400)
                 indicatorVisible = false
             }
@@ -105,12 +112,21 @@ fun PdfPreview(
         val density = LocalDensity.current
         val w = constraints.maxWidth.toFloat()
         val h = constraints.maxHeight.toFloat()
-        val pageWidthPx = with(density) { (maxWidth - 32.dp).roundToPx() }.coerceAtLeast(1)
+        val pageWidthPx = (constraints.maxWidth - with(density) { 32.dp.roundToPx() }).coerceAtLeast(1)
 
         fun clamp(o: Offset, s: Float): Offset {
             val mx = (s - 1f) * w / 2f
             val my = (s - 1f) * h / 2f
             return Offset(o.x.coerceIn(-mx, mx), o.y.coerceIn(-my, my))
+        }
+
+        // Moves the zoomed pages; vertical movement beyond the zoom edge scrolls the list.
+        fun panBy(delta: Offset) {
+            val target = offset + delta
+            val clamped = clamp(target, scale)
+            offset = clamped
+            val overflowY = target.y - clamped.y
+            if (overflowY != 0f) listState.dispatchRawDelta(-overflowY / scale)
         }
 
         LazyColumn(
@@ -125,13 +141,19 @@ fun PdfPreview(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(w, h) {
-                    // Two-finger pinch zoom / pan; intercepted before the list scrolls.
+                    val decay = splineBasedDecay<Float>(this)
+                    val slop = viewConfiguration.touchSlop
                     awaitEachGesture {
-                        awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                        flingJob?.cancel()
+                        val tracker = VelocityTracker().apply { addPosition(down.uptimeMillis, down.position) }
+                        var panning = false
+                        var travelled = Offset.Zero
                         do {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
                             val pressed = event.changes.count { it.pressed }
                             if (pressed >= 2) {
+                                // Pinch: zoom in / out around the fingers.
                                 val zoom = event.calculateZoom()
                                 val pan = event.calculatePan()
                                 val centroid = event.calculateCentroid(useCurrent = true)
@@ -141,15 +163,47 @@ fun PdfPreview(
                                 offset = clamp(centroid - c - anchor * newScale + pan, newScale)
                                 scale = newScale
                                 event.changes.forEach { it.consume() }
-                            } else if (pressed == 1 && scale > 1f) {
-                                val delta = event.changes.first().positionChange()
-                                offset = clamp(Offset(offset.x + delta.x, offset.y), scale)
+                                panning = false
+                            } else if (pressed == 1 && scale > 1.01f) {
+                                // Zoomed in: one finger moves the pages freely in every direction.
+                                val change = event.changes.first { it.pressed }
+                                tracker.addPosition(change.uptimeMillis, change.position)
+                                val delta = change.positionChange()
+                                if (!panning) {
+                                    travelled += delta
+                                    if (travelled.getDistance() > slop) panning = true
+                                }
+                                if (panning) {
+                                    panBy(delta)
+                                    change.consume()
+                                }
                             }
                         } while (event.changes.any { it.pressed })
+
+                        if (panning && scale > 1.01f) {
+                            val velocity = tracker.calculateVelocity()
+                            flingJob = scope.launch {
+                                var lastX = 0f
+                                var lastY = 0f
+                                launch {
+                                    AnimationState(0f, velocity.x).animateDecay(decay) {
+                                        panBy(Offset(value - lastX, 0f))
+                                        lastX = value
+                                    }
+                                }
+                                launch {
+                                    AnimationState(0f, velocity.y).animateDecay(decay) {
+                                        panBy(Offset(0f, value - lastY))
+                                        lastY = value
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 .pointerInput(w, h) {
                     detectTapGestures(onDoubleTap = { pos ->
+                        flingJob?.cancel()
                         scope.launch {
                             val startScale = scale
                             val startOffset = offset

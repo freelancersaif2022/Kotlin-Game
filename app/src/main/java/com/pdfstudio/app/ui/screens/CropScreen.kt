@@ -68,6 +68,7 @@ import com.pdfstudio.app.data.CropRect
 import com.pdfstudio.app.data.PageBitmapCache
 import com.pdfstudio.app.ui.components.PageImage
 import com.pdfstudio.app.ui.components.rememberPageBitmap
+import com.pdfstudio.app.ui.components.ToolIcons
 import com.pdfstudio.app.ui.theme.Brand
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -182,7 +183,7 @@ fun CropScreen(
             }
             SheetButtons(
                 confirmText = "Crop",
-                confirmIcon = Icons.Rounded.Crop,
+                confirmIcon = ToolIcons.Crop,
                 confirmEnabled = !rect.isFullPage,
                 onCancel = onCancel,
                 onConfirm = { onCrop(page, rect) },

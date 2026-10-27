@@ -5,20 +5,17 @@ A fast, minimal Android app (Kotlin + Jetpack Compose) to **preview, split, crop
 ## Features
 
 - **Splash screen**: animated logo, then the main screen.
-- **Upload & preview**: pick a PDF and see every page rendered sharply. Scroll, pinch to zoom, or double-tap to zoom.
-- **Split**: a bottom sheet shows every page with its number. Tap pages or type them (`1-3, 5, 8`), then press **Split**. The new PDF opens in the preview right away.
+- **Upload & preview**: pick a PDF and see every page rendered sharply. Scroll, pinch or double-tap to zoom, and drag with one finger to move around while zoomed.
+- **Split**: type the pages you want (`1-3, 5, 8`) and press **Split**. The result opens in the preview right away.
 - **Crop**: drag the corners, the edges, or the whole frame to crop the page freely, then press **Crop**.
-- **Convert**: exports every page as **JPG** (selected by default) or **PNG** at 300 DPI.
+- **Convert**: exports every page as a high-quality **JPG** (selected by default) or **PNG**, with an animated progress dialog.
 - **Dark / light mode** toggle in the top bar, remembered between launches.
 
 Split and crop copy the original PDF objects, so text, vectors and images keep their full quality.
 
 ## Where files are saved
 
-| Output | Location |
-| --- | --- |
-| Split / cropped PDF | `Download/PDF Studio/` |
-| Converted images | `Pictures/PDF Studio/` (Gallery) **and** `Download/PDF Studio/` |
+Converted images go to `Pictures/PDF Studio/`, so they show up in the Gallery. Split and crop only change the document open in the app; they don't write any files.
 
 ## Build
 

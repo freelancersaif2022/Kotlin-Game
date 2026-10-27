@@ -56,6 +56,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -82,6 +85,7 @@ import com.pdfstudio.app.data.PageBitmapCache
 import com.pdfstudio.app.data.PageRanges
 import com.pdfstudio.app.ui.components.PageImage
 import com.pdfstudio.app.ui.components.rememberPageBitmap
+import com.pdfstudio.app.ui.components.ToolIcons
 import com.pdfstudio.app.ui.theme.Brand
 import kotlinx.coroutines.launch
 
@@ -89,7 +93,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SplitSheet(
     doc: DocState,
-    cache: PageBitmapCache,
     onDismiss: () -> Unit,
     onSplit: (List<Int>) -> Unit,
 ) {
@@ -99,7 +102,8 @@ fun SplitSheet(
     var text by remember { mutableStateOf("") }
     val result = remember(text, doc.pageCount) { PageRanges.parse(text, doc.pageCount) }
     val selectedPages = (result as? PageRanges.Result.Valid)?.pages.orEmpty()
-    val selected = remember(selectedPages) { selectedPages.toSet() }
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
 
     fun close(then: () -> Unit = {}) {
         keyboard?.hide()
@@ -123,37 +127,13 @@ fun SplitSheet(
                 .imePadding()
                 .padding(bottom = 16.dp)
         ) {
-            SheetHeader(Icons.Rounded.ContentCut, Brand.SplitColors, "Split PDF", "Choose the pages to keep in a new PDF")
+            SheetHeader(ToolIcons.Split, Brand.SplitColors, "Split PDF", "Enter the pages to keep in a new PDF")
             Spacer(Modifier.height(18.dp))
 
-            val thumbWidth = with(LocalDensity.current) { 120.dp.roundToPx() }
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(76.dp),
-                modifier = Modifier.fillMaxWidth().heightIn(max = 252.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(bottom = 4.dp),
-            ) {
-                items(List(doc.pageCount) { it }, key = { it }) { index ->
-                    PageTile(
-                        doc = doc,
-                        cache = cache,
-                        index = index,
-                        thumbWidth = thumbWidth,
-                        selected = index in selected,
-                        onClick = {
-                            val next = if (index in selected) selected - index else selected + index
-                            text = PageRanges.format(next)
-                        },
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
             OutlinedTextField(
                 value = text,
                 onValueChange = { value -> text = value.filter { it.isDigit() || it == ',' || it == '-' || it == ' ' } },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().focusRequester(focus),
                 label = { Text("Page numbers") },
                 placeholder = { Text("e.g. 1-3, 5, 8") },
                 singleLine = true,
@@ -163,7 +143,7 @@ fun SplitSheet(
                         when (result) {
                             is PageRanges.Result.Invalid -> result.message
                             is PageRanges.Result.Valid -> "${result.pages.size} of ${doc.pageCount} pages selected"
-                            PageRanges.Result.Empty -> "Type pages or tap them above"
+                            PageRanges.Result.Empty -> "Pages 1–${doc.pageCount}, e.g. 1-3, 5, 8"
                         }
                     )
                 },
@@ -175,7 +155,7 @@ fun SplitSheet(
             Spacer(Modifier.height(16.dp))
             SheetButtons(
                 confirmText = "Split",
-                confirmIcon = Icons.Rounded.ContentCut,
+                confirmIcon = ToolIcons.Split,
                 confirmEnabled = selectedPages.isNotEmpty(),
                 onCancel = { close() },
                 onConfirm = {
@@ -184,64 +164,6 @@ fun SplitSheet(
                 },
             )
         }
-    }
-}
-
-@Composable
-private fun PageTile(
-    doc: DocState,
-    cache: PageBitmapCache,
-    index: Int,
-    thumbWidth: Int,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    val primary = MaterialTheme.colorScheme.primary
-    val borderWidth by animateDpAsState(if (selected) 2.5.dp else 1.dp, label = "border")
-    val borderColor by animateColorAsState(if (selected) primary else MaterialTheme.colorScheme.outlineVariant, label = "borderColor")
-    val scale by animateFloatAsState(if (selected) 0.94f else 1f, spring(dampingRatio = 0.5f, stiffness = 500f), label = "scale")
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            Modifier
-                .scale(scale)
-                .fillMaxWidth()
-                .aspectRatio(0.75f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .border(borderWidth, borderColor, RoundedCornerShape(12.dp))
-                .clickable(onClick = onClick)
-                .padding(6.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            val size = doc.pageSizes[index]
-            val bitmap = rememberPageBitmap(doc, cache, index, thumbWidth)
-            PageImage(
-                bitmap = bitmap,
-                modifier = Modifier
-                    .aspectRatio(size.aspect, matchHeightConstraintsFirst = size.aspect < 0.75f)
-                    .clip(RoundedCornerShape(3.dp)),
-            )
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = selected,
-                    enter = scaleIn(spring(dampingRatio = 0.45f)) + fadeIn(),
-                    exit = scaleOut() + fadeOut(),
-                ) {
-                    Box(
-                        Modifier.size(22.dp).clip(CircleShape).background(primary),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(Icons.Rounded.Check, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(15.dp))
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        Text(
-            "${index + 1}",
-            style = MaterialTheme.typography.labelMedium,
-            color = if (selected) primary else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 
@@ -275,34 +197,16 @@ fun ConvertSheet(
                 .navigationBarsPadding()
                 .padding(bottom = 16.dp)
         ) {
-            SheetHeader(Icons.Rounded.Image, Brand.ConvertColors, "Convert to image", "Every page is exported in high quality (300 DPI)")
+            SheetHeader(ToolIcons.Convert, Brand.ConvertColors, "Convert to image", "Export every page as a high-quality image")
             Spacer(Modifier.height(20.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FormatCard(ImageFormat.JPG, "Smaller files", Icons.Rounded.Photo, format == ImageFormat.JPG, { onFormatChange(ImageFormat.JPG) }, Modifier.weight(1f))
                 FormatCard(ImageFormat.PNG, "Lossless, sharpest", Icons.Rounded.Wallpaper, format == ImageFormat.PNG, { onFormatChange(ImageFormat.PNG) }, Modifier.weight(1f))
             }
-            Spacer(Modifier.height(16.dp))
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                AnimatedContent(format, transitionSpec = { fadeIn().togetherWith(fadeOut()) }, label = "summary") { f ->
-                    Text(
-                        "$pageCount page${if (pageCount == 1) "" else "s"} → $pageCount ${f.label} image${if (pageCount == 1) "" else "s"}\n" +
-                            "Saved to Gallery and Download/${MediaSaver.FOLDER}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
             Spacer(Modifier.height(20.dp))
             SheetButtons(
                 confirmText = "Convert",
-                confirmIcon = Icons.Rounded.Image,
+                confirmIcon = ToolIcons.Convert,
                 confirmEnabled = true,
                 onCancel = { close() },
                 onConfirm = { close(onConvert) },

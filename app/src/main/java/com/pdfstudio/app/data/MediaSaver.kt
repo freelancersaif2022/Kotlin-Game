@@ -11,30 +11,19 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 
-/** Saves output into the public Download/PDF Studio and Pictures/PDF Studio folders. */
+/** Saves exported images into the public Pictures/PDF Studio folder (visible in the gallery). */
 object MediaSaver {
     const val FOLDER = "PDF Studio"
 
-    fun savePdf(context: Context, file: File, displayName: String) {
-        save(context, Environment.DIRECTORY_DOWNLOADS, displayName, "application/pdf") { out ->
-            file.inputStream().use { it.copyTo(out, 256 * 1024) }
-        }
-    }
-
-    /** Saves an image to the gallery (Pictures/PDF Studio) and to Download/PDF Studio. */
+    /** Saves an image to the gallery, in Pictures/PDF Studio. */
     fun saveImage(context: Context, bytes: ByteArray, displayName: String, mime: String) {
         save(context, Environment.DIRECTORY_PICTURES, displayName, mime) { it.write(bytes) }
-        save(context, Environment.DIRECTORY_DOWNLOADS, displayName, mime) { it.write(bytes) }
     }
 
     private fun save(context: Context, directory: String, name: String, mime: String, write: (OutputStream) -> Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver = context.contentResolver
-            val collection: Uri = if (directory == Environment.DIRECTORY_PICTURES) {
-                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            } else {
-                MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            }
+            val collection: Uri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
             val values = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, name)
                 put(MediaStore.MediaColumns.MIME_TYPE, mime)

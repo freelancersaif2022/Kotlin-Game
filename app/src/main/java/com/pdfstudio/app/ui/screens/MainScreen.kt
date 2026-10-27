@@ -12,6 +12,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -58,9 +59,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,6 +70,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
@@ -89,10 +88,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.pdfstudio.app.Busy
 import com.pdfstudio.app.MainViewModel
 import com.pdfstudio.app.ui.components.AppLogo
 import com.pdfstudio.app.ui.components.ToolButton
+import com.pdfstudio.app.ui.components.ToolIcons
 import com.pdfstudio.app.ui.theme.Brand
 
 private enum class Sheet { Split, Convert }
@@ -101,23 +100,16 @@ private enum class Sheet { Split, Convert }
 fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val snackbar = remember { SnackbarHostState() }
-    LaunchedEffect(Unit) {
-        vm.messages.collect {
-            snackbar.currentSnackbarData?.dismiss()
-            snackbar.showSnackbar(it)
-        }
-    }
 
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) vm.open(uri)
     }
     val openPicker = { picker.launch(arrayOf("application/pdf")) }
 
-    // Android 9 and below need the legacy storage permission to write into Download / Pictures.
+    // Android 9 and below need the legacy storage permission to save images into Pictures.
     var pendingAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) pendingAction?.invoke() else vm.toast("Storage permission is needed to save files")
+        if (granted) pendingAction?.invoke()
         pendingAction = null
     }
     fun withStorage(action: () -> Unit) {
@@ -138,8 +130,10 @@ fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = v
 
     BackHandler(enabled = cropPage != null) { cropPage = null }
 
+    val blur by animateDpAsState(if (state.busy != null) 10.dp else 0.dp, tween(260), label = "blur")
     Box(Modifier.fillMaxSize()) {
         Scaffold(
+            modifier = Modifier.blur(blur),
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 TopBar(
@@ -161,16 +155,6 @@ fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = v
                         onSplit = { sheet = Sheet.Split },
                         onCrop = { cropPage = currentPage },
                         onConvert = { sheet = Sheet.Convert },
-                    )
-                }
-            },
-            snackbarHost = {
-                SnackbarHost(snackbar) { data ->
-                    Snackbar(
-                        data,
-                        shape = RoundedCornerShape(16.dp),
-                        containerColor = MaterialTheme.colorScheme.inverseSurface,
-                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
                     )
                 }
             },
@@ -200,9 +184,8 @@ fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = v
         if (doc != null && sheet == Sheet.Split) {
             SplitSheet(
                 doc = doc,
-                cache = vm.cache,
                 onDismiss = { sheet = null },
-                onSplit = { pages -> withStorage { vm.split(pages) } },
+                onSplit = vm::split,
             )
         }
         if (doc != null && sheet == Sheet.Convert) {
@@ -228,16 +211,14 @@ fun MainScreen(isDark: Boolean, onToggleTheme: () -> Unit, vm: MainViewModel = v
                     startPage = (cropPage ?: 0).coerceIn(0, d.pageCount - 1),
                     onCancel = { cropPage = null },
                     onCrop = { page, rect ->
-                        withStorage {
-                            vm.crop(page, rect)
-                            cropPage = null
-                        }
+                        vm.crop(page, rect)
+                        cropPage = null
                     },
                 )
             }
         }
 
-        BusyOverlay(state.busy)
+        ProgressDialog(state.busy)
     }
 }
 
@@ -419,65 +400,9 @@ private fun ActionBar(onSplit: () -> Unit, onCrop: () -> Unit, onConvert: () -> 
                 .padding(horizontal = 12.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            ToolButton(Icons.Rounded.ContentCut, "Split", Brand.SplitColors, onSplit, Modifier.weight(1f))
-            ToolButton(Icons.Rounded.Crop, "Crop", Brand.CropColors, onCrop, Modifier.weight(1f))
-            ToolButton(Icons.Rounded.Image, "Convert", Brand.ConvertColors, onConvert, Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun BusyOverlay(busy: Busy?) {
-    AnimatedVisibility(visible = busy != null, enter = fadeIn(tween(150)), exit = fadeOut(tween(220))) {
-        // Keep the last shown values while fading out.
-        var last by remember { mutableStateOf(busy) }
-        if (busy != null) last = busy
-        val shown = last ?: return@AnimatedVisibility
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.45f))
-                .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {},
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                Modifier
-                    .animateEnterExit(enter = scaleIn(spring(dampingRatio = 0.7f), initialScale = 0.85f), exit = scaleOut(targetScale = 0.9f))
-                    .widthIn(min = 220.dp, max = 300.dp)
-                    .shadow(24.dp, RoundedCornerShape(28.dp))
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 28.dp, vertical = 26.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    AppLogo(size = 44.dp, elevation = 4.dp)
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(72.dp),
-                        strokeWidth = 3.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                }
-                Spacer(Modifier.height(18.dp))
-                Text(shown.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                val progress = shown.progress
-                if (progress != null) {
-                    Spacer(Modifier.height(14.dp))
-                    val animated by animateFloatAsState(progress, tween(250), label = "progress")
-                    LinearProgressIndicator(
-                        progress = { animated },
-                        modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(50)),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        drawStopIndicator = {},
-                    )
-                    shown.detail?.let {
-                        Spacer(Modifier.height(8.dp))
-                        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
+            ToolButton(ToolIcons.Split, "Split", Brand.SplitColors, onSplit, Modifier.weight(1f))
+            ToolButton(ToolIcons.Crop, "Crop", Brand.CropColors, onCrop, Modifier.weight(1f))
+            ToolButton(ToolIcons.Convert, "Convert", Brand.ConvertColors, onConvert, Modifier.weight(1f))
         }
     }
 }

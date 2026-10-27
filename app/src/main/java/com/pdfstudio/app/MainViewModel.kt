@@ -16,18 +16,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.roundToInt
 
 enum class ImageFormat(val label: String, val extension: String, val mime: String, val compress: Bitmap.CompressFormat) {
     JPG("JPG", "jpg", "image/jpeg", Bitmap.CompressFormat.JPEG),
@@ -45,7 +43,14 @@ class DocState(
     val pageCount: Int get() = pageSizes.size
 }
 
-data class Busy(val title: String, val progress: Float? = null, val detail: String? = null)
+enum class BusyPhase { Working, Done, Failed }
+
+data class Busy(
+    val title: String,
+    val progress: Float? = null,
+    val detail: String? = null,
+    val phase: BusyPhase = BusyPhase.Working,
+)
 
 data class UiState(
     val doc: DocState? = null,
@@ -57,9 +62,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
 
-    private val _messages = MutableSharedFlow<String>(extraBufferCapacity = 8)
-    val messages = _messages.asSharedFlow()
-
     val cache = PageBitmapCache()
 
     private val workDir = File(app.cacheDir, "work").apply {
@@ -68,17 +70,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
     private var nextId = 0
 
-    fun toast(message: String) {
-        _messages.tryEmit(message)
-    }
-
     fun setFormat(format: ImageFormat) = _state.update { it.copy(format = format) }
 
     fun open(uri: Uri) {
         if (_state.value.busy != null) return
         viewModelScope.launch {
-            setBusy(Busy("Opening PDF"))
-            try {
+            runQuick("Opening PDF") {
                 val context = getApplication<Application>()
                 val (name, file) = withContext(Dispatchers.IO) {
                     val name = queryName(uri)
@@ -88,13 +85,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     } ?: error("Unable to read file")
                     name to file
                 }
-                showDocument(file, name, focusPage = 0)
-            } catch (e: SecurityException) {
-                toast("This PDF is password-protected")
-            } catch (e: Throwable) {
-                toast("Couldn't open this file. Make sure it's a valid PDF.")
-            } finally {
-                setBusy(null)
+                try {
+                    showDocument(file, name, focusPage = 0)
+                } catch (e: SecurityException) {
+                    throw IllegalStateException("This PDF is password-protected")
+                } catch (e: Throwable) {
+                    throw IllegalStateException("This file isn't a valid PDF")
+                }
             }
         }
     }
@@ -103,21 +100,11 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val doc = _state.value.doc ?: return
         if (pages.isEmpty() || _state.value.busy != null) return
         viewModelScope.launch {
-            setBusy(Busy("Splitting PDF"))
-            try {
-                val name = "${baseName(doc.name)}_split"
+            runQuick("Splitting PDF") {
                 val out = withContext(Dispatchers.IO) {
-                    val out = newWorkFile()
-                    PdfOps.split(doc.file, pages, out)
-                    MediaSaver.savePdf(getApplication(), out, "${name}_${stamp()}.pdf")
-                    out
+                    newWorkFile().also { PdfOps.split(doc.file, pages, it) }
                 }
-                showDocument(out, name, focusPage = 0)
-                toast("${pages.size} page${if (pages.size == 1) "" else "s"} split · Saved to Download/${MediaSaver.FOLDER}")
-            } catch (e: Throwable) {
-                toast("Split failed: ${e.message ?: "unknown error"}")
-            } finally {
-                setBusy(null)
+                showDocument(out, "${baseName(doc.name)}_split", focusPage = 0)
             }
         }
     }
@@ -126,22 +113,33 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         val doc = _state.value.doc ?: return
         if (rect.isFullPage || _state.value.busy != null) return
         viewModelScope.launch {
-            setBusy(Busy("Cropping page ${page + 1}"))
-            try {
-                val name = "${baseName(doc.name)}_cropped"
+            runQuick("Cropping page ${page + 1}") {
                 val out = withContext(Dispatchers.IO) {
-                    val out = newWorkFile()
-                    PdfOps.crop(doc.file, page, rect, out)
-                    MediaSaver.savePdf(getApplication(), out, "${name}_${stamp()}.pdf")
-                    out
+                    newWorkFile().also { PdfOps.crop(doc.file, page, rect, it) }
                 }
-                showDocument(out, name, focusPage = page)
-                toast("Page ${page + 1} cropped · Saved to Download/${MediaSaver.FOLDER}")
-            } catch (e: Throwable) {
-                toast("Crop failed: ${e.message ?: "unknown error"}")
-            } finally {
-                setBusy(null)
+                showDocument(out, "${baseName(doc.name)}_cropped", focusPage = page)
             }
+        }
+    }
+
+    /**
+     * Runs a short operation. The progress dialog only appears if it takes long enough to
+     * notice, so fast operations feel instant; failures are shown in the same dialog.
+     */
+    private suspend fun runQuick(title: String, block: suspend () -> Unit) = coroutineScope {
+        val reveal = launch {
+            delay(280)
+            setBusy(Busy(title))
+        }
+        try {
+            block()
+            reveal.cancel()
+            setBusy(null)
+        } catch (e: Throwable) {
+            reveal.cancel()
+            setBusy(Busy("Something went wrong", detail = e.message ?: "Please try again", phase = BusyPhase.Failed))
+            delay(1800)
+            setBusy(null)
         }
     }
 
@@ -150,8 +148,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         if (_state.value.busy != null) return
         val format = _state.value.format
         val total = doc.pageCount
+        val title = "Converting to ${format.label}"
         viewModelScope.launch {
-            setBusy(Busy("Converting to ${format.label}", 0f, "0 of $total"))
+            setBusy(Busy(title, 0f, "Page 1 of $total"))
             val context = getApplication<Application>()
             val base = baseName(doc.name)
             val digits = total.toString().length
@@ -159,8 +158,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 withContext(Dispatchers.IO) {
                     val renderer = PdfPageRenderer(doc.file)
                     try {
-                        // Render the next page while the previous one is being encoded and saved.
-                        val rendered = Channel<Pair<Int, Bitmap>>(Channel.RENDEZVOUS)
+                        // Render on the renderer thread while two workers encode and save in parallel.
+                        val rendered = Channel<Pair<Int, Bitmap>>(capacity = 1)
+                        val done = AtomicInteger(0)
                         coroutineScope {
                             launch {
                                 for (i in 0 until total) {
@@ -169,25 +169,31 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                                 }
                                 rendered.close()
                             }
-                            for ((i, bitmap) in rendered) {
-                                val bytes = ByteArrayOutputStream(1 shl 20).use { stream ->
-                                    bitmap.compress(format.compress, 100, stream)
-                                    stream.toByteArray()
+                            repeat(ENCODERS) {
+                                launch(Dispatchers.Default) {
+                                    for ((i, bitmap) in rendered) {
+                                        val bytes = ByteArrayOutputStream(1 shl 20).use { stream ->
+                                            bitmap.compress(format.compress, 100, stream)
+                                            stream.toByteArray()
+                                        }
+                                        bitmap.recycle()
+                                        val fileName = "${base}_page_${(i + 1).toString().padStart(digits, '0')}.${format.extension}"
+                                        withContext(Dispatchers.IO) { MediaSaver.saveImage(context, bytes, fileName, format.mime) }
+                                        val n = done.incrementAndGet()
+                                        setBusy(Busy(title, n / total.toFloat(), "Page ${minOf(n + 1, total)} of $total"))
+                                    }
                                 }
-                                bitmap.recycle()
-                                val fileName = "${base}_page_${(i + 1).toString().padStart(digits, '0')}.${format.extension}"
-                                MediaSaver.saveImage(context, bytes, fileName, format.mime)
-                                val done = i + 1
-                                setBusy(Busy("Converting to ${format.label}", done / total.toFloat(), "$done of $total"))
                             }
                         }
                     } finally {
                         withContext(NonCancellable) { renderer.close() }
                     }
                 }
-                toast("$total image${if (total == 1) "" else "s"} saved to Gallery & Download/${MediaSaver.FOLDER}")
+                setBusy(Busy("Export complete", 1f, "$total ${format.label} image${if (total == 1) "" else "s"}", BusyPhase.Done))
+                delay(1300)
             } catch (e: Throwable) {
-                toast("Convert failed: ${e.message ?: "unknown error"}")
+                setBusy(Busy("Export failed", detail = e.message ?: "Please try again", phase = BusyPhase.Failed))
+                delay(1800)
             } finally {
                 setBusy(null)
             }
@@ -208,10 +214,18 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             file.delete()
             error("Empty document")
         }
-        val previous = _state.value.doc
-        _state.update {
-            it.copy(doc = DocState(++nextId, file, name, renderer, sizes, focusPage.coerceIn(0, sizes.lastIndex)))
+        val id = ++nextId
+        val focus = focusPage.coerceIn(0, sizes.lastIndex)
+        // Pre-render the first visible pages so the preview appears fully drawn.
+        val metrics = getApplication<Application>().resources.displayMetrics
+        val previewWidth = metrics.widthPixels - (32 * metrics.density).roundToInt()
+        if (previewWidth > 0) {
+            for (page in focus..minOf(focus + 1, sizes.lastIndex)) {
+                renderer.render(page, previewWidth)?.let { cache.put(id, page, previewWidth, it) }
+            }
         }
+        val previous = _state.value.doc
+        _state.update { it.copy(doc = DocState(id, file, name, renderer, sizes, focus)) }
         if (previous != null) {
             viewModelScope.launch {
                 previous.renderer.close()
@@ -237,8 +251,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun baseName(name: String) = name.removeSuffix("_split").removeSuffix("_cropped")
 
-    private fun stamp() = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-
     override fun onCleared() {
         val doc = _state.value.doc ?: return
         // viewModelScope is already cancelled here; close on a detached scope.
@@ -248,5 +260,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     private companion object {
         const val EXPORT_DPI = 300
         const val MAX_EXPORT_PIXELS = 16_000_000L
+        const val ENCODERS = 2
     }
 }

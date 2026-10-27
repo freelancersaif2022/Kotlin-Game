@@ -34,7 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -90,7 +92,7 @@ fun AppLogo(size: Dp, modifier: Modifier = Modifier, shine: Boolean = false, ele
     }
 }
 
-/** Large tool button with a gradient icon tile and a springy press animation. */
+/** Large tool button: glossy gradient tile with a line icon and a springy press animation. */
 @Composable
 fun ToolButton(
     icon: ImageVector,
@@ -102,7 +104,8 @@ fun ToolButton(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
-    val scale by animateFloatAsState(if (pressed) 0.9f else 1f, spring(dampingRatio = 0.45f, stiffness = 600f), label = "press")
+    val scale by animateFloatAsState(if (pressed) 0.88f else 1f, spring(dampingRatio = 0.45f, stiffness = 650f), label = "press")
+    val shape = RoundedCornerShape(19.dp)
     androidx.compose.foundation.layout.Column(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
@@ -113,21 +116,34 @@ fun ToolButton(
     ) {
         Box(
             Modifier
-                .scale(scale)
-                .size(56.dp)
-                .shadow(10.dp, RoundedCornerShape(18.dp), ambientColor = colors.last(), spotColor = colors.last())
-                .clip(RoundedCornerShape(18.dp))
-                .background(Brush.linearGradient(colors)),
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                .size(58.dp)
+                .shadow(14.dp, shape, ambientColor = colors.last(), spotColor = colors.last())
+                .clip(shape)
+                .background(Brush.linearGradient(colors, start = Offset.Zero, end = Offset.Infinite))
+                .drawWithContent {
+                    // Soft top light and a thin inner rim for a glassy, tactile look.
+                    drawRect(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.28f), Color.Transparent), endY = size.height * 0.6f))
+                    drawCircle(
+                        Brush.radialGradient(listOf(Color.White.copy(alpha = 0.22f), Color.Transparent), center = Offset(size.width * 0.25f, 0f), radius = size.width * 0.8f),
+                        radius = size.width * 0.8f,
+                        center = Offset(size.width * 0.25f, 0f),
+                    )
+                    drawContent()
+                    drawRoundRect(
+                        color = Color.White.copy(alpha = 0.28f),
+                        cornerRadius = CornerRadius(19.dp.toPx()),
+                        style = Stroke(1.dp.toPx()),
+                    )
+                },
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.22f), Color.Transparent)))
-            )
-            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp))
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(27.dp))
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(9.dp))
         Text(label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface)
     }
 }
