@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -68,6 +69,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -276,9 +278,12 @@ private fun ColorRow(selected: Int, onSelect: (Int) -> Unit) {
                     .clickable { onSelect(i) },
                 contentAlignment = Alignment.Center,
             ) {
-                AnimatedVisibility(isSel, enter = scaleIn() + fadeIn(), exit = fadeOut()) {
-                    Icon(Icons.Rounded.Check, null, tint = Color(0xFF1E1B4B), modifier = Modifier.size(18.dp))
-                }
+                val check by animateFloatAsState(if (isSel) 1f else 0f, spring(dampingRatio = 0.5f), label = "check")
+                Icon(
+                    Icons.Rounded.Check, null,
+                    tint = Color(0xFF1E1B4B),
+                    modifier = Modifier.size(18.dp).graphicsLayer { scaleX = check; scaleY = check; alpha = check },
+                )
             }
         }
     }
