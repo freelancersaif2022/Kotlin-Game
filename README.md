@@ -54,7 +54,7 @@ Google Drive access is tied to the signing certificate. CI therefore signs relea
 
 To create a key, run `keytool -genkeypair -keystore my.jks -alias inkly -keyalg RSA -keysize 2048 -validity 10000`. Then add the secrets under **Settings → Secrets and variables → Actions**.
 
-If the secrets are missing, CI signs with an auto-generated debug key. That key is cached between runs, but GitHub can evict the cache, which changes the SHA-1. Use the secrets for anything you rely on.
+If the secrets are missing, CI generates its own key and caches it between runs. GitHub evicts caches that go unused for 7 days, and an evicted key means a new SHA-1. Use the secrets for anything you rely on.
 
 ## Build locally
 
