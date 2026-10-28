@@ -85,7 +85,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.inkly.notes.AppContainer
-import com.inkly.notes.ui.components.ConfirmDialog
+import com.inkly.notes.ui.components.DeleteNoteDialog
 import com.inkly.notes.ui.components.formatRelative
 import com.inkly.notes.ui.theme.NoteColors
 import kotlinx.coroutines.delay
@@ -219,13 +219,11 @@ fun EditorScreen(container: AppContainer, noteId: Long, onBack: () -> Unit) {
         }
     }
 
-    ConfirmDialog(
+    DeleteNoteDialog(
         visible = confirmDelete,
-        icon = Icons.Rounded.DeleteOutline,
-        title = "Delete this note?",
-        message = "This note will be permanently removed from this device.",
-        confirmText = "Delete",
-        destructive = true,
+        title = vm.title,
+        body = vm.content,
+        tint = NoteColors.card(vm.color),
         onConfirm = { confirmDelete = false; vm.delete(onBack) },
         onDismiss = { confirmDelete = false },
     )

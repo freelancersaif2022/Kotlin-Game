@@ -2,6 +2,8 @@ package com.inkly.notes.drive
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.AuthorizationResult
@@ -15,6 +17,7 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.security.MessageDigest
 
 /**
  * Google authorization for the Drive "appDataFolder" (a private, hidden folder only Inkly can see).
@@ -66,6 +69,21 @@ object DriveAuth {
         @Suppress("DEPRECATION")
         runCatching { GoogleSignIn.getClient(context, GoogleSignInOptions.DEFAULT_SIGN_IN).signOut().await() }
     }
+
+    /** SHA-1 of the certificate this APK is signed with – what Google Cloud's Android OAuth client must list. */
+    @Suppress("DEPRECATION")
+    fun signingSha1(context: Context): String = runCatching {
+        val pm = context.packageManager
+        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pm.getPackageInfo(context.packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+                .signingInfo?.apkContentsSigners
+        } else {
+            pm.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES).signatures
+        }
+        val cert = signatures?.firstOrNull() ?: return@runCatching "Unavailable"
+        MessageDigest.getInstance("SHA-1").digest(cert.toByteArray())
+            .joinToString(":") { "%02X".format(it) }
+    }.getOrDefault("Unavailable")
 
     private fun revoke(token: String) {
         val body = "token=" + URLEncoder.encode(token, "UTF-8")

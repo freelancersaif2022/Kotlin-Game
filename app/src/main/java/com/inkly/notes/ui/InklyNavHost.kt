@@ -24,10 +24,8 @@ import com.inkly.notes.ui.editor.EditorScreen
 import com.inkly.notes.ui.notes.NotesScreen
 import com.inkly.notes.ui.settings.SettingsScreen
 import com.inkly.notes.ui.splash.SplashScreen
-import com.inkly.notes.ui.welcome.WelcomeScreen
 
 private const val SPLASH = "splash"
-private const val WELCOME = "welcome"
 private const val NOTES = "notes"
 private const val EDITOR = "editor/{id}"
 private const val SETTINGS = "settings"
@@ -60,17 +58,7 @@ fun InklyNavHost(container: AppContainer, onBrandSurface: (Boolean) -> Unit) {
             exitTransition = { fadeOut(tween(380)) + scaleOut(tween(380), targetScale = 1.08f) },
         ) {
             SplashScreen(onFinished = {
-                val next = if (container.prefs.state.value.onboardingDone) NOTES else WELCOME
-                nav.navigate(next) { popUpTo(SPLASH) { inclusive = true } }
-            })
-        }
-        composable(
-            WELCOME,
-            enterTransition = { fadeIn(tween(420)) + scaleIn(tween(420, easing = ease), initialScale = 0.96f) },
-        ) {
-            WelcomeScreen(onDone = {
-                container.prefs.setOnboardingDone()
-                nav.navigate(NOTES) { popUpTo(WELCOME) { inclusive = true } }
+                nav.navigate(NOTES) { popUpTo(SPLASH) { inclusive = true } }
             })
         }
         composable(
@@ -97,13 +85,7 @@ fun InklyNavHost(container: AppContainer, onBrandSurface: (Boolean) -> Unit) {
             )
         }
         composable(SETTINGS) {
-            SettingsScreen(
-                onBack = { nav.safePop() },
-                onReplayTutorial = {
-                    container.prefs.setTutorialDone(false)
-                    nav.safePop()
-                },
-            )
+            SettingsScreen(onBack = { nav.safePop() })
         }
     }
 }

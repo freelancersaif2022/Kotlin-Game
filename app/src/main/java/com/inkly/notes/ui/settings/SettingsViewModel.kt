@@ -29,6 +29,8 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
+data class SetupHelp(val statusCode: Int?)
+
 enum class Busy { Connecting, BackingUp, Checking, Restoring, Disconnecting }
 
 sealed interface SettingsEvent {
@@ -44,6 +46,17 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
     /** A backup awaiting the user's confirmation before restoring. */
     var restoreOffer by mutableStateOf<DriveFile?>(null); private set
     var offerAfterConnect by mutableStateOf(false); private set
+    /** When non-null, the "Google didn't connect" help sheet is shown. */
+    var setupHelp by mutableStateOf<SetupHelp?>(null); private set
+    val packageName: String = app.packageName
+    val signingSha1: String by lazy { DriveAuth.signingSha1(app) }
+
+    fun dismissSetupHelp() { setupHelp = null }
+
+    fun retryConnect() {
+        setupHelp = null
+        connect()
+    }
 
     private val _events = Channel<SettingsEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
@@ -89,7 +102,11 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
         val op = pending ?: return
         pending = null
         if (resultCode != Activity.RESULT_OK) {
-            message("Google sign-in was cancelled")
+            // Google closes its sheet with RESULT_CANCELED both when the user backs out and when it
+            // rejects the app (unregistered SHA-1, consent screen in testing, Drive API off).
+            val error = data?.let { runCatching { DriveAuth.resultFromIntent(getApplication(), it) }.exceptionOrNull() }
+            val code = (error as? ApiException)?.statusCode
+            setupHelp = SetupHelp(code)
             return
         }
         viewModelScope.launch {
@@ -184,6 +201,10 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun fail(e: Throwable) {
         busy = null
+        if (e is ApiException && e.statusCode == CommonStatusCodes.DEVELOPER_ERROR) {
+            setupHelp = SetupHelp(e.statusCode)
+            return
+        }
         if (e is DriveException && e.code == 401) prefs.setNeedsReauth(true)
         message(friendly(e))
     }

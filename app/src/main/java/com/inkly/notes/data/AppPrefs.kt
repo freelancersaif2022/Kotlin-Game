@@ -10,7 +10,6 @@ enum class ThemeMode { LIGHT, DARK, SYSTEM }
 
 data class PrefsState(
     val themeMode: ThemeMode = ThemeMode.LIGHT,
-    val onboardingDone: Boolean = false,
     val tutorialDone: Boolean = false,
     val driveConnected: Boolean = false,
     val accountEmail: String? = null,
@@ -31,7 +30,6 @@ class AppPrefs(context: Context) {
     private fun read() = PrefsState(
         themeMode = runCatching { ThemeMode.valueOf(sp.getString(THEME, null) ?: "LIGHT") }
             .getOrDefault(ThemeMode.LIGHT),
-        onboardingDone = sp.getBoolean(ONBOARDING, false),
         tutorialDone = sp.getBoolean(TUTORIAL, false),
         driveConnected = sp.getBoolean(CONNECTED, false),
         accountEmail = sp.getString(EMAIL, null),
@@ -50,7 +48,6 @@ class AppPrefs(context: Context) {
     }
 
     fun setTheme(mode: ThemeMode) = edit { putString(THEME, mode.name) }
-    fun setOnboardingDone() = edit { putBoolean(ONBOARDING, true) }
     fun setTutorialDone(done: Boolean) = edit { putBoolean(TUTORIAL, done) }
     fun setAutoBackup(enabled: Boolean) = edit { putBoolean(AUTO, enabled) }
     fun setNeedsReauth(value: Boolean) = edit { putBoolean(REAUTH, value) }
@@ -79,7 +76,6 @@ class AppPrefs(context: Context) {
 
     private companion object {
         const val THEME = "theme"
-        const val ONBOARDING = "onboarding_done"
         const val TUTORIAL = "tutorial_done"
         const val CONNECTED = "drive_connected"
         const val EMAIL = "drive_email"

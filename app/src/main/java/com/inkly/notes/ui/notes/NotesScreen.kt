@@ -52,7 +52,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -86,6 +85,7 @@ import com.inkly.notes.data.Note
 import com.inkly.notes.ui.components.AnimatedDialog
 import com.inkly.notes.ui.components.CoachMarkOverlay
 import com.inkly.notes.ui.components.CoachStep
+import com.inkly.notes.ui.components.DeleteNoteDialog
 import com.inkly.notes.ui.components.InklyLogo
 import com.inkly.notes.ui.components.SheetAction
 import com.inkly.notes.ui.components.formatShort
@@ -132,6 +132,9 @@ fun NotesScreen(
     var optionsFor by remember { mutableStateOf<Note?>(null) }
     var lastOptions by remember { mutableStateOf<Note?>(null) }
     if (optionsFor != null) lastOptions = optionsFor
+    var deleteFor by remember { mutableStateOf<Note?>(null) }
+    var lastDelete by remember { mutableStateOf<Note?>(null) }
+    if (deleteFor != null) lastDelete = deleteFor
 
     var showTour by remember { mutableStateOf(false) }
     LaunchedEffect(prefs.tutorialDone, notes != null) {
@@ -219,7 +222,7 @@ fun NotesScreen(
             }
         }
 
-        AnimatedDialog(visible = optionsFor != null, onDismiss = { optionsFor = null }, alignBottom = true) {
+        AnimatedDialog(visible = optionsFor != null, onDismiss = { optionsFor = null }) {
             val note = lastOptions
             Text(
                 note?.title?.ifBlank { null } ?: "Untitled note",
@@ -236,17 +239,33 @@ fun NotesScreen(
                 note?.let(vm::togglePin); optionsFor = null
             }
             SheetAction(Icons.Rounded.DeleteOutline, "Delete note", MaterialTheme.colorScheme.error) {
+                val n = note
                 optionsFor = null
-                note?.let { n ->
-                    vm.delete(n)
-                    scope.launch {
-                        snackbar.currentSnackbarData?.dismiss()
-                        val r = snackbar.showSnackbar("Note deleted", "Undo", duration = SnackbarDuration.Short)
-                        if (r == SnackbarResult.ActionPerformed) vm.undoDelete(n)
-                    }
+                if (n != null) scope.launch {
+                    delay(160)
+                    deleteFor = n
                 }
             }
         }
+
+        val pendingDelete = lastDelete
+        DeleteNoteDialog(
+            visible = deleteFor != null,
+            title = pendingDelete?.title.orEmpty(),
+            body = pendingDelete?.content.orEmpty(),
+            tint = NoteColors.card(pendingDelete?.color ?: 0),
+            onConfirm = {
+                deleteFor?.let { n ->
+                    vm.delete(n)
+                    scope.launch {
+                        snackbar.currentSnackbarData?.dismiss()
+                        snackbar.showSnackbar("Note deleted", duration = SnackbarDuration.Short)
+                    }
+                }
+                deleteFor = null
+            },
+            onDismiss = { deleteFor = null },
+        )
 
         AnimatedVisibility(showTour, enter = fadeIn(), exit = fadeOut()) {
             val steps = remember { tourSteps.filter { targets.containsKey(it.target) } }

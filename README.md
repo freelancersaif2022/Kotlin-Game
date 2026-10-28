@@ -4,8 +4,8 @@ A fast, lightweight note-taking app for Android, built with **Kotlin + Jetpack C
 
 ## Features
 
-- **Splash → Welcome → Notes** flow. The animated splash shows on every launch; the 3-page welcome pager shows only on first launch.
-- **First-run guided tour.** Spotlight coach marks point out *New note*, *Search*, *Settings* and *long-press*. You can replay it from Settings.
+- An animated splash on launch, then straight into your notes.
+- **First-run guided tour.** Spotlight coach marks point out *New note*, *Search*, *Settings* and *long-press*.
 - **Lined writing box.** Tap **+** and you get a page ruled with dashed lines. Press Enter and a new line opens: the box grows and the dashed rules move down with it.
 - **Autosave.** Every keystroke is saved a moment after you stop typing (*Saving… → Saved*). Edits are also flushed when you go back or leave the app.
 - Pinned notes, six note colours, instant search, long-press to pin or delete, and *Undo* after a delete.
@@ -15,7 +15,8 @@ A fast, lightweight note-taking app for Android, built with **Kotlin + Jetpack C
   - **Restore** merges your latest backup with what is on the device. The newest edit of each note wins and nothing is deleted.
   - Backups go to the private, hidden *appDataFolder* in your own Drive (scope `drive.appdata`). Only Inkly can read it, and the 5 most recent snapshots are kept.
 - **Light / Dark / System** theme. Light is the default.
-- Custom animated popups, sheets and progress dialogs, spring animations, and edge-to-edge UI.
+- Every popup is an animated bottom sheet you can drag down to close. The delete sheet shows a preview of the note being deleted.
+- If Google sign-in doesn't complete, a help sheet shows the exact package name and SHA-1 to register, with copy buttons.
 - **Small APK.** R8 full mode, resource shrinking and no heavy Google API client: Drive is called through its REST API directly.
 
 ## Download the APK

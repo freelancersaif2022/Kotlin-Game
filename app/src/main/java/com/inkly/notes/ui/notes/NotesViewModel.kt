@@ -26,5 +26,4 @@ class NotesViewModel(private val repo: NoteRepository) : ViewModel() {
 
     fun delete(note: Note) = viewModelScope.launch { repo.delete(note.id) }
 
-    fun undoDelete(note: Note) = viewModelScope.launch { repo.insert(note) }
 }

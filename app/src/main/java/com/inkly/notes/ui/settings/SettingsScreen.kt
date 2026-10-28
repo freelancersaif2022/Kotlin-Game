@@ -49,7 +49,6 @@ import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.SettingsBrightness
 import androidx.compose.material.icons.rounded.Warning
@@ -83,6 +82,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import com.inkly.notes.ui.components.AnimatedDialog
+import com.inkly.notes.ui.components.DialogIcon
 import com.inkly.notes.BuildConfig
 import com.inkly.notes.data.ThemeMode
 import com.inkly.notes.drive.DriveFile
@@ -95,7 +102,7 @@ import com.inkly.notes.ui.components.pressScale
 import com.inkly.notes.ui.theme.Brand
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onReplayTutorial: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit) {
     val vm: SettingsViewModel = viewModel()
     val prefs by vm.prefs.state.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
@@ -157,8 +164,6 @@ fun SettingsScreen(onBack: () -> Unit, onReplayTutorial: () -> Unit) {
 
                 SectionTitle("General")
                 Card(padding = 6.dp) {
-                    ActionRow(Icons.Rounded.Replay, "Replay tutorial", "See the quick tour of the notes screen again", onClick = onReplayTutorial)
-                    HorizontalDivider(Modifier.padding(horizontal = 12.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     ActionRow(Icons.Rounded.Lock, "Privacy", "Notes stay on your device. Backups go to a hidden folder only Inkly can access in your own Google Drive.")
                     HorizontalDivider(Modifier.padding(horizontal = 12.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     ActionRow(Icons.Rounded.Info, "Version", "Inkly ${BuildConfig.VERSION_NAME}")
@@ -240,6 +245,111 @@ fun SettingsScreen(onBack: () -> Unit, onReplayTutorial: () -> Unit) {
         onConfirm = { confirmDisconnect = false; vm.disconnect() },
         onDismiss = { confirmDisconnect = false },
     )
+
+    var lastHelp by remember { mutableStateOf(SetupHelp(null)) }
+    vm.setupHelp?.let { lastHelp = it }
+    AnimatedDialog(visible = vm.setupHelp != null, onDismiss = vm::dismissSetupHelp) {
+        SetupHelpContent(
+            statusCode = lastHelp.statusCode,
+            packageName = vm.packageName,
+            sha1 = vm.signingSha1,
+            onRetry = vm::retryConnect,
+            onClose = vm::dismissSetupHelp,
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.SetupHelpContent(
+    statusCode: Int?,
+    packageName: String,
+    sha1: String,
+    onRetry: () -> Unit,
+    onClose: () -> Unit,
+) {
+    DialogIcon(Icons.Rounded.Cloud, MaterialTheme.colorScheme.primary, Modifier.align(Alignment.CenterHorizontally))
+    Spacer(Modifier.height(16.dp))
+    Text(
+        "Google didn't finish connecting",
+        style = MaterialTheme.typography.titleLarge,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Text(
+        "If you didn't close the Google window yourself, Google refused this app build" +
+            (if (statusCode != null) " (code $statusCode)" else "") +
+            ". Check these in Google Cloud Console, then try again:",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    HelpStep(1, "Google Drive API is enabled for the project")
+    HelpStep(2, "OAuth consent screen: your Google account is added under Test users (or the app is published)")
+    HelpStep(3, "An Android OAuth client exists with exactly these values:")
+    Spacer(Modifier.height(8.dp))
+    CopyField("Package name", packageName)
+    Spacer(Modifier.height(8.dp))
+    CopyField("SHA-1 fingerprint", sha1)
+    Spacer(Modifier.height(22.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        androidx.compose.material3.OutlinedButton(
+            onClick = onClose,
+            modifier = Modifier.weight(1f).height(54.dp),
+            shape = RoundedCornerShape(18.dp),
+        ) { Text("Close", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold) }
+        Button(
+            onClick = onRetry,
+            modifier = Modifier.weight(1f).height(54.dp),
+            shape = RoundedCornerShape(18.dp),
+        ) { Text("Try again", fontWeight = FontWeight.SemiBold) }
+    }
+}
+
+@Composable
+private fun HelpStep(n: Int, text: String) {
+    Row(Modifier.padding(vertical = 5.dp), verticalAlignment = Alignment.Top) {
+        Box(
+            Modifier.size(22.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
+            contentAlignment = Alignment.Center,
+        ) { Text("$n", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary) }
+        Spacer(Modifier.width(10.dp))
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+    }
+}
+
+@Composable
+private fun CopyField(label: String, value: String) {
+    val clipboard = LocalClipboardManager.current
+    var copied by remember { mutableStateOf(false) }
+    LaunchedEffect(copied) {
+        if (copied) { kotlinx.coroutines.delay(1500); copied = false }
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
+            .clickable { clipboard.setText(AnnotatedString(value)); copied = true }
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(value, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = MaterialTheme.colorScheme.onSurface)
+        }
+        Spacer(Modifier.width(8.dp))
+        AnimatedContent(copied, label = "copy") { done ->
+            Icon(
+                if (done) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                if (done) "Copied" else "Copy",
+                tint = if (done) Brand.Success else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
 }
 
 @Composable
