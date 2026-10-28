@@ -1,5 +1,6 @@
 package com.inkly.notes.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.MutableTransitionState
@@ -17,9 +18,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +28,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Velocity
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -50,7 +59,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,21 +70,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 /**
- * Bottom sheet popup: fading scrim, springy slide-up from the bottom edge, drag handle with
- * swipe-down-to-dismiss and a real exit animation (the window stays until the sheet has left).
+ * Bottom sheet popup drawn inside the screen (edge-to-edge, no separate window, so it sits flush
+ * with the bottom on every device). Fading scrim, springy slide-up, drag handle with
+ * swipe-down-to-dismiss and a real exit animation. Must be placed in a full-screen Box.
  */
 @Composable
 fun AnimatedDialog(
@@ -86,86 +91,96 @@ fun AnimatedDialog(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val state = remember { MutableTransitionState(false) }
-    LaunchedEffect(visible) { state.targetState = visible }
+    state.targetState = visible
     if (!state.currentState && !state.targetState && state.isIdle) return
 
-    Dialog(
-        onDismissRequest = { if (dismissible) onDismiss() },
-        properties = DialogProperties(
-            dismissOnBackPress = dismissible,
-            dismissOnClickOutside = false,
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false,
-        ),
-    ) {
-        val window = (LocalView.current.parent as? DialogWindowProvider)?.window
-        SideEffect { window?.setDimAmount(0f) }
-        val density = LocalDensity.current
-        val scope = rememberCoroutineScope()
-        val drag = remember { Animatable(0f) }
-        LaunchedEffect(visible) { if (visible) drag.snapTo(0f) }
+    BackHandler(enabled = visible) { if (dismissible) onDismiss() }
+    val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
+    val drag = remember { Animatable(0f) }
+    LaunchedEffect(visible) { if (visible) drag.snapTo(0f) }
+    val currentDismiss by rememberUpdatedState(onDismiss)
+    // Swipe down on the sheet (when its content is scrolled to the top) drags it; release past the
+    // threshold or with a fast fling to dismiss.
+    val sheetDrag = remember(dismissible) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (!dismissible || available.y >= 0f || drag.value <= 0f) return Offset.Zero
+                val used = maxOf(available.y, -drag.value)
+                scope.launch { drag.snapTo(drag.value + used) }
+                return Offset(0f, used)
+            }
 
-        AnimatedVisibility(
-            visibleState = state,
-            enter = fadeIn(tween(240)),
-            exit = fadeOut(tween(220)),
+            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                @Suppress("DEPRECATION")
+                if (!dismissible || available.y <= 0f || source != NestedScrollSource.Drag) return Offset.Zero
+                scope.launch { drag.snapTo(drag.value + available.y) }
+                return Offset(0f, available.y)
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                if (drag.value <= 0f) return Velocity.Zero
+                val threshold = with(density) { 110.dp.toPx() }
+                if (drag.value > threshold || available.y > 1800f) currentDismiss()
+                else drag.animateTo(0f, spring(dampingRatio = 0.7f, stiffness = 500f))
+                return available
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        visibleState = state,
+        enter = fadeIn(tween(240)),
+        exit = fadeOut(tween(240)),
+        modifier = Modifier.fillMaxSize().zIndex(100f),
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color(0xFF070914).copy(alpha = 0.52f))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) { if (dismissible) onDismiss() },
+            contentAlignment = Alignment.BottomCenter,
         ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFF070914).copy(alpha = 0.55f))
+            Surface(
+                modifier = Modifier
+                    .animateEnterExit(
+                        enter = slideInVertically(spring(dampingRatio = 0.86f, stiffness = 400f)) { it },
+                        exit = slideOutVertically(tween(240)) { it },
+                    )
+                    .offset { IntOffset(0, drag.value.roundToInt()) }
+                    .widthIn(max = 560.dp)
+                    .fillMaxWidth()
+                    .nestedScroll(sheetDrag)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                    ) { if (dismissible) onDismiss() },
-                contentAlignment = Alignment.BottomCenter,
+                    ) {},
+                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                shadowElevation = 28.dp,
             ) {
-                Surface(
-                    modifier = Modifier
-                        .animateEnterExit(
-                            enter = slideInVertically(spring(dampingRatio = 0.86f, stiffness = 420f)) { it },
-                            exit = slideOutVertically(tween(240)) { it },
-                        )
-                        .offset { IntOffset(0, drag.value.roundToInt()) }
-                        .widthIn(max = 560.dp)
-                        .fillMaxWidth()
-                        .draggable(
-                            orientation = Orientation.Vertical,
-                            enabled = dismissible,
-                            state = rememberDraggableState { delta ->
-                                scope.launch { drag.snapTo((drag.value + delta).coerceAtLeast(0f)) }
-                            },
-                            onDragStopped = { velocity ->
-                                val threshold = with(density) { 110.dp.toPx() }
-                                if (drag.value > threshold || velocity > 1800f) onDismiss()
-                                else drag.animateTo(0f, spring(dampingRatio = 0.7f, stiffness = 500f))
-                            },
-                        )
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                        ) {},
-                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                    shadowElevation = 24.dp,
+                Column(
+                    Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
+                        .heightIn(max = 720.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(start = 24.dp, end = 24.dp, bottom = 20.dp),
                 ) {
-                    Column(
+                    Box(
                         Modifier
-                            .navigationBarsPadding()
-                            .padding(start = 24.dp, end = 24.dp, bottom = 20.dp),
-                    ) {
-                        Box(
-                            Modifier
-                                .padding(top = 12.dp, bottom = 18.dp)
-                                .align(Alignment.CenterHorizontally)
-                                .size(width = 40.dp, height = 5.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (dismissible) 0.28f else 0f)
-                                )
-                        )
-                        content()
-                    }
+                            .padding(top = 12.dp, bottom = 18.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .size(width = 40.dp, height = 5.dp)
+                            .clip(CircleShape)
+                            .background(
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (dismissible) 0.28f else 0f)
+                            )
+                    )
+                    content()
                 }
             }
         }

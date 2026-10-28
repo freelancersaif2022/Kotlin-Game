@@ -85,12 +85,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import com.inkly.notes.ui.components.AnimatedDialog
 import com.inkly.notes.ui.components.DialogIcon
 import com.inkly.notes.BuildConfig
+import com.inkly.notes.R
+import com.inkly.notes.ui.theme.LocalDarkTheme
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import com.inkly.notes.data.ThemeMode
 import com.inkly.notes.drive.DriveFile
 import com.inkly.notes.ui.components.BrandGradient
@@ -190,7 +196,6 @@ fun SettingsScreen(onBack: () -> Unit) {
                 contentColor = MaterialTheme.colorScheme.inverseOnSurface,
             )
         }
-    }
 
     val busy = vm.busy
     var lastBusy by remember { mutableStateOf(Busy.Checking) }
@@ -251,23 +256,33 @@ fun SettingsScreen(onBack: () -> Unit) {
     AnimatedDialog(visible = vm.setupHelp != null, onDismiss = vm::dismissSetupHelp) {
         SetupHelpContent(
             statusCode = lastHelp.statusCode,
+            detail = lastHelp.detail,
             packageName = vm.packageName,
             sha1 = vm.signingSha1,
             onRetry = vm::retryConnect,
             onClose = vm::dismissSetupHelp,
         )
     }
+    }
 }
 
 @Composable
 private fun ColumnScope.SetupHelpContent(
     statusCode: Int?,
+    detail: String?,
     packageName: String,
     sha1: String,
     onRetry: () -> Unit,
     onClose: () -> Unit,
 ) {
-    DialogIcon(Icons.Rounded.Cloud, MaterialTheme.colorScheme.primary, Modifier.align(Alignment.CenterHorizontally))
+    Box(
+        Modifier
+            .align(Alignment.CenterHorizontally)
+            .size(84.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)),
+        contentAlignment = Alignment.Center,
+    ) { DriveLogoTile(60.dp) }
     Spacer(Modifier.height(16.dp))
     Text(
         "Google didn't finish connecting",
@@ -277,23 +292,57 @@ private fun ColumnScope.SetupHelpContent(
     )
     Spacer(Modifier.height(8.dp))
     Text(
-        "If you didn't close the Google window yourself, Google refused this app build" +
-            (if (statusCode != null) " (code $statusCode)" else "") +
-            ". Check these in Google Cloud Console, then try again:",
+        "Google rejected this app's sign-in request. This is a Google Cloud project setting, not your account — fix the items below and tap Try again.",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
     )
+    if (!detail.isNullOrBlank() || statusCode != null) {
+        Spacer(Modifier.height(14.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f))
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(10.dp))
+            Text(
+                "Google: " + (detail?.takeIf { it.isNotBlank() } ?: "error code $statusCode"),
+                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
+    }
     Spacer(Modifier.height(16.dp))
-    HelpStep(1, "Google Drive API is enabled for the project")
-    HelpStep(2, "OAuth consent screen: your Google account is added under Test users (or the app is published)")
-    HelpStep(3, "An Android OAuth client exists with exactly these values:")
+    HelpStep(1, "APIs & Services → Library → enable \"Google Drive API\"")
+    HelpStep(2, "OAuth consent screen (Audience): add your Gmail under Test users, or press Publish app")
+    HelpStep(3, "Credentials → Create credentials → OAuth client ID → type Android, with exactly:")
     Spacer(Modifier.height(8.dp))
     CopyField("Package name", packageName)
     Spacer(Modifier.height(8.dp))
     CopyField("SHA-1 fingerprint", sha1)
-    Spacer(Modifier.height(22.dp))
+    Spacer(Modifier.height(8.dp))
+    HelpStep(4, "Wait 5 minutes for Google to apply the changes, then tap Try again")
+    Spacer(Modifier.height(10.dp))
+    val uriHandler = LocalUriHandler.current
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .clickable { uriHandler.openUri("https://console.cloud.google.com/apis/credentials") }
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text("Open Google Cloud Console", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.width(6.dp))
+        Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+    }
+    Spacer(Modifier.height(12.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         androidx.compose.material3.OutlinedButton(
             onClick = onClose,
@@ -393,10 +442,7 @@ private fun DriveCard(
 ) {
     Card(padding = 6.dp) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier.size(48.dp).clip(RoundedCornerShape(16.dp)).background(BrandGradient),
-                contentAlignment = Alignment.Center,
-            ) { Icon(Icons.Rounded.Cloud, null, tint = Color.White, modifier = Modifier.size(26.dp)) }
+            DriveLogoTile(48.dp)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text("Google Drive backup", style = MaterialTheme.typography.titleMedium)
@@ -426,30 +472,7 @@ private fun DriveCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(16.dp))
-                    val interaction = remember { MutableInteractionSource() }
-                    Button(
-                        onClick = onConnect,
-                        enabled = !connecting,
-                        interactionSource = interaction,
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth().height(54.dp).pressScale(interaction),
-                    ) {
-                        AnimatedContent(connecting, label = "btn") { busy ->
-                            if (busy) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
-                                    Spacer(Modifier.width(10.dp))
-                                    Text("Connecting…")
-                                }
-                            } else {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    GoogleBadge()
-                                    Spacer(Modifier.width(10.dp))
-                                    Text("Connect Google Drive", fontWeight = FontWeight.SemiBold)
-                                }
-                            }
-                        }
-                    }
+                    GoogleSignInButton(connecting = connecting, onClick = onConnect)
                 }
             } else {
                 Column {
@@ -542,13 +565,57 @@ private fun DriveCard(
     }
 }
 
+/** "Continue with Google" button following Google's sign-in branding (neutral surface, colour G). */
 @Composable
-private fun GoogleBadge() {
+private fun GoogleSignInButton(connecting: Boolean, onClick: () -> Unit) {
+    val dark = LocalDarkTheme.current
+    val interaction = remember { MutableInteractionSource() }
+    Surface(
+        onClick = onClick,
+        enabled = !connecting,
+        interactionSource = interaction,
+        shape = RoundedCornerShape(16.dp),
+        color = if (dark) Color(0xFF131314) else Color.White,
+        border = BorderStroke(1.dp, if (dark) Color(0xFF8E918F) else Color(0xFFDADCE0)),
+        shadowElevation = if (dark) 0.dp else 2.dp,
+        modifier = Modifier.fillMaxWidth().height(56.dp).pressScale(interaction),
+    ) {
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AnimatedContent(connecting, label = "google") { busy ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (busy) {
+                        CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp, color = Color(0xFF4285F4))
+                    } else {
+                        Image(painterResource(R.drawable.ic_google), contentDescription = null, modifier = Modifier.size(22.dp))
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        if (busy) "Connecting…" else "Continue with Google",
+                        color = if (dark) Color(0xFFE3E3E3) else Color(0xFF1F1F1F),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DriveLogoTile(size: androidx.compose.ui.unit.Dp) {
     Box(
-        Modifier.size(24.dp).clip(CircleShape).background(Color.White),
+        Modifier
+            .size(size)
+            .shadow(3.dp, RoundedCornerShape(size * 0.32f))
+            .clip(RoundedCornerShape(size * 0.32f))
+            .background(Color.White),
         contentAlignment = Alignment.Center,
     ) {
-        Text("G", color = Color(0xFF4285F4), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+        Image(painterResource(R.drawable.ic_google_drive), contentDescription = "Google Drive", modifier = Modifier.size(size * 0.56f))
     }
 }
 

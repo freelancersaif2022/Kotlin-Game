@@ -28,7 +28,7 @@ object DriveAuth {
     const val SCOPE_APPDATA = "https://www.googleapis.com/auth/drive.appdata"
 
     private fun request(): AuthorizationRequest = AuthorizationRequest.builder()
-        .setRequestedScopes(listOf(Scope(SCOPE_APPDATA), Scope("email"), Scope("profile")))
+        .setRequestedScopes(listOf(Scope(SCOPE_APPDATA)))
         .build()
 
     suspend fun authorize(context: Context): AuthorizationResult =

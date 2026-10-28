@@ -29,7 +29,7 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-data class SetupHelp(val statusCode: Int?)
+data class SetupHelp(val statusCode: Int?, val detail: String? = null)
 
 enum class Busy { Connecting, BackingUp, Checking, Restoring, Disconnecting }
 
@@ -105,8 +105,12 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
             // Google closes its sheet with RESULT_CANCELED both when the user backs out and when it
             // rejects the app (unregistered SHA-1, consent screen in testing, Drive API off).
             val error = data?.let { runCatching { DriveAuth.resultFromIntent(getApplication(), it) }.exceptionOrNull() }
-            val code = (error as? ApiException)?.statusCode
-            setupHelp = SetupHelp(code)
+            val api = error as? ApiException
+            if ((api == null && data == null) || api?.statusCode == CommonStatusCodes.CANCELED) {
+                message("Google sign-in was closed")
+                return
+            }
+            setupHelp = SetupHelp(api?.statusCode, error?.message)
             return
         }
         viewModelScope.launch {
@@ -125,7 +129,8 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
         when (op) {
             Op.CONNECT -> {
                 busy = Busy.Connecting
-                val (name, email) = withContext(Dispatchers.IO) { DriveApi(t).aboutUser() }
+                val (name, email) = runCatching { withContext(Dispatchers.IO) { DriveApi(t).aboutUser() } }
+                    .getOrDefault(null to null)
                 prefs.setConnected(name, email)
                 if (prefs.state.value.autoBackup) BackupScheduler.schedule(getApplication())
                 val latest = container.backup.latestBackup(t)
@@ -201,8 +206,8 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun fail(e: Throwable) {
         busy = null
-        if (e is ApiException && e.statusCode == CommonStatusCodes.DEVELOPER_ERROR) {
-            setupHelp = SetupHelp(e.statusCode)
+        if (e is ApiException && e.statusCode != CommonStatusCodes.NETWORK_ERROR && e.statusCode != CommonStatusCodes.CANCELED) {
+            setupHelp = SetupHelp(e.statusCode, e.message)
             return
         }
         if (e is DriveException && e.code == 401) prefs.setNeedsReauth(true)

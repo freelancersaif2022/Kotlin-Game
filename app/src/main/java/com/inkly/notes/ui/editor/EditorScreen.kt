@@ -121,6 +121,7 @@ fun EditorScreen(container: AppContainer, noteId: Long, onBack: () -> Unit) {
         }
     }
 
+    Box(Modifier.fillMaxSize()) {
     Column(
         Modifier
             .fillMaxSize()
@@ -227,6 +228,7 @@ fun EditorScreen(container: AppContainer, noteId: Long, onBack: () -> Unit) {
         onConfirm = { confirmDelete = false; vm.delete(onBack) },
         onDismiss = { confirmDelete = false },
     )
+    }
 }
 
 @Composable
