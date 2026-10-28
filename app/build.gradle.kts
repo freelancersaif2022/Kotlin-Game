@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("io.github.takahirom.roborazzi")
 }
 
 android {
@@ -49,6 +50,12 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all { it.maxHeapSize = "3g" }
+        }
+    }
     packaging {
         resources {
             excludes += setOf(
@@ -82,4 +89,14 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    // Screenshot tests (Robolectric + Roborazzi): ./gradlew recordRoborazziDebug
+    testImplementation(composeBom)
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.32.2")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.32.2")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

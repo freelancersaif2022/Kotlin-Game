@@ -44,3 +44,26 @@ jobs:
           body: Installable Lexora APK built from ${{ github.sha }} (${{ github.ref_name }}).
           prerelease: true
           files: Lexora.apk
+
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Render screen previews
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon recordRoborazziDebug
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Lexora-screenshots
+          path: app/build/outputs/roborazzi/
