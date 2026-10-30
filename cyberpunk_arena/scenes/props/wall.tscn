@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Material" path="res://materials/arena_white_soft.tres" id="1_white"]
+[ext_resource type="Material" path="res://materials/accent_glow.tres" id="2_glow"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(73, 2.4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+material = ExtResource("1_white")
+size = Vector3(73, 1.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_strip"]
+material = ExtResource("2_glow")
+size = Vector3(73, 0.06, 0.12)
+
+[node name="Wall" type="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("BoxShape3D_wall")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("BoxMesh_wall")
+
+[node name="GlowStrip" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.23, -0.44)
+mesh = SubResource("BoxMesh_strip")
+cast_shadow = 0

@@ -1,0 +1,302 @@
+[gd_scene load_steps=25 format=3]
+
+[ext_resource type="Shader" path="res://shaders/arena_floor.gdshader" id="1_floor"]
+[ext_resource type="PackedScene" path="res://scenes/props/pillar.tscn" id="2_pillar"]
+[ext_resource type="PackedScene" path="res://scenes/props/wall.tscn" id="3_wall"]
+[ext_resource type="Material" path="res://materials/arena_white.tres" id="4_white"]
+[ext_resource type="Material" path="res://materials/accent_glow.tres" id="5_glow"]
+[ext_resource type="Material" path="res://materials/dark_trim.tres" id="6_trim"]
+[ext_resource type="Material" path="res://materials/accent_violet.tres" id="7_violet"]
+[ext_resource type="Material" path="res://materials/arena_white_soft.tres" id="8_soft"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color = Color(0.72, 0.8, 0.88, 1)
+sky_horizon_color = Color(0.93, 0.945, 0.96, 1)
+sky_curve = 0.12
+ground_bottom_color = Color(0.86, 0.875, 0.895, 1)
+ground_horizon_color = Color(0.93, 0.945, 0.96, 1)
+sun_angle_max = 20.0
+energy_multiplier = 1.0
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("Sky_mat")
+radiance_size = 1
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_color = Color(0.92, 0.94, 0.97, 1)
+ambient_light_sky_contribution = 0.85
+ambient_light_energy = 0.75
+reflected_light_source = 2
+tonemap_mode = 2
+tonemap_exposure = 0.95
+tonemap_white = 3.0
+glow_enabled = true
+glow_intensity = 0.45
+glow_strength = 0.9
+glow_bloom = 0.0
+glow_blend_mode = 2
+glow_hdr_threshold = 1.05
+fog_enabled = true
+fog_mode = 0
+fog_light_color = Color(0.93, 0.945, 0.96, 1)
+fog_light_energy = 1.0
+fog_density = 0.006
+fog_sky_affect = 0.0
+
+[sub_resource type="ShaderMaterial" id="Mat_floor"]
+render_priority = 0
+shader = ExtResource("1_floor")
+
+[sub_resource type="PlaneMesh" id="Mesh_floor"]
+material = SubResource("Mat_floor")
+size = Vector2(240, 240)
+
+[sub_resource type="BoxShape3D" id="Shape_floor"]
+size = Vector3(160, 1, 160)
+
+[sub_resource type="BoxShape3D" id="Shape_platform"]
+size = Vector3(8, 1, 8)
+
+[sub_resource type="BoxMesh" id="Mesh_platform"]
+material = ExtResource("4_white")
+size = Vector3(8, 1, 8)
+
+[sub_resource type="BoxMesh" id="Mesh_platform_edge"]
+material = ExtResource("5_glow")
+size = Vector3(8.02, 0.06, 0.06)
+
+[sub_resource type="BoxShape3D" id="Shape_ramp"]
+size = Vector3(3, 0.3, 6.083)
+
+[sub_resource type="BoxMesh" id="Mesh_ramp"]
+material = ExtResource("8_soft")
+size = Vector3(3, 0.3, 6.083)
+
+[sub_resource type="BoxShape3D" id="Shape_block_l"]
+size = Vector3(2.4, 1.6, 2.4)
+
+[sub_resource type="BoxMesh" id="Mesh_block_l"]
+material = ExtResource("4_white")
+size = Vector3(2.4, 1.6, 2.4)
+
+[sub_resource type="BoxShape3D" id="Shape_block_s"]
+size = Vector3(1.2, 0.9, 1.2)
+
+[sub_resource type="BoxMesh" id="Mesh_block_s"]
+material = ExtResource("8_soft")
+size = Vector3(1.2, 0.9, 1.2)
+
+[sub_resource type="BoxMesh" id="Mesh_block_trim"]
+material = ExtResource("7_violet")
+size = Vector3(2.42, 0.05, 2.42)
+
+[node name="Arena" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_main")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, -0.451984, 0.353129, 0, 0.615661, 0.788011, -0.573576, -0.645501, 0.50432, 0, 20, 0)
+light_color = Color(1, 0.975, 0.94, 1)
+light_energy = 1.25
+light_angular_distance = 1.2
+shadow_enabled = true
+shadow_bias = 0.04
+shadow_normal_bias = 1.2
+shadow_blur = 1.6
+shadow_opacity = 0.82
+directional_shadow_mode = 1
+directional_shadow_split_1 = 0.2
+directional_shadow_fade_start = 0.85
+directional_shadow_max_distance = 42.0
+directional_shadow_pancake_size = 12.0
+sky_mode = 1
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, 0.234736, -0.441474, 0, 0.882948, 0.469472, 0.5, 0.406574, -0.764655, 0, 15, 0)
+light_color = Color(0.82, 0.9, 1, 1)
+light_energy = 0.32
+light_specular = 0.2
+sky_mode = 1
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("Shape_floor")
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("Mesh_floor")
+cast_shadow = 0
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="WallNorth" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -36)
+
+[node name="WallSouth" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
+
+[node name="WallEast" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 36, 0, 0)
+
+[node name="WallWest" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -36, 0, 0)
+
+[node name="Pillars" type="Node3D" parent="."]
+
+[node name="Pillar1" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(0.92388, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.92388, 8.419, 0, 20.325)
+
+[node name="Pillar2" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(0.382683, 0, 0.92388, 0, 1, 0, -0.92388, 0, 0.382683, 20.325, 0, 8.419)
+
+[node name="Pillar3" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(-0.382683, 0, 0.92388, 0, 1, 0, -0.92388, 0, -0.382683, 20.325, 0, -8.419)
+
+[node name="Pillar4" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(-0.92388, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.92388, 8.419, 0, -20.325)
+
+[node name="Pillar5" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(-0.92388, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.92388, -8.419, 0, -20.325)
+
+[node name="Pillar6" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(-0.382683, 0, -0.92388, 0, 1, 0, 0.92388, 0, -0.382683, -20.325, 0, -8.419)
+
+[node name="Pillar7" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(0.382683, 0, -0.92388, 0, 1, 0, 0.92388, 0, 0.382683, -20.325, 0, 8.419)
+
+[node name="Pillar8" parent="Pillars" instance=ExtResource("2_pillar")]
+transform = Transform3D(0.92388, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.92388, -8.419, 0, 20.325)
+
+[node name="Platform" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -16)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Shape_platform")
+
+[node name="Mesh" type="MeshInstance3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("Mesh_platform")
+
+[node name="EdgeGlow" type="MeshInstance3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4)
+mesh = SubResource("Mesh_platform_edge")
+cast_shadow = 0
+
+[node name="Ramp" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.986394, -0.164399, 0, 0.164399, 0.986394, 16, 0.352041, -9)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp"]
+shape = SubResource("Shape_ramp")
+
+[node name="Mesh" type="MeshInstance3D" parent="Ramp"]
+mesh = SubResource("Mesh_ramp")
+
+[node name="Blocks" type="Node3D" parent="."]
+
+[node name="BlockA" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.955336, 0, 0.29552, 0, 1, 0, -0.29552, 0, 0.955336, -14, 0, -12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_block_l")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("Mesh_block_l")
+
+[node name="Trim" type="MeshInstance3D" parent="Blocks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("Mesh_block_trim")
+cast_shadow = 0
+
+[node name="BlockB" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.62161, 0, 0.783327, 0, 1, 0, -0.783327, 0, 0.62161, -17, 0, -9.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("Shape_block_s")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("Mesh_block_s")
+
+[node name="BlockC" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.921061, 0, -0.389418, 0, 1, 0, 0.389418, 0, 0.921061, -12, 0, 14)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_block_l")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("Mesh_block_l")
+
+[node name="Trim" type="MeshInstance3D" parent="Blocks/BlockC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("Mesh_block_trim")
+cast_shadow = 0
+
+[node name="BlockD" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.825336, 0, 0.564642, 0, 1, 0, -0.564642, 0, 0.825336, 12, 0, 12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockD"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_block_l")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockD"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("Mesh_block_l")
+
+[node name="Trim" type="MeshInstance3D" parent="Blocks/BlockD"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("Mesh_block_trim")
+cast_shadow = 0
+
+[node name="BlockE" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.980067, 0, 0.198669, 0, 1, 0, -0.198669, 0, 0.980067, 14.5, 0, 14.8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("Shape_block_s")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("Mesh_block_s")
+
+[node name="BlockF" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 0, 26)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockF"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_block_l")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockF"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("Mesh_block_l")
+
+[node name="Trim" type="MeshInstance3D" parent="Blocks/BlockF"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("Mesh_block_trim")
+cast_shadow = 0
+
+[node name="BlockG" type="StaticBody3D" parent="Blocks"]
+transform = Transform3D(0.877583, 0, 0.479426, 0, 1, 0, -0.479426, 0, 0.877583, 27, 0, -27)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Blocks/BlockG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_block_l")
+
+[node name="Mesh" type="MeshInstance3D" parent="Blocks/BlockG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("Mesh_block_l")
+
+[node name="Trim" type="MeshInstance3D" parent="Blocks/BlockG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("Mesh_block_trim")
+cast_shadow = 0

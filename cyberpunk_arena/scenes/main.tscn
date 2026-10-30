@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/arena/arena.tscn" id="2_arena"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/camera_rig.tscn" id="4_camera"]
+[ext_resource type="PackedScene" path="res://scenes/props/training_dummy.tscn" id="5_dummy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/mobile_controls.tscn" id="6_ui"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="Arena" parent="." instance=ExtResource("2_arena")]
+
+[node name="Player" parent="." node_paths=PackedStringArray("camera_rig") instance=ExtResource("3_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+camera_rig = NodePath("../CameraRig")
+
+[node name="CameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("4_camera")]
+target = NodePath("../Player")
+
+[node name="Dummies" type="Node3D" parent="."]
+
+[node name="DummyCenter" parent="Dummies" instance=ExtResource("5_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+
+[node name="DummyLeft" parent="Dummies" instance=ExtResource("5_dummy")]
+transform = Transform3D(0.94, 0, -0.34, 0, 1, 0, 0.34, 0, 0.94, -3.5, 0, -2.5)
+
+[node name="DummyRight" parent="Dummies" instance=ExtResource("5_dummy")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 3.5, 0, -2.5)
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="MobileControls" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("6_ui")]
+player = NodePath("../../Player")

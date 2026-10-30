@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Material" path="res://materials/arena_white.tres" id="1_white"]
+[ext_resource type="Material" path="res://materials/accent_glow.tres" id="2_glow"]
+[ext_resource type="Material" path="res://materials/dark_trim.tres" id="3_trim"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
+height = 7.0
+radius = 0.75
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
+material = ExtResource("1_white")
+top_radius = 0.7
+bottom_radius = 0.7
+height = 7.0
+radial_segments = 24
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_base"]
+material = ExtResource("3_trim")
+size = Vector3(1.9, 0.35, 1.9)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
+material = ExtResource("2_glow")
+top_radius = 0.73
+bottom_radius = 0.73
+height = 0.09
+radial_segments = 24
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_cap"]
+material = ExtResource("1_white")
+size = Vector3(1.7, 0.3, 1.7)
+
+[node name="Pillar" type="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+shape = SubResource("CylinderShape3D_pillar")
+
+[node name="Column" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+mesh = SubResource("CylinderMesh_column")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("BoxMesh_base")
+
+[node name="BandLow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+mesh = SubResource("CylinderMesh_band")
+cast_shadow = 0
+
+[node name="BandHigh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.8, 0)
+mesh = SubResource("CylinderMesh_band")
+cast_shadow = 0
+
+[node name="Cap" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.1, 0)
+mesh = SubResource("BoxMesh_cap")
