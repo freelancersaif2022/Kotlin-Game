@@ -1,0 +1,7 @@
+# Godot 4 generated files
+.godot/
+*.tmp
+# Signing keys
+*.keystore
+*.jks
+export_credentials.cfg
