@@ -12,6 +12,7 @@ datastore = "1.1.7"
 playAds = "24.3.0"
 ump = "3.2.0"
 billing = "7.1.1"
+guava = "33.3.1-android"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playAds" }
 ump = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "ump" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
 
 [plugins]
