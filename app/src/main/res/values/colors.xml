@@ -1,0 +1,8 @@
+<resources>
+    <color name="void_black">#FF020604</color>
+    <color name="neon_green">#FF39FF88</color>
+    <color name="panel">#FF0A1410</color>
+    <color name="panel_stroke">#3339FF88</color>
+    <color name="text_primary">#FFE8FFF1</color>
+    <color name="text_secondary">#FF8FB8A0</color>
+</resources>

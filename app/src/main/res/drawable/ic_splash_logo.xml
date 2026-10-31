@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- radar sweep wedge -->
+    <path android:fillColor="#3339FF88" android:pathData="M54,54 L54,24 A30,30 0 0,1 80,39 Z" />
+    <!-- corner brackets -->
+    <path android:strokeColor="#FF39FF88" android:strokeWidth="2.6" android:strokeLineCap="round"
+        android:pathData="M33,40v-7h7 M68,33h7v7 M75,68v7h-7 M40,75h-7v-7" />
+    <!-- ghost silhouette -->
+    <path android:fillColor="#EFE8FFF1"
+        android:pathData="M54,38c-7.2,0 -12,5.4 -12,12.4v17.6l3.4,-2.8 3.2,2.8 2.8,-2.8 2.6,2.8 2.6,-2.8 2.8,2.8 3.2,-2.8 3.4,2.8v-17.6c0,-7 -4.8,-12.4 -12,-12.4z" />
+    <path android:fillColor="#FF020604"
+        android:pathData="M49,50.5m-2.2,0a2.2,2.6 0,1 1,4.4 0a2.2,2.6 0,1 1,-4.4 0 M59,50.5m-2.2,0a2.2,2.6 0,1 1,4.4 0a2.2,2.6 0,1 1,-4.4 0" />
+    <path android:fillColor="#FF39FF88" android:pathData="M78,30m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0" />
+</vector>
